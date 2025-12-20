@@ -49,7 +49,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
               Turn Your Resume into a Website
             </h1>
-            <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl">
+            <p className="mx-auto text-muted-foreground md:text-xl">
               Stop sending PDFs. Get a professional, shareable web page in minutes.
             </p>
           </div>
