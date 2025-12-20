@@ -58,7 +58,6 @@ export default function SignUpForm() {
     
     signInWithPopup(auth, provider)
       .then(() => {
-        // The onAuthStateChanged listener in useUser will handle the redirect.
         toast({
           title: 'Account Created',
           description: "Welcome! We're redirecting you to the editor.",
