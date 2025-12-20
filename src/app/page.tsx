@@ -3,20 +3,32 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Palette, Share2, UploadCloud } from 'lucide-react';
+import { UploadCloud } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/header';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setFileName(file.name);
+      if (file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+        setFileName(file.name);
+      } else {
+        toast({
+            variant: 'destructive',
+            title: 'Invalid File',
+            description: 'Please select a PDF file under 5MB.',
+        });
+        event.target.value = ''; // Reset file input
+        setFileName(null);
+      }
     } else {
       setFileName(null);
     }
@@ -31,15 +43,14 @@ export default function Home() {
       });
       return;
     }
-    // TODO: Process the file
+    // In a real app, you'd upload the file and process it here.
+    // For now, we'll just simulate success and redirect.
     toast({
       title: 'Upload Successful!',
-      description: `${fileName} has been uploaded. Redirecting to editor...`,
+      description: `We've processed ${fileName}. Now, create an account to edit and publish your profile.`,
     });
-    // Redirect to editor page after a short delay
-    setTimeout(() => {
-        window.location.href = '/editor';
-    }, 2000);
+    // Redirect to sign-up page, passing the "intent" to create from a resume
+    router.push('/signup?from=upload');
   };
 
   return (
@@ -80,7 +91,7 @@ export default function Home() {
               <div className="space-x-4">
                   <span className="text-sm text-muted-foreground">Or, you can</span>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/editor">Build Manually</Link>
+                  <Link href="/signup">Sign Up Manually</Link>
                 </Button>
               </div>
             </div>
@@ -158,7 +169,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                     <Button asChild size="lg">
-                        <Link href="/editor">
+                        <Link href="/signup">
                             Get Started for Free
                         </Link>
                     </Button>

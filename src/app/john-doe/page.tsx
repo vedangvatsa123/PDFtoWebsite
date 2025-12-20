@@ -1,3 +1,7 @@
+// This file is now deprecated and will be replaced by a dynamic route [slug]/page.tsx
+// Keeping it for now to avoid breaking changes during transition.
+// The new dynamic page is located at src/app/[slug]/page.tsx
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { mockProfile } from '@/lib/mock-data';

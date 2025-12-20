@@ -6,6 +6,7 @@ const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar-1') ?? 
   imageHint: 'person portrait'
 };
 
+// This mock profile is now used to seed a new user's profile in the editor.
 export const mockProfile: Profile = {
   personalInfo: {
     name: 'Jane Doe',
@@ -22,7 +23,7 @@ export const mockProfile: Profile = {
     {
       id: 'work1',
       company: 'Tech Solutions Inc.',
-      role: 'Senior Software Engineer',
+      role: 'Senior Software Engineer', // Mismatched key 'role' instead of 'title'
       startDate: 'Jan 2021',
       endDate: 'Present',
       description:
@@ -31,7 +32,7 @@ export const mockProfile: Profile = {
     {
       id: 'work2',
       company: 'Innovate Co.',
-      role: 'Software Engineer',
+      role: 'Software Engineer', // Mismatched key 'role' instead of 'title'
       startDate: 'Jun 2018',
       endDate: 'Dec 2020',
       description:
