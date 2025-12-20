@@ -91,18 +91,18 @@ export default function Home() {
 
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-8">
                 <div className="flex items-center gap-2">
-                    <UploadCloud className="h-5 w-5" />
-                    <span>Upload Resume</span>
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">1</div>
+                    <span className="font-medium">Upload Resume</span>
                   </div>
-                  <ArrowRight className="h-5 w-5 hidden md:block" />
+                  <div className="h-px w-8 bg-border md:block hidden"></div>
                   <div className="flex items-center gap-2">
-                    <Edit className="h-5 w-5" />
-                    <span>Customize Profile</span>
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">2</div>
+                    <span className="font-medium">Customize Profile</span>
                   </div>
-                  <ArrowRight className="h-5 w-5 hidden md:block" />
+                   <div className="h-px w-8 bg-border md:block hidden"></div>
                   <div className="flex items-center gap-2">
-                    <Share2 className="h-5 w-5" />
-                    <span>Publish & Share</span>
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">3</div>
+                    <span className="font-medium">Publish & Share</span>
                   </div>
               </div>
             </>
