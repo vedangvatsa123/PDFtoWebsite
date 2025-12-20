@@ -56,7 +56,9 @@ type PageProps = {
 
 export default function ProfileSlugPage({ params }: PageProps) {
   const firestore = useFirestore();
-  const { slug } = use(Promise.resolve(params));
+  // Correctly unwrap the params promise with use()
+  const { slug } = use(params);
+  
   const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
