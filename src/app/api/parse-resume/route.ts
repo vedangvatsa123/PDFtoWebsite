@@ -2,177 +2,114 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
 
-const parseResumeText = (text: string) => {
+// A more robust list of potential section headers, case-insensitive
+const SECTION_KEYWORDS: { [key: string]: string[] } = {
+    summary: ['summary', 'profile', 'objective', 'about me', 'professional summary'],
+    experience: ['experience', 'work experience', 'professional experience', 'employment history', 'work history'],
+    education: ['education', 'academic background', 'academic history'],
+    skills: ['skills', 'technical skills', 'proficiencies', 'core competencies'],
+    projects: ['projects', 'personal projects', 'portfolio'],
+    certifications: ['certifications', 'licenses & certifications'],
+    awards: ['awards', 'honors & awards'],
+    publications: ['publications'],
+    volunteer: ['volunteer experience', 'community involvement'],
+};
+
+// Combine all keywords for easier searching
+const ALL_KEYWORDS = Object.values(SECTION_KEYWORDS).flat();
+
+/**
+ * A smarter parser that identifies sections and extracts their content block.
+ * @param text The raw text from the PDF.
+ * @returns An object with personal info and an array of flexible sections.
+ */
+const parseResumeTextSmarter = (text: string) => {
     const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-
-    const getSectionLines = (sectionKeywords: string[], allKeywords: string[]): [string[], number] => {
-        let startIndex = -1;
-        for (const keyword of sectionKeywords) {
-            const regex = new RegExp(`^${keyword}$`, 'i');
-            startIndex = lines.findIndex(line => regex.test(line));
-            if (startIndex !== -1) break;
-        }
-
-        if (startIndex === -1) return [[], -1];
-
-        let endIndex = lines.length;
-        const remainingKeywords = allKeywords.filter(k => !sectionKeywords.includes(k));
-        for (let i = startIndex + 1; i < lines.length; i++) {
-            const line = lines[i];
-            for (const endKeyword of remainingKeywords) {
-                const regex = new RegExp(`^${endKeyword}$`, 'i');
-                if (regex.test(line)) {
-                    endIndex = i;
-                    // Return the lines and the start index of the next section
-                    return [lines.slice(startIndex + 1, endIndex), endIndex];
-                }
-            }
-        }
-
-        // If no other section is found, return all lines until the end
-        return [lines.slice(startIndex + 1), lines.length];
-    };
-
-    const experienceKeywords = ['experience', 'work experience', 'professional experience', 'employment history'];
-    const educationKeywords = ['education', 'academic background'];
-    const skillsKeywords = ['skills', 'technical skills', 'proficiencies'];
-    const summaryKeywords = ['summary', 'profile', 'objective', 'about me'];
-    const allKeywords = [...experienceKeywords, ...educationKeywords, ...skillsKeywords, ...summaryKeywords];
-
-    // Find Summary/Profile
-    const [summaryLines] = getSectionLines(summaryKeywords, allKeywords);
-
-    // Find Experience, Education, Skills
-    const [experienceSectionLines] = getSectionLines(experienceKeywords, allKeywords);
-    const [educationSectionLines] = getSectionLines(educationKeywords, allKeywords);
-    const [skillsSectionLines] = getSectionLines(skillsKeywords, allKeywords);
     
     // --- Personal Info Extraction ---
-    // Assume the first few lines are personal info if no summary section is explicitly found early.
-    let personalInfoLines = lines.slice(0, 5); // Take top 5 lines as potential personal info block
     const emailRegex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
     const phoneRegex = /(\+?\d{1,2}[-.\s]?)?(\(?\d{3}\)?[-.\s]?){1,2}\d{3}[-.\s]?\d{4}/;
-    
+    const websiteRegex = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?/i;
+
     const emailMatch = text.match(emailRegex);
-    const email = emailMatch ? emailMatch[0] : '';
     const phoneMatch = text.match(phoneRegex);
+    const websiteMatch = text.match(websiteRegex);
+
+    const email = emailMatch ? emailMatch[0] : '';
     const phone = phoneMatch ? phoneMatch[0] : '';
-
-    let fullName = lines[0] && !allKeywords.some(k => lines[0].toLowerCase().includes(k)) ? lines[0] : 'Full Name';
-    if (fullName.includes(email) || fullName.includes(phone)) {
-        fullName = 'Full Name'; // Reset if name seems to be contact info
-    }
-
-    let summary = summaryLines.join(' ');
-    // If no summary section, try to infer it from lines after personal info.
-    if (!summary) {
-        let firstSectionIndex = lines.length;
-        allKeywords.forEach(keyword => {
-            const index = lines.findIndex(line => new RegExp(`^${keyword}$`, 'i').test(line.trim()));
-            if (index !== -1 && index < firstSectionIndex) {
-                firstSectionIndex = index;
-            }
-        });
-
-        // Find where personal info likely ends
-        let personalInfoEndIndex = 0;
-        for (let i = 0; i < Math.min(lines.length, 5); i++) {
-            if (emailRegex.test(lines[i]) || phoneRegex.test(lines[i]) || /linkedin\.com|github\.com/i.test(lines[i])) {
-                personalInfoEndIndex = i + 1;
-            }
-        }
-        
-        if (firstSectionIndex > personalInfoEndIndex) {
-            summary = lines.slice(personalInfoEndIndex, firstSectionIndex).join(' ').trim();
-        }
-    }
-
-
-    const parseEntries = (lines: string[]) => {
-        if (lines.length === 0) return [];
-        const entries: { title: string, subtitle: string; date: string, description: string }[] = [];
-        let currentEntryLines: string[] = [];
-
-        // Regex to detect a date range, which often signals the start of a new entry.
-        const dateRangeRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December)[\s.,]*\d{4}\s*(?:-|to|–|—)\s*(?:Present|Current|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December)[\s.,]*\d{4})/i;
-
-        lines.forEach((line, index) => {
-            // Heuristic for new entry: a date range, or a line that looks like a title after a few descriptive lines.
-            const isNewEntry = dateRangeRegex.test(line) || 
-                               (currentEntryLines.length > 2 && lines[index-1].endsWith('.') && !line.startsWith('-') && !line.startsWith('•'));
-            
-            if (isNewEntry && currentEntryLines.length > 0) {
-                // Process the previous entry
-                const dateLine = currentEntryLines.find(l => dateRangeRegex.test(l)) || '';
-                const title = currentEntryLines[0];
-                const subtitle = currentEntryLines[1] && !dateRangeRegex.test(currentEntryLines[1]) ? currentEntryLines[1] : '';
-                const description = currentEntryLines.slice(subtitle ? 2 : 1).filter(l => l !== dateLine).join(' ').trim();
-
-                entries.push({ title, subtitle, date: dateLine, description });
-                currentEntryLines = [line];
-            } else {
-                currentEntryLines.push(line);
-            }
-        });
-
-        // Add the last entry
-        if (currentEntryLines.length > 0) {
-            const dateLine = currentEntryLines.find(l => dateRangeRegex.test(l)) || '';
-            const title = currentEntryLines[0] || 'N/A';
-            const subtitle = currentEntryLines.length > 1 && !dateRangeRegex.test(currentEntryLines[1]) ? currentEntryLines[1] : '';
-             const description = currentEntryLines.slice(subtitle ? 2 : 1).filter(l => l !== dateLine).join(' ').trim();
-            entries.push({ title, subtitle, date: dateLine, description });
-        }
-        
-        return entries;
-    };
+    let website = websiteMatch ? websiteMatch[0] : '';
     
-    const workExperienceParsed = parseEntries(experienceSectionLines);
-    const educationParsed = parseEntries(educationSectionLines);
+    // Clean up website URL
+    if (website) {
+        website = website.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    }
 
-    const workExperience = workExperienceParsed.map(entry => {
-        const [startDate, endDate] = entry.date.split(/\s*(-|to|–|—)\s*/).map(d => d.trim());
-        return {
-            company: entry.subtitle,
-            title: entry.title,
-            startDate: startDate || 'Date',
-            endDate: endDate || 'Present',
-            description: entry.description,
-        };
+    let fullName = lines[0] && !ALL_KEYWORDS.some(k => lines[0].toLowerCase().includes(k)) ? lines[0] : '';
+
+    // --- Section Identification and Extraction ---
+    const sections: { title: string; content: string; order: number }[] = [];
+    let sectionStarts: { index: number; title: string }[] = [];
+
+    // Find all lines that look like section headers
+    lines.forEach((line, index) => {
+        const lowerLine = line.toLowerCase();
+        for (const sectionType in SECTION_KEYWORDS) {
+            if (SECTION_KEYWORDS[sectionType].includes(lowerLine)) {
+                sectionStarts.push({ index, title: line });
+                return; // Found a match, move to next line
+            }
+        }
+        // Fallback for any capitalized line with 1-3 words
+        if (/^[A-Z][a-zA-Z\s&]{4,25}$/.test(line) && line.split(' ').length <= 4 && lines[index + 1]?.length > 0) {
+             sectionStarts.push({ index, title: line });
+        }
     });
 
-    const education = educationParsed.map(entry => {
-        const [startDate, endDate] = entry.date.split(/\s*(-|to|–|—)\s*/).map(d => d.trim());
-        return {
-            institution: entry.title,
-            degree: entry.subtitle,
-            startDate: startDate || 'Date',
-            endDate: endDate || 'Present',
-            description: entry.description
-        };
+    // Deduplicate and sort section starts
+    const uniqueSectionStarts = sectionStarts.filter((section, index, self) => 
+        index === self.findIndex(s => s.index === section.index)
+    ).sort((a, b) => a.index - b.index);
+
+    
+    // Extract content for each section
+    uniqueSectionStarts.forEach((start, i) => {
+        const startIndex = start.index + 1;
+        const endIndex = (i + 1 < uniqueSectionStarts.length) ? uniqueSectionStarts[i + 1].index : lines.length;
+        const contentLines = lines.slice(startIndex, endIndex);
+        const content = contentLines.join('\n').replace(/\n\n+/g, '\n'); // Clean up excessive newlines
+        
+        if (content.trim()) {
+            sections.push({
+                title: start.title,
+                content: content.trim(),
+                order: i
+            });
+        }
     });
 
-    // Skills: split by commas, slashes, or bullet points, then process each line.
-    const skills = skillsSectionLines
-        .join(' ')
-        .split(/, | \/ | • | \| /)
-        .flatMap(skill => skill.split('\n'))
-        .map(s => s.trim())
-        .filter(s => s && s.length > 1 && s.length < 50) // Filter out noise
-        .map(s => ({name: s}));
+    // Try to find summary if it's not a formal section
+    let summary = '';
+    const summarySection = sections.find(s => SECTION_KEYWORDS.summary.includes(s.title.toLowerCase()));
+    if (summarySection) {
+        summary = summarySection.content;
+        // Remove summary from the generic sections array
+        sections.splice(sections.findIndex(s => s.title === summarySection.title), 1);
+    } else if (uniqueSectionStarts.length > 0 && uniqueSectionStarts[0].index > 1) {
+        // Assume text before the first section is the summary
+        const personalInfoLines = lines.slice(0, uniqueSectionStarts[0].index);
+        summary = personalInfoLines.filter(line => !emailRegex.test(line) && !phoneRegex.test(line) && line !== fullName).join(' ');
+    }
 
 
     return {
         fullName,
         email,
         phone,
+        website,
         summary,
-        workExperience,
-        education,
-        skills,
+        sections,
     };
 };
-
 
 export async function POST(request: NextRequest) {
   try {
@@ -191,7 +128,8 @@ export async function POST(request: NextRequest) {
 
     const data = await pdf(fileBuffer);
     
-    const structuredData = parseResumeText(data.text);
+    // Use the smarter parser
+    const structuredData = parseResumeTextSmarter(data.text);
     
     return NextResponse.json(structuredData, { status: 200 });
 
@@ -201,5 +139,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to parse resume.', details: errorMessage }, { status: 500 });
   }
 }
-
-    

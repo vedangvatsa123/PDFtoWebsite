@@ -1,3 +1,4 @@
+
 export type Skill = {
     id: string;
     userProfileId?: string;
@@ -6,7 +7,7 @@ export type Skill = {
 };
 
 export type Education = {
-    id: string;
+    id:string;
     userProfileId?: string;
     institution: string;
     degree: string;
@@ -25,6 +26,18 @@ export type WorkExperience = {
     description: string;
 };
 
+// A flexible type to hold any section from a parsed resume.
+export type ResumeSection = {
+    id: string;
+    userProfileId: string;
+    // The title of the section from the resume, e.g., "Work Experience", "Projects"
+    title: string;
+    // The raw text content of the section.
+    content: string;
+    // To maintain the order from the resume.
+    order: number;
+};
+
 export type UserProfile = {
     id?: string;
     userId: string;
@@ -33,9 +46,6 @@ export type UserProfile = {
     phone?: string;
     location?: string;
     summary: string;
-    experienceIds?: string[];
-    educationIds?: string[];
-    skillIds?: string[];
     themeId?: string;
     slug: string;
     avatarUrl?: string;

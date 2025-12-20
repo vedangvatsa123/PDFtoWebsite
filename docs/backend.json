@@ -7,193 +7,31 @@
       "type": "object",
       "description": "Represents a user's profile, derived from their resume and editable by the user.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the UserProfile entity."
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to User. (Relationship: User 1:1 UserProfile)"
-        },
-        "fullName": {
-          "type": "string",
-          "description": "The user's full name."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        },
-        "phone": {
-          "type": "string",
-          "description": "The user's phone number."
-        },
-        "location": {
-          "type": "string",
-          "description": "The user's location."
-        },
-        "summary": {
-          "type": "string",
-          "description": "A brief summary or personal statement."
-        },
-        "experienceIds": {
-          "type": "array",
-          "description": "References to WorkExperiences. (Relationship: UserProfile 1:N WorkExperience)",
-          "items": {
-            "type": "string"
-          }
-        },
-        "educationIds": {
-          "type": "array",
-          "description": "References to Educations. (Relationship: UserProfile 1:N Education)",
-          "items": {
-            "type": "string"
-          }
-        },
-        "skillIds": {
-          "type": "array",
-          "description": "References to Skills. (Relationship: UserProfile 1:N Skill)",
-          "items": {
-            "type": "string"
-          }
-        },
-        "themeId": {
-          "type": "string",
-          "description": "Reference to Theme. (Relationship: Theme 1:1 UserProfile)"
-        },
-        "slug": {
-          "type": "string",
-          "description": "The URL-friendly slug for the user's profile page."
-        }
+        "id": { "type": "string", "description": "Unique identifier for the UserProfile entity." },
+        "userId": { "type": "string", "description": "Reference to User. (Relationship: User 1:1 UserProfile)" },
+        "fullName": { "type": "string", "description": "The user's full name." },
+        "email": { "type": "string", "description": "The user's email address.", "format": "email" },
+        "phone": { "type": "string", "description": "The user's phone number." },
+        "location": { "type": "string", "description": "The user's location." },
+        "summary": { "type": "string", "description": "A brief summary or personal statement." },
+        "themeId": { "type": "string", "description": "Reference to Theme. (Relationship: Theme 1:1 UserProfile)" },
+        "slug": { "type": "string", "description": "The URL-friendly slug for the user's profile page." }
       },
-      "required": [
-        "id",
-        "userId",
-        "fullName",
-        "email",
-        "summary",
-        "slug"
-      ]
+      "required": ["id", "userId", "fullName", "email", "summary", "slug"]
     },
-    "WorkExperience": {
+    "ResumeSection": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "WorkExperience",
+      "title": "ResumeSection",
       "type": "object",
-      "description": "Represents a user's work experience entry.",
+      "description": "Represents a generic section from a user's resume.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the WorkExperience entity."
-        },
-        "userProfileId": {
-          "type": "string",
-          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N WorkExperience)"
-        },
-        "company": {
-          "type": "string",
-          "description": "The name of the company."
-        },
-        "title": {
-          "type": "string",
-          "description": "The job title."
-        },
-        "startDate": {
-          "type": "string",
-          "description": "The start date of the employment.",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "description": "The end date of the employment (or null if current).",
-          "format": "date-time"
-        },
-        "description": {
-          "type": "string",
-          "description": "A description of the responsibilities and achievements."
-        }
+        "id": { "type": "string", "description": "Unique identifier for the ResumeSection entity." },
+        "userProfileId": { "type": "string", "description": "Reference to UserProfile. (Relationship: UserProfile 1:N ResumeSection)" },
+        "title": { "type": "string", "description": "The title of the section, e.g., 'Work Experience', 'Projects'." },
+        "content": { "type": "string", "description": "The raw text content of that section." },
+        "order": { "type": "number", "description": "The order in which the section appeared on the resume." }
       },
-      "required": [
-        "id",
-        "userProfileId",
-        "company",
-        "title",
-        "startDate",
-        "description"
-      ]
-    },
-    "Education": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Education",
-      "type": "object",
-      "description": "Represents a user's education entry.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Education entity."
-        },
-        "userProfileId": {
-          "type": "string",
-          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Education)"
-        },
-        "institution": {
-          "type": "string",
-          "description": "The name of the educational institution."
-        },
-        "degree": {
-          "type": "string",
-          "description": "The degree obtained."
-        },
-        "startDate": {
-          "type": "string",
-          "description": "The start date of the education.",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "description": "The end date of the education.",
-          "format": "date-time"
-        },
-        "description": {
-          "type": "string",
-          "description": "A description of the studies and achievements."
-        }
-      },
-      "required": [
-        "id",
-        "userProfileId",
-        "institution",
-        "degree",
-        "startDate"
-      ]
-    },
-    "Skill": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Skill",
-      "type": "object",
-      "description": "Represents a skill possessed by a user.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Skill entity."
-        },
-        "userProfileId": {
-          "type": "string",
-          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Skill)"
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the skill."
-        },
-        "level": {
-          "type": "string",
-          "description": "The user's proficiency level in the skill."
-        }
-      },
-      "required": [
-        "id",
-        "userProfileId",
-        "name"
-      ]
+      "required": ["id", "userProfileId", "title", "content", "order"]
     },
     "Theme": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -201,67 +39,29 @@
       "type": "object",
       "description": "Represents a visual theme that can be applied to a user's profile.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Theme entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the theme."
-        },
-        "primaryColor": {
-          "type": "string",
-          "description": "The primary color of the theme (e.g., hex code)."
-        },
-        "secondaryColor": {
-          "type": "string",
-          "description": "The secondary color of the theme."
-        },
-        "fontFamily": {
-          "type": "string",
-          "description": "The font family used in the theme."
-        }
+        "id": { "type": "string", "description": "Unique identifier for the Theme entity." },
+        "name": { "type": "string", "description": "The name of the theme." },
+        "primaryColor": { "type": "string", "description": "The primary color of the theme (e.g., hex code)." },
+        "secondaryColor": { "type": "string", "description": "The secondary color of the theme." },
+        "fontFamily": { "type": "string", "description": "The font family used in the theme." }
       },
-      "required": [
-        "id",
-        "name",
-        "primaryColor",
-        "fontFamily"
-      ]
+      "required": ["id", "name", "primaryColor", "fontFamily"]
     },
     "User": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a user of the application.  Note: Authentication data (passwords) are assumed to be handled by an external system.",
+      "description": "Represents a user of the application.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the User entity."
-        },
-        "username": {
-          "type": "string",
-          "description": "The user's username."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        }
+        "id": { "type": "string", "description": "Unique identifier for the User entity." },
+        "username": { "type": "string", "description": "The user's username." },
+        "email": { "type": "string", "description": "The user's email address.", "format": "email" }
       },
-      "required": [
-        "id",
-        "username",
-        "email"
-      ]
+      "required": ["id", "username", "email"]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous",
-      "google.com"
-    ]
+    "providers": ["password", "anonymous", "google.com"]
   },
   "firestore": {
     "structure": [
@@ -269,127 +69,42 @@
         "path": "/users/{userId}",
         "definition": {
           "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user authentication and profile information. It only store authentication information, profile data in UserProfile entity.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/User" },
+          "description": "Stores user authentication information."
         }
       },
       {
         "path": "/users/{userId}/userProfile",
         "definition": {
           "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile data.  Owned by the user identified by userId.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/UserProfile" },
+          "description": "Stores user profile data."
         }
       },
       {
-        "path": "/users/{userId}/workExperiences/{workExperienceId}",
+        "path": "/users/{userId}/resumeSections/{sectionId}",
         "definition": {
-          "entityName": "WorkExperience",
-          "schema": {
-            "$ref": "#/backend/entities/WorkExperience"
-          },
-          "description": "Stores work experience entries for a specific user. Owned by the user identified by userId.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            },
-            {
-              "name": "workExperienceId",
-              "description": "The unique identifier for the work experience entry."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/educations/{educationId}",
-        "definition": {
-          "entityName": "Education",
-          "schema": {
-            "$ref": "#/backend/entities/Education"
-          },
-          "description": "Stores education entries for a specific user. Owned by the user identified by userId.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            },
-            {
-              "name": "educationId",
-              "description": "The unique identifier for the education entry."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/skills/{skillId}",
-        "definition": {
-          "entityName": "Skill",
-          "schema": {
-            "$ref": "#/backend/entities/Skill"
-          },
-          "description": "Stores skill entries for a specific user. Owned by the user identified by userId.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            },
-            {
-              "name": "skillId",
-              "description": "The unique identifier for the skill entry."
-            }
-          ]
+          "entityName": "ResumeSection",
+          "schema": { "$ref": "#/backend/entities/ResumeSection" },
+          "description": "Stores flexible content sections parsed from a user's resume."
         }
       },
       {
         "path": "/themes/{themeId}",
         "definition": {
           "entityName": "Theme",
-          "schema": {
-            "$ref": "#/backend/entities/Theme"
-          },
-          "description": "Stores available themes for user profiles.",
-          "params": [
-            {
-              "name": "themeId",
-              "description": "The unique identifier for the theme."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Theme" },
+          "description": "Stores available themes for user profiles."
         }
       },
       {
         "path": "/userProfilesBySlug/{slug}",
         "definition": {
           "entityName": "UserProfileSlug",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores slugs for user profiles, enforcing uniqueness.  This is managed by a Cloud Function to maintain consistency with /users/{userId}/userProfile.  Data is duplicated here for efficient slug lookup.",
-          "params": [
-            {
-              "name": "slug",
-              "description": "The unique slug for the user profile."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/UserProfile" },
+          "description": "Stores slugs for user profiles for efficient public lookup."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to provide a secure and scalable solution for the ResumeRack application. It prioritizes authorization independence and clear security rules. User profiles, work experience, education, and skills are organized under each user's document to maintain data locality and simplify authorization. The Theme entity is stored in a top-level collection, and each user profile references one.\n\nKey aspects of the design include:\n\n1.  **Authorization Independence:** UserProfile and all its subcollections (WorkExperience, Education, Skill) are located under `/users/{userId}`. This path-based ownership eliminates the need for `get()` calls in security rules, ensuring authorization is based solely on `request.auth.uid` and data within the user's document.\n2.  **Structural Segregation:** Each collection serves a distinct purpose, ensuring a homogeneous security posture. For instance, all documents within `/users/{userId}/workExperiences` have the same access control requirements (accessible only by the user).\n3.  **Access Modeling:** Path-based ownership is consistently used for user-owned data (UserProfile, WorkExperience, Education, Skill). Themes are global and accessible by anyone, so they are in a top-level collection.\n4.  **QAPs (Rules are not Filters):** The structure supports secure `list` operations. Because the data is nested under `/users/{userId}`, listing operations are always scoped to the authenticated user.\n5. **Slug Uniqueness:**  The `/userProfilesBySlug/{slug}` collection is used to quickly check for uniqueness of the chosen slug.  Writing to this collection is done via a Cloud Function that enforces uniqueness and consistency with the main `/users/{userId}/userProfile` document.\n\nThis design ensures data integrity, simplifies security rules, and enhances the scalability and maintainability of the ResumeRack application."
+    ]
   }
 }

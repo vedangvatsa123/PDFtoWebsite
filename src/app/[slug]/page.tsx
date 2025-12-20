@@ -2,18 +2,17 @@
 "use client";
 
 import { useState, useEffect, use } from 'react';
-import { doc, getDoc, collection, getDocs, Firestore } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, Firestore, query, orderBy } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useFirestore } from '@/firebase';
-import { type UserProfile, type WorkExperience, type Education, type Skill } from '@/types';
-import { Briefcase, Mail, Phone, MapPin, Link as LinkIcon, GraduationCap, Award, Loader2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { type UserProfile, type ResumeSection } from '@/types';
+import { Mail, Phone, MapPin, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
 import Header from '@/components/header';
 
-async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null> {
+async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, sections: ResumeSection[] } | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
     const slugSnap = await getDoc(slugRef);
 
@@ -24,7 +23,6 @@ async function getProfileData(firestore: Firestore, slug: string): Promise<{ pro
     const { userId } = slugSnap.data();
     if (!userId) return null;
 
-    // The user's profile is stored in a document where the ID is the user's UID.
     const profileRef = doc(firestore, 'users', userId, 'userProfile', userId);
     const profileSnap = await getDoc(profileRef);
 
@@ -34,21 +32,12 @@ async function getProfileData(firestore: Firestore, slug: string): Promise<{ pro
     
     const profileData = profileSnap.data() as UserProfile;
 
-    const workCol = collection(firestore, 'users', userId, 'workExperiences');
-    const eduCol = collection(firestore, 'users', userId, 'educations');
-    const skillsCol = collection(firestore, 'users', userId, 'skills');
-
-    const [workSnap, eduSnap, skillsSnap] = await Promise.all([
-        getDocs(workCol),
-        getDocs(eduCol),
-        getDocs(skillsCol)
-    ]);
+    const sectionsQuery = query(collection(firestore, 'users', userId, 'resumeSections'), orderBy('order'));
+    const sectionsSnap = await getDocs(sectionsQuery);
     
-    const work = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
-    const education = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
-    const skills = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
+    const sections = sectionsSnap.docs.map(d => ({...d.data(), id: d.id } as ResumeSection));
 
-    return { profile: profileData, work, education, skills };
+    return { profile: profileData, sections };
 }
 
 type PageProps = {
@@ -57,10 +46,9 @@ type PageProps = {
 
 export default function ProfileSlugPage({ params }: PageProps) {
   const firestore = useFirestore();
-  // Correctly unwrap the params promise with use()
   const { slug } = use(params);
   
-  const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
+  const [data, setData] = useState<{ profile: UserProfile, sections: ResumeSection[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -71,7 +59,6 @@ export default function ProfileSlugPage({ params }: PageProps) {
           if (profileData) {
             setData(profileData);
           } else {
-             // Will trigger not-found UI
              notFound();
           }
         })
@@ -92,7 +79,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
     return notFound();
   }
 
-  const { profile, work, education, skills } = data;
+  const { profile, sections } = data;
 
   return (
     <div className="min-h-screen bg-background">
@@ -140,66 +127,23 @@ export default function ProfileSlugPage({ params }: PageProps) {
 
           <div className="p-8">
             {/* Summary */}
-            <section className="mb-8">
-              <h2 className="mb-4 font-headline text-2xl font-bold">About Me</h2>
-              <p className="text-muted-foreground">{profile.summary}</p>
-            </section>
+            {profile.summary && (
+              <section className="mb-8">
+                <h2 className="mb-4 font-headline text-2xl font-bold">About Me</h2>
+                <p className="text-muted-foreground whitespace-pre-wrap">{profile.summary}</p>
+              </section>
+            )}
             
-            <Separator className="my-8" />
-
-            {/* Work Experience */}
-            <section className="mb-8">
-              <h2 className="mb-4 font-headline text-2xl font-bold flex items-center gap-3"><Briefcase /> Work Experience</h2>
-              <div className="space-y-6">
-                {work.map((job) => (
-                  <div key={job.id} className="flex gap-4">
-                    <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0"></div>
-                    <div>
-                      <div className="flex flex-col sm:flex-row justify-between sm:items-center">
-                        <h3 className="text-lg font-semibold">{job.title}</h3>
-                        <p className="text-sm text-muted-foreground">{job.startDate} - {job.endDate || 'Present'}</p>
-                      </div>
-                      <p className="text-md font-medium text-primary">{job.company}</p>
-                      <p className="mt-2 text-muted-foreground">{job.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-            
-            <Separator className="my-8" />
-
-            {/* Education */}
-            <section className="mb-8">
-              <h2 className="mb-4 font-headline text-2xl font-bold flex items-center gap-3"><GraduationCap /> Education</h2>
-              <div className="space-y-6">
-                {education.map((edu) => (
-                   <div key={edu.id} className="flex gap-4">
-                     <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0"></div>
-                     <div>
-                        <div className="flex flex-col sm:flex-row justify-between sm:items-center">
-                            <h3 className="text-lg font-semibold">{edu.degree}</h3>
-                            <p className="text-sm text-muted-foreground">{edu.startDate} - {edu.endDate || 'Present'}</p>
-                        </div>
-                       <p className="text-md font-medium text-primary">{edu.institution}</p>
-                       <p className="mt-2 text-muted-foreground">{edu.description}</p>
-                     </div>
-                   </div>
-                ))}
-              </div>
-            </section>
-
-            <Separator className="my-8" />
-            
-            {/* Skills */}
-            <section>
-              <h2 className="mb-4 font-headline text-2xl font-bold flex items-center gap-3"><Award /> Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill) => (
-                  <Badge key={skill.id} variant="secondary" className="text-sm">{skill.name}</Badge>
-                ))}
-              </div>
-            </section>
+            {/* Dynamic Sections from Resume */}
+            {sections.map((section, index) => (
+              <React.Fragment key={section.id}>
+                {index > 0 || profile.summary ? <Separator className="my-8" /> : null}
+                <section>
+                    <h2 className="mb-4 font-headline text-2xl font-bold">{section.title}</h2>
+                    <p className="text-muted-foreground whitespace-pre-wrap">{section.content}</p>
+                </section>
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </main>
