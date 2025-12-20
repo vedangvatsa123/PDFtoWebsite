@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { UploadCloud, Edit, Share2, ArrowRight } from 'lucide-react';
+import { UploadCloud, Edit, Share2, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/header';
 import { Input } from '@/components/ui/input';
@@ -17,23 +17,49 @@ export default function Home() {
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
   const router = useRouter();
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.type === 'application/pdf' && file.size <= 10 * 1024 * 1024) {
-        toast({
-          title: 'Resume Selected!',
-          description: `Next, create an account to generate and publish your profile from ${file.name}.`,
-        });
-        // Automatically redirect to the next step
-        router.push('/signup?from=upload');
-      } else {
+      if (file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) {
         toast({
             variant: 'destructive',
             title: 'Invalid File',
             description: 'Please select a PDF file under 10MB.',
         });
+        event.target.value = ''; // Reset file input
+        return;
+      }
+
+      setIsProcessingFile(true);
+      toast({
+        title: 'Resume Selected!',
+        description: `Next, create an account to generate your profile.`,
+      });
+
+      try {
+        // Read the file as a Data URL and store it in session storage
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string;
+          sessionStorage.setItem('pendingResume', dataUrl);
+          sessionStorage.setItem('pendingResumeName', file.name);
+          router.push('/signup?from=upload');
+        };
+        reader.onerror = () => {
+          throw new Error('Could not read the file.');
+        }
+        reader.readAsDataURL(file);
+
+      } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'File Error',
+            description: 'Could not process the selected file.',
+        });
+        setIsProcessingFile(false);
+      } finally {
         event.target.value = ''; // Reset file input
       }
     }
@@ -75,12 +101,21 @@ export default function Home() {
           ) : (
             <>
               <div className="w-full max-w-md">
-                <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50">
-                    <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
-                    <span className="text-muted-foreground">
-                        Drag & drop or click to upload PDF
-                    </span>
-                    <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} />
+                <label htmlFor="resume-upload" className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50 ${isProcessingFile ? 'cursor-wait' : ''}`}>
+                    {isProcessingFile ? (
+                        <>
+                            <Loader2 className="mr-4 h-8 w-8 animate-spin text-muted-foreground" />
+                            <span className="text-muted-foreground">Processing file...</span>
+                        </>
+                    ) : (
+                       <>
+                            <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                                Drag & drop or click to upload PDF
+                            </span>
+                       </>
+                    )}
+                    <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isProcessingFile} />
                 </label>
                 <p className="mt-4 text-sm text-muted-foreground">
                   Your profile will be generated automatically. <br/>
