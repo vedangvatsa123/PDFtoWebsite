@@ -268,13 +268,6 @@ export default function EditorPage() {
     const contentRef = useRef<HTMLDivElement>(null);
     const processedPendingResume = useRef(false);
 
-    // Redirect if user is not logged in
-    useEffect(() => {
-        if (!isUserLoading && !user) {
-            router.push('/login');
-        }
-    }, [user, isUserLoading, router]);
-
     const handleResumeUpload = useCallback(async (resumeFile: File) => {
         if (!resumeFile || !user || !firestore) {
             toast({ variant: 'destructive', title: 'Error', description: 'No file selected or user not logged in.' });
@@ -717,5 +710,7 @@ export default function EditorPage() {
 		</div>
 	);
 }
+
+    
 
     
