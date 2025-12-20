@@ -236,7 +236,7 @@ export default function EditorPage() {
 
         // Update slug mapping
         const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
-        const slugData = { userId: user.uid };
+        const slugData = { userId: user.uid, ...profile };
         batch.set(slugRef, slugData);
 
         // Update subcollections
@@ -337,22 +337,20 @@ export default function EditorPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header>
-        <div className="flex grow items-center justify-end">
-            <div className="flex items-center space-x-2">
-                {profile.slug && (
-                <Button variant="outline" asChild>
-                    <Link href={`/${profile.slug}`} target="_blank">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Preview
-                    </Link>
-                </Button>
-                )}
-                <Button onClick={handlePublish} disabled={isSaving}>
-                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                {isSaving ? 'Publishing...' : 'Publish'}
-                </Button>
-            </div>
-        </div>
+          <div className="flex grow items-center justify-end gap-2">
+            {profile.slug && (
+              <Button variant="outline" asChild>
+                <Link href={`/${profile.slug}`} target="_blank">
+                  <Eye />
+                  Preview
+                </Link>
+              </Button>
+            )}
+            <Button onClick={handlePublish} disabled={isSaving}>
+              {isSaving ? <Loader2 className="animate-spin" /> : <Save />}
+              {isSaving ? 'Publishing...' : 'Publish'}
+            </Button>
+          </div>
       </Header>
       <main className="flex-1 bg-secondary/30">
         <div className="container mx-auto max-w-4xl p-4 md:p-8">
@@ -564,3 +562,5 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
