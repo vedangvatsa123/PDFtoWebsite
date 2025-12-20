@@ -302,38 +302,39 @@ export default function EditorPage() {
 
   if (isLoading || isUserLoading) {
       return (
-          <div className="flex h-screen items-center justify-center">
-              <Loader2 className="h-16 w-16 animate-spin" />
+          <div className="flex h-screen flex-col">
+              <Header />
+              <div className="flex flex-1 items-center justify-center">
+                  <Loader2 className="h-16 w-16 animate-spin" />
+              </div>
           </div>
       )
   }
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-16 max-w-screen-2xl items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
-                <h1 className="text-xl font-bold sm:inline-block font-headline">
-                Editor
-                </h1>
-                <div className="flex items-center space-x-2">
-                    {profile.slug && (
-                    <Button variant="outline" asChild>
-                        <Link href={`/${profile.slug}`} target="_blank">
-                        <Eye className="mr-2 h-4 w-4" />
-                        Preview
-                        </Link>
-                    </Button>
-                    )}
-                    <Button onClick={handlePublish} disabled={isSaving}>
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {isSaving ? 'Publishing...' : 'Publish'}
-                    </Button>
-                </div>
+      <Header>
+        <div className="flex grow items-center justify-between">
+            <h1 className="text-xl font-bold sm:inline-block font-headline">
+            Editor
+            </h1>
+            <div className="flex items-center space-x-2">
+                {profile.slug && (
+                <Button variant="outline" asChild>
+                    <Link href={`/${profile.slug}`} target="_blank">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Preview
+                    </Link>
+                </Button>
+                )}
+                <Button onClick={handlePublish} disabled={isSaving}>
+                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {isSaving ? 'Publishing...' : 'Publish'}
+                </Button>
             </div>
         </div>
-
+      </Header>
+      <main className="flex-1 bg-secondary/30">
         <div className="container mx-auto max-w-4xl p-4 md:p-8">
             {showUploadPrompt ? (
                 <ResumeUploadPrompt 
