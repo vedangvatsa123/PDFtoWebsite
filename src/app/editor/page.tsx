@@ -24,7 +24,8 @@ import { Progress } from '@/components/ui/progress';
 
 function generateSlug(name: string) {
   const randomString = Math.random().toString(36).substring(2, 7);
-  return name.toLowerCase().replace(/\s+/g, '-') + '-' + randomString;
+  const firstName = name.split(' ')[0] || 'user';
+  return firstName.toLowerCase().replace(/[^a-z0-9]/g, '') + '-' + randomString;
 }
 
 const Chart = ({data}: {data: any[]}) => (
