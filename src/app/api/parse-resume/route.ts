@@ -86,16 +86,16 @@ const parseResumeTextSmarter = (text: string) => {
             });
         }
     });
-
-    // Try to find summary if it's not a formal section
+    
     let summary = '';
-    const summarySection = sections.find(s => SECTION_KEYWORDS.summary.includes(s.title.toLowerCase()));
-    if (summarySection) {
-        summary = summarySection.content;
-        // Remove summary from the generic sections array
-        sections.splice(sections.findIndex(s => s.title === summarySection.title), 1);
+    const summarySectionIndex = sections.findIndex(s => SECTION_KEYWORDS.summary.includes(s.title.toLowerCase()));
+
+    if (summarySectionIndex > -1) {
+        summary = sections[summarySectionIndex].content;
+        // Remove summary from the generic sections array to avoid duplication
+        sections.splice(summarySectionIndex, 1);
     } else if (uniqueSectionStarts.length > 0 && uniqueSectionStarts[0].index > 1) {
-        // Assume text before the first section is the summary
+        // Assume text before the first section is the summary if no formal summary section is found
         const personalInfoLines = lines.slice(0, uniqueSectionStarts[0].index);
         summary = personalInfoLines.filter(line => !emailRegex.test(line) && !phoneRegex.test(line) && line !== fullName).join(' ');
     }
