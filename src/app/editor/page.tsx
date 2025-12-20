@@ -104,7 +104,7 @@ const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel, showCa
 const ProfileCompleteness = ({ profile, work, education, skills }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: Skill[] }) => {
     const completeness = useMemo(() => {
         const checks = [
-            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('placeholder.svg')) },
+            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')) },
             { name: "Write a Summary", complete: !!(profile.summary && profile.summary !== mockProfile.personalInfo.summary) },
             { name: "Add Contact Info (Phone or Website)", complete: !!(profile.phone || profile.website) },
             { name: "Add Work Experience", complete: work.length > 0 },
@@ -184,6 +184,7 @@ const EditorDashboard = () => {
         if (profileSnap.exists()) {
             userProfile = profileSnap.data() as UserProfile;
         } else {
+            // This is a new user, so we seed their profile with mock data.
             userProfile = {
                 userId: user.uid,
                 fullName: user.displayName || 'Your Name',
@@ -196,13 +197,12 @@ const EditorDashboard = () => {
             };
             
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-            const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug);
+            const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug!);
 
-            const batch = writeBatch(firestore);
-            batch.set(userProfileDocRef, userProfile);
-            batch.set(slugDocRef, { userId: user.uid, ...userProfile });
+            setDocumentNonBlocking(userProfileDocRef, userProfile, { merge: true });
+            setDocumentNonBlocking(slugDocRef, { userId: user.uid, ...userProfile }, { merge: true });
             
-            userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid, title: item.title}));
+            userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
             userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
             userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
 
@@ -265,10 +265,20 @@ const EditorDashboard = () => {
                     <h1 className="text-3xl font-bold">Welcome back, {profile.fullName}!</h1>
                     <p className="text-muted-foreground">Here's a look at your profile's performance.</p>
                 </div>
-                <Button size="lg" onClick={() => setShowEditor(true)}>
-                    <FilePenLine />
-                    Edit Your Profile
-                </Button>
+                <div className="flex gap-2">
+                    {profile.slug && (
+                        <Button variant="outline" asChild>
+                            <Link href={`/${profile.slug}`} prefetch={false}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Preview Profile
+                            </Link>
+                        </Button>
+                    )}
+                    <Button size="lg" onClick={() => setShowEditor(true)}>
+                        <FilePenLine />
+                        Edit Your Profile
+                    </Button>
+                </div>
             </div>
             
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -280,19 +290,19 @@ const EditorDashboard = () => {
                     <CardContent>
                         <div className="text-2xl font-bold">{MOCK_ANALYTICS_DATA.totalViews.toLocaleString()}</div>
                          <p className="text-xs text-muted-foreground">
-                           All-time profile views
+                           All-time profile views.
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Views (Last 24h)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Recent Views</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">+{MOCK_ANALYTICS_DATA.viewsLast24h}</div>
                         <p className="text-xs text-muted-foreground">
-                            +20.1% from last day
+                            Views in the last 24 hours.
                         </p>
                     </CardContent>
                 </Card>
@@ -311,7 +321,7 @@ const EditorDashboard = () => {
                 <Card className="col-span-1 lg:col-span-3">
                      <CardHeader>
                         <CardTitle>Your Public Link</CardTitle>
-                         <CardDescription>Share this link with anyone to show off your profile.</CardDescription>
+                         <CardDescription>Share this link to show off your profile.</CardDescription>
                     </CardHeader>
                     <CardContent>
                          <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
@@ -408,13 +418,11 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
             if (data.slug && initialSlug && data.slug !== initialSlug) {
                 const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialSlug);
                 deleteDocumentNonBlocking(oldSlugRef);
-                const newSlugRef = doc(firestore, 'userProfilesBySlug', data.slug);
-                setDocumentNonBlocking(newSlugRef, { userId: user.uid, ...currentProfile }, { merge: true });
             }
 
             ref = doc(firestore, 'users', user.uid, collectionName, user.uid);
-             const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
-             setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
+            const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
+            setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
         } else {
              ref = doc(firestore, 'users', user.uid, collectionName, id);
         }
@@ -452,15 +460,8 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
                 setProfile(prev => ({ ...prev, slug: initialSlug }));
                 return;
             }
-            const oldSlug = initialSlug;
-            setInitialSlug(value);
             autoSave({ collectionName: 'userProfile', slug: value });
-            
-            if (oldSlug && firestore && user) {
-                const oldSlugRef = doc(firestore, 'userProfilesBySlug', oldSlug);
-                deleteDocumentNonBlocking(oldSlugRef);
-            }
-             
+            setInitialSlug(value); // Update the baseline slug for future checks
             return;
         }
 
@@ -813,7 +814,3 @@ export default function EditorPage() {
     </div>
   );
 }
-
-    
-
-    
