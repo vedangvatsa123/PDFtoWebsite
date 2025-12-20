@@ -336,8 +336,11 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    // Store the original fetched data to compare against for saving
-    const originalProfile = useRef<Partial<UserProfile>>({});
+    const originalData = useRef<{
+        profile: Partial<UserProfile>;
+        work: WorkExperience[];
+        education: Education[];
+    }>({ profile: {}, work: [], education: [] });
 
     const [profile, setProfile] = useState<Partial<UserProfile>>({});
     const [initialSlug, setInitialSlug] = useState<string | undefined>(undefined);
@@ -369,19 +372,15 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
             getDocs(collection(firestore, 'users', user.uid, 'educations')),
             getDocs(collection(firestore, 'users', user.uid, 'skills')),
         ]);
+        
+        let profileData: UserProfile;
+        const workData = workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience));
+        const eduData = eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education));
 
         if (profileSnap.exists()) {
-            const profileData = profileSnap.data() as UserProfile;
-            setProfile(profileData);
-            originalProfile.current = profileData; // Store original data
-            setInitialSlug(profileData.slug);
-            setActiveTheme(profileData.themeId || 'default');
-            setWorkExperiences(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
-            setEducations(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
-            setSkills(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+            profileData = profileSnap.data() as UserProfile;
         } else {
-             // If no profile exists, initialize a new one.
-            const newProfile: UserProfile = {
+            profileData = {
                 userId: user.uid,
                 fullName: user.displayName || 'Your Name',
                 email: user.email || '',
@@ -391,16 +390,25 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                 avatarHint: 'person portrait',
                 themeId: 'default',
             };
-            setProfile(newProfile);
-            originalProfile.current = newProfile;
-            setInitialSlug(newProfile.slug);
-
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-            const slugDocRef = doc(firestore, 'userProfilesBySlug', newProfile.slug!);
+            const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
 
-            await setDoc(userProfileDocRef, newProfile);
-            await setDoc(slugDocRef, { userId: user.uid, ...newProfile });
+            await setDoc(userProfileDocRef, profileData);
+            await setDoc(slugDocRef, { userId: user.uid, ...profileData });
         }
+
+        setProfile(profileData);
+        setInitialSlug(profileData.slug);
+        setActiveTheme(profileData.themeId || 'default');
+        setWorkExperiences(workData);
+        setEducations(eduData);
+        setSkills(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+
+        originalData.current = {
+            profile: JSON.parse(JSON.stringify(profileData)),
+            work: JSON.parse(JSON.stringify(workData)),
+            education: JSON.parse(JSON.stringify(eduData)),
+        };
         
         setIsLoading(false);
     }, [user, firestore]);
@@ -415,7 +423,6 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                 setActiveTab('settings');
             } else if (refs[section as keyof typeof refs]?.current) {
                 setActiveTab('content');
-                // Timeout to ensure content is rendered before scrolling
                 setTimeout(() => {
                     refs[section as keyof typeof refs].current?.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
@@ -440,15 +447,13 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         const { collectionName, id, ...data } = updatedData;
         
         let ref: any;
+        const currentProfile = {...profile, ...data};
 
         if (collectionName === 'userProfile') {
-            const currentProfile = {...profile, ...data};
-            
             if (data.slug && initialSlug && data.slug !== initialSlug) {
                 const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialSlug);
                 deleteDocumentNonBlocking(oldSlugRef);
             }
-
             ref = doc(firestore, 'users', user.uid, collectionName, user.uid);
             const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
             setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
@@ -475,11 +480,10 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        // Compare against the original value when the component loaded
-        const initialValue = (originalProfile.current as any)[name];
+        const originalValue = (originalData.current.profile as any)[name];
     
         if (name === 'slug') {
-            if (value === initialSlug) return; // No change, no need to check
+            if (value === initialSlug) return;
             const isAvailable = await checkSlugAvailability(value);
             if (!isAvailable) {
                 toast({
@@ -487,23 +491,18 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                     title: 'URL Unavailable',
                     description: `The URL "${value}" is already taken. Please choose another.`,
                 });
-                // Revert to the last known good slug
                 setProfile(prev => ({ ...prev, slug: initialSlug })); 
                 return;
             }
-            // If available, proceed with saving.
             autoSave({ collectionName: 'userProfile', slug: value });
-            // Update the baseline slugs for future checks
             setInitialSlug(value); 
-            originalProfile.current = {...originalProfile.current, slug: value};
+            originalData.current.profile.slug = value;
             return;
         }
 
-        // For all other fields, save if the current value is different from the original
-        if (initialValue !== value) {
+        if (originalValue !== value) {
             autoSave({ collectionName: 'userProfile', [name]: value });
-            // Update the original value reference to the new saved value
-            (originalProfile.current as any)[name] = value;
+            (originalData.current.profile as any)[name] = value;
         }
     };
 
@@ -522,12 +521,15 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         id: string,
         e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
         collectionName: string,
-        collectionState: T[]
+        collectionState: T[],
+        originalCollection: T[]
     ) => {
         const { name, value } = e.target;
-        const item = collectionState.find(i => i.id === id);
-        if (item && (item as any)[name] !== value) {
+        const originalItem = originalCollection.find(i => i.id === id);
+        
+        if (originalItem && (originalItem as any)[name] !== value) {
             autoSave({ collectionName, id, [name]: value });
+            (originalItem as any)[name] = value;
         }
     };
 
@@ -538,12 +540,16 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     ) => {
         if (!user || !firestore) return;
         const colRef = collection(firestore, 'users', user.uid, collectionName);
-        addDocumentNonBlocking(colRef, newItem)
-            .then(docRef => {
-                if (docRef) {
-                    setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
-                }
-            });
+        const docRef = await addDocumentNonBlocking(colRef, newItem);
+        if (docRef) {
+            const addedItem = { ...newItem, id: docRef.id };
+            setCollection(prev => [...prev, addedItem]);
+            if (collectionName === 'workExperiences') {
+                originalData.current.work.push(addedItem as WorkExperience);
+            } else if (collectionName === 'educations') {
+                originalData.current.education.push(addedItem as Education);
+            }
+        }
     }
 
     const handleDeleteItem = (
@@ -555,6 +561,11 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         const docRef = doc(firestore, 'users', user.uid, collectionName, id);
         deleteDocumentNonBlocking(docRef);
         setCollection(prev => prev.filter(item => item.id !== id));
+        if (collectionName === 'workExperiences') {
+            originalData.current.work = originalData.current.work.filter(i => i.id !== id);
+        } else if (collectionName === 'educations') {
+            originalData.current.education = originalData.current.education.filter(i => i.id !== id);
+        }
     }
 
     const handleAddSkill = () => {
@@ -655,24 +666,24 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Role</Label>
-                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
+                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Company</Label>
-                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
+                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
+                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work)} />
                                         </div>
                                     </div>
                                 </Card>
@@ -699,24 +710,24 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Institution</Label>
-                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
+                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Degree / Certificate</Label>
-                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
+                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
+                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education)} />
                                         </div>
                                     </div>
                                 </Card>
@@ -760,7 +771,6 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                                 <Label>Profile Photo</Label>
                                 <div className="flex items-center space-x-4">
                                     <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
-                                    <Button variant="outline">Change Photo</Button>
                                 </div>
                                 <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
                             </div>
@@ -865,3 +875,4 @@ export default function EditorPage() {
     </div>
   );
 }
+
