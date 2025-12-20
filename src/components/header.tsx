@@ -24,7 +24,7 @@ export default function Header() {
             </span>
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-between space-x-4 md:justify-end">
+        <div className="flex flex-1 items-center justify-end">
           <nav className="flex items-center gap-4">
             <ThemeToggle />
             {!isUserLoading && (
