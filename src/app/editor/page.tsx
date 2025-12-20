@@ -199,6 +199,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
             const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug!);
 
+            // Use non-blocking writes
             setDocumentNonBlocking(userProfileDocRef, userProfile, { merge: true });
             setDocumentNonBlocking(slugDocRef, { userId: user.uid, ...userProfile }, { merge: true });
         }
@@ -335,6 +336,9 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     const firestore = useFirestore();
     const { toast } = useToast();
     
+    // Store the original fetched data to compare against for saving
+    const originalProfile = useRef<Partial<UserProfile>>({});
+
     const [profile, setProfile] = useState<Partial<UserProfile>>({});
     const [initialSlug, setInitialSlug] = useState<string | undefined>(undefined);
     const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>([]);
@@ -369,11 +373,33 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         if (profileSnap.exists()) {
             const profileData = profileSnap.data() as UserProfile;
             setProfile(profileData);
+            originalProfile.current = profileData; // Store original data
             setInitialSlug(profileData.slug);
             setActiveTheme(profileData.themeId || 'default');
             setWorkExperiences(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
             setEducations(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
             setSkills(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+        } else {
+             // If no profile exists, initialize a new one.
+            const newProfile: UserProfile = {
+                userId: user.uid,
+                fullName: user.displayName || 'Your Name',
+                email: user.email || '',
+                summary: '',
+                slug: generateSlug(user.displayName || 'user'),
+                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+                avatarHint: 'person portrait',
+                themeId: 'default',
+            };
+            setProfile(newProfile);
+            originalProfile.current = newProfile;
+            setInitialSlug(newProfile.slug);
+
+            const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            const slugDocRef = doc(firestore, 'userProfilesBySlug', newProfile.slug!);
+
+            await setDoc(userProfileDocRef, newProfile);
+            await setDoc(slugDocRef, { userId: user.uid, ...newProfile });
         }
         
         setIsLoading(false);
@@ -449,10 +475,11 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const initialValue = (profile as any)[name];
+        // Compare against the original value when the component loaded
+        const initialValue = (originalProfile.current as any)[name];
     
         if (name === 'slug') {
-            if (value === initialSlug) return;
+            if (value === initialSlug) return; // No change, no need to check
             const isAvailable = await checkSlugAvailability(value);
             if (!isAvailable) {
                 toast({
@@ -460,16 +487,23 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                     title: 'URL Unavailable',
                     description: `The URL "${value}" is already taken. Please choose another.`,
                 });
-                setProfile(prev => ({ ...prev, slug: initialSlug }));
+                // Revert to the last known good slug
+                setProfile(prev => ({ ...prev, slug: initialSlug })); 
                 return;
             }
+            // If available, proceed with saving.
             autoSave({ collectionName: 'userProfile', slug: value });
-            setInitialSlug(value); // Update the baseline slug for future checks
+            // Update the baseline slugs for future checks
+            setInitialSlug(value); 
+            originalProfile.current = {...originalProfile.current, slug: value};
             return;
         }
 
+        // For all other fields, save if the current value is different from the original
         if (initialValue !== value) {
             autoSave({ collectionName: 'userProfile', [name]: value });
+            // Update the original value reference to the new saved value
+            (originalProfile.current as any)[name] = value;
         }
     };
 
@@ -551,16 +585,16 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
 
     const handleResumeUpload = () => {
         if (!fileName) {
-        toast({
-            variant: 'destructive',
-            title: 'No file selected',
-            description: 'Please select a PDF file to upload.',
-        });
-        return;
+            toast({
+                variant: 'destructive',
+                title: 'No file selected',
+                description: 'Please select a PDF file to upload.',
+            });
+            return;
         }
         toast({
-        title: 'Resume Processing...',
-        description: `We're analyzing ${fileName}. Your profile will update shortly.`,
+            title: 'Resume Processing...',
+            description: `We're analyzing ${fileName}. Your profile will update shortly.`,
         });
     }
     
