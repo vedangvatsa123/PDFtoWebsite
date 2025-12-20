@@ -23,11 +23,15 @@ export default function Header({ children }: { children?: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     
-    const handleSignOut = () => {
+    const handleSignOut = async () => {
         const auth = getAuth();
-        signOut(auth).then(() => {
+        try {
+            await signOut(auth);
             router.push('/');
-        });
+        } catch (error) {
+            console.error("Error signing out: ", error);
+            // Optionally, show a toast notification to the user
+        }
     }
 
   return (
