@@ -316,10 +316,7 @@ export default function EditorPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header>
-        <div className="flex grow items-center justify-between">
-            <h1 className="text-xl font-bold sm:inline-block font-headline">
-            Editor
-            </h1>
+        <div className="flex grow items-center justify-end">
             <div className="flex items-center space-x-2">
                 {profile.slug && (
                 <Button variant="outline" asChild>
