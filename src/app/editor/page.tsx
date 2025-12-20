@@ -19,7 +19,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Progress } from '@/components/ui/progress';
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 function generateSlug(name: string) {
@@ -168,9 +168,10 @@ export function ViewsByCountryChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 10 }}>
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ right: 20 }}>
             <CartesianGrid horizontal={false} />
             <XAxis type="number" dataKey="views" hide />
+            <YAxis dataKey="country" type="category" tickLine={false} axisLine={false} tickMargin={8} />
             <Bar dataKey="views" layout="vertical" radius={5} />
              <ChartTooltip
                   cursor={false}
@@ -691,5 +692,7 @@ export default function EditorPage() {
         </div>
     );
 }
+
+    
 
     
