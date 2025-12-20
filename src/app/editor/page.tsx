@@ -15,9 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Trash2, PlusCircle, Save, Loader2, UploadCloud, FileUp } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
-import { mockProfile } from '@/lib/mock-data'; 
+import { mockProfile } from '@/lib/mock-data';
+import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 function generateSlug(name: string) {
   const randomString = Math.random().toString(36).substring(2, 7);
@@ -121,8 +122,10 @@ export default function EditorPage() {
             avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
             avatarHint: mockProfile.personalInfo.avatarHint,
           };
-          await setDoc(profileRef, userProfile);
           
+          const profileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+          setDocumentNonBlocking(profileDocRef, userProfile, { merge: false });
+
           const batch = writeBatch(firestore);
           mockProfile.workExperience.forEach(item => {
               const ref = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
@@ -192,8 +195,10 @@ export default function EditorPage() {
   ) => {
       if (!user || !firestore) return;
       const colRef = collection(firestore, 'users', user.uid, collectionName);
-      const docRef = await addDoc(colRef, newItem);
-      setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
+      const docRef = await addDocumentNonBlocking(colRef, newItem);
+      if (docRef) {
+        setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
+      }
   }
 
   const handleDeleteItem = (
@@ -203,9 +208,8 @@ export default function EditorPage() {
   ) => {
       if (!user || !firestore) return;
       const docRef = doc(firestore, 'users', user.uid, collectionName, id);
-      deleteDoc(docRef).then(() => {
-          setCollection(prev => prev.filter(item => item.id !== id));
-      });
+      deleteDocumentNonBlocking(docRef);
+      setCollection(prev => prev.filter(item => item.id !== id));
   }
 
   const handleAddSkill = () => {
@@ -219,45 +223,43 @@ export default function EditorPage() {
   const handlePublish = async () => {
     if (!user || !firestore || !profile.slug) return;
     setIsSaving(true);
-    try {
-      const batch = writeBatch(firestore);
 
-      const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-      batch.set(profileRef, profile, { merge: true });
+    const batch = writeBatch(firestore);
 
-      const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
-      batch.set(slugRef, { userId: user.uid });
-      
-      workExperiences.forEach(item => {
-          const ref = doc(firestore, 'users', user.uid, 'workExperiences', item.id);
-          batch.set(ref, item, {merge: true});
-      });
-       educations.forEach(item => {
-          const ref = doc(firestore, 'users', user.uid, 'educations', item.id);
-          batch.set(ref, item, {merge: true});
-      });
-       skills.forEach(item => {
-          const ref = doc(firestore, 'users', user.uid, 'skills', item.id);
-          batch.set(ref, item, {merge: true});
-      });
+    const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+    batch.set(profileRef, profile, { merge: true });
 
-      await batch.commit();
+    const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
+    batch.set(slugRef, { userId: user.uid });
+    
+    workExperiences.forEach(item => {
+        const ref = doc(firestore, 'users', user.uid, 'workExperiences', item.id);
+        batch.set(ref, item, {merge: true});
+    });
+     educations.forEach(item => {
+        const ref = doc(firestore, 'users', user.uid, 'educations', item.id);
+        batch.set(ref, item, {merge: true});
+    });
+     skills.forEach(item => {
+        const ref = doc(firestore, 'users', user.uid, 'skills', item.id);
+        batch.set(ref, item, {merge: true});
+    });
 
-      toast({
-          title: "Profile Published!",
-          description: "Your professional web page is now live.",
-      });
-
-    } catch (e: any) {
-       console.error(e);
-       toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: e.message || "Could not save profile.",
-       });
-    } finally {
+    batch.commit().then(() => {
+        toast({
+            title: "Profile Published!",
+            description: "Your professional web page is now live.",
+        });
+    }).catch(e => {
+        console.error(e);
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: e.message || "Could not save profile.",
+        });
+    }).finally(() => {
         setIsSaving(false);
-    }
+    });
   }
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -544,3 +546,5 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
