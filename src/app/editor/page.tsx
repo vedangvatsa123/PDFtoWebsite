@@ -155,11 +155,100 @@ const ProfileCompleteness = ({ profile, work, education, skills }: { profile: Pa
     );
 };
 
-const EditorDashboard = ({ profile, work, education, skills, onProfileUpdate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: Skill[], onProfileUpdate: () => void }) => {
+const EditorDashboard = () => {
+    const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
+    const [profile, setProfile] = useState<Partial<UserProfile>>({});
+    const [work, setWork] = useState<WorkExperience[]>([]);
+    const [education, setEducation] = useState<Education[]>([]);
+    const [skills, setSkills] = useState<Skill[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showEditor, setShowEditor] = useState(false);
+
+    const fetchProfile = useCallback(async () => {
+        if (user && firestore) {
+            setIsLoading(true);
+            const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            
+            const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
+                getDoc(profileRef),
+                getDocs(collection(firestore, 'users', user.uid, 'workExperiences')),
+                getDocs(collection(firestore, 'users', user.uid, 'educations')),
+                getDocs(collection(firestore, 'users', user.uid, 'skills')),
+            ]);
+
+            let userProfile: UserProfile;
+            let userWork: WorkExperience[] = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
+            let userEducation: Education[] = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
+            let userSkills: Skill[] = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
+
+            if (profileSnap.exists()) {
+                userProfile = profileSnap.data() as UserProfile;
+            } else {
+                // Create a mock profile if one doesn't exist
+                userProfile = {
+                    userId: user.uid,
+                    fullName: user.displayName || 'Your Name',
+                    email: user.email || '',
+                    summary: mockProfile.personalInfo.summary,
+                    slug: generateSlug(user.displayName || 'user'),
+                    avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
+                    avatarHint: mockProfile.personalInfo.avatarHint,
+                    themeId: 'default',
+                };
+                
+                const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+                const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug);
+
+                const batch = writeBatch(firestore);
+                batch.set(userProfileDocRef, userProfile);
+                batch.set(slugDocRef, { userId: user.uid, ...userProfile });
+                
+                userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
+                userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
+                userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
+
+                userWork.forEach(item => {
+                    const { id, ...rest } = item;
+                    const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
+                    batch.set(workRef, rest);
+                });
+                userEducation.forEach(item => {
+                    const { id, ...rest } = item;
+                    const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
+                    batch.set(eduRef, rest);
+                });
+                userSkills.forEach(item => {
+                    const { id, ...rest } = item;
+                    const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
+                    batch.set(skillRef, rest);
+                });
+
+                await batch.commit();
+            }
+
+            setProfile(userProfile);
+            setWork(userWork);
+            setEducation(userEducation);
+            setSkills(userSkills);
+            setIsLoading(false);
+        }
+    }, [user, firestore]);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [user, firestore, fetchProfile]);
+
+    if (isLoading || isUserLoading) {
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-16 w-16 animate-spin" />
+            </div>
+        )
+    }
     
     if (showEditor) {
-        return <EditorForm profile={profile} onBackToDashboard={() => setShowEditor(false)} onProfileUpdate={onProfileUpdate} />;
+        return <EditorForm profile={profile} work={work} education={education} skills={skills} onBackToDashboard={() => setShowEditor(false)} onProfileUpdate={fetchProfile} />;
     }
 
     return (
@@ -243,18 +332,18 @@ const EditorDashboard = ({ profile, work, education, skills, onProfileUpdate }: 
 };
 
 
-const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdate }: { profile: Partial<UserProfile>, onBackToDashboard: () => void, onProfileUpdate: () => void }) => {
+const EditorForm = ({ profile: initialProfile, work: initialWork, education: initialEducation, skills: initialSkills, onBackToDashboard, onProfileUpdate }: { profile: Partial<UserProfile>,  work: WorkExperience[], education: Education[], skills: Skill[], onBackToDashboard: () => void, onProfileUpdate: () => void }) => {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
     const { toast } = useToast();
     
     const [profile, setProfile] = useState<Partial<UserProfile>>(initialProfile);
-    const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>([]);
-    const [educations, setEducations] = useState<Education[]>([]);
-    const [skills, setSkills] = useState<Skill[]>([]);
+    const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(initialWork);
+    const [educations, setEducations] = useState<Education[]>(initialEducation);
+    const [skills, setSkills] = useState<Skill[]>(initialSkills);
     const [newSkill, setNewSkill] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
     const [activeTheme, setActiveTheme] = useState(initialProfile.themeId || 'default');
@@ -310,38 +399,6 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
         setActiveTheme(themeId);
         autoSave({ collectionName: 'userProfile', themeId: themeId });
     };
-
-
-     useEffect(() => {
-    if (user && firestore) {
-      const fetchProfileData = async () => {
-        setIsLoading(true);
-          
-          const workCol = collection(firestore, 'users', user.uid, 'workExperiences');
-          const eduCol = collection(firestore, 'users', user.uid, 'educations');
-          const skillsCol = collection(firestore, 'users', user.uid, 'skills');
-
-          const [workSnap, eduSnap, skillsSnap] = await Promise.all([
-             getDocs(workCol),
-             getDocs(eduCol),
-             getDocs(skillsCol)
-          ]);
-
-          const work = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
-          const edu = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
-          const userSkills = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
-
-        setWorkExperiences(work);
-        setEducations(edu);
-        setSkills(userSkills);
-
-        setIsLoading(false);
-      };
-
-      fetchProfileData();
-    }
-  }, [user, firestore]);
-
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -687,98 +744,15 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
 
 export default function EditorPage() {
   const { user, isUserLoading } = useUser();
-  const firestore = useFirestore();
   const router = useRouter();
 
-  const [profile, setProfile] = useState<Partial<UserProfile>>({});
-  const [work, setWork] = useState<WorkExperience[]>([]);
-  const [education, setEducation] = useState<Education[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchProfile = useCallback(async () => {
-      if (user && firestore) {
-        setIsLoading(true);
-        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-        
-        const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
-            getDoc(profileRef),
-            getDocs(collection(firestore, 'users', user.uid, 'workExperiences')),
-            getDocs(collection(firestore, 'users', user.uid, 'educations')),
-            getDocs(collection(firestore, 'users', user.uid, 'skills')),
-        ]);
-
-
-        let userProfile: UserProfile;
-        let userWork: WorkExperience[] = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
-        let userEducation: Education[] = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
-        let userSkills: Skill[] = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
-
-
-        if (profileSnap.exists()) {
-          userProfile = profileSnap.data() as UserProfile;
-        } else {
-          // Create a mock profile if one doesn't exist
-          userProfile = {
-            userId: user.uid,
-            fullName: user.displayName || 'Your Name',
-            email: user.email || '',
-            summary: mockProfile.personalInfo.summary,
-            slug: generateSlug(user.displayName || 'user'),
-            avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
-            avatarHint: mockProfile.personalInfo.avatarHint,
-            themeId: 'default',
-          };
-          
-          const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-          const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug);
-
-          const batch = writeBatch(firestore);
-          batch.set(userProfileDocRef, userProfile);
-          batch.set(slugDocRef, { userId: user.uid, ...userProfile });
-          
-          userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
-          userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
-          userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
-
-          userWork.forEach(item => {
-              const { id, ...rest } = item;
-              const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
-              batch.set(workRef, rest);
-          });
-          userEducation.forEach(item => {
-              const { id, ...rest } = item;
-              const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
-              batch.set(eduRef, rest);
-          });
-          userSkills.forEach(item => {
-              const { id, ...rest } = item;
-              const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
-              batch.set(skillRef, rest);
-          });
-
-          await batch.commit();
-        }
-
-        setProfile(userProfile);
-        setWork(userWork);
-        setEducation(userEducation);
-        setSkills(userSkills);
-        setIsLoading(false);
-      }
-  }, [user, firestore]);
-  
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
     }
   }, [user, isUserLoading, router]);
 
-  useEffect(() => {
-      fetchProfile();
-  }, [user, firestore, fetchProfile]);
-  
-  if (isLoading || isUserLoading) {
+  if (isUserLoading) {
       return (
           <div className="flex h-screen flex-col">
               <Header />
@@ -794,12 +768,10 @@ export default function EditorPage() {
       <Header />
       <main className="flex-1 bg-secondary/30">
         <div className="container mx-auto max-w-7xl p-4 md:p-8">
-            <EditorDashboard profile={profile} work={work} education={education} skills={skills} onProfileUpdate={fetchProfile} />
+            <EditorDashboard />
         </div>
       </main>
     </div>
   );
 }
-
-
-    
+`
