@@ -49,22 +49,30 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      // On successful sign-in, the useEffect will redirect to /editor
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message,
-      });
-    } finally {
+    
+    signInWithPopup(auth, provider)
+      .then(() => {
+        // The onAuthStateChanged listener in useUser will handle the redirect.
+        toast({
+            title: 'Login Successful',
+            description: "Welcome! We're redirecting you to the editor.",
+        });
+        router.push('/editor');
+      })
+      .catch((error: any) => {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: error.message,
+        });
+      })
+      .finally(() => {
         setIsGoogleLoading(false);
-    }
+      });
   };
 
   return (
