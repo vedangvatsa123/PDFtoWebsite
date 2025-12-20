@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogOut, FilePenLine } from "lucide-react";
 import { Icons } from "./icons";
 import { ThemeToggle } from "./theme-toggle";
@@ -20,6 +21,7 @@ import {
 export default function Header({ children }: { children?: React.ReactNode }) {
     const { user, isUserLoading } = useUser();
     const router = useRouter();
+    const pathname = usePathname();
     
     const handleSignOut = () => {
         const auth = getAuth();
@@ -43,19 +45,21 @@ export default function Header({ children }: { children?: React.ReactNode }) {
           {!isUserLoading && user && (
               <TooltipProvider>
                 <div className="flex items-center space-x-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href="/editor">
-                          <FilePenLine />
-                          <span className="sr-only">Editor</span>
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Editor</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {pathname !== '/editor' && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link href="/editor">
+                            <FilePenLine />
+                            <span className="sr-only">Editor</span>
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Editor</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="ghost" size="icon" onClick={handleSignOut}>
