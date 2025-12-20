@@ -51,12 +51,12 @@ export function LoginDialog() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
+      signInWithRedirect(auth, provider);
       // The user is redirected, so the code below will not execute in the same session.
       // Firebase will handle the redirect back to the app.
     } catch (error: any) {
