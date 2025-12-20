@@ -1,0 +1,236 @@
+/**
+ * # Firestore Security Rules
+ *
+ * ## Core Philosophy
+ * This ruleset enforces a strict user-ownership model. All user-generated content, including profiles, work experience, education, and skills, is private and can only be accessed or modified by the user who created it. Publicly viewable data, such as themes and the final resume webpages, is structurally segregated into separate top-level collections with read-only permissions for clients.
+ *
+ * ## Data Structure
+ * The data is organized hierarchically to simplify security. All private user data is nested under the path `/users/{userId}`. This path-based ownership is the cornerstone of the security model. Publicly accessible data, such as `/themes` and `/userProfilesBySlug`, resides in separate top-level collections.
+ *
+ * ## Key Security Decisions
+ * - **Strict Ownership**: A user can only access the data tree located under their own user ID (`/users/{userId}`).
+ * - **No User Listing**: To protect user privacy, it is impossible for any client to list all documents in the `/users` collection.
+ * - **Read-Only Public Data**: The `/themes` collection is public and readable by anyone, but cannot be modified by clients. This is for content managed by application administrators.
+ * - **Server-Managed Logic**: The `/userProfilesBySlug` collection, which makes resume pages public, is readable by anyone but is not writable by clients. Writes to this collection must be handled by a trusted server environment (e.g., Cloud Functions) to ensure data integrity and uniqueness of slugs.
+ *
+ * ## Denormalization for Authorization
+ * This ruleset leverages a path-based security model. The `userId` in the document path (e.g., `/users/{userId}/...`) is the primary piece of information used for authorization. This avoids the need for slow and costly `get()` calls to other documents to verify ownership, resulting in simpler, faster, and more secure rules. For subcollections, a `userProfileId` (which must match the `userId` in the path) is enforced on document creation to maintain relational integrity.
+ *
+ * ## Structural Segregation
+ * The separation of private and public data is a key design feature. Private, editable data is stored in user-specific subcollections (e.g., `/users/{userId}/workExperiences`). The final, public-facing resume page is stored in a separate top-level collection (`/userProfilesBySlug`). This prevents accidental exposure of private data and makes security for list operations trivial.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions for authentication and authorization logic.
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the primary function for enforcing document ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Confirms that a document already exists. Used for update/delete operations.
+     */
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    /**
+     * A composite check to verify that a user is the owner of an existing document.
+     * This is the standard for all update and delete operations on user-owned data.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && isExistingDoc();
+    }
+    
+    /**
+     * On create, validates that the incoming document's 'userId' field
+     * matches the user ID from the path, ensuring relational integrity.
+     */
+    function hasCorrectUserIdOnCreate(userId) {
+      return request.resource.data.userId == userId;
+    }
+
+    /**
+     * On update, ensures the 'userId' field cannot be changed.
+     */
+    function userIdIsImmutable() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    /**
+     * On create, validates that the incoming document's 'userProfileId' field
+     * matches the user ID from the path, ensuring relational integrity.
+     */
+    function hasCorrectUserProfileIdOnCreate(userId) {
+      return request.resource.data.userProfileId == userId;
+    }
+
+    /**
+     * On update, ensures the 'userProfileId' field cannot be changed.
+     */
+    function userProfileIdIsImmutable() {
+      return request.resource.data.userProfileId == resource.data.userProfileId;
+    }
+
+    /**
+     * @description
+     *   Manages access to the root user documents. A user can create and update
+     *   their own user document, but cannot list other users or delete their account directly.
+     * @path
+     *   `/users/{userId}`
+     * @allow
+     *   (create) A newly signed-up user with UID 'user123' creating their own document at `/users/user123`.
+     * @deny
+     *   (list) Any user attempting to list documents in the `/users` collection.
+     * @deny
+     *   (delete) User 'user123' attempting to delete their own account document.
+     * @principle
+     *   Restricts access to a user's own data tree and prevents user enumeration for privacy.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if false;
+    }
+
+    /**
+     * @description
+     *   Controls access to a user's profile document. Only the owner can read or write their profile.
+     * @path
+     *   `/users/{userId}/userProfile/{profileId}`
+     * @allow
+     *   (create) User 'user123' creating their profile with `{ userId: 'user123' }` at `/users/user123/userProfile/some_doc_id`.
+     * @deny
+     *   (create) User 'user123' trying to create a profile with a mismatched userId: `{ userId: 'user456' }`.
+     * @deny
+     *   (get) User 'user456' trying to read a profile at `/users/user123/userProfile/some_doc_id`.
+     * @principle
+     *   Enforces document ownership and validates relational integrity on creation.
+     */
+    match /users/{userId}/userProfile/{profileId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserIdOnCreate(userId);
+      allow update: if isExistingOwner(userId) && userIdIsImmutable();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description
+     *   Secures a user's work experience entries. Only the owner has full CRUD access.
+     * @path
+     *   `/users/{userId}/workExperiences/{workExperienceId}`
+     * @allow
+     *   (update) User 'user123' updating their own work experience document at `/users/user123/workExperiences/job1`.
+     * @deny
+     *   (create) User 'user123' trying to create an experience doc with a mismatched ID: `{ userProfileId: 'user456' }`.
+     * @principle
+     *   Enforces strict ownership within a user-specific subcollection.
+     */
+    match /users/{userId}/workExperiences/{workExperienceId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserProfileIdOnCreate(userId);
+      allow update: if isExistingOwner(userId) && userProfileIdIsImmutable();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description
+     *   Secures a user's education entries. Only the owner has full CRUD access.
+     * @path
+     *   `/users/{userId}/educations/{educationId}`
+     * @allow
+     *   (list) User 'user123' listing all their education documents at `/users/user123/educations`.
+     * @deny
+     *   (get) User 'user456' trying to read a document at `/users/user123/educations/edu1`.
+     * @principle
+     *   Enforces strict ownership within a user-specific subcollection.
+     */
+    match /users/{userId}/educations/{educationId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserProfileIdOnCreate(userId);
+      allow update: if isExistingOwner(userId) && userProfileIdIsImmutable();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description
+     *   Secures a user's skill entries. Only the owner has full CRUD access.
+     * @path
+     *   `/users/{userId}/skills/{skillId}`
+     * @allow
+     *   (delete) User 'user123' deleting their own skill at `/users/user123/skills/skill1`.
+     * @deny
+     *   (update) User 'user456' trying to update a document at `/users/user123/skills/skill1`.
+     * @principle
+     *   Enforces strict ownership within a user-specific subcollection.
+     */
+    match /users/{userId}/skills/{skillId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserProfileIdOnCreate(userId);
+      allow update: if isExistingOwner(userId) && userProfileIdIsImmutable();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description
+     *   Provides public, read-only access to available themes.
+     *   Writes are disabled for clients, as this data is managed by app administrators.
+     * @path
+     *   `/themes/{themeId}`
+     * @allow
+     *   (get) Any user (signed in or not) reading a theme document.
+     * @deny
+     *   (create) Any client attempting to create a new theme.
+     * @principle
+     *   Provides public read access for globally shared, non-sensitive data.
+     */
+    match /themes/{themeId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description
+     *   Allows public read access to resume pages, which are looked up by their unique slug.
+     *   Writes are disabled for clients and must be handled by a Cloud Function to ensure
+     *   data consistency and slug uniqueness.
+     * @path
+     *   `/userProfilesBySlug/{slug}`
+     * @allow
+     *   (get) Any visitor reading the public resume at `/userProfilesBySlug/john-doe-123`.
+     * @deny
+     *   (create) A user attempting to directly create their public resume page, bypassing the Cloud Function.
+     * @principle
+     *   Separates public read data from private write data and enforces server-side control for critical operations.
+     */
+    match /userProfilesBySlug/{slug} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
