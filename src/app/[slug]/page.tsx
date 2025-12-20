@@ -54,10 +54,15 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
   const firestore = useFirestore();
   const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [slug, setSlug] = useState<string | null>(null);
 
   useEffect(() => {
-    if (firestore && params.slug) {
-      getProfileData(firestore, params.slug)
+    setSlug(params.slug);
+  }, [params]);
+
+  useEffect(() => {
+    if (firestore && slug) {
+      getProfileData(firestore, slug)
         .then(profileData => {
           if (profileData) {
             setData(profileData);
@@ -69,7 +74,7 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }
-  }, [firestore, params.slug]);
+  }, [firestore, slug]);
 
   if (isLoading) {
     return (
@@ -87,9 +92,9 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
   const { profile, work, education, skills } = data;
 
   return (
-    <div className="min-h-screen bg-secondary">
+    <div className="min-h-screen bg-background">
       <main className="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div>
           {/* Header */}
           <div className="flex flex-col items-center gap-6 p-8 text-center sm:flex-row sm:text-left">
             {profile.avatarUrl && 
