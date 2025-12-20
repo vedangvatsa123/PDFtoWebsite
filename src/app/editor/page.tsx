@@ -16,12 +16,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, FilePenLine, BarChart2, Users, Map, ArrowRight, CheckCircle, XCircle, Trophy } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, Firestore } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { mockProfile } from '@/lib/mock-data';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
 
@@ -165,79 +164,88 @@ const EditorDashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [showEditor, setShowEditor] = useState(false);
 
-    const fetchProfile = useCallback(async () => {
-        if (user && firestore) {
-            setIsLoading(true);
-            const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+    const fetchProfileData = useCallback(async () => {
+        if (!user || !firestore) return null;
+        
+        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+        
+        const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
+            getDoc(profileRef),
+            getDocs(collection(firestore, 'users', user.uid, 'workExperiences')),
+            getDocs(collection(firestore, 'users', user.uid, 'educations')),
+            getDocs(collection(firestore, 'users', user.uid, 'skills')),
+        ]);
+
+        let userProfile: UserProfile;
+        let userWork: WorkExperience[] = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
+        let userEducation: Education[] = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
+        let userSkills: Skill[] = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
+
+        if (profileSnap.exists()) {
+            userProfile = profileSnap.data() as UserProfile;
+        } else {
+            userProfile = {
+                userId: user.uid,
+                fullName: user.displayName || 'Your Name',
+                email: user.email || '',
+                summary: mockProfile.personalInfo.summary,
+                slug: generateSlug(user.displayName || 'user'),
+                avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
+                avatarHint: mockProfile.personalInfo.avatarHint,
+                themeId: 'default',
+            };
             
-            const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
-                getDoc(profileRef),
-                getDocs(collection(firestore, 'users', user.uid, 'workExperiences')),
-                getDocs(collection(firestore, 'users', user.uid, 'educations')),
-                getDocs(collection(firestore, 'users', user.uid, 'skills')),
-            ]);
+            const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug);
 
-            let userProfile: UserProfile;
-            let userWork: WorkExperience[] = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
-            let userEducation: Education[] = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
-            let userSkills: Skill[] = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
+            const batch = writeBatch(firestore);
+            batch.set(userProfileDocRef, userProfile);
+            batch.set(slugDocRef, { userId: user.uid, ...userProfile });
+            
+            userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
+            userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
+            userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
 
-            if (profileSnap.exists()) {
-                userProfile = profileSnap.data() as UserProfile;
-            } else {
-                // Create a mock profile if one doesn't exist
-                userProfile = {
-                    userId: user.uid,
-                    fullName: user.displayName || 'Your Name',
-                    email: user.email || '',
-                    summary: mockProfile.personalInfo.summary,
-                    slug: generateSlug(user.displayName || 'user'),
-                    avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
-                    avatarHint: mockProfile.personalInfo.avatarHint,
-                    themeId: 'default',
-                };
-                
-                const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-                const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug);
+            userWork.forEach(item => {
+                const { id, ...rest } = item;
+                const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
+                batch.set(workRef, rest);
+            });
+            userEducation.forEach(item => {
+                const { id, ...rest } = item;
+                const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
+                batch.set(eduRef, rest);
+            });
+            userSkills.forEach(item => {
+                const { id, ...rest } = item;
+                const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
+                batch.set(skillRef, rest);
+            });
 
-                const batch = writeBatch(firestore);
-                batch.set(userProfileDocRef, userProfile);
-                batch.set(slugDocRef, { userId: user.uid, ...userProfile });
-                
-                userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
-                userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
-                userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
-
-                userWork.forEach(item => {
-                    const { id, ...rest } = item;
-                    const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
-                    batch.set(workRef, rest);
-                });
-                userEducation.forEach(item => {
-                    const { id, ...rest } = item;
-                    const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
-                    batch.set(eduRef, rest);
-                });
-                userSkills.forEach(item => {
-                    const { id, ...rest } = item;
-                    const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
-                    batch.set(skillRef, rest);
-                });
-
-                await batch.commit();
-            }
-
-            setProfile(userProfile);
-            setWork(userWork);
-            setEducation(userEducation);
-            setSkills(userSkills);
-            setIsLoading(false);
+            await batch.commit();
         }
+
+        return { profile: userProfile, work: userWork, education: userEducation, skills: userSkills };
     }, [user, firestore]);
 
+    const loadData = useCallback(async () => {
+        setIsLoading(true);
+        const data = await fetchProfileData();
+        if (data) {
+            setProfile(data.profile);
+            setWork(data.work);
+            setEducation(data.education);
+            setSkills(data.skills);
+        }
+        setIsLoading(false);
+    }, [fetchProfileData]);
+
     useEffect(() => {
-        fetchProfile();
-    }, [user, firestore, fetchProfile]);
+        if (user && firestore) {
+            loadData();
+        }
+    }, [user, firestore, loadData]);
+
 
     if (isLoading || isUserLoading) {
         return (
@@ -248,7 +256,7 @@ const EditorDashboard = () => {
     }
     
     if (showEditor) {
-        return <EditorForm profile={profile} work={work} education={education} skills={skills} onBackToDashboard={() => setShowEditor(false)} onProfileUpdate={fetchProfile} />;
+        return <EditorForm onBackToDashboard={() => setShowEditor(false)} />;
     }
 
     return (
@@ -332,49 +340,74 @@ const EditorDashboard = () => {
 };
 
 
-const EditorForm = ({ profile: initialProfile, work: initialWork, education: initialEducation, skills: initialSkills, onBackToDashboard, onProfileUpdate }: { profile: Partial<UserProfile>,  work: WorkExperience[], education: Education[], skills: Skill[], onBackToDashboard: () => void, onProfileUpdate: () => void }) => {
-    const { user, isUserLoading } = useUser();
+const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) => {
+    const { user } = useUser();
     const firestore = useFirestore();
-    const router = useRouter();
     const { toast } = useToast();
     
-    const [profile, setProfile] = useState<Partial<UserProfile>>(initialProfile);
-    const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(initialWork);
-    const [educations, setEducations] = useState<Education[]>(initialEducation);
-    const [skills, setSkills] = useState<Skill[]>(initialSkills);
+    const [profile, setProfile] = useState<Partial<UserProfile>>({});
+    const [initialSlug, setInitialSlug] = useState<string | undefined>(undefined);
+    const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>([]);
+    const [educations, setEducations] = useState<Education[]>([]);
+    const [skills, setSkills] = useState<Skill[]>([]);
     const [newSkill, setNewSkill] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
-    const [activeTheme, setActiveTheme] = useState(initialProfile.themeId || 'default');
+    const [activeTheme, setActiveTheme] = useState('default');
+
+     const fetchProfileData = useCallback(async () => {
+        if (!user || !firestore) return;
+        setIsLoading(true);
+
+        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+        const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
+            getDoc(profileRef),
+            getDocs(collection(firestore, 'users', user.uid, 'workExperiences')),
+            getDocs(collection(firestore, 'users', user.uid, 'educations')),
+            getDocs(collection(firestore, 'users', user.uid, 'skills')),
+        ]);
+
+        if (profileSnap.exists()) {
+            const profileData = profileSnap.data() as UserProfile;
+            setProfile(profileData);
+            setInitialSlug(profileData.slug);
+            setActiveTheme(profileData.themeId || 'default');
+            setWorkExperiences(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
+            setEducations(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
+            setSkills(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+        }
+        
+        setIsLoading(false);
+    }, [user, firestore]);
+
+    useEffect(() => {
+        fetchProfileData();
+    }, [fetchProfileData]);
+
 
     const checkSlugAvailability = async (slug: string): Promise<boolean> => {
         if (!firestore) return false;
         const slugRef = doc(firestore, 'userProfilesBySlug', slug);
         const slugSnap = await getDoc(slugRef);
-        // If the slug exists and belongs to a different user, it's not available.
         if (slugSnap.exists() && slugSnap.data().userId !== user?.uid) {
             return false;
         }
         return true;
     };
 
-
     const autoSave = useCallback((updatedData: any) => {
         if (!user || !firestore) return;
         setIsSaving(true);
         const { collectionName, id, ...data } = updatedData;
         
-        let fullData = data;
         let ref: any;
 
         if (collectionName === 'userProfile') {
             const currentProfile = {...profile, ...data};
-            setProfile(currentProfile); // Update local state immediately
             
-            // If slug is being updated, handle the old one
-            if (data.slug && initialProfile.slug && data.slug !== initialProfile.slug) {
-                const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialProfile.slug);
+            if (data.slug && initialSlug && data.slug !== initialSlug) {
+                const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialSlug);
                 deleteDocumentNonBlocking(oldSlugRef);
             }
 
@@ -382,21 +415,19 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
             setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
 
             ref = doc(firestore, 'users', user.uid, collectionName, user.uid);
-            fullData = currentProfile;
         } else {
              ref = doc(firestore, 'users', user.uid, collectionName, id);
         }
 
-        setDocumentNonBlocking(ref, fullData, { merge: true });
+        setDocumentNonBlocking(ref, data, { merge: true });
         
-        setTimeout(() => {
-            setIsSaving(false);
-            onProfileUpdate(); // Notify parent of the update
-        }, 700);
-    }, [user, firestore, profile, initialProfile.slug, onProfileUpdate]);
+        setTimeout(() => setIsSaving(false), 700);
+    }, [user, firestore, profile, initialSlug]);
+
 
     const handleThemeChange = (themeId: string) => {
         setActiveTheme(themeId);
+        setProfile(prev => ({...prev, themeId}));
         autoSave({ collectionName: 'userProfile', themeId: themeId });
     };
 
@@ -407,9 +438,10 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+        const initialValue = (profile as any)[name];
     
         if (name === 'slug') {
-            if (value === initialProfile.slug) return; // No change, no need to check/save
+            if (value === initialSlug) return;
             const isAvailable = await checkSlugAvailability(value);
             if (!isAvailable) {
                 toast({
@@ -417,13 +449,13 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
                     title: 'Slug Unavailable',
                     description: `The URL slug "${value}" is already taken. Please choose another.`,
                 });
-                // Revert the change in the UI
-                setProfile(prev => ({ ...prev, slug: initialProfile.slug }));
+                setProfile(prev => ({ ...prev, slug: initialSlug }));
                 return;
             }
+            setInitialSlug(value); // Set new baseline slug
         }
 
-        if ((initialProfile as any)[name] !== value) {
+        if (initialValue !== value) {
             autoSave({ collectionName: 'userProfile', [name]: value });
         }
     };
@@ -442,13 +474,14 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
      const handleSubcollectionBlur = <T extends {id: string}>(
         id: string,
         e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-        collectionName: string
+        collectionName: string,
+        collectionState: T[]
     ) => {
         const { name, value } = e.target;
-        // We need to find the original value to compare against, this is a bit tricky
-        // For simplicity, we'll just save on blur for subcollections.
-        // A more complex implementation would involve keeping track of original state.
-        autoSave({ collectionName, id, [name]: value });
+        const item = collectionState.find(i => i.id === id);
+        if (item && (item as any)[name] !== value) {
+            autoSave({ collectionName, id, [name]: value });
+        }
     };
 
     const handleAddItem = async <T extends {}>(
@@ -463,7 +496,6 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
                 if (docRef) {
                     setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
                     toast({ title: "Item Added", description: "Your new item has been saved." });
-                    onProfileUpdate();
                 }
             });
     }
@@ -478,7 +510,6 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
         deleteDocumentNonBlocking(docRef);
         setCollection(prev => prev.filter(item => item.id !== id));
         toast({ title: "Item Removed", variant: "destructive" });
-        onProfileUpdate();
     }
 
     const handleAddSkill = () => {
@@ -579,24 +610,24 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Role</Label>
-                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences')} />
+                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Company</Label>
-                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences')} />
+                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences')} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences')} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences')} />
+                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                         </div>
                                     </div>
                                 </Card>
@@ -623,24 +654,24 @@ const EditorForm = ({ profile: initialProfile, work: initialWork, education: ini
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Institution</Label>
-                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations')} />
+                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Degree / Certificate</Label>
-                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations')} />
+                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations')} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations')} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations')} />
+                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                         </div>
                                     </div>
                                 </Card>
@@ -774,3 +805,5 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
