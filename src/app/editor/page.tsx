@@ -594,10 +594,12 @@ export default function EditorPage() {
                         />
 
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-                                <TabsTrigger value="content">Content</TabsTrigger>
-                            </TabsList>
+                            <div className="flex justify-center">
+                                <TabsList>
+                                    <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                                    <TabsTrigger value="content">Content</TabsTrigger>
+                                </TabsList>
+                            </div>
 
                              <TabsContent value="dashboard">
                                 <div className="grid gap-6 pt-6">
