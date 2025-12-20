@@ -27,24 +27,13 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-end">
           <nav className="flex items-center gap-4">
             <ThemeToggle />
-            {!isUserLoading && (
-                user ? (
-                    <>
-                        <Button variant="outline" asChild>
-                            <Link href="/editor">Editor</Link>
-                        </Button>
-                        <Button onClick={handleSignOut}>Sign Out</Button>
-                    </>
-                ) : (
-                     <>
-                        <Button variant="outline" asChild>
-                           <Link href="/login">Login</Link>
-                        </Button>
-                        <Button asChild>
-                            <Link href="/signup">Sign Up</Link>
-                        </Button>
-                     </>
-                )
+            {!isUserLoading && user && (
+                <>
+                    <Button variant="outline" asChild>
+                        <Link href="/editor">Editor</Link>
+                    </Button>
+                    <Button onClick={handleSignOut}>Sign Out</Button>
+                </>
             )}
           </nav>
         </div>
