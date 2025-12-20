@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Trash2, PlusCircle, Save, Loader2, UploadCloud, FileUp } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { Icons } from '@/components/icons';
+import Header from '@/components/header';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { mockProfile } from '@/lib/mock-data'; 
@@ -310,33 +310,31 @@ export default function EditorPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="container flex h-16 items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <Icons.logo className="h-6 w-6" />
-            <span className="font-bold sm:inline-block font-headline">
-              Editor
-            </span>
-          </Link>
-          <div className="flex items-center space-x-2">
-            {profile.slug && (
-              <Button variant="outline" asChild>
-                <Link href={`/${profile.slug}`} target="_blank">
-                  <Eye className="mr-2 h-4 w-4" />
-                  Preview
-                </Link>
-              </Button>
-            )}
-            <Button onClick={handlePublish} disabled={isSaving}>
-              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              {isSaving ? 'Publishing...' : 'Publish'}
-            </Button>
-          </div>
+      <Header />
+      <main className="flex-1">
+        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-16 max-w-screen-2xl items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
+                <h1 className="text-xl font-bold sm:inline-block font-headline">
+                Editor
+                </h1>
+                <div className="flex items-center space-x-2">
+                    {profile.slug && (
+                    <Button variant="outline" asChild>
+                        <Link href={`/${profile.slug}`} target="_blank">
+                        <Eye className="mr-2 h-4 w-4" />
+                        Preview
+                        </Link>
+                    </Button>
+                    )}
+                    <Button onClick={handlePublish} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    {isSaving ? 'Publishing...' : 'Publish'}
+                    </Button>
+                </div>
+            </div>
         </div>
-      </header>
 
-      <main className="flex-1 p-4 md:p-8">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-4xl p-4 md:p-8">
             {showUploadPrompt ? (
                 <ResumeUploadPrompt 
                     onFileChange={handleFileChange}
