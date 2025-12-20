@@ -11,6 +11,7 @@ import { Mail, Phone, MapPin, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
 import Header from '@/components/header';
+import React from 'react';
 
 async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, sections: ResumeSection[] } | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
