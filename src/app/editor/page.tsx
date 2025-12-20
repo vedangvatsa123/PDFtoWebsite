@@ -293,18 +293,25 @@ export default function EditorPage() {
             const batch = writeBatch(firestore);
             const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
             
-            const currentProfile = (await getDoc(profileRef)).data() || {};
+            const currentProfileSnap = await getDoc(profileRef);
+            const currentProfile = currentProfileSnap.data() || {};
+            const currentSlug = currentProfile.slug || generateSlug(extractedData.fullName || user.displayName || 'user');
             
-            const updatedProfile = {
+            const updatedProfile: UserProfile = {
                 ...currentProfile,
-                userId: user.uid, // <-- FIX: Ensure userId is always included
+                userId: user.uid,
                 fullName: extractedData.fullName || currentProfile.fullName || '',
+                email: currentProfile.email || user.email,
                 summary: extractedData.summary || currentProfile.summary || '',
                 phone: extractedData.phone || currentProfile.phone || '',
                 website: extractedData.website || currentProfile.website || '',
+                slug: currentSlug,
             };
             
             batch.set(profileRef, updatedProfile, { merge: true });
+
+            const slugRef = doc(firestore, 'userProfilesBySlug', updatedProfile.slug!);
+            batch.set(slugRef, { userId: user.uid, ...updatedProfile }, { merge: true });
 
             const sectionsSnap = await getDocs(collection(firestore, 'users', user.uid, 'resumeSections'));
             sectionsSnap.forEach(doc => batch.delete(doc.ref));
