@@ -17,7 +17,7 @@ import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, FilePenLine, Bar
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, Firestore } from 'firebase/firestore';
 import { mockProfile } from '@/lib/mock-data';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
@@ -219,7 +219,7 @@ const EditorDashboard = ({ profile, work, education, skills, onProfileUpdate }: 
                     </CardHeader>
                     <CardContent>
                          <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
-                             <Link href={`/${profile.slug}`} className="hover:underline">
+                             <Link href={`/${profile.slug}`} className="hover:underline" target="_blank" rel="noopener noreferrer">
                                 /{profile.slug}
                             </Link>
                          </div>
@@ -258,6 +258,18 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
     const [isSaving, setIsSaving] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
     const [activeTheme, setActiveTheme] = useState(initialProfile.themeId || 'default');
+
+    const checkSlugAvailability = async (slug: string): Promise<boolean> => {
+        if (!firestore) return false;
+        const slugRef = doc(firestore, 'userProfilesBySlug', slug);
+        const slugSnap = await getDoc(slugRef);
+        // If the slug exists and belongs to a different user, it's not available.
+        if (slugSnap.exists() && slugSnap.data().userId !== user?.uid) {
+            return false;
+        }
+        return true;
+    };
+
 
     const autoSave = useCallback((updatedData: any) => {
         if (!user || !firestore) return;
@@ -336,8 +348,24 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
         setProfile(prev => ({...prev, [name]: value}));
     };
     
-    const handleProfileBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+    
+        if (name === 'slug') {
+            if (value === initialProfile.slug) return; // No change, no need to check/save
+            const isAvailable = await checkSlugAvailability(value);
+            if (!isAvailable) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Slug Unavailable',
+                    description: `The URL slug "${value}" is already taken. Please choose another.`,
+                });
+                // Revert the change in the UI
+                setProfile(prev => ({ ...prev, slug: initialProfile.slug }));
+                return;
+            }
+        }
+
         if ((initialProfile as any)[name] !== value) {
             autoSave({ collectionName: 'userProfile', [name]: value });
         }
@@ -452,11 +480,11 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
             <div className="flex justify-between items-center mb-8">
                 <Button variant="outline" onClick={onBackToDashboard}>Dashboard</Button>
                 <div className="flex items-center gap-4">
-                    {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin" /><span>Saving...</span></div>}
+                    {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
                     {profile.slug && (
                         <Button variant="outline" asChild>
-                            <Link href={`/${profile.slug}`}>
-                                <Eye />
+                            <Link href={`/${profile.slug}`} target="_blank" rel="noopener noreferrer">
+                                <Eye className="mr-2 h-4 w-4" />
                                 Preview
                             </Link>
                         </Button>
@@ -702,8 +730,12 @@ export default function EditorPage() {
             themeId: 'default',
           };
           
-          setDocumentNonBlocking(doc(firestore, 'users', user.uid, 'userProfile', user.uid), userProfile, { merge: false });
-          setDocumentNonBlocking(doc(firestore, 'userProfilesBySlug', userProfile.slug), { userId: user.uid, ...userProfile }, {merge: false});
+          const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+          const slugDocRef = doc(firestore, 'userProfilesBySlug', userProfile.slug);
+
+          const batch = writeBatch(firestore);
+          batch.set(userProfileDocRef, userProfile);
+          batch.set(slugDocRef, { userId: user.uid, ...userProfile });
           
           userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
           userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
@@ -711,16 +743,21 @@ export default function EditorPage() {
 
           userWork.forEach(item => {
               const { id, ...rest } = item;
-              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'workExperiences'), rest);
+              const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
+              batch.set(workRef, rest);
           });
           userEducation.forEach(item => {
               const { id, ...rest } = item;
-              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'educations'), rest);
+              const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
+              batch.set(eduRef, rest);
           });
           userSkills.forEach(item => {
               const { id, ...rest } = item;
-              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'skills'), rest);
+              const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
+              batch.set(skillRef, rest);
           });
+
+          await batch.commit();
         }
 
         setProfile(userProfile);
@@ -763,3 +800,6 @@ export default function EditorPage() {
     </div>
   );
 }
+
+
+    
