@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, Trash2, PlusCircle, Save, Loader2, UploadCloud } from 'lucide-react';
+import { Eye, Trash2, PlusCircle, Save, Loader2, UploadCloud, FileUp } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Icons } from '@/components/icons';
 import { useUser, useFirestore } from '@/firebase';
@@ -34,6 +34,33 @@ function isNewProfile(profile: Partial<UserProfile>, work: WorkExperience[], edu
     );
 }
 
+const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onUpload: () => void, fileName: string | null, onCancel?: () => void }) => (
+    <Card className="w-full">
+        <CardHeader>
+            <CardTitle>Welcome! Let's build your profile.</CardTitle>
+            <CardDescription>Upload your resume (PDF) to get started automatically, or fill out the form manually.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50">
+                <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
+                <span className="text-muted-foreground">
+                    {fileName ? `Selected: ${fileName}` : 'Drag & drop or click to upload PDF'}
+                </span>
+                <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={onFileChange} />
+            </label>
+            <Button size="lg" className="w-full" onClick={onUpload} disabled={!fileName}>
+                Generate Profile from PDF
+            </Button>
+            {onCancel && (
+                <Button variant="link" className="w-full" onClick={onCancel}>
+                    Or fill it out manually
+                </Button>
+            )}
+        </CardContent>
+    </Card>
+);
+
+
 export default function EditorPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -48,6 +75,7 @@ export default function EditorPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showUploadPrompt, setShowUploadPrompt] = useState(false);
+  const [showInlineUpload, setShowInlineUpload] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   
   useEffect(() => {
@@ -269,6 +297,7 @@ export default function EditorPage() {
     // For demo, we just hide the prompt.
     // A real implementation would involve a loading state and then a data refetch.
     setShowUploadPrompt(false);
+    setShowInlineUpload(false);
   }
 
   if (isLoading || isUserLoading) {
@@ -309,27 +338,12 @@ export default function EditorPage() {
       <main className="flex-1 p-4 md:p-8">
         <div className="container mx-auto max-w-4xl">
             {showUploadPrompt ? (
-                <Card className="w-full">
-                    <CardHeader>
-                        <CardTitle>Welcome! Let's build your profile.</CardTitle>
-                        <CardDescription>Upload your resume (PDF) to get started automatically, or fill out the form manually.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50">
-                            <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
-                            <span className="text-muted-foreground">
-                                {fileName ? `Selected: ${fileName}` : 'Drag & drop or click to upload PDF'}
-                            </span>
-                            <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} />
-                        </label>
-                        <Button size="lg" className="w-full" onClick={handleResumeUpload} disabled={!fileName}>
-                           Generate Profile from PDF
-                        </Button>
-                         <Button variant="link" className="w-full" onClick={() => setShowUploadPrompt(false)}>
-                            Or fill it out manually
-                        </Button>
-                    </CardContent>
-                </Card>
+                <ResumeUploadPrompt 
+                    onFileChange={handleFileChange}
+                    onUpload={handleResumeUpload}
+                    fileName={fileName}
+                    onCancel={() => setShowUploadPrompt(false)}
+                />
             ) : (
                 <Tabs defaultValue="personal" className="w-full">
                     <TabsList className="grid w-full grid-cols-5">
@@ -347,9 +361,22 @@ export default function EditorPage() {
                         <CardDescription>This is your public calling card. Make it count.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
+
+                        {showInlineUpload ? (
+                             <ResumeUploadPrompt 
+                                onFileChange={handleFileChange}
+                                onUpload={handleResumeUpload}
+                                fileName={fileName}
+                            />
+                        ) : null}
+
                         <div className="flex items-center space-x-4">
                             <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
                             <Button variant="outline">Change Photo</Button>
+                             <Button variant="outline" onClick={() => setShowInlineUpload(!showInlineUpload)}>
+                                <FileUp className="mr-2 h-4 w-4" />
+                                {showInlineUpload ? 'Cancel' : 'Import from Resume'}
+                            </Button>
                         </div>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div className="space-y-2">
