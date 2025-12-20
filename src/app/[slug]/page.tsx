@@ -131,7 +131,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
                 />
             }
             <div className="space-y-2">
-              <h1 className="font-headline text-4xl font-bold">{profile.fullName}</h1>
+              <h1 className="text-4xl font-bold">{profile.fullName}</h1>
               <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-muted-foreground sm:justify-start">
                 {profile.email && <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
@@ -161,7 +161,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
             {/* Summary */}
             {profile.summary && (
               <section>
-                <h2 className="mb-4 font-headline text-2xl font-bold">About Me</h2>
+                <h2 className="mb-4 text-2xl font-bold">About Me</h2>
                 <p className="text-muted-foreground whitespace-pre-wrap">{profile.summary}</p>
               </section>
             )}
@@ -175,7 +175,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                             <Icon className="h-6 w-6" />
                         </div>
-                        <h2 className="font-headline text-2xl font-bold">{section.title}</h2>
+                        <h2 className="text-2xl font-bold">{section.title}</h2>
                     </div>
                     <div className="border-l-2 border-border ml-6 pl-12">
                         <p className="text-muted-foreground whitespace-pre-wrap py-2">

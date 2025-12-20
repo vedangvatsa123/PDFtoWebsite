@@ -4,10 +4,9 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { Inter, Montserrat } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-headline' });
 
 export const metadata: Metadata = {
   title: 'PDFtoPortfolio',
@@ -23,7 +22,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
       </head>
-      <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable, montserrat.variable)}>
+      <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
         <FirebaseClientProvider>
           <ThemeProvider
             attribute="class"
