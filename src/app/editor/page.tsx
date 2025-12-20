@@ -413,7 +413,7 @@ export default function EditorPage() {
         <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1 bg-secondary/30">
-                <div className="container mx-auto max-w-7xl p-4 md:p-8">
+                <div className="container mx-auto max-w-4xl p-4 md:p-8">
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <h1 className="text-3xl font-bold">Welcome back, {profile.fullName}!</h1>
@@ -432,125 +432,124 @@ export default function EditorPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-8">
-                            <ResumeUploadPrompt 
-                                onFileChange={handleFileChange}
-                                onUpload={handleResumeUpload}
-                                fileName={fileName}
-                                isGenerating={isGenerating}
-                            />
+                    <div className="space-y-8">
+                        <ResumeUploadPrompt 
+                            onFileChange={handleFileChange}
+                            onUpload={handleResumeUpload}
+                            fileName={fileName}
+                            isGenerating={isGenerating}
+                        />
 
-                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="content">Content</TabsTrigger>
-                                    <TabsTrigger value="settings">Settings</TabsTrigger>
-                                </TabsList>
-                                
-                                <TabsContent value="content" ref={contentRef}>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Resume Sections</CardTitle>
-                                            <CardDescription>Edit the content parsed from your resume. Each card represents a section.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-6">
-                                            {sections.map((item) => (
-                                                <Card key={item.id} className="p-4">
-                                                    <div className="space-y-4">
-                                                        <div className="flex justify-between items-center">
-                                                            <div className="space-y-2 flex-grow">
-                                                                <Label>Section Title</Label>
-                                                                <Input name="title" value={item.title} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} />
-                                                            </div>
-                                                            <Button variant="ghost" size="icon" className="ml-4" onClick={() => handleDeleteItem(item.id)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="content">Content</TabsTrigger>
+                                <TabsTrigger value="settings">Settings</TabsTrigger>
+                            </TabsList>
+                            
+                            <TabsContent value="content" ref={contentRef}>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Resume Sections</CardTitle>
+                                        <CardDescription>Edit the content parsed from your resume. Each card represents a section.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-6">
+                                        {sections.map((item) => (
+                                            <Card key={item.id} className="p-4">
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="space-y-2 flex-grow">
+                                                            <Label>Section Title</Label>
+                                                            <Input name="title" value={item.title} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} />
                                                         </div>
-                                                        <div className="space-y-2">
-                                                            <Label>Section Content</Label>
-                                                            <Textarea name="content" value={item.content} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} rows={8} />
-                                                        </div>
+                                                        <Button variant="ghost" size="icon" className="ml-4" onClick={() => handleDeleteItem(item.id)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
                                                     </div>
-                                                </Card>
-                                            ))}
-                                            <Button variant="outline" className="w-full" onClick={handleAddItem}>
-                                                <PlusCircle className="mr-2 h-4 w-4" /> Add Section
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
+                                                    <div className="space-y-2">
+                                                        <Label>Section Content</Label>
+                                                        <Textarea name="content" value={item.content} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} rows={8} />
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        ))}
+                                        <Button variant="outline" className="w-full" onClick={handleAddItem}>
+                                            <PlusCircle className="mr-2 h-4 w-4" /> Add Section
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
 
-                                <TabsContent value="settings">
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Personal Information</CardTitle>
-                                            <CardDescription>This is your public calling card. Make it count.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-6">
-                                            <div className="space-y-2">
-                                                <Label>Profile Photo</Label>
-                                                <div className="flex items-center space-x-4">
-                                                    <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
-                                                </div>
-                                                <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
+                            <TabsContent value="settings">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Personal Information</CardTitle>
+                                        <CardDescription>This is your public calling card. Make it count.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label>Profile Photo</Label>
+                                            <div className="flex items-center space-x-4">
+                                                <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
                                             </div>
-                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                <Label htmlFor="fullName">Full Name</Label>
-                                                <Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                <Label htmlFor="email">Email</Label>
-                                                <Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                <Label htmlFor="phone">Phone</Label>
-                                                <Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                <Label htmlFor="location">Location</Label>
-                                                <Input id="location" name="location" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                </div>
+                                            <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                            <div className="space-y-2">
+                                            <Label htmlFor="fullName">Full Name</Label>
+                                            <Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="website">Website/Portfolio</Label>
-                                                <Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="summary">Summary</Label>
-                                                <Textarea id="summary" name="summary" value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={5} />
+                                            <Label htmlFor="phone">Phone</Label>
+                                            <Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                            <div className="space-y-2">
+                                            <Label htmlFor="location">Location</Label>
+                                            <Input id="location" name="location" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="website">Website/Portfolio</Label>
+                                            <Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="summary">Summary</Label>
+                                            <Textarea id="summary" name="summary" value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={5} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
 
-                                    <Card className="mt-6">
-                                        <CardHeader>
-                                            <CardTitle>Profile Settings</CardTitle>
-                                            <CardDescription>Manage your public profile URL and theme.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="slug">Public URL Slug</Label>
-                                                <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
+                                <Card className="mt-6">
+                                    <CardHeader>
+                                        <CardTitle>Profile Settings</CardTitle>
+                                        <CardDescription>Manage your public profile URL and theme.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="slug">Public URL Slug</Label>
+                                            <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                            {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="template">Template</Label>
+                                            <p className="text-sm text-muted-foreground">Choose a visual theme for your public profile.</p>
+                                            <div className="flex gap-2 pt-2">
+                                                <Button variant={activeTheme === 'default' ? 'default' : 'secondary'} onClick={() => handleThemeChange('default')}>Default</Button>
+                                                <Button variant={activeTheme === 'modern' ? 'default' : 'secondary'} onClick={() => handleThemeChange('modern')}>Modern</Button>
+                                                <Button variant={activeTheme === 'classic' ? 'default' : 'secondary'} onClick={() => handleThemeChange('classic')}>Classic</Button>
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="template">Template</Label>
-                                                <p className="text-sm text-muted-foreground">Choose a visual theme for your public profile.</p>
-                                                <div className="flex gap-2 pt-2">
-                                                    <Button variant={activeTheme === 'default' ? 'default' : 'secondary'} onClick={() => handleThemeChange('default')}>Default</Button>
-                                                    <Button variant={activeTheme === 'modern' ? 'default' : 'secondary'} onClick={() => handleThemeChange('modern')}>Modern</Button>
-                                                    <Button variant={activeTheme === 'classic' ? 'default' : 'secondary'} onClick={() => handleThemeChange('classic')}>Classic</Button>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-                            </Tabs>
-                        </div>
-                        <div className="lg:col-span-1 space-y-8">
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                        </Tabs>
+
+                        <div className="space-y-8 pt-8">
                              <Card>
                                 <CardHeader>
                                     <CardTitle>Your Public Link</CardTitle>
-                                    <CardDescription>Share this link to your public profile page.</CardDescription>
+                                    <CardDescription>Share this link to your public profile page.</CardD>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
