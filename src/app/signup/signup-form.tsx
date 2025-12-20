@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { Icons } from '@/components/icons';
 import { useUser } from '@/firebase';
 
@@ -51,20 +51,20 @@ export default function SignUpForm() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
-      signInWithRedirect(auth, provider);
-      // The user is redirected, so the code below will not execute in the same session.
-      // Firebase will handle the redirect back to the app.
+      await signInWithPopup(auth, provider);
+      // On successful sign-in, the useEffect will redirect to /editor
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
         description: error.message,
       });
+    } finally {
       setIsGoogleLoading(false);
     }
   };
