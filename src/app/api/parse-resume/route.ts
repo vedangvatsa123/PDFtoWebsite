@@ -2,35 +2,128 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
 
-// A very basic parser. This is a starting point and will need to be made more robust.
 const parseResumeText = (text: string) => {
     const lines = text.split('\n').filter(line => line.trim() !== '');
+
+    const getSectionLines = (sectionKeywords: string[], endKeywords: string[]): string[] => {
+        let startIndex = -1;
+        for (const keyword of sectionKeywords) {
+            startIndex = lines.findIndex(line => new RegExp(`^${keyword}$`, 'i').test(line.trim()));
+            if (startIndex !== -1) break;
+        }
+        if (startIndex === -1) return [];
+
+        let endIndex = lines.length;
+        for (const endKeyword of endKeywords) {
+            const potentialEndIndex = lines.findIndex((line, index) => index > startIndex && new RegExp(`^${endKeyword}$`, 'i').test(line.trim()));
+            if (potentialEndIndex !== -1) {
+                endIndex = potentialEndIndex;
+                break;
+            }
+        }
+        return lines.slice(startIndex + 1, endIndex);
+    };
+
+    const allSectionKeywords = ['experience', 'work experience', 'education', 'skills', 'summary', 'profile'];
+    const experienceKeywords = ['experience', 'work experience'];
+    const educationKeywords = ['education'];
+    const skillsKeywords = ['skills', 'technical skills'];
+    const summaryKeywords = ['summary', 'profile'];
+
+    const experienceSectionLines = getSectionLines(experienceKeywords, [...educationKeywords, ...skillsKeywords, ...summaryKeywords]);
+    const educationSectionLines = getSectionLines(educationKeywords, [...experienceKeywords, ...skillsKeywords, ...summaryKeywords]);
+    const skillsSectionLines = getSectionLines(skillsKeywords, [...experienceKeywords, ...educationKeywords, ...summaryKeywords]);
+
+    // Very basic personal info extraction
+    const fullName = lines[0] || 'Full Name';
+    const emailRegex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
+    const emailMatch = text.match(emailRegex);
+    const email = emailMatch ? emailMatch[0] : '';
     
-    // Basic heuristics to find sections
-    const experienceIndex = lines.findIndex(line => line.toLowerCase().includes('experience'));
-    const educationIndex = lines.findIndex(line => line.toLowerCase().includes('education'));
-    const skillsIndex = lines.findIndex(line => line.toLowerCase().includes('skills'));
+    // Heuristic for summary: lines before the first major section
+     let firstSectionIndex = lines.length;
+     [...experienceKeywords, ...educationKeywords, ...skillsKeywords].forEach(keyword => {
+        const index = lines.findIndex(line => new RegExp(`^${keyword}$`, 'i').test(line.trim()));
+        if (index !== -1 && index < firstSectionIndex) {
+            firstSectionIndex = index;
+        }
+    });
+    // Assume a few lines after name/contact for summary
+    const summary = lines.slice(1, firstSectionIndex > 0 ? firstSectionIndex : 3).join(' ').trim();
 
-    // Basic data extraction - THIS IS A SIMPLISTIC PLACEHOLDER
-    const summary = lines.slice(1, experienceIndex > -1 ? experienceIndex : 3).join(' ');
-    const fullName = lines[0]; // Assume first line is the name
 
-    // In a real implementation, you would use more complex logic or regex to parse these sections.
-    const workExperience = experienceIndex > -1 
-        ? [{ id: 'work1', company: 'Extracted Company', title: 'Extracted Title', startDate: 'Jan 2020', endDate: 'Present', description: lines.slice(experienceIndex + 1, educationIndex > -1 ? educationIndex : experienceIndex + 3).join(' ') }] 
-        : [];
-    
-    const education = educationIndex > -1 
-        ? [{ id: 'edu1', institution: 'Extracted University', degree: 'Extracted Degree', startDate: 'Sep 2016', endDate: 'May 2020', description: lines.slice(educationIndex + 1, skillsIndex > -1 ? skillsIndex : educationIndex + 3).join(' ') }]
-        : [];
+    const parseEntries = (lines: string[]) => {
+        // This is still a very naive parser and would need significant improvement for production use.
+        // It assumes a new entry starts with a line that might be a company or school name.
+        if (lines.length === 0) return [];
+        const entries: {title: string, subtitle: string, date: string, description: string}[] = [];
+        // A simple heuristic: if a line contains a common date separator, it might be a new entry.
+        // This is not very reliable. A better approach would be to look for patterns.
+        let currentEntry: string[] = [];
 
-    const skills = skillsIndex > -1
-        ? lines.slice(skillsIndex + 1, skillsIndex + 4).map((skill, i) => ({ id: `skill${i}`, name: skill.trim() }))
-        : [];
+        lines.forEach(line => {
+            // A better heuristic might be looking for a date range, or a capitalized line following a blank line.
+            // This is still very basic.
+            if (/\s(20\d{2}|present|current)\s?-\s?/i.test(line) && currentEntry.length > 1) {
+                if (currentEntry.length > 0) {
+                     entries.push({
+                        title: currentEntry[0] || 'N/A',
+                        subtitle: currentEntry[1] || 'N/A',
+                        date: currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || 'N/A',
+                        description: currentEntry.slice(2).join(' ').replace(currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || '', '').trim()
+                    });
+                    currentEntry = [];
+                }
+            }
+            currentEntry.push(line);
+        });
 
+        if (currentEntry.length > 0) {
+            entries.push({
+                title: currentEntry[0] || 'N/A',
+                subtitle: currentEntry[1] || 'N/A',
+                date: currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || 'N/A',
+                description: currentEntry.slice(2).join(' ').replace(currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || '', '').trim()
+            });
+        }
+        
+        // This is a placeholder for actual parsing logic
+        if (entries.length > 0) {
+            return entries.map((entry, index) => ({
+                id: `entry${index}`,
+                ...entry
+            }));
+        }
+
+        // Fallback for very simple lists
+        return lines.length > 0 ? [{ id: 'entry1', title: lines[0], subtitle: lines[1] || '', description: lines.slice(2).join(' '), date: '' }] : [];
+    };
+
+    const workExperienceParsed = parseEntries(experienceSectionLines);
+    const educationParsed = parseEntries(educationSectionLines);
+
+    const workExperience = workExperienceParsed.map(entry => ({
+        company: entry.subtitle,
+        title: entry.title,
+        startDate: entry.date.split('-')[0]?.trim() || 'Date',
+        endDate: entry.date.split('-')[1]?.trim() || 'Present',
+        description: entry.description,
+    }));
+
+    const education = educationParsed.map(entry => ({
+        institution: entry.title,
+        degree: entry.subtitle,
+        startDate: entry.date.split('-')[0]?.trim() || 'Date',
+        endDate: entry.date.split('-')[1]?.trim() || 'Present',
+        description: entry.description
+    }));
+
+    // Skills are often comma-separated or one per line
+    const skills = skillsSectionLines.join(' ').split(/, | \/ | • | \| /).flatMap(skill => skill.split('\n')).map(s => s.trim()).filter(s => s && s.length > 1 && s.length < 30).map(s => ({name: s}));
 
     return {
         fullName,
+        email,
         summary,
         workExperience,
         education,
@@ -55,9 +148,7 @@ export async function POST(request: NextRequest) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     const data = await pdf(fileBuffer);
-
-    // Here you would implement your robust text parsing logic.
-    // For now, we'll use a very basic placeholder parser.
+    
     const structuredData = parseResumeText(data.text);
     
     return NextResponse.json(structuredData, { status: 200 });
