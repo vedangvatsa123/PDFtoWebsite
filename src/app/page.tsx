@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -8,6 +9,7 @@ import Header from '@/components/header';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { LoginDialog } from '@/components/login-dialog';
 
 export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
@@ -80,9 +82,7 @@ export default function Home() {
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link href="/login" className="underline hover:text-primary">
-                Login
-              </Link>
+              <LoginDialog />
             </p>
           </div>
 
