@@ -30,11 +30,7 @@ function generateSlug(name: string) {
 
 const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, isGenerating }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onUpload: () => void, fileName: string | null, isGenerating: boolean }) => (
     <Card className="w-full border-dashed border-2 hover:border-primary transition-colors mb-8">
-        <CardHeader>
-            <CardTitle>Generate with your Resume</CardTitle>
-            <CardDescription>Upload your resume (PDF) to automatically fill out your profile.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-6">
             <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50">
                 <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
                 <span className="text-muted-foreground">
@@ -250,7 +246,6 @@ export default function EditorPage() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
-    const [activeTheme, setActiveTheme] = useState('default');
     const [activeTab, setActiveTab] = useState('dashboard');
 
     const contentRef = useRef<HTMLDivElement>(null);
@@ -307,7 +302,6 @@ export default function EditorPage() {
 
         setProfile(dataBundle.profile);
         setInitialSlug(dataBundle.profile.slug);
-        setActiveTheme(dataBundle.profile.themeId || 'default');
         setSections(dataBundle.sections);
         
         lastSavedData.current = JSON.parse(JSON.stringify(dataBundle));
@@ -668,3 +662,5 @@ export default function EditorPage() {
         </div>
     );
 }
+
+    
