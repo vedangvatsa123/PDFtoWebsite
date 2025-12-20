@@ -19,6 +19,8 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Progress } from '@/components/ui/progress';
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 function generateSlug(name: string) {
   const randomString = Math.random().toString(36).substring(2, 7);
@@ -53,9 +55,9 @@ const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, isGenerating }: 
 const ProfileCompleteness = ({ profile, sections, onNavigate }: { profile: Partial<UserProfile>, sections: ResumeSection[], onNavigate: (tab: string) => void }) => {
     const completeness = useMemo(() => {
         const checks = [
-            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')), section: 'settings' },
-            { name: "Write a Summary", complete: !!profile.summary, section: 'settings' },
-            { name: "Add Contact Info (Phone or Website)", complete: !!(profile.phone || profile.website), section: 'settings' },
+            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')), section: 'content' },
+            { name: "Write a Summary", complete: !!profile.summary, section: 'content' },
+            { name: "Add Contact Info (Phone or Website)", complete: !!(profile.phone || profile.website), section: 'content' },
             { name: "Add at least one resume section", complete: sections.length > 0, section: 'content' },
         ];
         const completeCount = checks.filter(c => c.complete).length;
@@ -118,6 +120,115 @@ const VisitorMetrics = ({ viewCount }: { viewCount: number }) => {
     )
 }
 
+const chartData = [
+  { country: "USA", views: 186, fill: "var(--color-usa)" },
+  { country: "India", views: 120, fill: "var(--color-india)" },
+  { country: "Germany", views: 98, fill: "var(--color-germany)" },
+  { country: "UK", views: 87, fill: "var(--color-uk)" },
+  { country: "Canada", views: 76, fill: "var(--color-canada)" },
+  { country: "Other", views: 110, fill: "var(--color-other)" },
+]
+
+const chartConfig = {
+  views: {
+    label: "Views",
+  },
+  usa: {
+    label: "USA",
+    color: "hsl(var(--chart-1))",
+  },
+  india: {
+    label: "India",
+    color: "hsl(var(--chart-2))",
+  },
+  germany: {
+    label: "Germany",
+    color: "hsl(var(--chart-3))",
+  },
+   uk: {
+    label: "UK",
+    color: "hsl(var(--chart-4))",
+  },
+  canada: {
+    label: "Canada",
+    color: "hsl(var(--chart-5))",
+  },
+  other: {
+    label: "Other",
+    color: "hsl(var(--muted))",
+  }
+} satisfies ChartConfig
+
+export function ViewsByCountryChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Views by Country</CardTitle>
+        <CardDescription>Top countries where your profile is viewed.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 10 }}>
+            <CartesianGrid horizontal={false} />
+            <XAxis type="number" dataKey="views" hide />
+            <Bar dataKey="views" layout="vertical" radius={5} />
+             <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  )
+}
+
+const last7DaysData = [
+    { date: 'Day 1', views: Math.floor(Math.random() * 10) },
+    { date: 'Day 2', views: Math.floor(Math.random() * 10) },
+    { date: 'Day 3', views: Math.floor(Math.random() * 10) },
+    { date: 'Day 4', views: Math.floor(Math.random() * 10) },
+    { date: 'Day 5', views: Math.floor(Math.random() * 10) },
+    { date: 'Day 6', views: Math.floor(Math.random() * 10) },
+    { date: 'Day 7', views: Math.floor(Math.random() * 10) },
+];
+
+const last7DaysConfig = {
+  views: {
+    label: "Views",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig
+
+export function ViewsLast7DaysChart() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Views (Last 7 Days)</CardTitle>
+                <CardDescription>Your profile views over the past week.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={last7DaysConfig} className="min-h-[200px] w-full">
+                    <BarChart accessibilityLayer data={last7DaysData}>
+                         <CartesianGrid vertical={false} />
+                         <XAxis
+                            dataKey="date"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                            />
+                        <Bar dataKey="views" fill="var(--color-views)" radius={4} />
+                        <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent hideLabel />}
+                        />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+}
+
 export default function EditorPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -139,7 +250,7 @@ export default function EditorPage() {
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
     const [activeTheme, setActiveTheme] = useState('default');
-    const [activeTab, setActiveTab] = useState('content');
+    const [activeTab, setActiveTab] = useState('dashboard');
 
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -442,134 +553,143 @@ export default function EditorPage() {
 
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
                                 <TabsTrigger value="content">Content</TabsTrigger>
-                                <TabsTrigger value="settings">Settings</TabsTrigger>
                             </TabsList>
+
+                             <TabsContent value="dashboard">
+                                <div className="grid gap-6 pt-6">
+                                     <Card>
+                                        <CardHeader>
+                                            <CardTitle>Your Public Link</CardTitle>
+                                            <CardDescription>Share this link to your public profile page.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
+                                                <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false} target="_blank">
+                                                    /{profile.slug}
+                                                </Link>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <VisitorMetrics viewCount={profile.viewCount || 0} />
+                                        <ProfileCompleteness 
+                                            profile={profile} 
+                                            sections={sections} 
+                                            onNavigate={(tab) => setActiveTab(tab)}
+                                        />
+                                    </div>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <ViewsByCountryChart />
+                                        <ViewsLast7DaysChart />
+                                    </div>
+                                </div>
+                            </TabsContent>
                             
                             <TabsContent value="content" ref={contentRef}>
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Resume Sections</CardTitle>
-                                        <CardDescription>Edit the content parsed from your resume. Each card represents a section.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-6">
-                                        {sections.map((item) => (
-                                            <Card key={item.id} className="p-4">
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="space-y-2 flex-grow">
-                                                            <Label>Section Title</Label>
-                                                            <Input name="title" value={item.title} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} />
-                                                        </div>
-                                                        <Button variant="ghost" size="icon" className="ml-4" onClick={() => handleDeleteItem(item.id)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label>Section Content</Label>
-                                                        <Textarea name="content" value={item.content} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} rows={8} />
-                                                    </div>
+                                <div className="space-y-6 pt-6">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Personal Information</CardTitle>
+                                            <CardDescription>This is your public calling card. Make it count.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-6">
+                                            <div className="space-y-2">
+                                                <Label>Profile Photo</Label>
+                                                <div className="flex items-center space-x-4">
+                                                    <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
                                                 </div>
-                                            </Card>
-                                        ))}
-                                        <Button variant="outline" className="w-full" onClick={handleAddItem}>
-                                            <PlusCircle className="mr-2 h-4 w-4" /> Add Section
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </TabsContent>
+                                                <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                <div className="space-y-2">
+                                                <Label htmlFor="fullName">Full Name</Label>
+                                                <Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                </div>
+                                                <div className="space-y-2">
+                                                <Label htmlFor="email">Email</Label>
+                                                <Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                </div>
+                                                <div className="space-y-2">
+                                                <Label htmlFor="phone">Phone</Label>
+                                                <Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                </div>
+                                                <div className="space-y-2">
+                                                <Label htmlFor="location">Location</Label>
+                                                <Input id="location" name="location" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="website">Website/Portfolio</Label>
+                                                <Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="summary">Summary</Label>
+                                                <Textarea id="summary" name="summary" value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={5} />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
 
-                            <TabsContent value="settings">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Personal Information</CardTitle>
-                                        <CardDescription>This is your public calling card. Make it count.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-6">
-                                        <div className="space-y-2">
-                                            <Label>Profile Photo</Label>
-                                            <div className="flex items-center space-x-4">
-                                                <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
-                                        </div>
-                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Profile Settings</CardTitle>
+                                            <CardDescription>Manage your public profile URL and theme.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-6">
                                             <div className="space-y-2">
-                                            <Label htmlFor="fullName">Full Name</Label>
-                                            <Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                <Label htmlFor="slug">Public URL Slug</Label>
+                                                <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
                                             </div>
                                             <div className="space-y-2">
-                                            <Label htmlFor="email">Email</Label>
-                                            <Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                <Label htmlFor="template">Template</Label>
+                                                <p className="text-sm text-muted-foreground">Choose a visual theme for your public profile.</p>
+                                                <div className="flex gap-2 pt-2">
+                                                    <Button variant={activeTheme === 'default' ? 'default' : 'secondary'} onClick={() => handleThemeChange('default')}>Default</Button>
+                                                    <Button variant={activeTheme === 'modern' ? 'default' : 'secondary'} onClick={() => handleThemeChange('modern')}>Modern</Button>
+                                                    <Button variant={activeTheme === 'classic' ? 'default' : 'secondary'} onClick={() => handleThemeChange('classic')}>Classic</Button>
+                                                </div>
                                             </div>
-                                            <div className="space-y-2">
-                                            <Label htmlFor="phone">Phone</Label>
-                                            <Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                            </div>
-                                            <div className="space-y-2">
-                                            <Label htmlFor="location">Location</Label>
-                                            <Input id="location" name="location" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="website">Website/Portfolio</Label>
-                                            <Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="summary">Summary</Label>
-                                            <Textarea id="summary" name="summary" value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={5} />
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
 
-                                <Card className="mt-6">
-                                    <CardHeader>
-                                        <CardTitle>Profile Settings</CardTitle>
-                                        <CardDescription>Manage your public profile URL and theme.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="slug">Public URL Slug</Label>
-                                            <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                            {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="template">Template</Label>
-                                            <p className="text-sm text-muted-foreground">Choose a visual theme for your public profile.</p>
-                                            <div className="flex gap-2 pt-2">
-                                                <Button variant={activeTheme === 'default' ? 'default' : 'secondary'} onClick={() => handleThemeChange('default')}>Default</Button>
-                                                <Button variant={activeTheme === 'modern' ? 'default' : 'secondary'} onClick={() => handleThemeChange('modern')}>Modern</Button>
-                                                <Button variant={activeTheme === 'classic' ? 'default' : 'secondary'} onClick={() => handleThemeChange('classic')}>Classic</Button>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Resume Sections</CardTitle>
+                                            <CardDescription>Edit the content parsed from your resume. Each card represents a section.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-6">
+                                            {sections.map((item) => (
+                                                <Card key={item.id} className="p-4">
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                            <div className="space-y-2 flex-grow">
+                                                                <Label>Section Title</Label>
+                                                                <Input name="title" value={item.title} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} />
+                                                            </div>
+                                                            <Button variant="ghost" size="icon" className="ml-4" onClick={() => handleDeleteItem(item.id)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label>Section Content</Label>
+                                                            <Textarea name="content" value={item.content} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} rows={8} />
+                                                        </div>
+                                                    </div>
+                                                </Card>
+                                            ))}
+                                            <Button variant="outline" className="w-full" onClick={handleAddItem}>
+                                                <PlusCircle className="mr-2 h-4 w-4" /> Add Section
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             </TabsContent>
                         </Tabs>
-
-                        <div className="space-y-8 pt-8">
-                             <Card>
-                                <CardHeader>
-                                    <CardTitle>Your Public Link</CardTitle>
-                                    <CardDescription>Share this link to your public profile page.</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
-                                        <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false}>
-                                            /{profile.slug}
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <VisitorMetrics viewCount={profile.viewCount || 0} />
-                            <ProfileCompleteness 
-                                profile={profile} 
-                                sections={sections} 
-                                onNavigate={(tab) => setActiveTab(tab)}
-                            />
-                        </div>
                     </div>
                 </div>
             </main>
         </div>
     );
 }
+
     
