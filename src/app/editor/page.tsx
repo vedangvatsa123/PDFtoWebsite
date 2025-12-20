@@ -297,6 +297,7 @@ export default function EditorPage() {
             
             const updatedProfile = {
                 ...currentProfile,
+                userId: user.uid, // <-- FIX: Ensure userId is always included
                 fullName: extractedData.fullName || currentProfile.fullName || '',
                 summary: extractedData.summary || currentProfile.summary || '',
                 phone: extractedData.phone || currentProfile.phone || '',
@@ -710,6 +711,8 @@ export default function EditorPage() {
 		</div>
 	);
 }
+
+    
 
     
 
