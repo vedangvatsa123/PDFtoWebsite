@@ -202,27 +202,26 @@ const EditorDashboard = () => {
             batch.set(userProfileDocRef, userProfile);
             batch.set(slugDocRef, { userId: user.uid, ...userProfile });
             
-            userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
+            userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid, title: item.title}));
             userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
             userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
 
             userWork.forEach(item => {
                 const { id, ...rest } = item;
                 const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
-                batch.set(workRef, rest);
+                setDocumentNonBlocking(workRef, rest, { merge: true });
             });
             userEducation.forEach(item => {
                 const { id, ...rest } = item;
                 const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
-                batch.set(eduRef, rest);
+                setDocumentNonBlocking(eduRef, rest, { merge: true });
             });
             userSkills.forEach(item => {
                 const { id, ...rest } = item;
                 const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
-                batch.set(skillRef, rest);
+                setDocumentNonBlocking(skillRef, rest, { merge: true });
             });
 
-            await batch.commit();
         }
 
         return { profile: userProfile, work: userWork, education: userEducation, skills: userSkills };
@@ -316,7 +315,7 @@ const EditorDashboard = () => {
                     </CardHeader>
                     <CardContent>
                          <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
-                             <Link href={`/${profile.slug}`} className="hover:underline" target="_blank" rel="noopener noreferrer">
+                             <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false}>
                                 /{profile.slug}
                             </Link>
                          </div>
@@ -409,12 +408,13 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
             if (data.slug && initialSlug && data.slug !== initialSlug) {
                 const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialSlug);
                 deleteDocumentNonBlocking(oldSlugRef);
+                const newSlugRef = doc(firestore, 'userProfilesBySlug', data.slug);
+                setDocumentNonBlocking(newSlugRef, { userId: user.uid, ...currentProfile }, { merge: true });
             }
 
-            const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
-            setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
-
             ref = doc(firestore, 'users', user.uid, collectionName, user.uid);
+             const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
+             setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
         } else {
              ref = doc(firestore, 'users', user.uid, collectionName, id);
         }
@@ -452,7 +452,16 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
                 setProfile(prev => ({ ...prev, slug: initialSlug }));
                 return;
             }
-            setInitialSlug(value); // Set new baseline slug
+            const oldSlug = initialSlug;
+            setInitialSlug(value);
+            autoSave({ collectionName: 'userProfile', slug: value });
+            
+            if (oldSlug && firestore && user) {
+                const oldSlugRef = doc(firestore, 'userProfilesBySlug', oldSlug);
+                deleteDocumentNonBlocking(oldSlugRef);
+            }
+             
+            return;
         }
 
         if (initialValue !== value) {
@@ -495,7 +504,6 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
             .then(docRef => {
                 if (docRef) {
                     setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
-                    toast({ title: "Item Added", description: "Your new item has been saved." });
                 }
             });
     }
@@ -571,7 +579,7 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
                     {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
                     {profile.slug && (
                         <Button variant="outline" asChild>
-                            <Link href={`/${profile.slug}`} target="_blank" rel="noopener noreferrer">
+                            <Link href={`/${profile.slug}`} prefetch={false}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 Preview
                             </Link>
@@ -805,5 +813,7 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
 
     
