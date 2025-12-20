@@ -49,8 +49,8 @@ export default function Home() {
           <Image 
             src="/images/cvtopdf.png"
             alt="Resume to Website"
-            width={200}
-            height={200}
+            width={300}
+            height={300}
             className="mb-4"
           />
 
