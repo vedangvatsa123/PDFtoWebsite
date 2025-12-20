@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -50,12 +51,13 @@ async function getProfileData(firestore: any, slug: string): Promise<{ profile: 
 
 export default function ProfileSlugPage({ params }: { params: { slug: string } }) {
   const firestore = useFirestore();
+  const { slug } = params;
   const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (firestore && params.slug) {
-      getProfileData(firestore, params.slug)
+    if (firestore && slug) {
+      getProfileData(firestore, slug)
         .then(profileData => {
           if (profileData) {
             setData(profileData);
@@ -67,7 +69,7 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }
-  }, [firestore, params.slug]);
+  }, [firestore, slug]);
 
   if (isLoading) {
     return (
