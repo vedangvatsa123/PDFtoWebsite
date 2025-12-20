@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -465,13 +466,15 @@ export default function EditorPage() {
 
             const batch = writeBatch(firestore);
             const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            
             const updatedProfile = {
                 ...profile,
-                fullName: extractedData.fullName || profile.fullName,
-                summary: extractedData.summary || profile.summary,
-                phone: extractedData.phone || profile.phone,
-                website: extractedData.website || profile.website,
+                fullName: extractedData.fullName || profile.fullName || '',
+                summary: extractedData.summary || profile.summary || '',
+                phone: extractedData.phone || profile.phone || '',
+                website: extractedData.website || profile.website || '',
             };
+            
             batch.set(profileRef, updatedProfile, { merge: true });
 
             const sectionsSnap = await getDocs(collection(firestore, 'users', user.uid, 'resumeSections'));
@@ -662,5 +665,7 @@ export default function EditorPage() {
         </div>
     );
 }
+
+    
 
     
