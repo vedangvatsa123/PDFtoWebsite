@@ -197,16 +197,6 @@ export function ViewsByCountryChart() {
   )
 }
 
-const last7DaysData = [
-    { date: 'Day 1', views: Math.floor(Math.random() * 10) },
-    { date: 'Day 2', views: Math.floor(Math.random() * 10) },
-    { date: 'Day 3', views: Math.floor(Math.random() * 10) },
-    { date: 'Day 4', views: Math.floor(Math.random() * 10) },
-    { date: 'Day 5', views: Math.floor(Math.random() * 10) },
-    { date: 'Day 6', views: Math.floor(Math.random() * 10) },
-    { date: 'Day 7', views: Math.floor(Math.random() * 10) },
-];
-
 const last7DaysConfig = {
   views: {
     label: "Views",
@@ -215,6 +205,22 @@ const last7DaysConfig = {
 } satisfies ChartConfig
 
 export function ViewsLast7DaysChart() {
+    const [last7DaysData, setLast7DaysData] = useState<any[]>([]);
+
+    useEffect(() => {
+        const data = [
+            { date: 'Day 1', views: Math.floor(Math.random() * 10) },
+            { date: 'Day 2', views: Math.floor(Math.random() * 10) },
+            { date: 'Day 3', views: Math.floor(Math.random() * 10) },
+            { date: 'Day 4', views: Math.floor(Math.random() * 10) },
+            { date: 'Day 5', views: Math.floor(Math.random() * 10) },
+            { date: 'Day 6', views: Math.floor(Math.random() * 10) },
+            { date: 'Day 7', views: Math.floor(Math.random() * 10) },
+        ];
+        setLast7DaysData(data);
+    }, []);
+
+
     return (
         <Card>
             <CardHeader>
@@ -299,7 +305,7 @@ export default function EditorPage() {
             
             const updatedProfile: UserProfile = {
                 ...currentProfile,
-                userId: user.uid,
+                userId: user.uid, // Ensure userId is always present
                 fullName: extractedData.fullName || currentProfile.fullName || '',
                 email: currentProfile.email || user.email,
                 summary: extractedData.summary || currentProfile.summary || '',
@@ -311,6 +317,7 @@ export default function EditorPage() {
             batch.set(profileRef, updatedProfile, { merge: true });
 
             const slugRef = doc(firestore, 'userProfilesBySlug', updatedProfile.slug!);
+            // Also ensure the slug document has the userId
             batch.set(slugRef, { userId: user.uid, ...updatedProfile }, { merge: true });
 
             const sectionsSnap = await getDocs(collection(firestore, 'users', user.uid, 'resumeSections'));
@@ -329,7 +336,10 @@ export default function EditorPage() {
 
         } catch (error) {
             console.error(error);
-            toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
+            const permissionError = (error as any)?.message?.includes('permission');
+            if (!permissionError) {
+                toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
+            }
         } finally {
             setIsGenerating(false);
             setFile(null);
