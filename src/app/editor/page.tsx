@@ -17,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
-import { mockProfile } from '@/lib/mock-data';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Progress } from '@/components/ui/progress';
@@ -74,7 +73,7 @@ const MOCK_ANALYTICS_DATA = {
 const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel, showCancel = true }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onUpload: () => void, fileName: string | null, onCancel?: () => void, showCancel?: boolean }) => (
     <Card className="w-full border-dashed border-2 hover:border-primary transition-colors mb-8">
         <CardHeader>
-            <CardTitle>Generate with AI</CardTitle>
+            <CardTitle>Generate with your Resume</CardTitle>
             <CardDescription>Upload your resume (PDF) to automatically fill out your profile.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -104,7 +103,7 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
     const completeness = useMemo(() => {
         const checks = [
             { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')), section: 'personal' },
-            { name: "Write a Summary", complete: !!(profile.summary && profile.summary !== mockProfile.personalInfo.summary), section: 'personal' },
+            { name: "Write a Summary", complete: !!profile.summary, section: 'personal' },
             { name: "Add Contact Info (Phone or Website)", complete: !!(profile.phone || profile.website), section: 'personal' },
             { name: "Add Work Experience", complete: work.length > 0, section: 'work' },
             { name: "Add Education", complete: education.length > 0, section: 'education' },
@@ -125,7 +124,7 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
                 <CardTitle className="flex items-center gap-2">
                     <Trophy /> Profile Completeness
                 </CardTitle>
-                 <CardDescription>A complete profile stands out more to recruiters.</CardDescription>
+                 <CardDescription>A complete profile is more likely to be seen.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -134,11 +133,11 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
                 </div>
                 {isComplete ? (
                     <div className="text-sm text-green-500 flex items-center gap-2 font-semibold">
-                       <CheckCircle className="h-5 w-5" /> Great job! Your profile is complete.
+                       <CheckCircle className="h-5 w-5" /> You did it! Your profile is complete.
                     </div>
                 ) : (
                      <div className="space-y-2">
-                        <p className="text-sm font-medium">To-do:</p>
+                        <p className="text-sm font-medium">Things to do:</p>
                         <ul className="text-sm text-muted-foreground list-inside space-y-1">
                             {checks.filter(c => !c.complete).map(c => (
                                  <li key={c.name} className="flex items-center gap-2">
@@ -185,15 +184,15 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
         if (profileSnap.exists()) {
             userProfile = profileSnap.data() as UserProfile;
         } else {
-            // This is a new user, so we seed their profile with mock data.
+            // This is a new user, create a shell profile.
             userProfile = {
                 userId: user.uid,
                 fullName: user.displayName || 'Your Name',
                 email: user.email || '',
-                summary: mockProfile.personalInfo.summary,
+                summary: '',
                 slug: generateSlug(user.displayName || 'user'),
-                avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
-                avatarHint: mockProfile.personalInfo.avatarHint,
+                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+                avatarHint: 'person portrait',
                 themeId: 'default',
             };
             
@@ -202,26 +201,6 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
 
             setDocumentNonBlocking(userProfileDocRef, userProfile, { merge: true });
             setDocumentNonBlocking(slugDocRef, { userId: user.uid, ...userProfile }, { merge: true });
-            
-            userWork = mockProfile.workExperience.map(item => ({...item, userProfileId: user.uid}));
-            userEducation = mockProfile.education.map(item => ({...item, userProfileId: user.uid}));
-            userSkills = mockProfile.skills.map(item => ({...item, userProfileId: user.uid}));
-
-            userWork.forEach(item => {
-                const { id, ...rest } = item;
-                const workRef = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
-                setDocumentNonBlocking(workRef, rest, { merge: true });
-            });
-            userEducation.forEach(item => {
-                const { id, ...rest } = item;
-                const eduRef = doc(collection(firestore, 'users', user.uid, 'educations'));
-                setDocumentNonBlocking(eduRef, rest, { merge: true });
-            });
-            userSkills.forEach(item => {
-                const { id, ...rest } = item;
-                const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
-                setDocumentNonBlocking(skillRef, rest, { merge: true });
-            });
         }
 
         return { profile: userProfile, work: userWork, education: userEducation, skills: userSkills };
@@ -259,7 +238,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div>
                     <h1 className="text-3xl font-bold">Welcome back, {profile.fullName}!</h1>
-                    <p className="text-muted-foreground">Here's a look at your profile's performance.</p>
+                    <p className="text-muted-foreground">Here is how your profile is doing.</p>
                 </div>
                 <div className="flex gap-2">
                     {profile.slug && (
@@ -286,7 +265,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                     <CardContent>
                         <div className="text-2xl font-bold">{MOCK_ANALYTICS_DATA.totalViews.toLocaleString()}</div>
                          <p className="text-xs text-muted-foreground">
-                           All-time profile views.
+                           How many times your profile has been seen.
                         </p>
                     </CardContent>
                 </Card>
@@ -298,7 +277,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                     <CardContent>
                         <div className="text-2xl font-bold">+{MOCK_ANALYTICS_DATA.viewsLast24h}</div>
                         <p className="text-xs text-muted-foreground">
-                            Views in the last 24 hours.
+                            New views in the last day.
                         </p>
                     </CardContent>
                 </Card>
@@ -314,7 +293,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                 <Card className="col-span-1 lg:col-span-4">
                     <CardHeader>
                         <CardTitle>Daily Views</CardTitle>
-                        <CardDescription>Your profile views over the last 7 days.</CardDescription>
+                        <CardDescription>How many views your profile got each day this week.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Chart data={MOCK_ANALYTICS_DATA.dailyViews} />
@@ -323,7 +302,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                 <Card className="col-span-1 lg:col-span-3">
                      <CardHeader>
                         <CardTitle>Your Public Link</CardTitle>
-                         <CardDescription>Share this link to show off your profile.</CardDescription>
+                         <CardDescription>This is the link to your public profile page.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
@@ -334,7 +313,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                     </CardContent>
                     <CardHeader>
                         <CardTitle>Views by Country</CardTitle>
-                        <CardDescription>Top countries where your profile is being viewed.</CardDescription>
+                        <CardDescription>Top countries where people are seeing your profile.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                        {MOCK_ANALYTICS_DATA.viewsByCountry.map((item) => (
@@ -420,7 +399,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
 
 
     const checkSlugAvailability = async (slug: string): Promise<boolean> => {
-        if (!firestore) return false;
+        if (!firestore || !slug) return false;
         const slugRef = doc(firestore, 'userProfilesBySlug', slug);
         const slugSnap = await getDoc(slugRef);
         if (slugSnap.exists() && slugSnap.data().userId !== user?.uid) {
@@ -478,8 +457,8 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
             if (!isAvailable) {
                 toast({
                     variant: 'destructive',
-                    title: 'Slug Unavailable',
-                    description: `The URL slug "${value}" is already taken. Please choose another.`,
+                    title: 'URL Unavailable',
+                    description: `The URL "${value}" is already taken. Please choose another.`,
                 });
                 setProfile(prev => ({ ...prev, slug: initialSlug }));
                 return;
@@ -542,7 +521,6 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         const docRef = doc(firestore, 'users', user.uid, collectionName, id);
         deleteDocumentNonBlocking(docRef);
         setCollection(prev => prev.filter(item => item.id !== id));
-        toast({ title: "Item Removed", variant: "destructive" });
     }
 
     const handleAddSkill = () => {
@@ -744,9 +722,13 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                             <CardDescription>This is your public calling card. Make it count.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex items-center space-x-4">
-                                <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
-                                <Button variant="outline">Change Photo</Button>
+                            <div className="space-y-2">
+                                <Label>Profile Photo</Label>
+                                <div className="flex items-center space-x-4">
+                                    <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
+                                    <Button variant="outline">Change Photo</Button>
+                                </div>
+                                <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
                             </div>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
@@ -783,7 +765,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                             <CardDescription>Manage your public profile URL and theme.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="spacey-y-2">
+                            <div className="space-y-2">
                                 <Label htmlFor="slug">Public URL Slug</Label>
                                 <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
                                 {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
@@ -849,8 +831,3 @@ export default function EditorPage() {
     </div>
   );
 }
-
-
-    
-
-    
