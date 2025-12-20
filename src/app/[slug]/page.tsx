@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { doc, getDoc, collection, getDocs, query, where, limit } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useFirestore } from '@/firebase';
@@ -22,6 +22,7 @@ async function getProfileData(firestore: any, slug: string): Promise<{ profile: 
 
     const { userId } = slugSnap.data();
 
+    // The user's profile is stored in a document where the ID is the user's UID.
     const profileRef = doc(firestore, 'users', userId, 'userProfile', userId);
     const profileSnap = await getDoc(profileRef);
 
@@ -41,9 +42,9 @@ async function getProfileData(firestore: any, slug: string): Promise<{ profile: 
         getDocs(skillsCol)
     ]);
     
-    const work = workSnap.docs.map(d => d.data() as WorkExperience);
-    const education = eduSnap.docs.map(d => d.data() as Education);
-    const skills = skillsSnap.docs.map(d => d.data() as Skill);
+    const work = workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience));
+    const education = eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education));
+    const skills = skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill));
 
     return { profile: profileData, work, education, skills };
 }
@@ -51,13 +52,12 @@ async function getProfileData(firestore: any, slug: string): Promise<{ profile: 
 
 export default function ProfileSlugPage({ params }: { params: { slug: string } }) {
   const firestore = useFirestore();
-  const { slug } = params;
   const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (firestore && slug) {
-      getProfileData(firestore, slug)
+    if (firestore && params.slug) {
+      getProfileData(firestore, params.slug)
         .then(profileData => {
           if (profileData) {
             setData(profileData);
@@ -69,7 +69,7 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }
-  }, [firestore, slug]);
+  }, [firestore, params.slug]);
 
   if (isLoading) {
     return (
@@ -142,8 +142,8 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
             <section className="mb-8">
               <h2 className="mb-4 font-headline text-2xl font-bold flex items-center gap-3"><Briefcase /> Work Experience</h2>
               <div className="space-y-6">
-                {work.map((job, index) => (
-                  <div key={index} className="flex gap-4">
+                {work.map((job) => (
+                  <div key={job.id} className="flex gap-4">
                     <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0"></div>
                     <div>
                       <div className="flex flex-col sm:flex-row justify-between sm:items-center">
@@ -164,8 +164,8 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
             <section className="mb-8">
               <h2 className="mb-4 font-headline text-2xl font-bold flex items-center gap-3"><GraduationCap /> Education</h2>
               <div className="space-y-6">
-                {education.map((edu, index) => (
-                   <div key={index} className="flex gap-4">
+                {education.map((edu) => (
+                   <div key={edu.id} className="flex gap-4">
                      <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0"></div>
                      <div>
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center">
@@ -186,8 +186,8 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
             <section>
               <h2 className="mb-4 font-headline text-2xl font-bold flex items-center gap-3"><Award /> Skills</h2>
               <div className="flex flex-wrap gap-2">
-                {skills.map((skill, index) => (
-                  <Badge key={index} variant="secondary" className="text-sm">{skill.name}</Badge>
+                {skills.map((skill) => (
+                  <Badge key={skill.id} variant="secondary" className="text-sm">{skill.name}</Badge>
                 ))}
               </div>
             </section>
