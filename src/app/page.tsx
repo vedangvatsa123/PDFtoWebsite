@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { LoginDialog } from '@/components/login-dialog';
+import { useUser } from '@/firebase';
 
 export default function Home() {
+  const { user, isUserLoading } = useUser();
   const [fileName, setFileName] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -44,13 +46,10 @@ export default function Home() {
       });
       return;
     }
-    // In a real app, you'd upload the file and process it here.
-    // For now, we'll just simulate success and redirect.
     toast({
       title: 'Upload Successful!',
       description: `We've processed ${fileName}. Now, create an account to edit and publish your profile.`,
     });
-    // Redirect to sign-up page, passing the "intent" to create from a resume
     router.push('/signup?from=upload');
   };
 
@@ -68,40 +67,54 @@ export default function Home() {
               Stop sending PDFs. Get a professional, shareable web page in minutes.
             </p>
           </div>
+          
+          {(isUserLoading) ? null : user ? (
+             <div className="w-full max-w-md">
+                <Button size="lg" className="w-full mt-4" asChild>
+                    <Link href="/editor">Go to Your Editor</Link>
+                </Button>
+                <p className="mt-4 text-sm text-muted-foreground">
+                    Welcome back, {user.displayName || user.email}!
+                </p>
+            </div>
+          ) : (
+            <>
+              <div className="w-full max-w-md">
+                <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors hover:bg-accent/50">
+                    <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                        {fileName ? `Selected: ${fileName}` : 'Drag & drop or click to upload PDF'}
+                    </span>
+                    <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} />
+                </label>
+                <Button size="lg" className="w-full mt-4" onClick={handleUpload}>
+                    Create Your Profile Page
+                </Button>
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Already have an account?{' '}
+                  <LoginDialog />
+                </p>
+              </div>
 
-          <div className="w-full max-w-md">
-             <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors hover:bg-accent/50">
-                <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
-                <span className="text-muted-foreground">
-                    {fileName ? `Selected: ${fileName}` : 'Drag & drop or click to upload PDF'}
-                </span>
-                <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} />
-             </label>
-            <Button size="lg" className="w-full mt-4" onClick={handleUpload}>
-                Create Your Profile Page
-            </Button>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <LoginDialog />
-            </p>
-          </div>
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <UploadCloud className="h-5 w-5" />
+                    <span>Upload Resume</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 hidden md:block" />
+                  <div className="flex items-center gap-2">
+                    <Edit className="h-5 w-5" />
+                    <span>Customize Profile</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 hidden md:block" />
+                  <div className="flex items-center gap-2">
+                    <Share2 className="h-5 w-5" />
+                    <span>Publish & Share</span>
+                  </div>
+              </div>
+            </>
+          )}
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground">
-             <div className="flex items-center gap-2">
-                <UploadCloud className="h-5 w-5" />
-                <span>Upload Resume</span>
-              </div>
-              <ArrowRight className="h-5 w-5 hidden md:block" />
-              <div className="flex items-center gap-2">
-                <Edit className="h-5 w-5" />
-                <span>Customize Profile</span>
-              </div>
-              <ArrowRight className="h-5 w-5 hidden md:block" />
-               <div className="flex items-center gap-2">
-                <Share2 className="h-5 w-5" />
-                <span>Publish & Share</span>
-              </div>
-          </div>
         </div>
       </main>
     </div>

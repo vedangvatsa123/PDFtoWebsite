@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { Icons } from '@/components/icons';
+import { useUser } from '@/firebase';
 
 
 export default function SignUpPage() {
@@ -18,6 +20,13 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
+
+  useEffect(() => {
+    if (!isUserLoading && user) {
+        router.push('/editor');
+    }
+  },[user, isUserLoading, router]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +55,6 @@ export default function SignUpPage() {
         <div className="absolute left-4 top-4">
          <Link href="/" className="flex items-center space-x-2 text-primary hover:underline">
             <Icons.logo className="h-6 w-6" />
-            <span className="font-bold sm:inline-block font-headline">
-              ResumeRack
-            </span>
           </Link>
        </div>
       <Card className="w-full max-w-sm">

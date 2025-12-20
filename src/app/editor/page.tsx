@@ -286,7 +286,7 @@ export default function EditorPage() {
           <Link href="/" className="flex items-center space-x-2">
             <Icons.logo className="h-6 w-6" />
             <span className="font-bold sm:inline-block font-headline">
-              ResumeRack Editor
+              Editor
             </span>
           </Link>
           <div className="flex items-center space-x-2">
@@ -518,5 +518,3 @@ export default function EditorPage() {
     </div>
   );
 }
-
-    
