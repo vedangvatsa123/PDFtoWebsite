@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { Icons } from '@/components/icons';
 import Link from 'next/link';
 
@@ -56,20 +56,15 @@ export function LoginDialog() {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      toast({
-        title: 'Login Successful',
-        description: 'Welcome!',
-      });
-      setOpen(false);
-      router.push('/editor');
+      await signInWithRedirect(auth, provider);
+      // The user is redirected, so the code below will not execute in the same session.
+      // Firebase will handle the redirect back to the app.
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
         description: error.message,
       });
-    } finally {
       setIsGoogleLoading(false);
     }
   };
