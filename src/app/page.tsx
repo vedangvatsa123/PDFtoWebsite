@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { UploadCloud, Edit, Share2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -45,6 +46,14 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-8 text-center">
           
+          <Image 
+            src="/images/cvtopdf.png"
+            alt="Resume to Website"
+            width={200}
+            height={200}
+            className="mb-4"
+          />
+
           <div className="space-y-3">
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
               Turn Your Resume into a Website
