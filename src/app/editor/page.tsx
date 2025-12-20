@@ -109,6 +109,20 @@ const ProfileCompleteness = ({ profile, sections, onNavigate }: { profile: Parti
     );
 };
 
+const VisitorMetrics = ({ viewCount }: { viewCount: number }) => {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Profile Views</CardTitle>
+                <CardDescription>Total number of times your public profile has been viewed.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-4xl font-bold">{viewCount}</p>
+            </CardContent>
+        </Card>
+    )
+}
+
 
 const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: string) => void }) => {
     const { user, isUserLoading } = useUser();
@@ -144,6 +158,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                 avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
                 avatarHint: 'person portrait',
                 themeId: 'default',
+                viewCount: 0,
             };
             
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
@@ -205,19 +220,20 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
             </div>
             
              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                 <Card className="col-span-1 lg:col-span-2">
+                 <Card className="col-span-1">
                      <CardHeader>
                         <CardTitle>Your Public Link</CardTitle>
                          <CardDescription>Share this link to your public profile page.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
+                        <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
                            <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false}>
                                 /{profile.slug}
                             </Link>
                          </div>
                     </CardContent>
                 </Card>
+                 <VisitorMetrics viewCount={profile.viewCount || 0} />
                  <ProfileCompleteness 
                     profile={profile} 
                     sections={sections} 
@@ -281,6 +297,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                 avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
                 avatarHint: 'person portrait',
                 themeId: 'default',
+                viewCount: 0,
             };
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
             const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
