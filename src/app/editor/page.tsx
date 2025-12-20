@@ -21,6 +21,7 @@ import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs
 import { mockProfile } from '@/lib/mock-data';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { cn } from '@/lib/utils';
 
 
 function generateSlug(name: string) {
@@ -218,22 +219,41 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
+    const [activeTheme, setActiveTheme] = useState(initialProfile.themeId || 'default');
 
     const autoSave = useCallback((updatedData: any) => {
         if (!user || !firestore) return;
         setIsSaving(true);
         const { collectionName, id, ...data } = updatedData;
         const ref = doc(firestore, 'users', user.uid, collectionName, id);
-        setDocumentNonBlocking(ref, data, { merge: true });
         
+        let fullData = data;
         if (collectionName === 'userProfile') {
-            const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug!);
-            const slugData = { userId: user.uid, ...profile, ...data };
-            setDocumentNonBlocking(slugRef, slugData, { merge: true });
+            const currentProfile = {...profile, ...data};
+            setProfile(currentProfile); // Update local state immediately
+            
+            // If slug is being updated, handle the old one
+            if (data.slug && initialProfile.slug && data.slug !== initialProfile.slug) {
+                const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialProfile.slug);
+                deleteDocumentNonBlocking(oldSlugRef);
+            }
+
+            const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
+            setDocumentNonBlocking(slugRef, currentProfile, { merge: true });
+
+            fullData = currentProfile;
         }
 
+
+        setDocumentNonBlocking(ref, fullData, { merge: true });
+        
         setTimeout(() => setIsSaving(false), 500); // Visual feedback
-    }, [user, firestore, profile]);
+    }, [user, firestore, profile, initialProfile.slug]);
+
+    const handleThemeChange = (themeId: string) => {
+        setActiveTheme(themeId);
+        autoSave({ collectionName: 'userProfile', id: user?.uid, themeId: themeId });
+    };
 
 
      useEffect(() => {
@@ -269,18 +289,6 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const oldSlug = profile.slug;
-        const newProfile = { ...profile, [name]: value };
-        setProfile(newProfile);
-
-        if (name === 'slug' && oldSlug && oldSlug !== value) {
-            // If slug changed, delete the old slug document
-            if (firestore && user) {
-                const oldSlugRef = doc(firestore, 'userProfilesBySlug', oldSlug);
-                deleteDocumentNonBlocking(oldSlugRef);
-            }
-        }
-
         autoSave({ collectionName: 'userProfile', id: user?.uid, [name]: value });
     };
 
@@ -562,18 +570,18 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
                             <CardDescription>Manage your public profile URL and theme.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="space-y-2">
+                            <div className="spacey-y-2">
                                 <Label htmlFor="slug">Public URL Slug</Label>
                                 <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} />
-                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline">/{profile.slug}</Link></p>}
+                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="slug">Template</Label>
+                                <Label htmlFor="template">Template</Label>
                                 <p className="text-sm text-muted-foreground">Choose a visual theme for your public profile.</p>
                                 <div className="flex gap-2 pt-2">
-                                    <Button variant="outline">Default</Button>
-                                    <Button variant="secondary">Modern</Button>
-                                    <Button variant="secondary">Classic</Button>
+                                    <Button variant={activeTheme === 'default' ? 'default' : 'secondary'} onClick={() => handleThemeChange('default')}>Default</Button>
+                                    <Button variant={activeTheme === 'modern' ? 'default' : 'secondary'} onClick={() => handleThemeChange('modern')}>Modern</Button>
+                                    <Button variant={activeTheme === 'classic' ? 'default' : 'secondary'} onClick={() => handleThemeChange('classic')}>Classic</Button>
                                 </div>
                             </div>
                         </CardContent>
@@ -613,19 +621,23 @@ export default function EditorPage() {
             slug: generateSlug(user.displayName || 'user'),
             avatarUrl: user.photoURL || mockProfile.personalInfo.avatarUrl,
             avatarHint: mockProfile.personalInfo.avatarHint,
+            themeId: 'default',
           };
           
           setDocumentNonBlocking(doc(firestore, 'users', user.uid, 'userProfile', user.uid), userProfile, { merge: false });
-          setDocumentNonBlocking(doc(firestore, 'userProfilesBySlug', userProfile.slug), { ...userProfile });
+          setDocumentNonBlocking(doc(firestore, 'userProfilesBySlug', userProfile.slug), { ...userProfile }, {merge: false});
           
           mockProfile.workExperience.forEach(item => {
-              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'workExperiences'), {...item, userProfileId: user.uid});
+              const { id, ...rest } = item;
+              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'workExperiences'), {...rest, userProfileId: user.uid});
           });
           mockProfile.education.forEach(item => {
-              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'educations'), {...item, userProfileId: user.uid});
+              const { id, ...rest } = item;
+              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'educations'), {...rest, userProfileId: user.uid});
           });
           mockProfile.skills.forEach(item => {
-              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'skills'), {...item, userProfileId: user.uid});
+              const { id, ...rest } = item;
+              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'skills'), {...rest, userProfileId: user.uid});
           });
         }
 
@@ -666,5 +678,7 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
 
     
