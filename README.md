@@ -1,6 +1,6 @@
-# ResumeRack: Your Resume, Reimagined as a Website
+# PDFtoPortfolio: Your Resume, Reimagined as a Website
 
-ResumeRack is a web application that transforms a standard PDF resume into a beautiful, shareable, and professional online portfolio. Stop sending PDF attachments and start sharing a dynamic web profile that you can customize and track.
+PDFtoPortfolio is a web application that transforms a standard PDF resume into a beautiful, shareable, and professional online portfolio. Stop sending PDF attachments and start sharing a dynamic web profile that you can customize and track.
 
 This project is built with a modern, full-stack TypeScript setup, leveraging Next.js for the frontend and Firebase for the backend services.
 
@@ -10,7 +10,7 @@ This project is built with a modern, full-stack TypeScript setup, leveraging Nex
 - **✏️ Rich Content Editor**: Easily edit the parsed content, add new sections, or rewrite summaries. The editor saves your changes automatically.
 - **📊 Analytics Dashboard**: Get insights into your profile's performance with a built-in dashboard that tracks total views, views over the last 7 days, and views by country.
 - **🎨 Customizable Themes (Coming Soon)**: Choose from multiple visual themes to personalize the look and feel of your public profile page.
-- **🔗 Shareable Public URL**: Get a unique, customizable URL (e.g., `resumerack.com/your-name`) to share with recruiters, colleagues, and on your social media.
+- **🔗 Shareable Public URL**: Get a unique, customizable URL (e.g., your-portfolio.com/your-name) to share with recruiters, colleagues, and on your social media.
 - **🔥 Firebase Integration**: Built on a robust backend using Firebase Authentication for user management and Firestore for data storage.
 
 ## Tech Stack

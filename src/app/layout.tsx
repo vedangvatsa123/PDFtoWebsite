@@ -6,7 +6,7 @@ import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
-  title: 'ResumeRack',
+  title: 'PDFtoPortfolio',
   description: 'Create a professional web profile from your resume.',
 };
 
