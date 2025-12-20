@@ -698,20 +698,20 @@ export default function EditorPage() {
                                                             <Label>Section Content</Label>
                                                             <Textarea name="content" value={item.content} onChange={(e) => handleSectionChange(item.id, e)} onBlur={(e) => handleSectionBlur(item.id, e)} rows={8} />
                                                         </div>
-                                                    </div>
-                                                </Card>
-                                            ))}
-                                            <Button variant="outline" className="w-full" onClick={handleAddItem}>
-                                                <PlusCircle className="mr-2 h-4 w-4" /> Add Section
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-                    </div>
-                </div>
-            </main>
-        </div>
-    );
+													</div>
+												</Card>
+											))}
+											<Button variant="outline" className="w-full" onClick={handleAddItem}>
+												<PlusCircle className="mr-2 h-4 w-4" /> Add Section
+											</Button>
+										</CardContent>
+									</Card>
+								</div>
+							</TabsContent>
+						</Tabs>
+					</div>
+				</div>
+			</main>
+		</div>
+	);
 }
