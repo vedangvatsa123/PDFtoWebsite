@@ -3,127 +3,169 @@ import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
 
 const parseResumeText = (text: string) => {
-    const lines = text.split('\n').filter(line => line.trim() !== '');
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
 
-    const getSectionLines = (sectionKeywords: string[], endKeywords: string[]): string[] => {
+    const getSectionLines = (sectionKeywords: string[], allKeywords: string[]): [string[], number] => {
         let startIndex = -1;
         for (const keyword of sectionKeywords) {
-            startIndex = lines.findIndex(line => new RegExp(`^${keyword}$`, 'i').test(line.trim()));
+            const regex = new RegExp(`^${keyword}$`, 'i');
+            startIndex = lines.findIndex(line => regex.test(line));
             if (startIndex !== -1) break;
         }
-        if (startIndex === -1) return [];
+
+        if (startIndex === -1) return [[], -1];
 
         let endIndex = lines.length;
-        for (const endKeyword of endKeywords) {
-            const potentialEndIndex = lines.findIndex((line, index) => index > startIndex && new RegExp(`^${endKeyword}$`, 'i').test(line.trim()));
-            if (potentialEndIndex !== -1) {
-                endIndex = potentialEndIndex;
-                break;
+        const remainingKeywords = allKeywords.filter(k => !sectionKeywords.includes(k));
+        for (let i = startIndex + 1; i < lines.length; i++) {
+            const line = lines[i];
+            for (const endKeyword of remainingKeywords) {
+                const regex = new RegExp(`^${endKeyword}$`, 'i');
+                if (regex.test(line)) {
+                    endIndex = i;
+                    // Return the lines and the start index of the next section
+                    return [lines.slice(startIndex + 1, endIndex), endIndex];
+                }
             }
         }
-        return lines.slice(startIndex + 1, endIndex);
+
+        // If no other section is found, return all lines until the end
+        return [lines.slice(startIndex + 1), lines.length];
     };
 
-    const allSectionKeywords = ['experience', 'work experience', 'education', 'skills', 'summary', 'profile'];
-    const experienceKeywords = ['experience', 'work experience'];
-    const educationKeywords = ['education'];
-    const skillsKeywords = ['skills', 'technical skills'];
-    const summaryKeywords = ['summary', 'profile'];
+    const experienceKeywords = ['experience', 'work experience', 'professional experience', 'employment history'];
+    const educationKeywords = ['education', 'academic background'];
+    const skillsKeywords = ['skills', 'technical skills', 'proficiencies'];
+    const summaryKeywords = ['summary', 'profile', 'objective', 'about me'];
+    const allKeywords = [...experienceKeywords, ...educationKeywords, ...skillsKeywords, ...summaryKeywords];
 
-    const experienceSectionLines = getSectionLines(experienceKeywords, [...educationKeywords, ...skillsKeywords, ...summaryKeywords]);
-    const educationSectionLines = getSectionLines(educationKeywords, [...experienceKeywords, ...skillsKeywords, ...summaryKeywords]);
-    const skillsSectionLines = getSectionLines(skillsKeywords, [...experienceKeywords, ...educationKeywords, ...summaryKeywords]);
+    // Find Summary/Profile
+    const [summaryLines] = getSectionLines(summaryKeywords, allKeywords);
 
-    // Very basic personal info extraction
-    const fullName = lines[0] || 'Full Name';
+    // Find Experience, Education, Skills
+    const [experienceSectionLines] = getSectionLines(experienceKeywords, allKeywords);
+    const [educationSectionLines] = getSectionLines(educationKeywords, allKeywords);
+    const [skillsSectionLines] = getSectionLines(skillsKeywords, allKeywords);
+    
+    // --- Personal Info Extraction ---
+    // Assume the first few lines are personal info if no summary section is explicitly found early.
+    let personalInfoLines = lines.slice(0, 5); // Take top 5 lines as potential personal info block
     const emailRegex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
+    const phoneRegex = /(\+?\d{1,2}[-.\s]?)?(\(?\d{3}\)?[-.\s]?){1,2}\d{3}[-.\s]?\d{4}/;
+    
     const emailMatch = text.match(emailRegex);
     const email = emailMatch ? emailMatch[0] : '';
-    
-    // Heuristic for summary: lines before the first major section
-     let firstSectionIndex = lines.length;
-     [...experienceKeywords, ...educationKeywords, ...skillsKeywords].forEach(keyword => {
-        const index = lines.findIndex(line => new RegExp(`^${keyword}$`, 'i').test(line.trim()));
-        if (index !== -1 && index < firstSectionIndex) {
-            firstSectionIndex = index;
+    const phoneMatch = text.match(phoneRegex);
+    const phone = phoneMatch ? phoneMatch[0] : '';
+
+    let fullName = lines[0] && !allKeywords.some(k => lines[0].toLowerCase().includes(k)) ? lines[0] : 'Full Name';
+    if (fullName.includes(email) || fullName.includes(phone)) {
+        fullName = 'Full Name'; // Reset if name seems to be contact info
+    }
+
+    let summary = summaryLines.join(' ');
+    // If no summary section, try to infer it from lines after personal info.
+    if (!summary) {
+        let firstSectionIndex = lines.length;
+        allKeywords.forEach(keyword => {
+            const index = lines.findIndex(line => new RegExp(`^${keyword}$`, 'i').test(line.trim()));
+            if (index !== -1 && index < firstSectionIndex) {
+                firstSectionIndex = index;
+            }
+        });
+
+        // Find where personal info likely ends
+        let personalInfoEndIndex = 0;
+        for (let i = 0; i < Math.min(lines.length, 5); i++) {
+            if (emailRegex.test(lines[i]) || phoneRegex.test(lines[i]) || /linkedin\.com|github\.com/i.test(lines[i])) {
+                personalInfoEndIndex = i + 1;
+            }
         }
-    });
-    // Assume a few lines after name/contact for summary
-    const summary = lines.slice(1, firstSectionIndex > 0 ? firstSectionIndex : 3).join(' ').trim();
+        
+        if (firstSectionIndex > personalInfoEndIndex) {
+            summary = lines.slice(personalInfoEndIndex, firstSectionIndex).join(' ').trim();
+        }
+    }
 
 
     const parseEntries = (lines: string[]) => {
-        // This is still a very naive parser and would need significant improvement for production use.
-        // It assumes a new entry starts with a line that might be a company or school name.
         if (lines.length === 0) return [];
-        const entries: {title: string, subtitle: string, date: string, description: string}[] = [];
-        // A simple heuristic: if a line contains a common date separator, it might be a new entry.
-        // This is not very reliable. A better approach would be to look for patterns.
-        let currentEntry: string[] = [];
+        const entries: { title: string, subtitle: string; date: string, description: string }[] = [];
+        let currentEntryLines: string[] = [];
 
-        lines.forEach(line => {
-            // A better heuristic might be looking for a date range, or a capitalized line following a blank line.
-            // This is still very basic.
-            if (/\s(20\d{2}|present|current)\s?-\s?/i.test(line) && currentEntry.length > 1) {
-                if (currentEntry.length > 0) {
-                     entries.push({
-                        title: currentEntry[0] || 'N/A',
-                        subtitle: currentEntry[1] || 'N/A',
-                        date: currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || 'N/A',
-                        description: currentEntry.slice(2).join(' ').replace(currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || '', '').trim()
-                    });
-                    currentEntry = [];
-                }
+        // Regex to detect a date range, which often signals the start of a new entry.
+        const dateRangeRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December)[\s.,]*\d{4}\s*(?:-|to|–|—)\s*(?:Present|Current|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December)[\s.,]*\d{4})/i;
+
+        lines.forEach((line, index) => {
+            // Heuristic for new entry: a date range, or a line that looks like a title after a few descriptive lines.
+            const isNewEntry = dateRangeRegex.test(line) || 
+                               (currentEntryLines.length > 2 && lines[index-1].endsWith('.') && !line.startsWith('-') && !line.startsWith('•'));
+            
+            if (isNewEntry && currentEntryLines.length > 0) {
+                // Process the previous entry
+                const dateLine = currentEntryLines.find(l => dateRangeRegex.test(l)) || '';
+                const title = currentEntryLines[0];
+                const subtitle = currentEntryLines[1] && !dateRangeRegex.test(currentEntryLines[1]) ? currentEntryLines[1] : '';
+                const description = currentEntryLines.slice(subtitle ? 2 : 1).filter(l => l !== dateLine).join(' ').trim();
+
+                entries.push({ title, subtitle, date: dateLine, description });
+                currentEntryLines = [line];
+            } else {
+                currentEntryLines.push(line);
             }
-            currentEntry.push(line);
         });
 
-        if (currentEntry.length > 0) {
-            entries.push({
-                title: currentEntry[0] || 'N/A',
-                subtitle: currentEntry[1] || 'N/A',
-                date: currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || 'N/A',
-                description: currentEntry.slice(2).join(' ').replace(currentEntry.find(l => /\s(20\d{2}|present|current)\s?-\s?/i.test(l)) || '', '').trim()
-            });
+        // Add the last entry
+        if (currentEntryLines.length > 0) {
+            const dateLine = currentEntryLines.find(l => dateRangeRegex.test(l)) || '';
+            const title = currentEntryLines[0] || 'N/A';
+            const subtitle = currentEntryLines.length > 1 && !dateRangeRegex.test(currentEntryLines[1]) ? currentEntryLines[1] : '';
+             const description = currentEntryLines.slice(subtitle ? 2 : 1).filter(l => l !== dateLine).join(' ').trim();
+            entries.push({ title, subtitle, date: dateLine, description });
         }
         
-        // This is a placeholder for actual parsing logic
-        if (entries.length > 0) {
-            return entries.map((entry, index) => ({
-                id: `entry${index}`,
-                ...entry
-            }));
-        }
-
-        // Fallback for very simple lists
-        return lines.length > 0 ? [{ id: 'entry1', title: lines[0], subtitle: lines[1] || '', description: lines.slice(2).join(' '), date: '' }] : [];
+        return entries;
     };
-
+    
     const workExperienceParsed = parseEntries(experienceSectionLines);
     const educationParsed = parseEntries(educationSectionLines);
 
-    const workExperience = workExperienceParsed.map(entry => ({
-        company: entry.subtitle,
-        title: entry.title,
-        startDate: entry.date.split('-')[0]?.trim() || 'Date',
-        endDate: entry.date.split('-')[1]?.trim() || 'Present',
-        description: entry.description,
-    }));
+    const workExperience = workExperienceParsed.map(entry => {
+        const [startDate, endDate] = entry.date.split(/\s*(-|to|–|—)\s*/).map(d => d.trim());
+        return {
+            company: entry.subtitle,
+            title: entry.title,
+            startDate: startDate || 'Date',
+            endDate: endDate || 'Present',
+            description: entry.description,
+        };
+    });
 
-    const education = educationParsed.map(entry => ({
-        institution: entry.title,
-        degree: entry.subtitle,
-        startDate: entry.date.split('-')[0]?.trim() || 'Date',
-        endDate: entry.date.split('-')[1]?.trim() || 'Present',
-        description: entry.description
-    }));
+    const education = educationParsed.map(entry => {
+        const [startDate, endDate] = entry.date.split(/\s*(-|to|–|—)\s*/).map(d => d.trim());
+        return {
+            institution: entry.title,
+            degree: entry.subtitle,
+            startDate: startDate || 'Date',
+            endDate: endDate || 'Present',
+            description: entry.description
+        };
+    });
 
-    // Skills are often comma-separated or one per line
-    const skills = skillsSectionLines.join(' ').split(/, | \/ | • | \| /).flatMap(skill => skill.split('\n')).map(s => s.trim()).filter(s => s && s.length > 1 && s.length < 30).map(s => ({name: s}));
+    // Skills: split by commas, slashes, or bullet points, then process each line.
+    const skills = skillsSectionLines
+        .join(' ')
+        .split(/, | \/ | • | \| /)
+        .flatMap(skill => skill.split('\n'))
+        .map(s => s.trim())
+        .filter(s => s && s.length > 1 && s.length < 50) // Filter out noise
+        .map(s => ({name: s}));
+
 
     return {
         fullName,
         email,
+        phone,
         summary,
         workExperience,
         education,
@@ -155,6 +197,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error parsing resume:', error);
-    return NextResponse.json({ error: 'Failed to parse resume.' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred during parsing.';
+    return NextResponse.json({ error: 'Failed to parse resume.', details: errorMessage }, { status: 500 });
   }
 }
+
+    

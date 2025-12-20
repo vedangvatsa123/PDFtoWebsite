@@ -325,7 +325,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    const originalData = useRef<{
+    const lastSavedData = useRef<{
         profile: Partial<UserProfile>;
         work: WorkExperience[];
         education: Education[];
@@ -391,19 +391,21 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
             await setDoc(slugDocRef, { userId: user.uid, ...profileData });
         }
 
-        setProfile(profileData);
-        setInitialSlug(profileData.slug);
-        setActiveTheme(profileData.themeId || 'default');
-        setWorkExperiences(workData);
-        setEducations(eduData);
-        setSkills(skillsData);
-
-        originalData.current = {
-            profile: JSON.parse(JSON.stringify(profileData)),
-            work: JSON.parse(JSON.stringify(workData)),
-            education: JSON.parse(JSON.stringify(eduData)),
-            skills: JSON.parse(JSON.stringify(skillsData)),
+        const dataBundle = {
+            profile: profileData,
+            work: workData,
+            education: eduData,
+            skills: skillsData,
         };
+
+        setProfile(dataBundle.profile);
+        setInitialSlug(dataBundle.profile.slug);
+        setActiveTheme(dataBundle.profile.themeId || 'default');
+        setWorkExperiences(dataBundle.work);
+        setEducations(dataBundle.education);
+        setSkills(dataBundle.skills);
+
+        lastSavedData.current = JSON.parse(JSON.stringify(dataBundle));
         
         setIsLoading(false);
     }, [user, firestore]);
@@ -436,28 +438,45 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         return true;
     };
 
-    const autoSave = useCallback((updatedData: any) => {
+    const autoSave = useCallback((collectionName: string, id: string | null, data: any) => {
         if (!user || !firestore) return;
         setIsSaving(true);
-        const { collectionName, id, ...data } = updatedData;
         
         let ref: any;
         const currentProfile = {...profile, ...data};
 
-        if (collectionName === 'userProfile') {
+        if (collectionName === 'userProfile' && user.uid) {
             if (data.slug && initialSlug && data.slug !== initialSlug) {
                 const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialSlug);
                 deleteDocumentNonBlocking(oldSlugRef);
             }
-            ref = doc(firestore, 'users', user.uid, collectionName, user.uid);
+            ref = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
             const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
             setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
-        } else {
+        } else if (id) {
              ref = doc(firestore, 'users', user.uid, collectionName, id);
+        } else {
+             console.error("Autosave failed: missing document ID for subcollection");
+             setIsSaving(false);
+             return;
         }
-
+        
         setDocumentNonBlocking(ref, data, { merge: true });
         
+        // Update the 'last saved' state
+        if (collectionName === 'userProfile') {
+            lastSavedData.current.profile = { ...lastSavedData.current.profile, ...data };
+        } else {
+            const collectionKey = collectionName.replace(/s$/, '') + 's' as 'work' | 'education' | 'skills';
+            if (lastSavedData.current[collectionKey]) {
+                const itemIndex = (lastSavedData.current[collectionKey] as any[]).findIndex(item => item.id === id);
+                if (itemIndex > -1) {
+                    (lastSavedData.current[collectionKey] as any[])[itemIndex] = { ...(lastSavedData.current[collectionKey] as any[])[itemIndex], ...data };
+                }
+            }
+        }
+
+
         setTimeout(() => setIsSaving(false), 700);
     }, [user, firestore, profile, initialSlug]);
 
@@ -465,7 +484,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     const handleThemeChange = (themeId: string) => {
         setActiveTheme(themeId);
         setProfile(prev => ({...prev, themeId}));
-        autoSave({ collectionName: 'userProfile', themeId: themeId });
+        autoSave('userProfile', user!.uid, { themeId });
     };
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -475,9 +494,9 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const originalValue = (originalData.current.profile as any)[name];
+        const lastSavedValue = (lastSavedData.current.profile as any)[name];
 
-        if (originalValue === value) return;
+        if (lastSavedValue === value) return;
     
         if (name === 'slug') {
             if (value === initialSlug) return;
@@ -488,13 +507,12 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                     title: 'URL Unavailable',
                     description: `The URL "${value}" is already taken. Please choose another.`,
                 });
-                setProfile(prev => ({ ...prev, slug: originalData.current.profile.slug })); 
+                setProfile(prev => ({ ...prev, slug: lastSavedData.current.profile.slug })); 
                 return;
             }
         }
 
-        autoSave({ collectionName: 'userProfile', [name]: value });
-        (originalData.current.profile as any)[name] = value;
+        autoSave('userProfile', user!.uid, { [name]: value });
     };
 
 
@@ -512,31 +530,23 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         id: string,
         e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
         collectionName: string,
-        collectionState: T[],
-        originalCollectionRef: React.MutableRefObject<T[]>
+        collectionState: T[]
     ) => {
         const { name, value } = e.target;
-        const itemInState = collectionState.find(i => i.id === id);
-        const originalItem = originalCollectionRef.current.find(i => i.id === id);
+        
+        const lastSavedCollection = (lastSavedData.current as any)[collectionName.replace(/s$/, '') + 's'];
+        const lastSavedItem = lastSavedCollection?.find((i: any) => i.id === id);
+        const lastSavedValue = lastSavedItem ? lastSavedItem[name] : undefined;
 
-        if (!itemInState) return;
+        if (value === lastSavedValue) return;
 
-        const currentValue = (itemInState as any)[name];
-        const originalValue = originalItem ? (originalItem as any)[name] : undefined;
-
-        if (currentValue !== originalValue) {
-            autoSave({ collectionName, id, [name]: value });
-            // Update the ref to the new value
-            const updatedOriginalItem = originalCollectionRef.current.find(i => i.id === id);
-            if(updatedOriginalItem) (updatedOriginalItem as any)[name] = value;
-        }
+        autoSave(collectionName, id, { [name]: value });
     };
 
     const handleAddItem = async <T extends {}>(
         newItem: T,
         collectionName: string,
-        setCollection: React.Dispatch<React.SetStateAction<(T & {id: string})[]>>,
-        originalCollectionRef: React.MutableRefObject<(T & {id: string})[]>
+        setCollection: React.Dispatch<React.SetStateAction<(T & {id: string})[]>>
     ) => {
         if (!user || !firestore) return;
         const colRef = collection(firestore, 'users', user.uid, collectionName);
@@ -544,26 +554,33 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         if (docRef) {
             const addedItem = { ...newItem, id: docRef.id };
             setCollection(prev => [...prev, addedItem]);
-            originalCollectionRef.current.push(addedItem);
+            
+            const collectionKey = collectionName.replace(/s$/, '') + 's' as 'work' | 'education' | 'skills';
+             if (lastSavedData.current[collectionKey]) {
+                (lastSavedData.current[collectionKey] as any[]).push(addedItem);
+            }
         }
     }
 
     const handleDeleteItem = (
         id: string,
         collectionName: string,
-        setCollection: React.Dispatch<React.SetStateAction<any[]>>,
-        originalCollectionRef: React.MutableRefObject<any[]>
+        setCollection: React.Dispatch<React.SetStateAction<any[]>>
     ) => {
         if (!user || !firestore) return;
         const docRef = doc(firestore, 'users', user.uid, collectionName, id);
         deleteDocumentNonBlocking(docRef);
         setCollection(prev => prev.filter(item => item.id !== id));
-        originalCollectionRef.current = originalCollectionRef.current.filter(i => i.id !== id);
+        
+        const collectionKey = collectionName.replace(/s$/, '') + 's' as 'work' | 'education' | 'skills';
+        if (lastSavedData.current[collectionKey]) {
+            lastSavedData.current[collectionKey] = (lastSavedData.current[collectionKey] as any[]).filter(i => i.id !== id);
+        }
     }
 
     const handleAddSkill = () => {
         if (newSkill.trim() && user) {
-            handleAddItem({ name: newSkill.trim(), userProfileId: user.uid }, 'skills', setSkills, originalData.current.skills as any);
+            handleAddItem({ name: newSkill.trim(), userProfileId: user.uid }, 'skills', setSkills);
             setNewSkill('');
         }
     }
@@ -631,6 +648,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                 ...profile,
                 fullName: extractedData.fullName || profile.fullName,
                 summary: extractedData.summary || profile.summary,
+                phone: extractedData.phone || profile.phone,
             };
             batch.set(profileRef, updatedProfile, { merge: true });
 
@@ -734,36 +752,36 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                             {workExperiences.map((item) => (
                                 <Card key={item.id} className="p-4">
                                     <div className="flex justify-between items-center mb-4">
-                                    <p className="font-semibold">{item.title} at {item.company}</p>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id, 'workExperiences', setWorkExperiences, originalData.current.work as any)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                    <p className="font-semibold">{item.title || 'New Role'} at {item.company || 'New Company'}</p>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id, 'workExperiences', setWorkExperiences)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
                                     </div>
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Role</Label>
-                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work as any)} />
+                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Company</Label>
-                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work as any)} />
+                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work as any)} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work as any)} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences, originalData.current.work as any)} />
+                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'workExperiences', workExperiences)} />
                                         </div>
                                     </div>
                                 </Card>
                             ))}
-                            <Button variant="outline" className="w-full" onClick={() => handleAddItem({ title: 'New Role', company: 'New Company', startDate: 'Date', description: '', userProfileId: user?.uid }, 'workExperiences', setWorkExperiences, originalData.current.work as any)}>
+                            <Button variant="outline" className="w-full" onClick={() => handleAddItem({ title: 'New Role', company: 'New Company', startDate: 'Date', description: '', userProfileId: user?.uid }, 'workExperiences', setWorkExperiences)}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Experience
                             </Button>
                         </CardContent>
@@ -778,36 +796,36 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                             {educations.map((item) => (
                             <Card key={item.id} className="p-4">
                                     <div className="flex justify-between items-center mb-4">
-                                    <p className="font-semibold">{item.degree} from {item.institution}</p>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id, 'educations', setEducations, originalData.current.education as any)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                    <p className="font-semibold">{item.degree || 'New Degree'} from {item.institution || 'New School'}</p>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id, 'educations', setEducations)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
                                     </div>
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Institution</Label>
-                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education as any)} />
+                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Degree / Certificate</Label>
-                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education as any)} />
+                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education as any)} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education as any)} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations, originalData.current.education as any)} />
+                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} onBlur={(e) => handleSubcollectionBlur(item.id, e, 'educations', educations)} />
                                         </div>
                                     </div>
                                 </Card>
                             ))}
-                            <Button variant="outline" className="w-full" onClick={() => handleAddItem({ institution: 'New School', degree: 'Degree', startDate: 'Date', userProfileId: user?.uid }, 'educations', setEducations, originalData.current.education as any)}>
+                            <Button variant="outline" className="w-full" onClick={() => handleAddItem({ institution: 'New School', degree: 'Degree', startDate: 'Date', userProfileId: user?.uid }, 'educations', setEducations)}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Education
                             </Button>
                         </CardContent>
@@ -823,7 +841,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
                                 {skills.map(skill => (
                                     <div key={skill.id} className="flex items-center rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground">
                                         {skill.name}
-                                        <Button variant="ghost" size="icon" className="ml-1 h-5 w-5" onClick={() => handleDeleteItem(skill.id, 'skills', setSkills, originalData.current.skills as any)}><Trash2 className="h-3 w-3"/></Button>
+                                        <Button variant="ghost" size="icon" className="ml-1 h-5 w-5" onClick={() => handleDeleteItem(skill.id, 'skills', setSkills)}><Trash2 className="h-3 w-3"/></Button>
                                     </div>
                                 ))}
                             </div>
@@ -908,7 +926,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
 
 
 export default function EditorPage() {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading } A= useUser();
   const router = useRouter();
   const [view, setView] = useState<'dashboard' | 'editor'>('dashboard');
   const [section, setSection] = useState<string | undefined>(undefined);
@@ -950,3 +968,5 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
