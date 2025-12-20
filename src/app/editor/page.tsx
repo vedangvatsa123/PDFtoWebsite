@@ -361,12 +361,6 @@ export default function EditorPage() {
         setTimeout(() => setIsSaving(false), 700);
     }, [user, firestore, profile, initialSlug]);
 
-    const handleThemeChange = (themeId: string) => {
-        setActiveTheme(themeId);
-        setProfile(prev => ({...prev, themeId}));
-        autoSave('userProfile', user!.uid, { themeId });
-    };
-
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setProfile(prev => ({...prev, [name]: value}));
@@ -565,12 +559,17 @@ export default function EditorPage() {
                                             <CardTitle>Your Public Link</CardTitle>
                                             <CardDescription>Share this link to your public profile page.</CardDescription>
                                         </CardHeader>
-                                        <CardContent>
-                                            <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
-                                                <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false} target="_blank">
-                                                    {`/${profile.slug}`}
-                                                </Link>
+                                        <CardContent className="space-y-2">
+                                            <div className="flex space-x-2">
+                                                <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
+                                                <Button asChild variant="secondary">
+                                                    <Link href={`/${profile.slug}`} target="_blank" prefetch={false}>
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        Visit
+                                                    </Link>
+                                                </Button>
                                             </div>
+                                             {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">{`/${profile.slug}`}</Link></p>}
                                         </CardContent>
                                     </Card>
                                     <div className="grid md:grid-cols-2 gap-6">
@@ -631,29 +630,6 @@ export default function EditorPage() {
                                             </div>
                                         </CardContent>
                                     </Card>
-                                    
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Profile Settings</CardTitle>
-                                            <CardDescription>Manage your public profile URL and theme.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="slug">Public URL Slug</Label>
-                                                <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">{`/${profile.slug}`}</Link></p>}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="template">Template</Label>
-                                                <p className="text-sm text-muted-foreground">Choose a visual theme for your public profile.</p>
-                                                <div className="flex gap-2 pt-2">
-                                                    <Button variant={activeTheme === 'default' ? 'default' : 'secondary'} onClick={() => handleThemeChange('default')}>Default</Button>
-                                                    <Button variant={activeTheme === 'modern' ? 'default' : 'secondary'} onClick={() => handleThemeChange('modern')}>Modern</Button>
-                                                    <Button variant={activeTheme === 'classic' ? 'default' : 'secondary'} onClick={() => handleThemeChange('classic')}>Classic</Button>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
 
                                     <Card>
                                         <CardHeader>
@@ -692,7 +668,3 @@ export default function EditorPage() {
         </div>
     );
 }
-
-    
-
-    
