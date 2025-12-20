@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -13,15 +13,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, Trash2, PlusCircle, Save, Loader2, UploadCloud, FileUp, FilePenLine, BarChart2, Users, Map, Settings, ArrowRight } from 'lucide-react';
+import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, FilePenLine, BarChart2, Users, Map, Settings, ArrowRight } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { mockProfile } from '@/lib/mock-data';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 
@@ -220,6 +218,24 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
     const [showUploadPrompt, setShowUploadPrompt] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
 
+    const autoSave = useCallback((updatedData: any) => {
+        if (!user || !firestore) return;
+        setIsSaving(true);
+        const { collectionName, id, ...data } = updatedData;
+        const ref = doc(firestore, 'users', user.uid, collectionName, id);
+        setDocumentNonBlocking(ref, data, { merge: true });
+        
+        // Also update the public slug document if profile info changes
+        if (collectionName === 'userProfile' && profile.slug) {
+            const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
+            const slugData = { userId: user.uid, ...profile, ...data };
+            setDocumentNonBlocking(slugRef, slugData, { merge: true });
+        }
+
+        setTimeout(() => setIsSaving(false), 500); // Visual feedback
+    }, [user, firestore, profile]);
+
+
      useEffect(() => {
     if (user && firestore) {
       const fetchProfileData = async () => {
@@ -258,16 +274,19 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setProfile(prev => ({ ...prev, [name]: value }));
+        autoSave({ collectionName: 'userProfile', id: user?.uid, [name]: value });
     };
 
     const handleSubcollectionChange = <T extends {id: string}>(
         id: string, 
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, 
-        collection: T[], 
-        setCollection: React.Dispatch<React.SetStateAction<T[]>>
+        collectionState: T[], 
+        setCollectionState: React.Dispatch<React.SetStateAction<T[]>>,
+        collectionName: string
         ) => {
         const { name, value } = e.target;
-        setCollection(prev => prev.map(item => item.id === id ? {...item, [name]: value} : item));
+        setCollectionState(prev => prev.map(item => item.id === id ? {...item, [name]: value} : item));
+        autoSave({ collectionName, id, [name]: value });
     }
 
     const handleAddItem = async <T extends {}>(
@@ -280,6 +299,7 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
         const docRef = await addDocumentNonBlocking(colRef, newItem);
         if (docRef) {
             setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
+            toast({ title: "Item Added", description: "Your new item has been saved." });
         }
     }
 
@@ -292,69 +312,13 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
         const docRef = doc(firestore, 'users', user.uid, collectionName, id);
         deleteDocumentNonBlocking(docRef);
         setCollection(prev => prev.filter(item => item.id !== id));
+        toast({ title: "Item Removed", variant: "destructive" });
     }
 
     const handleAddSkill = () => {
         if (newSkill.trim() && user) {
             handleAddItem({ name: newSkill.trim(), userProfileId: user.uid }, 'skills', setSkills);
             setNewSkill('');
-        }
-    }
-
-
-    const handlePublish = async () => {
-        if (!user || !firestore || !profile.slug) return;
-        setIsSaving(true);
-
-        try {
-            const batch = writeBatch(firestore);
-
-            const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-            batch.set(profileRef, profile, { merge: true });
-
-            const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
-            const slugData = { userId: user.uid, ...profile };
-            batch.set(slugRef, slugData);
-
-            workExperiences.forEach(item => {
-                const ref = doc(firestore, 'users', user.uid, 'workExperiences', item.id);
-                batch.set(ref, item, { merge: true });
-            });
-            educations.forEach(item => {
-                const ref = doc(firestore, 'users', user.uid, 'educations', item.id);
-                batch.set(ref, item, { merge: true });
-            });
-            skills.forEach(item => {
-                const ref = doc(firestore, 'users', user.uid, 'skills', item.id);
-                batch.set(ref, item, { merge: true });
-            });
-
-            await batch.commit();
-
-            toast({
-                title: "Profile Published!",
-                description: "Redirecting you to your live page...",
-            });
-            router.push(`/${profile.slug}`);
-        } catch (e: any) {
-            const allData = {
-            profile: profile,
-            slug: { userId: user.uid },
-            work: workExperiences,
-            education: educations,
-            skills: skills
-            };
-
-            const permissionError = new FirestorePermissionError({
-            path: `BATCH WRITE to user ${user.uid}`,
-            operation: 'write',
-            requestResourceData: allData
-            });
-
-            errorEmitter.emit('permission-error', permissionError);
-
-        } finally {
-            setIsSaving(false);
         }
     }
     
@@ -406,20 +370,17 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
     return (
          <div>
             <div className="flex justify-between items-center mb-8">
-                <Button variant="outline" onClick={onBackToDashboard}>Back to Dashboard</Button>
+                <Button variant="outline" onClick={onBackToDashboard}>Dashboard</Button>
                 <div className="flex items-center gap-2">
+                    {isSaving && <Loader2 className="animate-spin text-muted-foreground" />}
                     {profile.slug && (
                         <Button variant="outline" asChild>
-                            <Link href={`/${profile.slug}`} target="_blank">
+                            <Link href={`/${profile.slug}`}>
                                 <Eye />
                                 Preview
                             </Link>
                         </Button>
                     )}
-                    <Button onClick={handlePublish} disabled={isSaving}>
-                        {isSaving ? <Loader2 className="animate-spin" /> : <Save />}
-                        {isSaving ? 'Publishing...' : 'Publish'}
-                    </Button>
                 </div>
             </div>
              
@@ -455,24 +416,24 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Role</Label>
-                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} />
+                                                <Input name="title" value={item.title} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences, 'workExperiences')} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Company</Label>
-                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} />
+                                                <Input name="company" value={item.company} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences, 'workExperiences')} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences, 'workExperiences')} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences, 'workExperiences')} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences)} />
+                                            <Textarea name="description" value={item.description} onChange={(e) => handleSubcollectionChange(item.id, e, workExperiences, setWorkExperiences, 'workExperiences')} />
                                         </div>
                                     </div>
                                 </Card>
@@ -499,24 +460,24 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label>Institution</Label>
-                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
+                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations, 'educations')} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Degree / Certificate</Label>
-                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)}/>
+                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations, 'educations')}/>
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Start Date</Label>
-                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations, 'educations')} />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>End Date</Label>
-                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations, 'educations')} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Description</Label>
-                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
+                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations, 'educations')} />
                                         </div>
                                     </div>
                                 </Card>
@@ -542,7 +503,7 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                                 ))}
                             </div>
                             <div className="mt-4 flex gap-2">
-                                <Input placeholder="Add a new skill..." value={newSkill} onChange={(e) => setNewSkill(e.target.value)} />
+                                <Input placeholder="Add a new skill..." value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()} />
                                 <Button onClick={handleAddSkill}><PlusCircle className="mr-2 h-4 w-4" /> Add Skill</Button>
                             </div>
                         </CardContent>
@@ -704,3 +665,4 @@ export default function EditorPage() {
     </div>
   );
 }
+
