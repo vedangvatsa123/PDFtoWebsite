@@ -38,11 +38,11 @@ function isNewProfile(profile: Partial<UserProfile>, work: WorkExperience[], edu
     );
 }
 
-const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onUpload: () => void, fileName: string | null, onCancel?: () => void }) => (
-    <Card className="w-full">
+const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel, showCancel = true }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onUpload: () => void, fileName: string | null, onCancel?: () => void, showCancel?: boolean }) => (
+    <Card className="w-full border-dashed border-2 hover:border-primary transition-colors">
         <CardHeader>
-            <CardTitle>Welcome! Let's build your profile.</CardTitle>
-            <CardDescription>Upload your resume (PDF) to get started automatically, or fill out the form manually.</CardDescription>
+            <CardTitle>Generate with AI</CardTitle>
+            <CardDescription>Upload your resume (PDF) to automatically fill out your profile.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50">
@@ -52,14 +52,17 @@ const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel }: { on
                 </span>
                 <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={onFileChange} />
             </label>
-            <Button size="lg" className="w-full" onClick={onUpload} disabled={!fileName}>
-                Generate Profile from PDF
-            </Button>
-            {onCancel && (
-                <Button variant="link" className="w-full" onClick={onCancel}>
-                    Or fill it out manually
+            <div className="flex flex-col sm:flex-row gap-2">
+                <Button size="lg" className="w-full" onClick={onUpload} disabled={!fileName}>
+                    <FileUp className="mr-2 h-4 w-4" />
+                    Generate from PDF
                 </Button>
-            )}
+                {onCancel && showCancel && (
+                    <Button variant="ghost" className="w-full sm:w-auto" onClick={onCancel}>
+                        Cancel
+                    </Button>
+                )}
+            </div>
         </CardContent>
     </Card>
 );
@@ -79,7 +82,6 @@ export default function EditorPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showUploadPrompt, setShowUploadPrompt] = useState(false);
-  const [showInlineUpload, setShowInlineUpload] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   
   useEffect(() => {
@@ -257,8 +259,9 @@ export default function EditorPage() {
 
         toast({
             title: "Profile Published!",
-            description: "Your professional web page is now live.",
+            description: "Redirecting you to your live page...",
         });
+        router.push(`/${profile.slug}`);
     } catch (e: any) {
         // This will now throw a detailed error if any write in the batch fails
         // due to security rules.
@@ -317,10 +320,7 @@ export default function EditorPage() {
       title: 'Resume Processing...',
       description: `We're analyzing ${fileName}. Your profile will update shortly.`,
     });
-    // For demo, we just hide the prompt.
-    // A real implementation would involve a loading state and then a data refetch.
     setShowUploadPrompt(false);
-    setShowInlineUpload(false);
   }
 
   if (isLoading || isUserLoading) {
@@ -377,23 +377,18 @@ export default function EditorPage() {
                         <CardTitle>Personal Information</CardTitle>
                         <CardDescription>This is your public calling card. Make it count.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
+                        
+                        <ResumeUploadPrompt
+                            onFileChange={handleFileChange}
+                            onUpload={handleResumeUpload}
+                            fileName={fileName}
+                            showCancel={false}
+                         />
 
-                        {showInlineUpload ? (
-                             <ResumeUploadPrompt 
-                                onFileChange={handleFileChange}
-                                onUpload={handleResumeUpload}
-                                fileName={fileName}
-                            />
-                        ) : null}
-
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-4 pt-6">
                             <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
                             <Button variant="outline">Change Photo</Button>
-                             <Button variant="outline" onClick={() => setShowInlineUpload(!showInlineUpload)}>
-                                <FileUp className="mr-2 h-4 w-4" />
-                                {showInlineUpload ? 'Cancel' : 'Import from Resume'}
-                            </Button>
                         </div>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div className="space-y-2">
@@ -562,5 +557,7 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
 
     
