@@ -15,7 +15,6 @@ import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
 import Header from '@/components/header';
 import React from 'react';
-import { cn } from '@/lib/utils';
 
 async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, sections: ResumeSection[] } | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
@@ -118,7 +117,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div>
           {/* Header */}
           <div className="flex flex-col items-center gap-6 p-8 text-center sm:flex-row sm:text-left">
             {profile.avatarUrl && 
