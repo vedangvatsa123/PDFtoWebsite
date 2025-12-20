@@ -110,11 +110,11 @@ const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel, showCa
     </Card>
 );
 
-const EditorDashboard = ({ profile }: { profile: Partial<UserProfile> }) => {
+const EditorDashboard = ({ profile, onProfileUpdate }: { profile: Partial<UserProfile>, onProfileUpdate: () => void }) => {
     const [showEditor, setShowEditor] = useState(false);
     
     if (showEditor) {
-        return <EditorForm profile={profile} onBackToDashboard={() => setShowEditor(false)} />;
+        return <EditorForm profile={profile} onBackToDashboard={() => setShowEditor(false)} onProfileUpdate={onProfileUpdate} />;
     }
 
     return (
@@ -202,7 +202,7 @@ const EditorDashboard = ({ profile }: { profile: Partial<UserProfile> }) => {
 };
 
 
-const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: Partial<UserProfile>, onBackToDashboard: () => void }) => {
+const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdate }: { profile: Partial<UserProfile>, onBackToDashboard: () => void, onProfileUpdate: () => void }) => {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
@@ -224,9 +224,8 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
         const ref = doc(firestore, 'users', user.uid, collectionName, id);
         setDocumentNonBlocking(ref, data, { merge: true });
         
-        // Also update the public slug document if profile info changes
-        if (collectionName === 'userProfile' && profile.slug) {
-            const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
+        if (collectionName === 'userProfile') {
+            const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug!);
             const slugData = { userId: user.uid, ...profile, ...data };
             setDocumentNonBlocking(slugRef, slugData, { merge: true });
         }
@@ -268,7 +267,8 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setProfile(prev => ({ ...prev, [name]: value }));
+        const newProfile = { ...profile, [name]: value };
+        setProfile(newProfile);
         autoSave({ collectionName: 'userProfile', id: user?.uid, [name]: value });
     };
 
@@ -291,11 +291,13 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
     ) => {
         if (!user || !firestore) return;
         const colRef = collection(firestore, 'users', user.uid, collectionName);
-        const docRef = await addDocumentNonBlocking(colRef, newItem);
-        if (docRef) {
-            setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
-            toast({ title: "Item Added", description: "Your new item has been saved." });
-        }
+        addDocumentNonBlocking(colRef, newItem)
+            .then(docRef => {
+                if (docRef) {
+                    setCollection(prev => [...prev, {...newItem, id: docRef.id}]);
+                    toast({ title: "Item Added", description: "Your new item has been saved." });
+                }
+            });
     }
 
     const handleDeleteItem = (
@@ -578,16 +580,9 @@ export default function EditorPage() {
 
   const [profile, setProfile] = useState<Partial<UserProfile>>({});
   const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isUserLoading, router]);
 
-  useEffect(() => {
-    if (user && firestore) {
-      const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+      if (user && firestore) {
         setIsLoading(true);
         const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
         const profileSnap = await getDoc(profileRef);
@@ -608,32 +603,34 @@ export default function EditorPage() {
             avatarHint: mockProfile.personalInfo.avatarHint,
           };
           
-          const profileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-          setDocumentNonBlocking(profileDocRef, userProfile, { merge: false });
-
-          const batch = writeBatch(firestore);
+          setDocumentNonBlocking(doc(firestore, 'users', user.uid, 'userProfile', user.uid), userProfile, { merge: false });
+          setDocumentNonBlocking(doc(firestore, 'userProfilesBySlug', userProfile.slug), { ...userProfile });
+          
           mockProfile.workExperience.forEach(item => {
-              const ref = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
-              batch.set(ref, {...item, userProfileId: user.uid, id: ref.id, title: item.role});
+              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'workExperiences'), {...item, userProfileId: user.uid});
           });
           mockProfile.education.forEach(item => {
-              const ref = doc(collection(firestore, 'users', user.uid, 'educations'));
-              batch.set(ref, {...item, userProfileId: user.uid, id: ref.id});
+              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'educations'), {...item, userProfileId: user.uid});
           });
           mockProfile.skills.forEach(item => {
-              const ref = doc(collection(firestore, 'users', user.uid, 'skills'));
-              batch.set(ref, {...item, userProfileId: user.uid, id: ref.id});
+              addDocumentNonBlocking(collection(firestore, 'users', user.uid, 'skills'), {...item, userProfileId: user.uid});
           });
-          await batch.commit();
         }
 
         setProfile(userProfile);
         setIsLoading(false);
-      };
-
-      fetchProfile();
+      }
+  }, [user, firestore]);
+  
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
     }
-  }, [user, firestore, router]);
+  }, [user, isUserLoading, router]);
+
+  useEffect(() => {
+      fetchProfile();
+  }, [user, firestore, fetchProfile]);
   
   if (isLoading || isUserLoading) {
       return (
@@ -651,10 +648,9 @@ export default function EditorPage() {
       <Header />
       <main className="flex-1 bg-secondary/30">
         <div className="container mx-auto max-w-7xl p-4 md:p-8">
-            <EditorDashboard profile={profile} />
+            <EditorDashboard profile={profile} onProfileUpdate={fetchProfile} />
         </div>
       </main>
     </div>
   );
 }
-

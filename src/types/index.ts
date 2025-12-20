@@ -59,7 +59,7 @@ export type Profile = {
   workExperience: {
     id: string;
     company: string;
-    role: string;
+    title: string;
     startDate: string;
     endDate: string;
     description: string;

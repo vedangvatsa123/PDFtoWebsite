@@ -23,7 +23,7 @@ export const mockProfile: Profile = {
     {
       id: 'work1',
       company: 'Tech Solutions Inc.',
-      role: 'Senior Software Engineer', // Mismatched key 'role' instead of 'title'
+      title: 'Senior Software Engineer',
       startDate: 'Jan 2021',
       endDate: 'Present',
       description:
@@ -32,7 +32,7 @@ export const mockProfile: Profile = {
     {
       id: 'work2',
       company: 'Innovate Co.',
-      role: 'Software Engineer', // Mismatched key 'role' instead of 'title'
+      title: 'Software Engineer',
       startDate: 'Jun 2018',
       endDate: 'Dec 2020',
       description:
