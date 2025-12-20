@@ -29,15 +29,20 @@ const parseResumeTextSmarter = (text: string) => {
     // --- Personal Info Extraction ---
     const emailRegex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
     const phoneRegex = /(\+?\d{1,2}[-.\s]?)?(\(?\d{3}\)?[-.\s]?){1,2}\d{3}[-.\s]?\d{4}/;
-    const websiteRegex = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?/i;
+    // This regex looks for URLs but tries to avoid matching email addresses.
+    const websiteRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)/i;
+
 
     const emailMatch = text.match(emailRegex);
     const phoneMatch = text.match(phoneRegex);
-    const websiteMatch = text.match(websiteRegex);
+    
+    // Find all potential website matches that don't contain an '@'
+    const websiteMatches = text.match(new RegExp(websiteRegex.source, 'gi'));
+    const validWebsiteMatch = websiteMatches?.find(match => !match.includes('@'));
 
     const email = emailMatch ? emailMatch[0] : '';
     const phone = phoneMatch ? phoneMatch[0] : '';
-    let website = websiteMatch ? websiteMatch[0] : '';
+    let website = validWebsiteMatch || '';
     
     // Clean up website URL
     if (website) {
