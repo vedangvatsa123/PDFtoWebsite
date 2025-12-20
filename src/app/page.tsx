@@ -14,7 +14,6 @@ import { useUser } from '@/firebase';
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
-  const [fileName, setFileName] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -22,7 +21,12 @@ export default function Home() {
     const file = event.target.files?.[0];
     if (file) {
       if (file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-        setFileName(file.name);
+        toast({
+          title: 'Resume Selected!',
+          description: `Next, create an account to generate and publish your profile from ${file.name}.`,
+        });
+        // Automatically redirect to the next step
+        router.push('/signup?from=upload');
       } else {
         toast({
             variant: 'destructive',
@@ -30,28 +34,10 @@ export default function Home() {
             description: 'Please select a PDF file under 5MB.',
         });
         event.target.value = ''; // Reset file input
-        setFileName(null);
       }
-    } else {
-      setFileName(null);
     }
   };
 
-  const handleUpload = () => {
-    if (!fileName) {
-      toast({
-        variant: 'destructive',
-        title: 'No file selected',
-        description: 'Please select a PDF file to upload.',
-      });
-      return;
-    }
-    toast({
-      title: 'Upload Successful!',
-      description: `We've processed ${fileName}. Now, create an account to edit and publish your profile.`,
-    });
-    router.push('/signup?from=upload');
-  };
 
   return (
     <div className="flex h-screen flex-col">
@@ -80,23 +66,21 @@ export default function Home() {
           ) : (
             <>
               <div className="w-full max-w-md">
-                <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors hover:bg-accent/50">
+                <label htmlFor="resume-upload" className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50">
                     <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
                     <span className="text-muted-foreground">
-                        {fileName ? `Selected: ${fileName}` : 'Drag & drop or click to upload PDF'}
+                        Drag & drop or click to upload PDF
                     </span>
                     <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} />
                 </label>
-                <Button size="lg" className="w-full mt-4" onClick={handleUpload}>
-                    Create Your Profile Page
-                </Button>
                 <p className="mt-4 text-sm text-muted-foreground">
+                  Your profile will be generated automatically. <br/>
                   Already have an account?{' '}
                   <LoginDialog />
                 </p>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-8">
                 <div className="flex items-center gap-2">
                     <UploadCloud className="h-5 w-5" />
                     <span>Upload Resume</span>
