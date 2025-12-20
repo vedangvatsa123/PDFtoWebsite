@@ -49,32 +49,36 @@ const parseResumeTextSmarter = (text: string) => {
     // --- Section Identification and Extraction ---
     const sections: { title: string; content: string; order: number }[] = [];
     let sectionStarts: { index: number; title: string }[] = [];
+    const usedLineIndexes = new Set<number>();
 
     // Find all lines that look like section headers
     lines.forEach((line, index) => {
+        if (usedLineIndexes.has(index)) return;
+
         const lowerLine = line.toLowerCase();
+        let found = false;
         for (const sectionType in SECTION_KEYWORDS) {
             if (SECTION_KEYWORDS[sectionType].includes(lowerLine)) {
                 sectionStarts.push({ index, title: line });
-                return; // Found a match, move to next line
+                usedLineIndexes.add(index);
+                found = true;
+                break; 
             }
         }
         // Fallback for any capitalized line with 1-3 words
-        if (/^[A-Z][a-zA-Z\s&]{4,25}$/.test(line) && line.split(' ').length <= 4 && lines[index + 1]?.length > 0) {
+        if (!found && /^[A-Z][a-zA-Z\s&]{4,25}$/.test(line) && line.split(' ').length <= 4 && lines[index + 1]?.length > 0) {
              sectionStarts.push({ index, title: line });
+             usedLineIndexes.add(index);
         }
     });
-
-    // Deduplicate and sort section starts
-    const uniqueSectionStarts = sectionStarts.filter((section, index, self) => 
-        index === self.findIndex(s => s.index === section.index)
-    ).sort((a, b) => a.index - b.index);
-
     
+    // Sort section starts by their line index
+    sectionStarts.sort((a, b) => a.index - b.index);
+
     // Extract content for each section
-    uniqueSectionStarts.forEach((start, i) => {
+    sectionStarts.forEach((start, i) => {
         const startIndex = start.index + 1;
-        const endIndex = (i + 1 < uniqueSectionStarts.length) ? uniqueSectionStarts[i + 1].index : lines.length;
+        const endIndex = (i + 1 < sectionStarts.length) ? sectionStarts[i + 1].index : lines.length;
         const contentLines = lines.slice(startIndex, endIndex);
         const content = contentLines.join('\n').replace(/\n\n+/g, '\n'); // Clean up excessive newlines
         
@@ -94,12 +98,18 @@ const parseResumeTextSmarter = (text: string) => {
         summary = sections[summarySectionIndex].content;
         // Remove summary from the generic sections array to avoid duplication
         sections.splice(summarySectionIndex, 1);
-    } else if (uniqueSectionStarts.length > 0 && uniqueSectionStarts[0].index > 1) {
+    } else if (sectionStarts.length > 0 && sectionStarts[0].index > 1) {
         // Assume text before the first section is the summary if no formal summary section is found
-        const personalInfoLines = lines.slice(0, uniqueSectionStarts[0].index);
+        const personalInfoLines = lines.slice(0, sectionStarts[0].index);
         summary = personalInfoLines.filter(line => !emailRegex.test(line) && !phoneRegex.test(line) && line !== fullName).join(' ');
     }
 
+    // Final de-duplication pass based on content
+    const finalSections = sections.filter((section, index, self) =>
+        index === self.findIndex((s) => (
+            s.content === section.content
+        ))
+    );
 
     return {
         fullName,
@@ -107,7 +117,7 @@ const parseResumeTextSmarter = (text: string) => {
         phone,
         website,
         summary,
-        sections,
+        sections: finalSections,
     };
 };
 
