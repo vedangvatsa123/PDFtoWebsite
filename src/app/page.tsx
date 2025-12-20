@@ -21,7 +21,7 @@ export default function Home() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+      if (file.type === 'application/pdf' && file.size <= 10 * 1024 * 1024) {
         toast({
           title: 'Resume Selected!',
           description: `Next, create an account to generate and publish your profile from ${file.name}.`,
@@ -32,7 +32,7 @@ export default function Home() {
         toast({
             variant: 'destructive',
             title: 'Invalid File',
-            description: 'Please select a PDF file under 5MB.',
+            description: 'Please select a PDF file under 10MB.',
         });
         event.target.value = ''; // Reset file input
       }

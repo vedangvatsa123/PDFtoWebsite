@@ -513,9 +513,12 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         originalCollection: T[]
     ) => {
         const { name, value } = e.target;
+        const itemInState = collectionState.find(i => i.id === id);
         const originalItem = originalCollection.find(i => i.id === id);
-        
-        if (originalItem && (originalItem as any)[name] !== value) {
+        const currentValue = itemInState ? (itemInState as any)[name] : undefined;
+        const originalValue = originalItem ? (originalItem as any)[name] : undefined;
+
+        if (currentValue !== originalValue) {
             autoSave({ collectionName, id, [name]: value });
             const updatedOriginalItem = originalCollection.find(i => i.id === id);
             if(updatedOriginalItem) (updatedOriginalItem as any)[name] = value;
@@ -567,13 +570,13 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-        if (file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+        if (file.type === 'application/pdf' && file.size <= 10 * 1024 * 1024) {
             setFileName(file.name);
         } else {
             toast({
                 variant: 'destructive',
                 title: 'Invalid File',
-                description: 'Please select a PDF file under 5MB.',
+                description: 'Please select a PDF file under 10MB.',
             });
             event.target.value = '';
             setFileName(null);
