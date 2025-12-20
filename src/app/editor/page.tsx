@@ -215,7 +215,6 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
     const [newSkill, setNewSkill] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [showUploadPrompt, setShowUploadPrompt] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
 
     const autoSave = useCallback((updatedData: any) => {
@@ -258,10 +257,6 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
         setWorkExperiences(work);
         setEducations(edu);
         setSkills(userSkills);
-
-        if (isNewProfile(initialProfile, work, edu, userSkills)) {
-            setShowUploadPrompt(true);
-        }
 
         setIsLoading(false);
       };
@@ -354,7 +349,6 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
         title: 'Resume Processing...',
         description: `We're analyzing ${fileName}. Your profile will update shortly.`,
         });
-        setShowUploadPrompt(false);
     }
     
      if (isLoading) {
@@ -384,14 +378,12 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                 </div>
             </div>
              
-             {showUploadPrompt && (
-                <ResumeUploadPrompt 
-                    onFileChange={handleFileChange}
-                    onUpload={handleResumeUpload}
-                    fileName={fileName}
-                    onCancel={() => setShowUploadPrompt(false)}
-                />
-            )}
+            <ResumeUploadPrompt 
+                onFileChange={handleFileChange}
+                onUpload={handleResumeUpload}
+                fileName={fileName}
+                showCancel={false}
+            />
 
             <Tabs defaultValue="content" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
