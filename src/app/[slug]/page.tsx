@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { useState, useEffect, use } from 'react';
+import { doc, getDoc, collection, getDocs, Firestore } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useFirestore } from '@/firebase';
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
 
-async function getProfileData(firestore: any, slug: string): Promise<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null> {
+async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
     const slugSnap = await getDoc(slugRef);
 
@@ -21,6 +21,7 @@ async function getProfileData(firestore: any, slug: string): Promise<{ profile: 
     }
 
     const { userId } = slugSnap.data();
+    if (!userId) return null;
 
     // The user's profile is stored in a document where the ID is the user's UID.
     const profileRef = doc(firestore, 'users', userId, 'userProfile', userId);
@@ -49,15 +50,19 @@ async function getProfileData(firestore: any, slug: string): Promise<{ profile: 
     return { profile: profileData, work, education, skills };
 }
 
+type PageProps = {
+  params: { slug: string };
+};
 
-export default function ProfileSlugPage({ params }: { params: { slug: string } }) {
+export default function ProfileSlugPage({ params }: PageProps) {
   const firestore = useFirestore();
+  const { slug } = use(Promise.resolve(params));
   const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const slug = params.slug;
     if (firestore && slug) {
+      setIsLoading(true);
       getProfileData(firestore, slug)
         .then(profileData => {
           if (profileData) {
@@ -70,7 +75,7 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }
-  }, [firestore, params.slug]);
+  }, [firestore, slug]);
 
   if (isLoading) {
     return (
@@ -81,7 +86,6 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
   }
 
   if (!data) {
-    // This should be caught by notFound(), but as a fallback:
     return notFound();
   }
 
