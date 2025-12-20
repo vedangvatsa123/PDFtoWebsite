@@ -549,7 +549,7 @@ export default function EditorPage() {
                              <Card>
                                 <CardHeader>
                                     <CardTitle>Your Public Link</CardTitle>
-                                    <CardDescription>Share this link to your public profile page.</CardD>
+                                    <CardDescription>Share this link to your public profile page.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
@@ -572,3 +572,4 @@ export default function EditorPage() {
         </div>
     );
 }
+    
