@@ -19,6 +19,9 @@ import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { mockProfile } from '@/lib/mock-data';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+
 
 function generateSlug(name: string) {
   const randomString = Math.random().toString(36).substring(2, 7);
@@ -224,42 +227,60 @@ export default function EditorPage() {
     if (!user || !firestore || !profile.slug) return;
     setIsSaving(true);
 
-    const batch = writeBatch(firestore);
+    try {
+        const batch = writeBatch(firestore);
 
-    const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-    batch.set(profileRef, profile, { merge: true });
+        // Update main profile
+        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+        batch.set(profileRef, profile, { merge: true });
 
-    const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
-    batch.set(slugRef, { userId: user.uid });
-    
-    workExperiences.forEach(item => {
-        const ref = doc(firestore, 'users', user.uid, 'workExperiences', item.id);
-        batch.set(ref, item, {merge: true});
-    });
-     educations.forEach(item => {
-        const ref = doc(firestore, 'users', user.uid, 'educations', item.id);
-        batch.set(ref, item, {merge: true});
-    });
-     skills.forEach(item => {
-        const ref = doc(firestore, 'users', user.uid, 'skills', item.id);
-        batch.set(ref, item, {merge: true});
-    });
+        // Update slug mapping
+        const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
+        const slugData = { userId: user.uid };
+        batch.set(slugRef, slugData);
 
-    batch.commit().then(() => {
+        // Update subcollections
+        workExperiences.forEach(item => {
+            const ref = doc(firestore, 'users', user.uid, 'workExperiences', item.id);
+            batch.set(ref, item, { merge: true });
+        });
+        educations.forEach(item => {
+            const ref = doc(firestore, 'users', user.uid, 'educations', item.id);
+            batch.set(ref, item, { merge: true });
+        });
+        skills.forEach(item => {
+            const ref = doc(firestore, 'users', user.uid, 'skills', item.id);
+            batch.set(ref, item, { merge: true });
+        });
+
+        await batch.commit();
+
         toast({
             title: "Profile Published!",
             description: "Your professional web page is now live.",
         });
-    }).catch(e => {
-        console.error(e);
-        toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: e.message || "Could not save profile.",
+    } catch (e: any) {
+        // This will now throw a detailed error if any write in the batch fails
+        // due to security rules.
+        const allData = {
+          profile: profile,
+          slug: { userId: user.uid },
+          work: workExperiences,
+          education: educations,
+          skills: skills
+        };
+
+        const permissionError = new FirestorePermissionError({
+          path: `BATCH WRITE to user ${user.uid}`,
+          operation: 'write',
+          requestResourceData: allData
         });
-    }).finally(() => {
+
+        errorEmitter.emit('permission-error', permissionError);
+
+    } finally {
         setIsSaving(false);
-    });
+    }
   }
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -543,5 +564,3 @@ export default function EditorPage() {
     </div>
   );
 }
-
-    
