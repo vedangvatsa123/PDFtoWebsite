@@ -51,25 +51,26 @@ export function LoginDialog() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      // On successful sign-in, the main app's auth state listener will
-      // redirect to the editor.
-       setOpen(false);
-       router.push('/editor');
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message,
-      });
-    } finally {
+
+    signInWithPopup(auth, provider)
+      .then(() => {
+        setOpen(false);
+        router.push('/editor');
+      })
+      .catch((error: any) => {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: error.message,
+        });
+      })
+      .finally(() => {
         setIsGoogleLoading(false);
-    }
+      });
   };
 
   return (
