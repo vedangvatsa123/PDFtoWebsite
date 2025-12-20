@@ -567,7 +567,7 @@ export default function EditorPage() {
                                         <CardContent>
                                             <div className="text-lg font-bold truncate p-4 bg-secondary rounded-md">
                                                 <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false} target="_blank">
-                                                    /{profile.slug}
+                                                    {`/${profile.slug}`}
                                                 </Link>
                                             </div>
                                         </CardContent>
@@ -598,7 +598,7 @@ export default function EditorPage() {
                                             <div className="space-y-2">
                                                 <Label>Profile Photo</Label>
                                                 <div className="flex items-center space-x-4">
-                                                    <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
+                                                    {profile.avatarUrl && <Image src={profile.avatarUrl} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />}
                                                 </div>
                                                 <p className="text-sm text-muted-foreground">Your photo comes from your Google account. You can change it there.</p>
                                             </div>
@@ -630,7 +630,7 @@ export default function EditorPage() {
                                             </div>
                                         </CardContent>
                                     </Card>
-
+                                    
                                     <Card>
                                         <CardHeader>
                                             <CardTitle>Profile Settings</CardTitle>
@@ -640,7 +640,7 @@ export default function EditorPage() {
                                             <div className="space-y-2">
                                                 <Label htmlFor="slug">Public URL Slug</Label>
                                                 <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
-                                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">/{profile.slug}</Link></p>}
+                                                {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">{`/${profile.slug}`}</Link></p>}
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="template">Template</Label>
