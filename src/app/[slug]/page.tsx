@@ -1,17 +1,21 @@
 
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { doc, getDoc, collection, getDocs, Firestore, query, orderBy } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useFirestore } from '@/firebase';
 import { type UserProfile, type ResumeSection } from '@/types';
-import { Mail, Phone, MapPin, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { 
+    Mail, Phone, MapPin, Link as LinkIcon, Loader2,
+    Briefcase, GraduationCap, Wrench, FolderKanban, Award, BookText, HeartHandshake, FileText
+} from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
 import Header from '@/components/header';
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, sections: ResumeSection[] } | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
@@ -41,13 +45,35 @@ async function getProfileData(firestore: Firestore, slug: string): Promise<{ pro
     return { profile: profileData, sections };
 }
 
+const SECTION_ICON_MAP: { [key: string]: React.ElementType } = {
+    experience: Briefcase,
+    education: GraduationCap,
+    skills: Wrench,
+    projects: FolderKanban,
+    awards: Award,
+    volunteer: HeartHandshake,
+    certifications: FileText,
+    publications: BookText,
+};
+
+const getIconForSection = (title: string) => {
+    const lowerTitle = title.toLowerCase();
+    for (const key in SECTION_ICON_MAP) {
+        if (lowerTitle.includes(key)) {
+            return SECTION_ICON_MAP[key];
+        }
+    }
+    return BookText; // Default icon
+};
+
+
 type PageProps = {
   params: { slug: string };
 };
 
 export default function ProfileSlugPage({ params }: PageProps) {
   const firestore = useFirestore();
-  const { slug } = use(params);
+  const { slug } = params;
   
   const [data, setData] = useState<{ profile: UserProfile, sections: ResumeSection[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,7 +118,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
-        <div>
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
           {/* Header */}
           <div className="flex flex-col items-center gap-6 p-8 text-center sm:flex-row sm:text-left">
             {profile.avatarUrl && 
@@ -132,25 +158,32 @@ export default function ProfileSlugPage({ params }: PageProps) {
 
           <Separator />
 
-          <div className="p-8">
+          <div className="p-8 space-y-12">
             {/* Summary */}
             {profile.summary && (
-              <section className="mb-8">
+              <section>
                 <h2 className="mb-4 font-headline text-2xl font-bold">About Me</h2>
                 <p className="text-muted-foreground whitespace-pre-wrap">{profile.summary}</p>
               </section>
             )}
             
             {/* Dynamic Sections from Resume */}
-            {sections.map((section, index) => (
-              <React.Fragment key={section.id}>
-                {index > 0 || profile.summary ? <Separator className="my-8" /> : null}
-                <section>
-                    <h2 className="mb-4 font-headline text-2xl font-bold">{section.title}</h2>
-                    <p className="text-muted-foreground whitespace-pre-wrap">{section.content}</p>
+            {sections.map((section) => {
+              const Icon = getIconForSection(section.title);
+              return (
+                <section key={section.id}>
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <Icon className="h-6 w-6" />
+                        </div>
+                        <h2 className="font-headline text-2xl font-bold">{section.title}</h2>
+                    </div>
+                    <p className="text-muted-foreground whitespace-pre-wrap pl-16 border-l-2 border-border ml-6 pl-8 py-2">
+                        {section.content}
+                    </p>
                 </section>
-              </React.Fragment>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>
