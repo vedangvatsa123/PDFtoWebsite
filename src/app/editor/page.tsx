@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -369,9 +369,9 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
     const [activeTab, setActiveTab] = useState(section === 'personal' ? 'settings' : 'content');
 
     const refs = {
-        work: React.useRef<HTMLDivElement>(null),
-        education: React.useRef<HTMLDivElement>(null),
-        skills: React.useRef<HTMLDivElement>(null),
+        work: useRef<HTMLDivElement>(null),
+        education: useRef<HTMLDivElement>(null),
+        skills: useRef<HTMLDivElement>(null),
     };
 
 
@@ -850,5 +850,7 @@ export default function EditorPage() {
   );
 }
 
+
+    
 
     
