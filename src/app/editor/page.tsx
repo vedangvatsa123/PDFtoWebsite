@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -22,6 +21,23 @@ import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocki
 import { Progress } from '@/components/ui/progress';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+
+// Helper function to convert Data URL to File object
+function dataURLtoFile(dataurl: string, filename: string): File | null {
+    const arr = dataurl.split(',');
+    if (arr.length < 2) { return null; }
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    if (!mimeMatch) { return null; }
+    const mime = mimeMatch[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
+}
+
 
 function generateSlug(name: string) {
   const randomString = Math.random().toString(36).substring(2, 7);
@@ -250,6 +266,7 @@ export default function EditorPage() {
     const [activeTab, setActiveTab] = useState('dashboard');
 
     const contentRef = useRef<HTMLDivElement>(null);
+    const processedPendingResume = useRef(false);
 
     // Redirect if user is not logged in
     useEffect(() => {
@@ -257,6 +274,70 @@ export default function EditorPage() {
             router.push('/login');
         }
     }, [user, isUserLoading, router]);
+
+    const handleResumeUpload = useCallback(async (resumeFile: File) => {
+        if (!resumeFile || !user || !firestore) {
+            toast({ variant: 'destructive', title: 'Error', description: 'No file selected or user not logged in.' });
+            return;
+        }
+
+        setIsGenerating(true);
+        toast({ title: 'Processing Resume...', description: `We're analyzing ${resumeFile.name}. Your profile will update shortly.` });
+
+        try {
+            const formData = new FormData();
+            formData.append('resume', resumeFile);
+
+            const response = await fetch('/api/parse-resume', { method: 'POST', body: formData });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to parse resume');
+            }
+
+            const extractedData = await response.json();
+
+            const batch = writeBatch(firestore);
+            const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            
+            const currentProfile = (await getDoc(profileRef)).data() || {};
+            
+            const updatedProfile = {
+                ...currentProfile,
+                fullName: extractedData.fullName || currentProfile.fullName || '',
+                summary: extractedData.summary || currentProfile.summary || '',
+                phone: extractedData.phone || currentProfile.phone || '',
+                website: extractedData.website || currentProfile.website || '',
+            };
+            
+            batch.set(profileRef, updatedProfile, { merge: true });
+
+            const sectionsSnap = await getDocs(collection(firestore, 'users', user.uid, 'resumeSections'));
+            sectionsSnap.forEach(doc => batch.delete(doc.ref));
+
+            extractedData.sections?.forEach((item: Omit<ResumeSection, 'id' | 'userProfileId'>) => {
+                const newSectionRef = doc(collection(firestore, 'users', user.uid, 'resumeSections'));
+                batch.set(newSectionRef, { ...item, userProfileId: user.uid });
+            });
+            
+            await batch.commit();
+
+            toast({ title: 'Success!', description: 'Your profile has been updated with your resume content.' });
+
+            await fetchProfileData();
+
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
+        } finally {
+            setIsGenerating(false);
+            setFile(null);
+            setFileName(null);
+            // Clear the pending resume from session storage
+            sessionStorage.removeItem('pendingResume');
+            sessionStorage.removeItem('pendingResumeName');
+        }
+    }, [user, firestore]); // Removed fetchProfileData from deps to avoid loop, it's called internally
 
     const fetchProfileData = useCallback(async () => {
         if (!user || !firestore) return;
@@ -291,9 +372,11 @@ export default function EditorPage() {
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
             const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
             
-            // Non-blocking writes for new user setup
-            setDocumentNonBlocking(userProfileDocRef, profileData, { merge: true });
-            setDocumentNonBlocking(slugDocRef, { userId: user.uid, ...profileData }, { merge: true });
+            // Use a batch to ensure atomicity
+            const batch = writeBatch(firestore);
+            batch.set(userProfileDocRef, profileData, { merge: true });
+            batch.set(slugDocRef, { userId: user.uid, ...profileData }, { merge: true });
+            await batch.commit();
         }
 
         const dataBundle = {
@@ -308,13 +391,30 @@ export default function EditorPage() {
         lastSavedData.current = JSON.parse(JSON.stringify(dataBundle));
         
         setPageIsLoading(false);
+        return dataBundle;
     }, [user, firestore]);
 
+
     useEffect(() => {
-        if (user && firestore) {
-            fetchProfileData();
+        if (user && firestore && !processedPendingResume.current) {
+            fetchProfileData().then(data => {
+                const pendingResumeDataUrl = sessionStorage.getItem('pendingResume');
+                const pendingResumeName = sessionStorage.getItem('pendingResumeName');
+
+                if (pendingResumeDataUrl && pendingResumeName && data) {
+                    processedPendingResume.current = true; // Mark as processed
+                    const resumeFile = dataURLtoFile(pendingResumeDataUrl, pendingResumeName);
+                    if (resumeFile) {
+                        handleResumeUpload(resumeFile);
+                    } else {
+                        // Clear storage if file conversion fails
+                        sessionStorage.removeItem('pendingResume');
+                        sessionStorage.removeItem('pendingResumeName');
+                    }
+                }
+            });
         }
-    }, [user, firestore, fetchProfileData]);
+    }, [user, firestore, fetchProfileData, handleResumeUpload]);
 
     const checkSlugAvailability = async (slug: string): Promise<boolean> => {
         if (!firestore || !slug) return false;
@@ -338,6 +438,9 @@ export default function EditorPage() {
             ref = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
             const slugRef = doc(firestore, 'userProfilesBySlug', currentProfile.slug!);
             setDocumentNonBlocking(slugRef, { userId: user.uid, ...currentProfile }, { merge: true });
+            if (data.slug) {
+                setInitialSlug(data.slug); // Update initial slug after successful save
+            }
         } else {
              ref = doc(firestore, 'users', user.uid, collectionName, id);
         }
@@ -442,62 +545,9 @@ export default function EditorPage() {
         }
     };
 
-    const handleResumeUpload = async () => {
-        if (!file || !user || !firestore) {
-            toast({ variant: 'destructive', title: 'Error', description: 'No file selected or user not logged in.' });
-            return;
-        }
-
-        setIsGenerating(true);
-        toast({ title: 'Processing Resume...', description: `We're analyzing ${fileName}. Your profile will update shortly.` });
-
-        try {
-            const formData = new FormData();
-            formData.append('resume', file);
-
-            const response = await fetch('/api/parse-resume', { method: 'POST', body: formData });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to parse resume');
-            }
-
-            const extractedData = await response.json();
-
-            const batch = writeBatch(firestore);
-            const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-            
-            const updatedProfile = {
-                ...profile,
-                fullName: extractedData.fullName || profile.fullName || '',
-                summary: extractedData.summary || profile.summary || '',
-                phone: extractedData.phone || profile.phone || '',
-                website: extractedData.website || profile.website || '',
-            };
-            
-            batch.set(profileRef, updatedProfile, { merge: true });
-
-            const sectionsSnap = await getDocs(collection(firestore, 'users', user.uid, 'resumeSections'));
-            sectionsSnap.forEach(doc => batch.delete(doc.ref));
-
-            extractedData.sections?.forEach((item: Omit<ResumeSection, 'id' | 'userProfileId'>) => {
-                const newSectionRef = doc(collection(firestore, 'users', user.uid, 'resumeSections'));
-                batch.set(newSectionRef, { ...item, userProfileId: user.uid });
-            });
-            
-            await batch.commit();
-
-            toast({ title: 'Success!', description: 'Your profile has been updated with your resume content.' });
-
-            await fetchProfileData();
-
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
-        } finally {
-            setIsGenerating(false);
-            setFile(null);
-            setFileName(null);
+    const handleManualUpload = () => {
+        if (file) {
+            handleResumeUpload(file);
         }
     }
     
@@ -538,7 +588,7 @@ export default function EditorPage() {
                     <div className="space-y-8">
                         <ResumeUploadPrompt 
                             onFileChange={handleFileChange}
-                            onUpload={handleResumeUpload}
+                            onUpload={handleManualUpload}
                             fileName={fileName}
                             isGenerating={isGenerating}
                         />
@@ -665,7 +715,3 @@ export default function EditorPage() {
         </div>
     );
 }
-
-    
-
-    
