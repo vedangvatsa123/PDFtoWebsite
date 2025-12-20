@@ -214,23 +214,24 @@ service cloud.firestore {
     /**
      * @description
      *   Allows public read access to resume pages, which are looked up by their unique slug.
-     *   Writes are disabled for clients and must be handled by a Cloud Function to ensure
-     *   data consistency and slug uniqueness.
+     *   Writes are restricted to the owner of the profile.
      * @path
      *   `/userProfilesBySlug/{slug}`
      * @allow
      *   (get) Any visitor reading the public resume at `/userProfilesBySlug/john-doe-123`.
+     * @allow
+     *   (create) A user creating a slug document where the `userId` in the document matches their own auth UID.
      * @deny
-     *   (create) A user attempting to directly create their public resume page, bypassing the Cloud Function.
+     *   (update) A user trying to change the `userId` of an existing slug document.
      * @principle
-     *   Separates public read data from private write data and enforces server-side control for critical operations.
+     *   Separates public read data from private write data and enforces ownership for write operations.
      */
     match /userProfilesBySlug/{slug} {
       allow get: if true;
       allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(request.resource.data.userId) && userIdIsImmutable();
+      allow delete: if isExistingOwner(resource.data.userId);
     }
   }
 }
