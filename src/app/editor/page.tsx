@@ -257,7 +257,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                 </div>
             </div>
             
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Views</CardTitle>
@@ -267,18 +267,6 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                         <div className="text-2xl font-bold">{MOCK_ANALYTICS_DATA.totalViews.toLocaleString()}</div>
                          <p className="text-xs text-muted-foreground">
                            How many times your profile has been seen.
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Recent Views</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">+{MOCK_ANALYTICS_DATA.viewsLast24h}</div>
-                        <p className="text-xs text-muted-foreground">
-                            New views in the last day.
                         </p>
                     </CardContent>
                 </Card>
@@ -294,7 +282,7 @@ const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: st
                 <Card className="col-span-1 lg:col-span-4">
                     <CardHeader>
                         <CardTitle>Daily Views</CardTitle>
-                        <CardDescription>How many views your profile got each day this week.</CardDescription>
+                        <CardDescription>Your profile got <strong>+{MOCK_ANALYTICS_DATA.viewsLast24h}</strong> views in the last day.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Chart data={MOCK_ANALYTICS_DATA.dailyViews} />
@@ -529,7 +517,8 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
         
         if (originalItem && (originalItem as any)[name] !== value) {
             autoSave({ collectionName, id, [name]: value });
-            (originalItem as any)[name] = value;
+            const updatedOriginalItem = originalCollection.find(i => i.id === id);
+            if(updatedOriginalItem) (updatedOriginalItem as any)[name] = value;
         }
     };
 
@@ -875,4 +864,3 @@ export default function EditorPage() {
     </div>
   );
 }
-
