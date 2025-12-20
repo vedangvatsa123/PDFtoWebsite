@@ -11,6 +11,7 @@ import { Briefcase, Mail, Phone, MapPin, Link as LinkIcon, GraduationCap, Award,
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
+import Header from '@/components/header';
 
 async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
@@ -95,6 +96,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <main className="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
         <div>
           {/* Header */}
