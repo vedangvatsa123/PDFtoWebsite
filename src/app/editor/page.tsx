@@ -15,7 +15,7 @@ import { Eye, Trash2, PlusCircle, Save, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Icons } from '@/components/icons';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { mockProfile } from '@/lib/mock-data'; // For initial structure
 
 function generateSlug(name: string) {
@@ -89,7 +89,7 @@ export default function EditorPage() {
           const batch = writeBatch(firestore);
           mockProfile.workExperience.forEach(item => {
               const ref = doc(collection(firestore, 'users', user.uid, 'workExperiences'));
-              batch.set(ref, {...item, userProfileId: user.uid, id: ref.id});
+              batch.set(ref, {...item, userProfileId: user.uid, id: ref.id, title: item.role});
           });
           mockProfile.education.forEach(item => {
               const ref = doc(collection(firestore, 'users', user.uid, 'educations'));
@@ -100,14 +100,24 @@ export default function EditorPage() {
               batch.set(ref, {...item, userProfileId: user.uid, id: ref.id});
           });
           await batch.commit();
-
+          
           // Refetch to get the created data with IDs
-          fetchProfile();
+          const workCol = collection(firestore, 'users', user.uid, 'workExperiences');
+          const eduCol = collection(firestore, 'users', user.uid, 'educations');
+          const skillsCol = collection(firestore, 'users', user.uid, 'skills');
+
+          const [workSnap, eduSnap, skillsSnap] = await Promise.all([
+             getDocs(workCol),
+             getDocs(eduCol),
+             getDocs(skillsCol)
+          ]);
+
+          setWorkExperiences(workSnap.docs.map(d => ({...d.data(), id: d.id } as WorkExperience)));
+          setEducations(eduSnap.docs.map(d => ({...d.data(), id: d.id } as Education)));
+          setSkills(skillsSnap.docs.map(d => ({...d.data(), id: d.id } as Skill)));
         }
         setIsLoading(false);
       };
-      // Helper inside useEffect needs to be imported
-      const getDocs = (c: any) => import('firebase/firestore').then(m => m.getDocs(c));
 
       fetchProfile();
     }
