@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,8 +20,10 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
+  const fromUpload = searchParams.get('from') === 'upload';
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -84,7 +86,9 @@ export default function SignUpPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Sign Up</CardTitle>
           <CardDescription>
-            Enter your information to create an account.
+            {fromUpload 
+              ? "Create an account to generate your profile from your resume." 
+              : "Enter your information to create an account."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -147,3 +151,5 @@ export default function SignUpPage() {
     </div>
   );
 }
+
+    

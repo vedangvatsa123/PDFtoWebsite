@@ -158,11 +158,13 @@ const EditorDashboard = ({ profile, onProfileUpdate }: { profile: Partial<UserPr
                  <Card className="col-span-1 lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Your Public Link</CardTitle>
-                        <Link href={`/${profile.slug}`} target="_blank"><ArrowRight className="h-4 w-4 text-muted-foreground" /></Link>
+                        <Link href={`/${profile.slug}`}>
+                          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                        </Link>
                     </CardHeader>
                     <CardContent>
                          <div className="text-2xl font-bold truncate">
-                             <Link href={`/${profile.slug}`} target="_blank" className="hover:underline">
+                             <Link href={`/${profile.slug}`} className="hover:underline">
                                 /{profile.slug}
                             </Link>
                          </div>
@@ -267,8 +269,18 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard, onProfileUpdat
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+        const oldSlug = profile.slug;
         const newProfile = { ...profile, [name]: value };
         setProfile(newProfile);
+
+        if (name === 'slug' && oldSlug && oldSlug !== value) {
+            // If slug changed, delete the old slug document
+            if (firestore && user) {
+                const oldSlugRef = doc(firestore, 'userProfilesBySlug', oldSlug);
+                deleteDocumentNonBlocking(oldSlugRef);
+            }
+        }
+
         autoSave({ collectionName: 'userProfile', id: user?.uid, [name]: value });
     };
 
@@ -654,3 +666,5 @@ export default function EditorPage() {
     </div>
   );
 }
+
+    
