@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -101,15 +100,15 @@ const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel, showCa
     </Card>
 );
 
-const ProfileCompleteness = ({ profile, work, education, skills }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: Skill[] }) => {
+const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: Skill[], onNavigate: (section: string) => void }) => {
     const completeness = useMemo(() => {
         const checks = [
-            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')) },
-            { name: "Write a Summary", complete: !!(profile.summary && profile.summary !== mockProfile.personalInfo.summary) },
-            { name: "Add Contact Info (Phone or Website)", complete: !!(profile.phone || profile.website) },
-            { name: "Add Work Experience", complete: work.length > 0 },
-            { name: "Add Education", complete: education.length > 0 },
-            { name: "Add at least 3 Skills", complete: skills.length >= 3 },
+            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')), section: 'personal' },
+            { name: "Write a Summary", complete: !!(profile.summary && profile.summary !== mockProfile.personalInfo.summary), section: 'personal' },
+            { name: "Add Contact Info (Phone or Website)", complete: !!(profile.phone || profile.website), section: 'personal' },
+            { name: "Add Work Experience", complete: work.length > 0, section: 'work' },
+            { name: "Add Education", complete: education.length > 0, section: 'education' },
+            { name: "Add at least 3 Skills", complete: skills.length >= 3, section: 'skills' },
         ];
         const completeCount = checks.filter(c => c.complete).length;
         const totalCount = checks.length;
@@ -142,8 +141,11 @@ const ProfileCompleteness = ({ profile, work, education, skills }: { profile: Pa
                         <p className="text-sm font-medium">To-do:</p>
                         <ul className="text-sm text-muted-foreground list-inside space-y-1">
                             {checks.filter(c => !c.complete).map(c => (
-                                <li key={c.name} className="flex items-center gap-2">
-                                    <XCircle className="h-4 w-4 text-destructive" /> {c.name}
+                                 <li key={c.name} className="flex items-center gap-2">
+                                    <XCircle className="h-4 w-4 text-destructive" /> 
+                                    <button onClick={() => onNavigate(c.section)} className="hover:underline text-left">
+                                        {c.name}
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -154,7 +156,7 @@ const ProfileCompleteness = ({ profile, work, education, skills }: { profile: Pa
     );
 };
 
-const EditorDashboard = () => {
+const EditorDashboard = ({ onSwitchToEditor }: { onSwitchToEditor: (section?: string) => void }) => {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const [profile, setProfile] = useState<Partial<UserProfile>>({});
@@ -162,7 +164,6 @@ const EditorDashboard = () => {
     const [education, setEducation] = useState<Education[]>([]);
     const [skills, setSkills] = useState<Skill[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [showEditor, setShowEditor] = useState(false);
 
     const fetchProfileData = useCallback(async () => {
         if (!user || !firestore) return null;
@@ -221,7 +222,6 @@ const EditorDashboard = () => {
                 const skillRef = doc(collection(firestore, 'users', user.uid, 'skills'));
                 setDocumentNonBlocking(skillRef, rest, { merge: true });
             });
-
         }
 
         return { profile: userProfile, work: userWork, education: userEducation, skills: userSkills };
@@ -253,10 +253,6 @@ const EditorDashboard = () => {
             </div>
         )
     }
-    
-    if (showEditor) {
-        return <EditorForm onBackToDashboard={() => setShowEditor(false)} />;
-    }
 
     return (
         <div className="space-y-8">
@@ -274,7 +270,7 @@ const EditorDashboard = () => {
                             </Link>
                         </Button>
                     )}
-                    <Button size="lg" onClick={() => setShowEditor(true)}>
+                    <Button size="lg" onClick={() => onSwitchToEditor()}>
                         <FilePenLine />
                         Edit Your Profile
                     </Button>
@@ -306,7 +302,13 @@ const EditorDashboard = () => {
                         </p>
                     </CardContent>
                 </Card>
-                <ProfileCompleteness profile={profile} work={work} education={education} skills={skills} />
+                <ProfileCompleteness 
+                    profile={profile} 
+                    work={work} 
+                    education={education} 
+                    skills={skills} 
+                    onNavigate={(section) => onSwitchToEditor(section)}
+                />
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="col-span-1 lg:col-span-4">
@@ -324,8 +326,8 @@ const EditorDashboard = () => {
                          <CardDescription>Share this link to show off your profile.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
-                             <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false}>
+                        <div className="text-2xl font-bold truncate p-4 bg-secondary rounded-md">
+                           <Link href={`/${profile.slug}`} className="hover:underline" prefetch={false}>
                                 /{profile.slug}
                             </Link>
                          </div>
@@ -349,7 +351,7 @@ const EditorDashboard = () => {
 };
 
 
-const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) => {
+const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => void, section?: string }) => {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -364,6 +366,14 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
     const [isSaving, setIsSaving] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
     const [activeTheme, setActiveTheme] = useState('default');
+    const [activeTab, setActiveTab] = useState(section === 'personal' ? 'settings' : 'content');
+
+    const refs = {
+        work: React.useRef<HTMLDivElement>(null),
+        education: React.useRef<HTMLDivElement>(null),
+        skills: React.useRef<HTMLDivElement>(null),
+    };
+
 
      const fetchProfileData = useCallback(async () => {
         if (!user || !firestore) return;
@@ -393,6 +403,20 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
     useEffect(() => {
         fetchProfileData();
     }, [fetchProfileData]);
+
+    useEffect(() => {
+        if (section && !isLoading) {
+            if (section === 'personal') {
+                setActiveTab('settings');
+            } else if (refs[section as keyof typeof refs]?.current) {
+                setActiveTab('content');
+                // Timeout to ensure content is rendered before scrolling
+                setTimeout(() => {
+                    refs[section as keyof typeof refs].current?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }, [section, isLoading, refs]);
 
 
     const checkSlugAvailability = async (slug: string): Promise<boolean> => {
@@ -596,14 +620,14 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
                 showCancel={false}
             />
 
-            <Tabs defaultValue="content" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="content">Content</TabsTrigger>
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="content">
-                    <Card>
+                    <Card ref={refs.work}>
                         <CardHeader>
                             <CardTitle>Work Experience</CardTitle>
                             <CardDescription>Detail your professional journey.</CardDescription>
@@ -647,7 +671,7 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
                         </CardContent>
                     </Card>
 
-                    <Card className="mt-6">
+                    <Card className="mt-6" ref={refs.education}>
                         <CardHeader>
                             <CardTitle>Education</CardTitle>
                             <CardDescription>Your academic background.</CardDescription>
@@ -691,7 +715,7 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
                         </CardContent>
                     </Card>
 
-                    <Card className="mt-6">
+                    <Card className="mt-6" ref={refs.skills}>
                         <CardHeader>
                             <CardTitle>Skills</CardTitle>
                             <CardDescription>List your key technical and soft skills.</CardDescription>
@@ -785,12 +809,19 @@ const EditorForm = ({ onBackToDashboard }: { onBackToDashboard: () => void }) =>
 export default function EditorPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const [view, setView] = useState<'dashboard' | 'editor'>('dashboard');
+  const [section, setSection] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
     }
   }, [user, isUserLoading, router]);
+
+  const handleSwitchToEditor = (section?: string) => {
+      setSection(section);
+      setView('editor');
+  };
 
   if (isUserLoading) {
       return (
@@ -808,9 +839,16 @@ export default function EditorPage() {
       <Header />
       <main className="flex-1 bg-secondary/30">
         <div className="container mx-auto max-w-7xl p-4 md:p-8">
-            <EditorDashboard />
+            {view === 'dashboard' ? (
+                <EditorDashboard onSwitchToEditor={handleSwitchToEditor} />
+            ) : (
+                <EditorForm onBackToDashboard={() => setView('dashboard')} section={section} />
+            )}
         </div>
       </main>
     </div>
   );
 }
+
+
+    
