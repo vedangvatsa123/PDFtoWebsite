@@ -78,6 +78,12 @@ export default function Home() {
             <Button size="lg" className="w-full mt-4" onClick={handleUpload}>
                 Create Your Profile Page
             </Button>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Already have an account?{' '}
+              <Link href="/login" className="underline hover:text-primary">
+                Login
+              </Link>
+            </p>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground">
