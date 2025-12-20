@@ -51,6 +51,7 @@ export type UserProfile = {
     avatarUrl?: string;
     avatarHint?: string;
     website?: string;
+    viewCount?: number;
 };
 
 // This corresponds to the mock data structure and what the UI currently uses.

@@ -53,6 +53,12 @@ export default function ProfileSlugPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (slug) {
+      fetch(`/api/views/${slug}`, { method: 'POST' }).catch(console.error);
+    }
+  }, [slug]);
+
+  useEffect(() => {
     if (firestore && slug) {
       setIsLoading(true);
       getProfileData(firestore, slug)

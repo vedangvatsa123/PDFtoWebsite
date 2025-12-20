@@ -15,7 +15,8 @@
         "location": { "type": "string", "description": "The user's location." },
         "summary": { "type": "string", "description": "A brief summary or personal statement." },
         "themeId": { "type": "string", "description": "Reference to Theme. (Relationship: Theme 1:1 UserProfile)" },
-        "slug": { "type": "string", "description": "The URL-friendly slug for the user's profile page." }
+        "slug": { "type": "string", "description": "The URL-friendly slug for the user's profile page." },
+        "viewCount": { "type": "number", "description": "The number of times the public profile has been viewed." }
       },
       "required": ["id", "userId", "fullName", "email", "summary", "slug"]
     },
