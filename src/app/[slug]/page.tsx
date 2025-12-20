@@ -178,9 +178,11 @@ export default function ProfileSlugPage({ params }: PageProps) {
                         </div>
                         <h2 className="font-headline text-2xl font-bold">{section.title}</h2>
                     </div>
-                    <p className="text-muted-foreground whitespace-pre-wrap pl-16 border-l-2 border-border ml-6 pl-8 py-2">
-                        {section.content}
-                    </p>
+                    <div className="border-l-2 border-border ml-6 pl-12">
+                        <p className="text-muted-foreground whitespace-pre-wrap py-2">
+                            {section.content}
+                        </p>
+                    </div>
                 </section>
               );
             })}
