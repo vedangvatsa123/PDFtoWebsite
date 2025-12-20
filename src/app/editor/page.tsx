@@ -926,7 +926,7 @@ const EditorForm = ({ onBackToDashboard, section }: { onBackToDashboard: () => v
 
 
 export default function EditorPage() {
-  const { user, isUserLoading } A= useUser();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const [view, setView] = useState<'dashboard' | 'editor'>('dashboard');
   const [section, setSection] = useState<string | undefined>(undefined);
