@@ -84,7 +84,7 @@ const MOCK_ANALYTICS_DATA = {
 };
 
 const ResumeUploadPrompt = ({ onFileChange, onUpload, fileName, onCancel, showCancel = true }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onUpload: () => void, fileName: string | null, onCancel?: () => void, showCancel?: boolean }) => (
-    <Card className="w-full border-dashed border-2 hover:border-primary transition-colors">
+    <Card className="w-full border-dashed border-2 hover:border-primary transition-colors mb-8">
         <CardHeader>
             <CardTitle>Generate with AI</CardTitle>
             <CardDescription>Upload your resume (PDF) to automatically fill out your profile.</CardDescription>
@@ -422,77 +422,27 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                     </Button>
                 </div>
             </div>
-             {showUploadPrompt ? (
+             
+             {showUploadPrompt && (
                 <ResumeUploadPrompt 
                     onFileChange={handleFileChange}
                     onUpload={handleResumeUpload}
                     fileName={fileName}
                     onCancel={() => setShowUploadPrompt(false)}
                 />
-            ) : (
-                <Tabs defaultValue="personal" className="w-full">
-                    <TabsList className="grid w-full grid-cols-5">
-                        <TabsTrigger value="personal">Personal</TabsTrigger>
-                        <TabsTrigger value="experience">Experience</TabsTrigger>
-                        <TabsTrigger value="education">Education</TabsTrigger>
-                        <TabsTrigger value="skills">Skills</TabsTrigger>
-                        <TabsTrigger value="settings">Settings</TabsTrigger>
-                    </TabsList>
+            )}
 
-                    <TabsContent value="personal">
+            <Tabs defaultValue="content" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="content">Content</TabsTrigger>
+                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="content">
                     <Card>
                         <CardHeader>
-                        <CardTitle>Personal Information</CardTitle>
-                        <CardDescription>This is your public calling card. Make it count.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                        
-                        <ResumeUploadPrompt
-                            onFileChange={handleFileChange}
-                            onUpload={handleResumeUpload}
-                            fileName={fileName}
-                            showCancel={false}
-                         />
-
-                        <div className="flex items-center space-x-4 pt-6">
-                            <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
-                            <Button variant="outline">Change Photo</Button>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
-                            <Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} />
-                            </div>
-                            <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} />
-                            </div>
-                            <div className="space-y-2">
-                            <Label htmlFor="phone">Phone</Label>
-                            <Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} />
-                            </div>
-                            <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
-                            <Input id="location" name="location" value={profile.location || ''} onChange={handleProfileChange} />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="website">Website/Portfolio</Label>
-                            <Input id="website" name="website" value={profile.website || ''} onChange={handleProfileChange} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="summary">Summary</Label>
-                            <Textarea id="summary" name="summary" value={profile.summary || ''} onChange={handleProfileChange} rows={5} />
-                        </div>
-                        </CardContent>
-                    </Card>
-                    </TabsContent>
-
-                    <TabsContent value="experience">
-                    <Card>
-                        <CardHeader>
-                        <CardTitle>Work Experience</CardTitle>
-                        <CardDescription>Detail your professional journey.</CardDescription>
+                            <CardTitle>Work Experience</CardTitle>
+                            <CardDescription>Detail your professional journey.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {workExperiences.map((item) => (
@@ -532,81 +482,116 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                             </Button>
                         </CardContent>
                     </Card>
-                    </TabsContent>
 
-                    <TabsContent value="education">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Education</CardTitle>
-                                <CardDescription>Your academic background.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                {educations.map((item) => (
-                                <Card key={item.id} className="p-4">
-                                        <div className="flex justify-between items-center mb-4">
-                                        <p className="font-semibold">{item.degree} from {item.institution}</p>
-                                            <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id, 'educations', setEducations)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                    <Label>Institution</Label>
-                                                    <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Degree / Certificate</Label>
-                                                    <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)}/>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Start Date</Label>
-                                                    <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>End Date</Label>
-                                                    <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
-                                                </div>
+                    <Card className="mt-6">
+                        <CardHeader>
+                            <CardTitle>Education</CardTitle>
+                            <CardDescription>Your academic background.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {educations.map((item) => (
+                            <Card key={item.id} className="p-4">
+                                    <div className="flex justify-between items-center mb-4">
+                                    <p className="font-semibold">{item.degree} from {item.institution}</p>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id, 'educations', setEducations)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                            <div className="space-y-2">
+                                                <Label>Institution</Label>
+                                                <Input name="institution" value={item.institution} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Description</Label>
-                                                <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
+                                                <Label>Degree / Certificate</Label>
+                                                <Input name="degree" value={item.degree} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)}/>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Start Date</Label>
+                                                <Input name="startDate" value={item.startDate} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>End Date</Label>
+                                                <Input name="endDate" value={item.endDate || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
                                             </div>
                                         </div>
-                                    </Card>
-                                ))}
-                                <Button variant="outline" className="w-full" onClick={() => handleAddItem({ institution: 'New School', degree: 'Degree', startDate: 'Date', userProfileId: user?.uid }, 'educations', setEducations)}>
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Education
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                    
-                    <TabsContent value="skills">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Skills</CardTitle>
-                                <CardDescription>List your key technical and soft skills.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex flex-wrap gap-2">
-                                    {skills.map(skill => (
-                                        <div key={skill.id} className="flex items-center rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground">
-                                            {skill.name}
-                                            <Button variant="ghost" size="icon" className="ml-1 h-5 w-5" onClick={() => handleDeleteItem(skill.id, 'skills', setSkills)}><Trash2 className="h-3 w-3"/></Button>
+                                        <div className="space-y-2">
+                                            <Label>Description</Label>
+                                            <Textarea name="description" value={item.description || ''} onChange={(e) => handleSubcollectionChange(item.id, e, educations, setEducations)} />
                                         </div>
-                                    ))}
-                                </div>
-                                <div className="mt-4 flex gap-2">
-                                    <Input placeholder="Add a new skill..." value={newSkill} onChange={(e) => setNewSkill(e.target.value)} />
-                                    <Button onClick={handleAddSkill}><PlusCircle className="mr-2 h-4 w-4" /> Add Skill</Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                                    </div>
+                                </Card>
+                            ))}
+                            <Button variant="outline" className="w-full" onClick={() => handleAddItem({ institution: 'New School', degree: 'Degree', startDate: 'Date', userProfileId: user?.uid }, 'educations', setEducations)}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Add Education
+                            </Button>
+                        </CardContent>
+                    </Card>
 
-                    <TabsContent value="settings">
+                    <Card className="mt-6">
+                        <CardHeader>
+                            <CardTitle>Skills</CardTitle>
+                            <CardDescription>List your key technical and soft skills.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                                {skills.map(skill => (
+                                    <div key={skill.id} className="flex items-center rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground">
+                                        {skill.name}
+                                        <Button variant="ghost" size="icon" className="ml-1 h-5 w-5" onClick={() => handleDeleteItem(skill.id, 'skills', setSkills)}><Trash2 className="h-3 w-3"/></Button>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-4 flex gap-2">
+                                <Input placeholder="Add a new skill..." value={newSkill} onChange={(e) => setNewSkill(e.target.value)} />
+                                <Button onClick={handleAddSkill}><PlusCircle className="mr-2 h-4 w-4" /> Add Skill</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="settings">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Settings</CardTitle>
+                            <CardTitle>Personal Information</CardTitle>
+                            <CardDescription>This is your public calling card. Make it count.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center space-x-4">
+                                <Image src={profile.avatarUrl || '/placeholder.svg'} alt="User Avatar" width={80} height={80} className="rounded-full" data-ai-hint={profile.avatarHint || 'person portrait'} />
+                                <Button variant="outline">Change Photo</Button>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                <Label htmlFor="fullName">Full Name</Label>
+                                <Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} />
+                                </div>
+                                <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} />
+                                </div>
+                                <div className="space-y-2">
+                                <Label htmlFor="phone">Phone</Label>
+                                <Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} />
+                                </div>
+                                <div className="space-y-2">
+                                <Label htmlFor="location">Location</Label>
+                                <Input id="location" name="location" value={profile.location || ''} onChange={handleProfileChange} />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="website">Website/Portfolio</Label>
+                                <Input id="website" name="website" value={profile.website || ''} onChange={handleProfileChange} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="summary">Summary</Label>
+                                <Textarea id="summary" name="summary" value={profile.summary || ''} onChange={handleProfileChange} rows={5} />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="mt-6">
+                        <CardHeader>
+                            <CardTitle>Profile Settings</CardTitle>
                             <CardDescription>Manage your public profile URL and theme.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
@@ -626,9 +611,8 @@ const EditorForm = ({ profile: initialProfile, onBackToDashboard }: { profile: P
                             </div>
                         </CardContent>
                     </Card>
-                    </TabsContent>
-                </Tabs>
-            )}
+                </TabsContent>
+            </Tabs>
         </div>
     );
 };
