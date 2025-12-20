@@ -54,13 +54,9 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
   const firestore = useFirestore();
   const [data, setData] = useState<{ profile: UserProfile, work: WorkExperience[], education: Education[], skills: Skill[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [slug, setSlug] = useState<string | null>(null);
 
   useEffect(() => {
-    setSlug(params.slug);
-  }, [params]);
-
-  useEffect(() => {
+    const slug = params.slug;
     if (firestore && slug) {
       getProfileData(firestore, slug)
         .then(profileData => {
@@ -74,7 +70,7 @@ export default function ProfileSlugPage({ params }: { params: { slug: string } }
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }
-  }, [firestore, slug]);
+  }, [firestore, params.slug]);
 
   if (isLoading) {
     return (
