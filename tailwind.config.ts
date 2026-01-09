@@ -11,10 +11,6 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
-        montserrat: ['var(--font-montserrat)'],
-        playfair: ['var(--font-playfair)'],
-        manrope: ['var(--font-manrope)'],
-        lato: ['var(--font-lato)'],
       },
       colors: {
         background: 'hsl(var(--background))',

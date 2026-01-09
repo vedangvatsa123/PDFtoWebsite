@@ -18,7 +18,7 @@ export default function TemplateModern(props: ProfileData) {
   const primaryBgSoftColor = 'blue-50';
 
   return (
-    <div className={cn("min-h-screen bg-gray-50 text-gray-700", "font-manrope")}>
+    <div className={cn("min-h-screen bg-gray-50 text-gray-700")}>
       {/* Header Bar */}
       <div className={`h-2 bg-${primaryColor}`} />
 
