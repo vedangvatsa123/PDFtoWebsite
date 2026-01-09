@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -15,7 +14,7 @@
         "location": { "type": "string", "description": "The user's location." },
         "website": { "type": "string", "description": "The user's personal website or portfolio link." },
         "summary": { "type": "string", "description": "A brief summary or personal statement." },
-        "themeId": { "type": "string", "description": "Reference to Theme. (Relationship: Theme 1:1 UserProfile)" },
+        "themeId": { "type": "string", "description": "The ID of the selected theme for the profile page." },
         "slug": { "type": "string", "description": "The URL-friendly slug for the user's profile page." },
         "viewCount": { "type": "number", "description": "The number of times the public profile has been viewed." }
       },
@@ -68,15 +67,13 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Theme",
       "type": "object",
-      "description": "Represents a visual theme that can be applied to a user's profile.",
+      "description": "Represents a visual theme for a public profile page.",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "primaryColor": { "type": "string" },
-        "secondaryColor": { "type": "string" },
-        "fontFamily": { "type": "string" }
+        "id": { "type": "string", "description": "Unique identifier for the theme (e.g., 'modern-creative')." },
+        "name": { "type": "string", "description": "Display name of the theme (e.g., 'Modern Creative')." },
+        "thumbnailUrl": { "type": "string", "description": "URL for a small preview image of the theme." }
       },
-      "required": ["id", "name", "primaryColor", "fontFamily"]
+      "required": ["id", "name", "thumbnailUrl"]
     },
     "User": {
       "$schema": "http://json-schema.org/draft-07/schema#",

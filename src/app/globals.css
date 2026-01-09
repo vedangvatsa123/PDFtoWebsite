@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  body[data-radix-scroll-area-hidden] {
+    position: fixed !important;
+    overflow: hidden !important;
+    width: 100%;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

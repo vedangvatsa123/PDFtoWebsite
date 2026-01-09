@@ -1,5 +1,3 @@
-
-
 export type Skill = {
     id: string;
     userProfileId: string;
@@ -49,6 +47,12 @@ export type UserProfile = {
     website?: string;
     viewCount?: number;
 };
+
+export type Theme = {
+  id: string;
+  name: string;
+  thumbnailUrl: string;
+}
 
 // This represents the fully structured profile data
 export type Profile = {
