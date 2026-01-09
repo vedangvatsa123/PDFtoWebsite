@@ -27,14 +27,6 @@ service cloud.firestore {
       return request.resource.data.userId == resource.data.userId;
     }
 
-    function hasCorrectUserProfileIdOnCreate(userId) {
-      return request.resource.data.userProfileId == userId;
-    }
-
-    function userProfileIdIsImmutable() {
-      return request.resource.data.userProfileId == resource.data.userProfileId;
-    }
-
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
@@ -44,19 +36,26 @@ service cloud.firestore {
     }
 
     match /users/{userId}/userProfile/{profileId} {
-      allow get: if isOwner(userId);
+      allow get: if isOwner(userId) || exists(/databases/$(database)/documents/userProfilesBySlug/$(profileId));
       allow list: if isOwner(userId);
       allow create: if isOwner(userId) && hasCorrectUserIdOnCreate(userId);
       allow update: if isExistingOwner(userId) && userIdIsImmutable();
       allow delete: if isExistingOwner(userId);
     }
-
-    match /users/{userId}/resumeSections/{sectionId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && hasCorrectUserProfileIdOnCreate(userId);
-      allow update: if isExistingOwner(userId) && userProfileIdIsImmutable();
-      allow delete: if isExistingOwner(userId);
+    
+    match /users/{userId}/workExperience/{experienceId} {
+      allow read, list: if isOwner(userId) || exists(/databases/$(database)/documents/users/$(userId));
+      allow write: if isOwner(userId);
+    }
+    
+    match /users/{userId}/education/{educationId} {
+      allow read, list: if isOwner(userId) || exists(/databases/$(database)/documents/users/$(userId));
+      allow write: if isOwner(userId);
+    }
+    
+    match /users/{userId}/skills/{skillId} {
+      allow read, list: if isOwner(userId) || exists(/databases/$(database)/documents/users/$(userId));
+      allow write: if isOwner(userId);
     }
 
     match /themes/{themeId} {
