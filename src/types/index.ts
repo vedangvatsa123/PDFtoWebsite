@@ -1,24 +1,23 @@
 
+
 export type Skill = {
     id: string;
-    userProfileId?: string;
+    userProfileId: string;
     name: string;
-    level?: string;
 };
 
 export type Education = {
     id:string;
-    userProfileId?: string;
+    userProfileId: string;
     institution: string;
     degree: string;
     startDate: string;
     endDate?: string;
-    description?: string;
 };
 
 export type WorkExperience = {
     id: string;
-    userProfileId?: string;
+    userProfileId: string;
     company: string;
     title: string;
     startDate: string;
@@ -26,15 +25,12 @@ export type WorkExperience = {
     description: string;
 };
 
-// A flexible type to hold any section from a parsed resume.
+// Generic section type is deprecated but kept for reference during migration
 export type ResumeSection = {
     id: string;
     userProfileId: string;
-    // The title of the section from the resume, e.g., "Work Experience", "Projects"
     title: string;
-    // The raw text content of the section.
     content: string;
-    // To maintain the order from the resume.
     order: number;
 };
 
@@ -54,37 +50,10 @@ export type UserProfile = {
     viewCount?: number;
 };
 
-// This corresponds to the mock data structure and what the UI currently uses.
-// We will migrate towards the Firestore-aligned types.
+// This represents the fully structured profile data
 export type Profile = {
-  personalInfo: {
-    name: string;
-    email: string;
-    phone: string;
-    location: string;
-    website: string;
-    summary: string;
-    avatarUrl: string;
-    avatarHint: string;
-  };
-  workExperience: {
-    id: string;
-    company: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-  }[];
-  education: {
-    id: string;
-    institution: string;
-    degree: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-  }[];
-  skills: {
-    id: string;
-    name: string;
-  }[];
+  personalInfo: UserProfile;
+  workExperience: WorkExperience[];
+  education: Education[];
+  skills: Skill[];
 };

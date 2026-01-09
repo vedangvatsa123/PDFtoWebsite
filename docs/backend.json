@@ -13,6 +13,7 @@
         "email": { "type": "string", "description": "The user's email address.", "format": "email" },
         "phone": { "type": "string", "description": "The user's phone number." },
         "location": { "type": "string", "description": "The user's location." },
+        "website": { "type": "string", "description": "The user's personal website or portfolio link." },
         "summary": { "type": "string", "description": "A brief summary or personal statement." },
         "themeId": { "type": "string", "description": "Reference to Theme. (Relationship: Theme 1:1 UserProfile)" },
         "slug": { "type": "string", "description": "The URL-friendly slug for the user's profile page." },
@@ -20,19 +21,48 @@
       },
       "required": ["id", "userId", "fullName", "email", "summary", "slug"]
     },
-    "ResumeSection": {
+    "WorkExperience": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "ResumeSection",
+      "title": "WorkExperience",
       "type": "object",
-      "description": "Represents a generic section from a user's resume.",
+      "description": "Represents a single work experience entry.",
       "properties": {
-        "id": { "type": "string", "description": "Unique identifier for the ResumeSection entity." },
-        "userProfileId": { "type": "string", "description": "Reference to UserProfile. (Relationship: UserProfile 1:N ResumeSection)" },
-        "title": { "type": "string", "description": "The title of the section, e.g., 'Work Experience', 'Projects'." },
-        "content": { "type": "string", "description": "The raw text content of that section." },
-        "order": { "type": "number", "description": "The order in which the section appeared on the resume." }
+        "id": { "type": "string" },
+        "userProfileId": { "type": "string" },
+        "company": { "type": "string" },
+        "title": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "description": { "type": "string" }
       },
-      "required": ["id", "userProfileId", "title", "content", "order"]
+      "required": ["company", "title", "startDate", "description"]
+    },
+    "Education": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Education",
+      "type": "object",
+      "description": "Represents a single education entry.",
+      "properties": {
+        "id": { "type": "string" },
+        "userProfileId": { "type": "string" },
+        "institution": { "type": "string" },
+        "degree": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" }
+      },
+      "required": ["institution", "degree", "startDate"]
+    },
+    "Skill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Skill",
+      "type": "object",
+      "description": "Represents a single skill.",
+      "properties": {
+        "id": { "type": "string" },
+        "userProfileId": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
     },
     "Theme": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -40,11 +70,11 @@
       "type": "object",
       "description": "Represents a visual theme that can be applied to a user's profile.",
       "properties": {
-        "id": { "type": "string", "description": "Unique identifier for the Theme entity." },
-        "name": { "type": "string", "description": "The name of the theme." },
-        "primaryColor": { "type": "string", "description": "The primary color of the theme (e.g., hex code)." },
-        "secondaryColor": { "type": "string", "description": "The secondary color of the theme." },
-        "fontFamily": { "type": "string", "description": "The font family used in the theme." }
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "primaryColor": { "type": "string" },
+        "secondaryColor": { "type": "string" },
+        "fontFamily": { "type": "string" }
       },
       "required": ["id", "name", "primaryColor", "fontFamily"]
     },
@@ -54,9 +84,9 @@
       "type": "object",
       "description": "Represents a user of the application.",
       "properties": {
-        "id": { "type": "string", "description": "Unique identifier for the User entity." },
-        "username": { "type": "string", "description": "The user's username." },
-        "email": { "type": "string", "description": "The user's email address.", "format": "email" }
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
       },
       "required": ["id", "username", "email"]
     }
@@ -68,43 +98,31 @@
     "structure": [
       {
         "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": { "$ref": "#/backend/entities/User" },
-          "description": "Stores user authentication information."
-        }
+        "definition": { "schema": { "$ref": "#/entities/User" } }
       },
       {
-        "path": "/users/{userId}/userProfile",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": { "$ref": "#/backend/entities/UserProfile" },
-          "description": "Stores user profile data."
-        }
+        "path": "/users/{userId}/userProfile/{profileId}",
+        "definition": { "schema": { "$ref": "#/entities/UserProfile" } }
       },
       {
-        "path": "/users/{userId}/resumeSections/{sectionId}",
-        "definition": {
-          "entityName": "ResumeSection",
-          "schema": { "$ref": "#/backend/entities/ResumeSection" },
-          "description": "Stores flexible content sections parsed from a user's resume."
-        }
+        "path": "/users/{userId}/workExperience/{experienceId}",
+        "definition": { "schema": { "$ref": "#/entities/WorkExperience" } }
+      },
+      {
+        "path": "/users/{userId}/education/{educationId}",
+        "definition": { "schema": { "$ref": "#/entities/Education" } }
+      },
+      {
+        "path": "/users/{userId}/skills/{skillId}",
+        "definition": { "schema": { "$ref": "#/entities/Skill" } }
       },
       {
         "path": "/themes/{themeId}",
-        "definition": {
-          "entityName": "Theme",
-          "schema": { "$ref": "#/backend/entities/Theme" },
-          "description": "Stores available themes for user profiles."
-        }
+        "definition": { "schema": { "$ref": "#/entities/Theme" } }
       },
       {
         "path": "/userProfilesBySlug/{slug}",
-        "definition": {
-          "entityName": "UserProfileSlug",
-          "schema": { "$ref": "#/backend/entities/UserProfile" },
-          "description": "Stores slugs for user profiles for efficient public lookup."
-        }
+        "definition": { "schema": { "$ref": "#/entities/UserProfile" } }
       }
     ]
   }

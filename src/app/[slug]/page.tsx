@@ -6,17 +6,25 @@ import { doc, getDoc, collection, getDocs, Firestore, query, orderBy } from 'fir
 import Image from 'next/image';
 import Link from 'next/link';
 import { useFirestore } from '@/firebase';
-import { type UserProfile, type ResumeSection } from '@/types';
+import { type UserProfile, type WorkExperience, type Education, type Skill } from '@/types';
 import { 
     Mail, Phone, MapPin, Link as LinkIcon, Loader2,
-    Briefcase, GraduationCap, Wrench, FolderKanban, Award, BookText, HeartHandshake, FileText
+    Briefcase, GraduationCap, Wrench
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { notFound } from 'next/navigation';
 import Header from '@/components/header';
 import React from 'react';
+import { Badge } from '@/components/ui/badge';
 
-async function getProfileData(firestore: Firestore, slug: string): Promise<{ profile: UserProfile, sections: ResumeSection[] } | null> {
+type ProfileData = {
+    profile: UserProfile;
+    workExperience: WorkExperience[];
+    education: Education[];
+    skills: Skill[];
+};
+
+async function getProfileData(firestore: Firestore, slug: string): Promise<ProfileData | null> {
     const slugRef = doc(firestore, 'userProfilesBySlug', slug);
     const slugSnap = await getDoc(slugRef);
 
@@ -27,44 +35,30 @@ async function getProfileData(firestore: Firestore, slug: string): Promise<{ pro
     const { userId } = slugSnap.data();
     if (!userId) return null;
 
+    // Fetch profile, work experience, education, and skills in parallel
     const profileRef = doc(firestore, 'users', userId, 'userProfile', userId);
-    const profileSnap = await getDoc(profileRef);
+    const workQuery = query(collection(firestore, 'users', userId, 'workExperience'), orderBy('startDate', 'desc'));
+    const eduQuery = query(collection(firestore, 'users', userId, 'education'), orderBy('startDate', 'desc'));
+    const skillsQuery = query(collection(firestore, 'users', userId, 'skills'));
+
+    const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
+        getDoc(profileRef),
+        getDocs(workQuery),
+        getDocs(eduQuery),
+        getDocs(skillsQuery)
+    ]);
 
     if (!profileSnap.exists()) {
         return null;
     }
     
     const profileData = profileSnap.data() as UserProfile;
+    const workExperience = workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience));
+    const education = eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education));
+    const skills = skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill));
 
-    const sectionsQuery = query(collection(firestore, 'users', userId, 'resumeSections'), orderBy('order'));
-    const sectionsSnap = await getDocs(sectionsQuery);
-    
-    const sections = sectionsSnap.docs.map(d => ({...d.data(), id: d.id } as ResumeSection));
-
-    return { profile: profileData, sections };
+    return { profile: profileData, workExperience, education, skills };
 }
-
-const SECTION_ICON_MAP: { [key: string]: React.ElementType } = {
-    experience: Briefcase,
-    education: GraduationCap,
-    skills: Wrench,
-    projects: FolderKanban,
-    awards: Award,
-    volunteer: HeartHandshake,
-    certifications: FileText,
-    publications: BookText,
-};
-
-const getIconForSection = (title: string) => {
-    const lowerTitle = title.toLowerCase();
-    for (const key in SECTION_ICON_MAP) {
-        if (lowerTitle.includes(key)) {
-            return SECTION_ICON_MAP[key];
-        }
-    }
-    return BookText; // Default icon
-};
-
 
 type PageProps = {
   params: { slug: string };
@@ -74,7 +68,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
   const firestore = useFirestore();
   const { slug } = params;
   
-  const [data, setData] = useState<{ profile: UserProfile, sections: ResumeSection[] } | null>(null);
+  const [data, setData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -111,7 +105,7 @@ export default function ProfileSlugPage({ params }: PageProps) {
     return notFound();
   }
 
-  const { profile, sections } = data;
+  const { profile, workExperience, education, skills } = data;
 
   return (
     <div className="min-h-screen bg-background">
@@ -158,7 +152,6 @@ export default function ProfileSlugPage({ params }: PageProps) {
           <Separator />
 
           <div className="p-8 space-y-12">
-            {/* Summary */}
             {profile.summary && (
               <section>
                 <h2 className="mb-4 text-2xl font-bold">About Me</h2>
@@ -166,25 +159,65 @@ export default function ProfileSlugPage({ params }: PageProps) {
               </section>
             )}
             
-            {/* Dynamic Sections from Resume */}
-            {sections.map((section) => {
-              const Icon = getIconForSection(section.title);
-              return (
-                <section key={section.id}>
+            {workExperience.length > 0 && (
+                <section>
                     <div className="flex items-center gap-4 mb-6">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <Icon className="h-6 w-6" />
+                            <Briefcase className="h-6 w-6" />
                         </div>
-                        <h2 className="text-2xl font-bold">{section.title}</h2>
+                        <h2 className="text-2xl font-bold">Work Experience</h2>
                     </div>
-                    <div className="border-l-2 border-border ml-6 pl-12">
-                        <p className="text-muted-foreground whitespace-pre-wrap py-2">
-                            {section.content}
-                        </p>
+                    <div className="space-y-8 border-l-2 border-border ml-6 pl-12">
+                        {workExperience.map(job => (
+                            <div key={job.id} className="relative">
+                                <div className="absolute -left-[58px] top-1 h-4 w-4 rounded-full bg-primary" />
+                                <p className="font-semibold text-lg">{job.title}</p>
+                                <p className="text-muted-foreground">{job.company}</p>
+                                <p className="text-sm text-muted-foreground">{job.startDate} - {job.endDate || 'Present'}</p>
+                                <p className="mt-2 whitespace-pre-wrap">{job.description}</p>
+                            </div>
+                        ))}
                     </div>
                 </section>
-              );
-            })}
+            )}
+            
+            {education.length > 0 && (
+                <section>
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <GraduationCap className="h-6 w-6" />
+                        </div>
+                        <h2 className="text-2xl font-bold">Education</h2>
+                    </div>
+                     <div className="space-y-8 border-l-2 border-border ml-6 pl-12">
+                        {education.map(edu => (
+                           <div key={edu.id} className="relative">
+                                <div className="absolute -left-[58px] top-1 h-4 w-4 rounded-full bg-primary" />
+                                <p className="font-semibold text-lg">{edu.degree}</p>
+                                <p className="text-muted-foreground">{edu.institution}</p>
+                                <p className="text-sm text-muted-foreground">{edu.startDate} - {edu.endDate || 'Present'}</p>
+                           </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+            
+            {skills.length > 0 && (
+                <section>
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <Wrench className="h-6 w-6" />
+                        </div>
+                        <h2 className="text-2xl font-bold">Skills</h2>
+                    </div>
+                    <div className="flex flex-wrap gap-2 ml-6">
+                        {skills.map(skill => (
+                            <Badge key={skill.id} variant="secondary" className="text-lg py-1 px-4">{skill.name}</Badge>
+                        ))}
+                    </div>
+                </section>
+            )}
+
           </div>
         </div>
       </main>
