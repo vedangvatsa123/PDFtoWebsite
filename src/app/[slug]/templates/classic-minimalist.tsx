@@ -13,7 +13,7 @@ export default function TemplateClassic(props: ProfileData) {
   const { profile, workExperience, education, skills } = props;
 
   return (
-    <div className={cn("min-h-screen bg-gray-50 text-gray-800", "font-lato")}>
+    <div className={cn("min-h-screen bg-gray-50 text-gray-800")}>
       <main className="container mx-auto max-w-4xl p-4 sm:p-8 md:p-12">
         <div className="bg-white p-12 rounded-lg shadow-md">
           {/* Header */}

@@ -13,7 +13,7 @@ export default function TemplateMonochrome(props: ProfileData) {
   const { profile, workExperience, education, skills } = props;
 
   return (
-    <div className={cn("min-h-screen", "font-playfair")}>
+    <div className={cn("min-h-screen")}>
       <div className="flex flex-col md:flex-row min-h-screen">
         {/* Sidebar */}
         <aside className="w-full md:w-1/3 bg-gray-900 text-white p-8 md:p-12 flex flex-col items-center text-center md:items-start md:text-left">
