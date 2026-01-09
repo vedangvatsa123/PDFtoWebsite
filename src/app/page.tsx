@@ -70,21 +70,21 @@ export default function Home() {
     <div className="flex h-screen flex-col">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="flex flex-col items-center space-y-8 text-center">
+        <div className="flex flex-col items-center space-y-6 text-center">
           
           <Image 
             src="/images/cvtopdf.png"
             alt="Resume to Website"
-            width={300}
-            height={300}
-            className="mb-4"
+            width={200}
+            height={200}
+            className="mb-2"
           />
 
-          <div className="space-y-3">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your Resume into a Website
             </h1>
-            <p className="mx-auto text-muted-foreground md:text-xl">
+            <p className="mx-auto text-muted-foreground md:text-lg">
               Stop sending PDFs. Get a professional, shareable web page in minutes.
             </p>
           </div>
@@ -94,14 +94,14 @@ export default function Home() {
                 <Button size="lg" className="w-full mt-4" asChild>
                     <Link href="/editor">Go to Your Editor</Link>
                 </Button>
-                <p className="mt-4 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                     Welcome back, {user.displayName || user.email}!
                 </p>
             </div>
           ) : (
             <>
               <div className="w-full max-w-md">
-                <label htmlFor="resume-upload" className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-colors hover:bg-accent/50 ${isProcessingFile ? 'cursor-wait' : ''}`}>
+                <label htmlFor="resume-upload" className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:bg-accent/50 ${isProcessingFile ? 'cursor-wait' : ''}`}>
                     {isProcessingFile ? (
                         <>
                             <Loader2 className="mr-4 h-8 w-8 animate-spin text-muted-foreground" />
@@ -117,14 +117,14 @@ export default function Home() {
                     )}
                     <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isProcessingFile} />
                 </label>
-                <p className="mt-4 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                   Your profile will be generated automatically. <br/>
                   Already have an account?{' '}
                   <LoginDialog />
                 </p>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-8">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-6">
                 <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">1</div>
                     <span className="font-medium">Upload Resume</span>
