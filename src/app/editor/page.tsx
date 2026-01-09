@@ -1,18 +1,17 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import type { UserProfile, WorkExperience, Education, Skill } from '@/types';
+import type { UserProfile, WorkExperience, Education, Skill, Theme } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, Trophy, CheckCircle, XCircle } from 'lucide-react';
+import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, Trophy, CheckCircle, XCircle, Palette } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -220,6 +219,11 @@ export default function EditorPage() {
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeThemeId, setActiveThemeId] = useState<string | undefined>('modern-creative');
+
+    const themesQuery = useMemo(() => firestore ? query(collection(firestore, 'themes')) : null, [firestore]);
+    const { data: themes } = useCollection<Theme>(themesQuery);
+
 
     const processedPendingResume = useRef(false);
 
@@ -324,7 +328,7 @@ export default function EditorPage() {
                 slug: generateSlug(user.displayName || 'user'),
                 avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
                 avatarHint: 'person portrait',
-                themeId: 'default',
+                themeId: 'modern-creative',
                 viewCount: 0,
             };
             const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
@@ -337,6 +341,7 @@ export default function EditorPage() {
 
         setProfile(profileData);
         setInitialSlug(profileData.slug);
+        setActiveThemeId(profileData.themeId);
         setWorkItems(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
         setEducationItems(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
         setSkillItems(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
@@ -447,6 +452,11 @@ export default function EditorPage() {
         }
     };
     
+    const handleThemeChange = (themeId: string) => {
+        setActiveThemeId(themeId);
+        autoSave('userProfile', user!.uid, { themeId });
+    };
+
     if (isUserLoading || pageIsLoading) {
       return (
           <div className="flex h-screen flex-col">
@@ -484,7 +494,7 @@ export default function EditorPage() {
                     <div className="space-y-8">
                         <ResumeUploadPrompt onFileChange={handleFileChange} onUpload={() => file && handleResumeUpload(file)} fileName={fileName} isGenerating={isGenerating} />
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <div className="flex justify-center"><TabsList><TabsTrigger value="dashboard">Dashboard</TabsTrigger><TabsTrigger value="content">Content</TabsTrigger></TabsList></div>
+                            <div className="flex justify-center"><TabsList><TabsTrigger value="dashboard">Dashboard</TabsTrigger><TabsTrigger value="content">Content</TabsTrigger><TabsTrigger value="appearance">Appearance</TabsTrigger></TabsList></div>
                              <TabsContent value="dashboard">
                                 <div className="grid gap-6 pt-6">
                                      <Card>
@@ -570,6 +580,31 @@ export default function EditorPage() {
 
 								</div>
 							</TabsContent>
+                            <TabsContent value="appearance">
+                                <div className="space-y-6 pt-6">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2"><Palette /> Select a Theme</CardTitle>
+                                            <CardDescription>Choose a visual theme for your public profile page.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            {themes?.map(theme => (
+                                                <div key={theme.id} className="relative cursor-pointer group" onClick={() => handleThemeChange(theme.id)}>
+                                                    <div className={`aspect-video w-full rounded-md border-2 ${activeThemeId === theme.id ? 'border-primary' : 'border-border'}`}>
+                                                        <Image src={theme.thumbnailUrl || '/placeholder.svg'} alt={theme.name} width={300} height={169} className="w-full h-full object-cover rounded-sm" />
+                                                    </div>
+                                                    <p className="text-sm font-medium mt-2 text-center">{theme.name}</p>
+                                                    {activeThemeId === theme.id && (
+                                                        <div className="absolute top-2 right-2 flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
+                                                            <CheckCircle className="w-4 h-4" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </TabsContent>
 						</Tabs>
 					</div>
 				</div>
