@@ -417,12 +417,14 @@ export default function EditorPage() {
     };
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (!user) return;
         const { name, value } = e.target;
         if ((profile as any)[name] === value) return; // No change
+        
         if (name === 'slug' && value !== initialSlug) {
             const slugRef = doc(firestore, 'userProfilesBySlug', value);
             const slugSnap = await getDoc(slugRef);
-            if (slugSnap.exists() && slugSnap.data().userId !== user?.uid) {
+            if (slugSnap.exists() && slugSnap.data().userId !== user.uid) {
                 toast({ variant: 'destructive', title: 'URL Unavailable', description: `The URL "${value}" is already taken.` });
                 setProfile(prev => ({ ...prev, slug: initialSlug })); 
                 return;
@@ -432,10 +434,10 @@ export default function EditorPage() {
                 deleteDocumentNonBlocking(oldSlugRef);
             }
             const newSlugRef = doc(firestore, 'userProfilesBySlug', value);
-            setDocumentNonBlocking(newSlugRef, { userId: user!.uid, ...profile, slug: value }, { merge: true });
+            setDocumentNonBlocking(newSlugRef, { userId: user.uid, ...profile, slug: value }, { merge: true });
             setInitialSlug(value);
         }
-        autoSave('userProfile', user!.uid, { [name]: value });
+        autoSave('userProfile', user.uid, { [name]: value });
     };
 
     const handleItemChange = (collection: string, id: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -492,8 +494,9 @@ export default function EditorPage() {
     };
     
     const handleThemeChange = (themeId: string) => {
+        if (!user) return;
         setActiveThemeId(themeId);
-        autoSave('userProfile', user!.uid, { themeId });
+        autoSave('userProfile', user.uid, { themeId });
     };
 
     if (isUserLoading || pageIsLoading) {
@@ -651,6 +654,3 @@ export default function EditorPage() {
 		</div>
 	);
 }
-
-    
-    
