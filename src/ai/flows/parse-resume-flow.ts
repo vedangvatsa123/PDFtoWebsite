@@ -17,7 +17,7 @@ const WorkExperienceSchema = z.object({
   title: z.string().describe('The job title.'),
   startDate: z.string().describe('The start date (Month Year, e.g., "Jan 2021").'),
   endDate: z.string().optional().describe('The end date (Month Year, e.g., "Dec 2022") or "Present".'),
-  description: z.string().describe('A concise, 1-2 sentence summary of the role and key accomplishments.'),
+  description: z.string().describe("A summary of the role's key responsibilities and accomplishments. Preserve the original meaning and details from the resume, using newline characters to separate bullet points or distinct tasks."),
 });
 
 const EducationSchema = z.object({
@@ -53,16 +53,25 @@ const parseResumeFlow = ai.defineFlow(
   },
   async (resumeText) => {
     const {output} = await ai.generate({
-      prompt: `You are an expert resume parser. Your task is to extract information from the provided resume text. Be concise and only extract the information defined in the output schema.
+      prompt: `You are an expert AI assistant specializing in parsing human resumes. Your task is to meticulously extract structured information from the provided resume text and format it according to the defined JSON schema.
 
-Resume Text:
+Pay close attention to the following guidelines:
+- **Accuracy is paramount.** Only extract information that is explicitly present in the resume text. Do not infer or invent details.
+- **Professional Summary**: If the resume includes a "Summary" or "Objective" section, use that content for the 'summary' field. If no such section exists, you MUST generate a concise, 2-3 sentence professional summary based on the candidate's most recent work experience and key skills.
+- **Work Experience**: For each job, extract the key responsibilities and accomplishments. Preserve the original meaning and detail, but format it for clarity.
+- **Dates**: Format all dates as "Month Year" (e.g., "Jan 2021"). If only the year is provided, that is acceptable.
+- **Omissions**: If a specific piece of information (like a phone number or end date for a current job) is not found, simply omit the corresponding field from the output.
+
+Resume Text to Parse:
+---
 ${resumeText}
+---
 `,
       output: {
         schema: ParsedResumeSchema,
       },
       config: {
-        temperature: 0.1, // Lower temperature for more deterministic, structured output
+        temperature: 0.2, // Slightly increase temperature for better summary generation if needed
       }
     });
     
