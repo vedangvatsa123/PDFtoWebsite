@@ -17,7 +17,7 @@ const WorkExperienceSchema = z.object({
   title: z.string().describe('The job title.'),
   startDate: z.string().describe('The start date (Month Year, e.g., "Jan 2021").'),
   endDate: z.string().optional().describe('The end date (Month Year, e.g., "Dec 2022") or "Present".'),
-  description: z.string().describe('A summary of the role and accomplishments.'),
+  description: z.string().describe('A concise, 1-2 sentence summary of the role and key accomplishments.'),
 });
 
 const EducationSchema = z.object({
@@ -53,7 +53,7 @@ const parseResumeFlow = ai.defineFlow(
   },
   async (resumeText) => {
     const {output} = await ai.generate({
-      prompt: `You are an expert resume parser. Extract the following information from the provided resume text and return it in a structured JSON format.
+      prompt: `You are an expert resume parser. Your task is to extract information from the provided resume text. Be concise and only extract the information defined in the output schema.
 
 Resume Text:
 ${resumeText}
