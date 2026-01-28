@@ -20,7 +20,7 @@ import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs
 import { getRedirectResult } from 'firebase/auth';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Progress } from '@/components/ui/progress';
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 function dataURLtoFile(dataurl: string, filename: string): File | null {
