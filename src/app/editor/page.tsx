@@ -20,7 +20,7 @@ import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs
 import { getRedirectResult } from 'firebase/auth';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Progress } from '@/components/ui/progress';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts";
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 function dataURLtoFile(dataurl: string, filename: string): File | null {
@@ -163,7 +163,11 @@ export function ViewsByCountryChart() {
             <CartesianGrid horizontal={false} />
             <XAxis type="number" dataKey="views" hide />
             <YAxis dataKey="country" type="category" tickLine={false} axisLine={false} tickMargin={8} />
-            <Bar dataKey="views" layout="vertical" radius={5} />
+            <Bar dataKey="views" radius={5}>
+              {chartData.map((entry) => (
+                <Cell key={`cell-${entry.country}`} fill={entry.fill} />
+              ))}
+            </Bar>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
           </BarChart>
         </ChartContainer>
@@ -175,7 +179,7 @@ export function ViewsByCountryChart() {
 const last7DaysConfig = { views: { label: "Views", color: "hsl(var(--chart-1))" } } satisfies ChartConfig;
 
 export function ViewsLast7DaysChart() {
-    const [last7DaysData, setLast7DaysData] = useState<any[]>([]);
+    const [last7DaysData, setLast7DaysData] = useState<any[] | null>(null);
     useEffect(() => {
         const data = Array.from({length: 7}, (_, i) => ({ date: `Day ${i+1}`, views: Math.floor(Math.random() * 10) }));
         setLast7DaysData(data);
@@ -188,14 +192,20 @@ export function ViewsLast7DaysChart() {
                 <CardDescription>Your profile views over the past week.</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={last7DaysConfig} className="min-h-[200px] w-full">
-                    <BarChart accessibilityLayer data={last7DaysData}>
-                         <CartesianGrid vertical={false} />
-                         <XAxis dataKey="date" tickLine={false} tickMargin={10} axisLine={false} />
-                        <Bar dataKey="views" fill="var(--color-views)" radius={4} />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                    </BarChart>
-                </ChartContainer>
+                {last7DaysData ? (
+                    <ChartContainer config={last7DaysConfig} className="min-h-[200px] w-full">
+                        <BarChart accessibilityLayer data={last7DaysData}>
+                             <CartesianGrid vertical={false} />
+                             <XAxis dataKey="date" tickLine={false} tickMargin={10} axisLine={false} />
+                            <Bar dataKey="views" fill="var(--color-views)" radius={4} />
+                            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                        </BarChart>
+                    </ChartContainer>
+                ) : (
+                    <div className="min-h-[200px] w-full flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
@@ -642,4 +652,5 @@ export default function EditorPage() {
 	);
 }
 
+    
     
