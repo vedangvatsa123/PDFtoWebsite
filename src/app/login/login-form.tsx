@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { Icons } from '@/components/icons';
 import { useUser } from '@/firebase';
 
@@ -53,23 +53,13 @@ export default function LoginForm() {
     setIsGoogleLoading(true);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
-    
-    signInWithPopup(auth, provider)
-      .then(() => {
-        toast({
-            title: 'Login Successful',
-            description: "Welcome! We're redirecting you to the editor.",
-        });
-        router.push('/editor');
-      })
+    signInWithRedirect(auth, provider)
       .catch((error: any) => {
         toast({
           variant: 'destructive',
           title: 'Login Failed',
           description: error.message,
         });
-      })
-      .finally(() => {
         setIsGoogleLoading(false);
       });
   };
@@ -130,3 +120,5 @@ export default function LoginForm() {
   </div>
   )
 }
+
+    

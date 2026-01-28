@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -14,8 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, Trophy, CheckCircle, XCircle, Palette } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
+import { getRedirectResult } from 'firebase/auth';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Progress } from '@/components/ui/progress';
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
@@ -202,6 +204,7 @@ export function ViewsLast7DaysChart() {
 export default function EditorPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const auth = useAuth();
     const router = useRouter();
     const { toast } = useToast();
     
@@ -226,6 +229,32 @@ export default function EditorPage() {
 
 
     const processedPendingResume = useRef(false);
+
+    useEffect(() => {
+        if (auth && !isUserLoading) { // Check if auth is initialized and initial check is done
+            getRedirectResult(auth)
+                .then((result) => {
+                    if (result) {
+                        // This means the user has just signed in via redirect.
+                        toast({
+                            title: 'Login Successful',
+                            description: `Welcome, ${result.user.displayName || result.user.email}!`,
+                        });
+                        // The onAuthStateChanged listener in FirebaseProvider will handle the rest.
+                    }
+                    // If `result` is null, it means the page loaded without a redirect sign-in. Do nothing.
+                })
+                .catch((error) => {
+                    // This handles errors from the redirect sign-in attempt.
+                    console.error("Error processing redirect result:", error);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Login Failed',
+                        description: error.message,
+                    });
+                });
+        }
+    }, [auth, isUserLoading, toast]);
 
     const handleResumeUpload = useCallback(async (resumeFile: File) => {
         if (!resumeFile || !user || !firestore) {
@@ -612,3 +641,5 @@ export default function EditorPage() {
 		</div>
 	);
 }
+
+    

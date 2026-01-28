@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { Icons } from '@/components/icons';
 import Link from 'next/link';
 
@@ -56,19 +56,13 @@ export function LoginDialog() {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
 
-    signInWithPopup(auth, provider)
-      .then(() => {
-        setOpen(false);
-        router.push('/editor');
-      })
+    signInWithRedirect(auth, provider)
       .catch((error: any) => {
         toast({
           variant: 'destructive',
           title: 'Login Failed',
           description: error.message,
         });
-      })
-      .finally(() => {
         setIsGoogleLoading(false);
       });
   };
@@ -146,3 +140,5 @@ export function LoginDialog() {
     </Dialog>
   );
 }
+
+    
