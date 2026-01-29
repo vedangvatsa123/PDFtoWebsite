@@ -266,6 +266,61 @@ export default function EditorPage() {
         }
     }, [auth, isUserLoading, toast]);
 
+    const fetchProfileData = useCallback(async () => {
+        if (!user || !firestore) return;
+        setPageIsLoading(true);
+
+        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+        const workQuery = query(collection(firestore, 'users', user.uid, 'workExperience'));
+        const eduQuery = query(collection(firestore, 'users', user.uid, 'education'));
+        const skillsQuery = query(collection(firestore, 'users', user.uid, 'skills'));
+        
+        const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
+            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(skillsQuery)
+        ]);
+        
+        let profileData: UserProfile;
+        if (profileSnap.exists()) {
+            profileData = profileSnap.data() as UserProfile;
+        } else {
+            profileData = {
+                userId: user.uid,
+                fullName: user.displayName || 'Your Name',
+                email: user.email || '',
+                summary: '',
+                slug: generateSlug(user.displayName || 'user'),
+                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+                avatarHint: 'person portrait',
+                themeId: 'modern-creative',
+                viewCount: 0,
+            };
+            const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
+            const batch = writeBatch(firestore);
+            batch.set(userProfileDocRef, profileData, { merge: true });
+            batch.set(slugDocRef, { userId: user.uid, ...profileData }, { merge: true });
+            await batch.commit();
+        }
+
+        setProfile(profileData);
+        setInitialSlug(profileData.slug);
+        setActiveThemeId(profileData.themeId);
+        setWorkItems(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
+        setEducationItems(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
+        setSkillItems(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+        
+        setPageIsLoading(false);
+        return { profile: profileData }; // Return data for chaining
+    }, [user, firestore, setPageIsLoading, setProfile, setInitialSlug, setActiveThemeId, setWorkItems, setEducationItems, setSkillItems]);
+
+    const autoSave = useCallback((collectionName: string, id: string, data: any) => {
+        if (!user || !firestore) return;
+        setIsSaving(true);
+        const ref = doc(firestore, 'users', user.uid, collectionName, id);
+        setDocumentNonBlocking(ref, data, { merge: true });
+        setTimeout(() => setIsSaving(false), 700);
+    }, [user, firestore, setIsSaving]);
+
     const handleResumeUpload = useCallback(async (resumeFile: File) => {
         if (!resumeFile || !user || !firestore) {
             toast({ variant: 'destructive', title: 'Error', description: 'No file selected or user not logged in.' });
@@ -340,54 +395,7 @@ export default function EditorPage() {
             sessionStorage.removeItem('pendingResume');
             sessionStorage.removeItem('pendingResumeName');
         }
-    }, [user, firestore, fetchProfileData]);
-
-    const fetchProfileData = useCallback(async () => {
-        if (!user || !firestore) return;
-        setPageIsLoading(true);
-
-        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-        const workQuery = query(collection(firestore, 'users', user.uid, 'workExperience'));
-        const eduQuery = query(collection(firestore, 'users', user.uid, 'education'));
-        const skillsQuery = query(collection(firestore, 'users', user.uid, 'skills'));
-        
-        const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
-            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(skillsQuery)
-        ]);
-        
-        let profileData: UserProfile;
-        if (profileSnap.exists()) {
-            profileData = profileSnap.data() as UserProfile;
-        } else {
-            profileData = {
-                userId: user.uid,
-                fullName: user.displayName || 'Your Name',
-                email: user.email || '',
-                summary: '',
-                slug: generateSlug(user.displayName || 'user'),
-                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
-                avatarHint: 'person portrait',
-                themeId: 'modern-creative',
-                viewCount: 0,
-            };
-            const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-            const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
-            const batch = writeBatch(firestore);
-            batch.set(userProfileDocRef, profileData, { merge: true });
-            batch.set(slugDocRef, { userId: user.uid, ...profileData }, { merge: true });
-            await batch.commit();
-        }
-
-        setProfile(profileData);
-        setInitialSlug(profileData.slug);
-        setActiveThemeId(profileData.themeId);
-        setWorkItems(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
-        setEducationItems(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
-        setSkillItems(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
-        
-        setPageIsLoading(false);
-        return { profile: profileData }; // Return data for chaining
-    }, [user, firestore]);
+    }, [user, firestore, fetchProfileData, toast, setFile, setFileName]);
 
     useEffect(() => {
         if (user && firestore && !processedPendingResume.current) {
@@ -403,21 +411,13 @@ export default function EditorPage() {
         }
     }, [user, firestore, fetchProfileData, handleResumeUpload]);
 
-    const autoSave = useCallback((collectionName: string, id: string, data: any) => {
-        if (!user || !firestore) return;
-        setIsSaving(true);
-        const ref = doc(firestore, 'users', user.uid, collectionName, id);
-        setDocumentNonBlocking(ref, data, { merge: true });
-        setTimeout(() => setIsSaving(false), 700);
-    }, [user, firestore]);
-
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setProfile(prev => ({...prev, [name]: value}));
     };
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (!user) return;
+        if (!user || !firestore) return;
         const { name, value } = e.target;
         if ((profile as any)[name] === value) return; // No change
         
@@ -546,7 +546,7 @@ export default function EditorPage() {
                                                 <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} />
                                                 <Button asChild variant="secondary"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}><Eye className="mr-2 h-4 w-4" />Visit</Link></Button>
                                             </div>
-                                             {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">{`/${profile.slug}`}</Link></p>}
+                                             {profile.slug && <p className="text-sm text-muted-foreground">Your profile is available at: <Link href={`/${profile.slug}`} target="_blank" className="text-primary hover:underline" rel="noopener noreferrer">{`https://your-domain.com/${profile.slug}`}</Link></p>}
                                         </CardContent>
                                     </Card>
                                     <div className="grid md:grid-cols-2 gap-6">
