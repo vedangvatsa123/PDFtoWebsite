@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, Trophy, CheckCircle, XCircle, Palette } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
-import { useUser, useFirestore, useCollection, useAuth, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useAuth } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
 import { getRedirectResult } from 'firebase/auth';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -234,8 +234,11 @@ export default function EditorPage() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [activeThemeId, setActiveThemeId] = useState<string | undefined>('modern-creative');
 
-    const themesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'themes')) : null, [firestore]);
-    const { data: themes } = useCollection<Theme>(themesQuery);
+    const themes: Theme[] = [
+        { id: 'modern-creative', name: 'Modern Creative', thumbnailUrl: '/images/themes/modern-creative.svg' },
+        { id: 'monochrome-professional', name: 'Monochrome Professional', thumbnailUrl: '/images/themes/monochrome-professional.svg' },
+        { id: 'classic-minimalist', name: 'Classic Minimalist', thumbnailUrl: '/images/themes/classic-minimalist.svg' },
+    ];
 
 
     const processedPendingResume = useRef(false);
