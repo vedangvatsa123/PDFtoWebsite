@@ -46,7 +46,7 @@ export default function TemplateMonochrome(props: ProfileData) {
             </div>}
             {profile.website && <div className="flex items-center gap-3">
               <LinkIcon className="h-5 w-5 text-gray-400" />
-               <Link href={`https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+               <Link href={profile.website!.startsWith('http') ? profile.website! : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">
                 {profile.website}
                 </Link>
             </div>}

@@ -76,10 +76,10 @@ export interface ServerProfileData {
   profile: {
     userId: string;
     fullName: string;
-    email: string;
+    email?: string;
     phone?: string;
     location?: string;
-    summary: string;
+    summary?: string;
     themeId?: string;
     slug: string;
     avatarUrl?: string;
@@ -121,8 +121,24 @@ export async function getProfileBySlug(slug: string): Promise<ServerProfileData 
 
   if (!profile) return null;
 
+  // Ensure required fields have fallbacks so templates never crash
+  const safeProfile: ServerProfileData['profile'] = {
+    userId: (profile.userId as string) || userId,
+    fullName: (profile.fullName as string) || 'Professional Profile',
+    slug: (profile.slug as string) || slug,
+    email: profile.email as string | undefined,
+    phone: profile.phone as string | undefined,
+    location: profile.location as string | undefined,
+    summary: profile.summary as string | undefined,
+    themeId: (profile.themeId as string) || 'modern-creative',
+    avatarUrl: profile.avatarUrl as string | undefined,
+    avatarHint: profile.avatarHint as string | undefined,
+    website: profile.website as string | undefined,
+    viewCount: profile.viewCount as number | undefined,
+  };
+
   return {
-    profile: profile as ServerProfileData['profile'],
+    profile: safeProfile,
     workExperience: workExperience as ServerProfileData['workExperience'],
     education: education as ServerProfileData['education'],
     skills: skills as ServerProfileData['skills'],
