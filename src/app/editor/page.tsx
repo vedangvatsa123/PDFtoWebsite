@@ -275,26 +275,29 @@ export default function EditorPage() {
         }
     }, [isUserLoading, user]);
 
-    // When guest signs up/logs in, save their in-memory state to Firestore
+    // When guest signs up/logs in, save their sessionStorage snapshot to Firestore
     useEffect(() => {
-        if (!user || !firestore || !guestInitDone.current || guestSavedToFirestore.current || processedPendingResume.current) return;
-        const hasParsedData = !!sessionStorage.getItem('parsedResume');
-        if (!hasParsedData) return;
+        if (!user || !firestore || guestSavedToFirestore.current || processedPendingResume.current) return;
+        const rawSnapshot = sessionStorage.getItem('parsedResume');
+        if (!rawSnapshot) return;
         guestSavedToFirestore.current = true;
         processedPendingResume.current = true;
         (async () => {
             try {
-                const slug = profile.slug || generateSlug(profile.fullName || user.displayName || 'user');
+                const snapshot = JSON.parse(rawSnapshot);
+                const pi = snapshot.personalInfo || {};
+                const fullName = pi.fullName || user.displayName || 'user';
+                const slug = pi.slug || generateSlug(fullName);
                 const profileToSave: UserProfile = {
                     userId: user.uid,
-                    fullName: profile.fullName || user.displayName || '',
-                    email: profile.email || user.email || '',
-                    phone: profile.phone || '',
-                    location: profile.location || '',
-                    website: profile.website || '',
-                    summary: profile.summary || '',
+                    fullName,
+                    email: pi.email || user.email || '',
+                    phone: pi.phone || '',
+                    location: pi.location || '',
+                    website: pi.website || '',
+                    summary: snapshot.summary || '',
                     slug,
-                    themeId: activeThemeId || 'modern-creative',
+                    themeId: snapshot.themeId || 'modern-creative',
                     avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
                     avatarHint: 'person portrait',
                     viewCount: 0,
@@ -302,15 +305,15 @@ export default function EditorPage() {
                 const batch = writeBatch(firestore);
                 batch.set(doc(firestore, 'users', user.uid, 'userProfile', user.uid), profileToSave, { merge: true });
                 batch.set(doc(firestore, 'userProfilesBySlug', slug), profileToSave, { merge: true });
-                workItems.forEach(item => {
+                (snapshot.workExperience || []).forEach((item: any) => {
                     const { id, ...rest } = item;
                     batch.set(doc(collection(firestore, 'users', user.uid, 'workExperience')), { ...rest, userProfileId: user.uid });
                 });
-                educationItems.forEach(item => {
+                (snapshot.education || []).forEach((item: any) => {
                     const { id, ...rest } = item;
                     batch.set(doc(collection(firestore, 'users', user.uid, 'education')), { ...rest, userProfileId: user.uid });
                 });
-                skillItems.forEach(item => {
+                (snapshot.skills || []).forEach((item: any) => {
                     const { id, ...rest } = item;
                     batch.set(doc(collection(firestore, 'users', user.uid, 'skills')), { ...rest, userProfileId: user.uid });
                 });
@@ -613,6 +616,7 @@ export default function EditorPage() {
                             const snapshot = {
                                 personalInfo: { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website },
                                 summary: profile.summary,
+                                themeId: activeThemeId,
                                 workExperience: workItems,
                                 education: educationItems,
                                 skills: skillItems,
