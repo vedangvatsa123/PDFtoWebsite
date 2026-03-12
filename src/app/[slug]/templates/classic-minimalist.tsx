@@ -45,7 +45,7 @@ export default function TemplateClassic(props: ProfileData) {
                 </div>}
                 {profile.website && <div className="flex items-center gap-2">
                   <LinkIcon className="h-4 w-4" />
-                   <Link href={`https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-gray-900">
+                   <Link href={profile.website!.startsWith('http') ? profile.website! : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-gray-900">
                     {profile.website}
                     </Link>
                 </div>}

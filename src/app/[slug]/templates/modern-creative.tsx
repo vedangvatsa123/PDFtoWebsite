@@ -56,7 +56,7 @@ export default function TemplateModern(props: ProfileData) {
                 </div>}
                 {profile.website && <div className="flex items-center gap-2">
                   <LinkIcon className="h-4 w-4" />
-                   <Link href={`https://${profile.website}`} target="_blank" rel="noopener noreferrer" className={`hover:text-${primaryColor}`}>
+                   <Link href={profile.website!.startsWith('http') ? profile.website! : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className={`hover:text-${primaryColor}`}>
                     {profile.website}
                     </Link>
                 </div>}
