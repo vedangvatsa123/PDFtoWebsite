@@ -44,7 +44,9 @@ export default function SignUpForm() {
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const fromUpload = searchParams.get('from') === 'upload';
+  const fromParam = searchParams.get('from');
+  const fromUpload = fromParam === 'upload';
+  const fromManual = fromParam === 'manual';
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -92,6 +94,11 @@ export default function SignUpForm() {
       {fromUpload && (
         <p className="text-sm text-center text-muted-foreground bg-accent/50 rounded-md p-2">
           Create an account to generate your profile from your resume.
+        </p>
+      )}
+      {fromManual && (
+        <p className="text-sm text-center text-muted-foreground bg-accent/50 rounded-md p-2">
+          Create an account to build your profile and get a shareable link.
         </p>
       )}
 
