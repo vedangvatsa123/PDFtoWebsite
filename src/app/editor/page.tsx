@@ -231,8 +231,9 @@ export default function EditorPage() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeTab, setActiveTab] = useState('content');
     const [activeThemeId, setActiveThemeId] = useState<string | undefined>('modern-creative');
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
 
     const themes: Theme[] = [
         { id: 'modern-creative', name: 'Modern Creative', thumbnailUrl: '/images/themes/modern-creative.svg' },
@@ -242,6 +243,89 @@ export default function EditorPage() {
 
 
     const processedPendingResume = useRef(false);
+    const guestInitDone = useRef(false);
+    const guestSavedToFirestore = useRef(false);
+
+    // Guest mode: load parsed resume from sessionStorage without needing auth
+    useEffect(() => {
+        if (!isUserLoading && !user && !guestInitDone.current) {
+            guestInitDone.current = true;
+            const parsed = sessionStorage.getItem('parsedResume');
+            if (parsed) {
+                try {
+                    const data = JSON.parse(parsed);
+                    const slug = generateSlug(data.personalInfo?.fullName || 'user');
+                    setProfile({
+                        fullName: data.personalInfo?.fullName || '',
+                        email: data.personalInfo?.email || '',
+                        phone: data.personalInfo?.phone || '',
+                        location: data.personalInfo?.location || '',
+                        website: data.personalInfo?.website || '',
+                        summary: data.summary || '',
+                        slug,
+                        themeId: 'modern-creative',
+                    });
+                    setActiveThemeId('modern-creative');
+                    setWorkItems((data.workExperience || []).map((w: any, i: number) => ({ ...w, id: `guest-work-${i}`, userProfileId: '' })));
+                    setEducationItems((data.education || []).map((e: any, i: number) => ({ ...e, id: `guest-edu-${i}`, userProfileId: '' })));
+                    setSkillItems((data.skills || []).map((s: any, i: number) => ({ ...s, id: `guest-skill-${i}`, userProfileId: '' })));
+                } catch {}
+            }
+            setPageIsLoading(false);
+        }
+    }, [isUserLoading, user]);
+
+    // When guest signs up/logs in, save their in-memory state to Firestore
+    useEffect(() => {
+        if (!user || !firestore || !guestInitDone.current || guestSavedToFirestore.current || processedPendingResume.current) return;
+        const hasParsedData = !!sessionStorage.getItem('parsedResume');
+        if (!hasParsedData) return;
+        guestSavedToFirestore.current = true;
+        processedPendingResume.current = true;
+        (async () => {
+            try {
+                const slug = profile.slug || generateSlug(profile.fullName || user.displayName || 'user');
+                const profileToSave: UserProfile = {
+                    userId: user.uid,
+                    fullName: profile.fullName || user.displayName || '',
+                    email: profile.email || user.email || '',
+                    phone: profile.phone || '',
+                    location: profile.location || '',
+                    website: profile.website || '',
+                    summary: profile.summary || '',
+                    slug,
+                    themeId: activeThemeId || 'modern-creative',
+                    avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+                    avatarHint: 'person portrait',
+                    viewCount: 0,
+                };
+                const batch = writeBatch(firestore);
+                batch.set(doc(firestore, 'users', user.uid, 'userProfile', user.uid), profileToSave, { merge: true });
+                batch.set(doc(firestore, 'userProfilesBySlug', slug), profileToSave, { merge: true });
+                workItems.forEach(item => {
+                    const { id, ...rest } = item;
+                    batch.set(doc(collection(firestore, 'users', user.uid, 'workExperience')), { ...rest, userProfileId: user.uid });
+                });
+                educationItems.forEach(item => {
+                    const { id, ...rest } = item;
+                    batch.set(doc(collection(firestore, 'users', user.uid, 'education')), { ...rest, userProfileId: user.uid });
+                });
+                skillItems.forEach(item => {
+                    const { id, ...rest } = item;
+                    batch.set(doc(collection(firestore, 'users', user.uid, 'skills')), { ...rest, userProfileId: user.uid });
+                });
+                await batch.commit();
+                sessionStorage.removeItem('parsedResume');
+                toast({ title: 'Profile saved!', description: 'Your profile is now live.' });
+            } catch (e) {
+                console.error('Failed to save guest data:', e);
+            } finally {
+                fetchProfileData();
+            }
+        })();
+    // intentionally only depends on user/firestore — runs once on auth state change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, firestore]);
 
     useEffect(() => {
         if (auth && !isUserLoading) {
@@ -456,27 +540,32 @@ export default function EditorPage() {
     };
 
     const handleAddItem = async (collectionName: 'workExperience' | 'education' | 'skills') => {
-        if (!user || !firestore) return;
-        const colRef = collection(firestore, 'users', user.uid, collectionName);
         let newItem: any;
         if (collectionName === 'workExperience') {
             newItem = { title: 'New Role', company: 'Company Name', startDate: 'Jan 2024', description: 'My responsibilities...' };
         } else if (collectionName === 'education') {
             newItem = { institution: 'University Name', degree: 'Degree', startDate: 'Sep 2020' };
-        } else { // Skills
+        } else {
             newItem = { name: 'New Skill' };
         }
-        const docRef = await addDoc(colRef, { ...newItem, userProfileId: user.uid });
-        newItem.id = docRef.id;
-        
+        const guestId = `guest-${collectionName}-${Date.now()}`;
+        if (user && firestore) {
+            const colRef = collection(firestore, 'users', user.uid, collectionName);
+            const docRef = await addDoc(colRef, { ...newItem, userProfileId: user.uid });
+            newItem.id = docRef.id;
+        } else {
+            newItem.id = guestId;
+            newItem.userProfileId = '';
+        }
         const setter = { workExperience: setWorkItems, education: setEducationItems, skills: setSkillItems }[collectionName];
         (setter as any)((prev: any[]) => [...prev, newItem]);
     };
 
     const handleDeleteItem = (collectionName: string, id: string) => {
-        if (!user || !firestore) return;
-        const docRef = doc(firestore, 'users', user.uid, collectionName, id);
-        deleteDocumentNonBlocking(docRef);
+        if (user && firestore) {
+            const docRef = doc(firestore, 'users', user.uid, collectionName, id);
+            deleteDocumentNonBlocking(docRef);
+        }
         const setter = { workExperience: setWorkItems, education: setEducationItems, skills: setSkillItems }[collectionName as 'workExperience' | 'education' | 'skills'];
         (setter as any)?.((prev: any[]) => prev.filter((item: any) => item.id !== id));
     }
@@ -494,9 +583,8 @@ export default function EditorPage() {
     };
     
     const handleThemeChange = (themeId: string) => {
-        if (!user) return;
         setActiveThemeId(themeId);
-        autoSave('userProfile', user.uid, { themeId });
+        if (user) autoSave('userProfile', user.uid, { themeId });
     };
 
     if (isUserLoading || pageIsLoading) {
@@ -513,12 +601,35 @@ export default function EditorPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <Header />
+            {!user && (
+                <div className="border-b bg-background">
+                    <div className="container mx-auto max-w-4xl px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p className="text-sm text-muted-foreground">
+                            <span className="font-medium text-foreground">Not saved yet.</span>{' '}
+                            Create a free account to publish your profile and get a shareable link.
+                        </p>
+                        <Button size="sm" asChild onClick={() => {
+                            // Persist current edits to sessionStorage before navigating to signup
+                            const snapshot = {
+                                personalInfo: { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website },
+                                summary: profile.summary,
+                                workExperience: workItems,
+                                education: educationItems,
+                                skills: skillItems,
+                            };
+                            sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
+                        }}>
+                            <Link href="/signup">Save &amp; Publish</Link>
+                        </Button>
+                    </div>
+                </div>
+            )}
             <main className="flex-1 bg-secondary/30">
                 <div className="container mx-auto max-w-4xl p-4 md:p-8">
                     <div className="flex justify-between items-start mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold">Welcome back, {profile.fullName}!</h1>
-                            <p className="text-muted-foreground">Edit your profile, manage settings, and see your stats.</p>
+                            <h1 className="text-3xl font-bold">{user ? `Welcome back, ${profile.fullName}!` : 'Build Your Profile'}</h1>
+                            <p className="text-muted-foreground">{user ? 'Edit your profile, manage settings, and see your stats.' : 'Fill in your details below. Sign up when ready to publish.'}</p>
                         </div>
                         <div className="flex items-center gap-2">
                            {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
@@ -534,9 +645,15 @@ export default function EditorPage() {
                     </div>
 
                     <div className="space-y-8">
-                        <ResumeUploadPrompt onFileChange={handleFileChange} onUpload={() => file && handleResumeUpload(file)} fileName={fileName} isGenerating={isGenerating} />
+                        {user && <ResumeUploadPrompt onFileChange={handleFileChange} onUpload={() => file && handleResumeUpload(file)} fileName={fileName} isGenerating={isGenerating} />}
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <div className="flex justify-center"><TabsList><TabsTrigger value="dashboard">Dashboard</TabsTrigger><TabsTrigger value="content">Content</TabsTrigger><TabsTrigger value="appearance">Appearance</TabsTrigger></TabsList></div>
+                            <div className="flex justify-center">
+                                <TabsList>
+                                    {user && <TabsTrigger value="dashboard">Dashboard</TabsTrigger>}
+                                    <TabsTrigger value="content">Content</TabsTrigger>
+                                    <TabsTrigger value="appearance">Appearance</TabsTrigger>
+                                </TabsList>
+                            </div>
                              <TabsContent value="dashboard">
                                 <div className="grid gap-6 pt-6">
                                      <Card>
