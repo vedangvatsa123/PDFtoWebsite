@@ -1,7 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { type ThemeProviderProps } from "next-themes/dist/types"
+type ThemeProviderProps = {
+  children: React.ReactNode;
+  defaultTheme?: string;
+  storageKey?: string;
+  attribute?: string;
+  enableSystem?: boolean;
+  disableTransitionOnChange?: boolean;
+  [key: string]: unknown;
+};
 
 // This is a simplified version of next-themes's provider logic.
 // In a real app, you would `npm install next-themes` and `import { ThemeProvider } from "next-themes"`.
