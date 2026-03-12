@@ -637,7 +637,7 @@ export default function EditorPage() {
                         </div>
                         <div className="flex items-center gap-2">
                            {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
-                            {profile.slug && (
+                            {profile.slug && user && (
                                 <Button variant="outline" asChild>
                                     <Link href={`/${profile.slug}`} prefetch={false} target="_blank">
                                         <Eye className="mr-2 h-4 w-4" />
