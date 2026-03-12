@@ -27,6 +27,11 @@ service cloud.firestore {
       return request.resource.data.userId == resource.data.userId;
     }
 
+    // True if the user has a published public profile (slug document exists)
+    function hasPublicProfile(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)/userProfile/$(userId));
+    }
+
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
@@ -44,17 +49,17 @@ service cloud.firestore {
     }
     
     match /users/{userId}/workExperience/{experienceId} {
-      allow read, list: if isOwner(userId) || exists(/databases/$(database)/documents/users/$(userId));
+      allow read, list: if isOwner(userId) || hasPublicProfile(userId);
       allow write: if isOwner(userId);
     }
-    
+
     match /users/{userId}/education/{educationId} {
-      allow read, list: if isOwner(userId) || exists(/databases/$(database)/documents/users/$(userId));
+      allow read, list: if isOwner(userId) || hasPublicProfile(userId);
       allow write: if isOwner(userId);
     }
-    
+
     match /users/{userId}/skills/{skillId} {
-      allow read, list: if isOwner(userId) || exists(/databases/$(database)/documents/users/$(userId));
+      allow read, list: if isOwner(userId) || hasPublicProfile(userId);
       allow write: if isOwner(userId);
     }
 
