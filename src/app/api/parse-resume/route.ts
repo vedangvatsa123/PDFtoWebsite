@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
-import { parseResume } from '@/ai/flows/parse-resume-flow';
+import { parseResumeText } from '@/lib/resume-parser';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,20 +13,18 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.type !== 'application/pdf') {
-        return NextResponse.json({ error: 'File is not a PDF.' }, { status: 400 });
+      return NextResponse.json({ error: 'File is not a PDF.' }, { status: 400 });
     }
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const data = await pdf(fileBuffer);
-    
-    // Use the new AI-powered parser
-    const structuredData = await parseResume(data.text);
-    
+    const structuredData = parseResumeText(data.text);
+
     return NextResponse.json(structuredData, { status: 200 });
 
   } catch (error) {
-    console.error('Error parsing resume with AI:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred during AI parsing.';
+    console.error('Error parsing resume:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return NextResponse.json({ error: 'Failed to parse resume.', details: errorMessage }, { status: 500 });
   }
 }

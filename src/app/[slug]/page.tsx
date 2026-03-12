@@ -1,115 +1,103 @@
-"use client";
-
-import { useState, useEffect } from 'react';
-import { doc, getDoc, collection, getDocs, Firestore, query, orderBy } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
-import { type UserProfile, type WorkExperience, type Education, type Skill } from '@/types';
-import { Loader2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import TemplateMonochrome from './templates/monochrome-professional';
-import TemplateModern from './templates/modern-creative';
-import TemplateClassic from './templates/classic-minimalist';
+import type { Metadata } from 'next';
+import { getProfileBySlug, type ServerProfileData } from '@/lib/firebase-rest';
+import ProfilePageClient from './profile-page-client';
 
-export type ProfileData = {
-    profile: UserProfile;
-    workExperience: WorkExperience[];
-    education: Education[];
-    skills: Skill[];
-};
-
-async function getProfileData(firestore: Firestore, slug: string): Promise<ProfileData | null> {
-    const slugRef = doc(firestore, 'userProfilesBySlug', slug);
-    const slugSnap = await getDoc(slugRef);
-
-    if (!slugSnap.exists()) {
-        return null;
-    }
-
-    const { userId } = slugSnap.data();
-    if (!userId) return null;
-
-    const profileRef = doc(firestore, 'users', userId, 'userProfile', userId);
-    const workQuery = query(collection(firestore, 'users', userId, 'workExperience'), orderBy('startDate', 'desc'));
-    const eduQuery = query(collection(firestore, 'users', userId, 'education'), orderBy('startDate', 'desc'));
-    const skillsQuery = query(collection(firestore, 'users', userId, 'skills'));
-
-    const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
-        getDoc(profileRef),
-        getDocs(workQuery),
-        getDocs(eduQuery),
-        getDocs(skillsQuery)
-    ]);
-
-    if (!profileSnap.exists()) {
-        return null;
-    }
-    
-    const profileData = profileSnap.data() as UserProfile;
-    const workExperience = workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience));
-    const education = eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education));
-    const skills = skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill));
-
-    return { profile: profileData, workExperience, education, skills };
-}
+export type ProfileData = ServerProfileData;
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
-export default function ProfileSlugPage({ params }: PageProps) {
-  const firestore = useFirestore();
-  const { slug } = params;
-  
-  const [data, setData] = useState<ProfileData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getProfileBySlug(slug);
+  if (!data) return { title: 'Profile Not Found' };
 
-  useEffect(() => {
-    if (slug) {
-      fetch(`/api/views/${slug}`, { method: 'POST' }).catch(console.error);
-    }
-  }, [slug]);
+  const { profile } = data;
+  const name = profile.fullName;
+  const title = `${name} — Professional Profile`;
+  const latestRole = data.workExperience[0];
+  const roleText = latestRole ? ` | ${latestRole.title} at ${latestRole.company}` : '';
+  const description = profile.summary
+    ? profile.summary.slice(0, 160)
+    : `View ${name}'s professional profile${roleText}.`;
 
-  useEffect(() => {
-    if (firestore && slug) {
-      setIsLoading(true);
-      getProfileData(firestore, slug)
-        .then(profileData => {
-          if (profileData) {
-            setData(profileData);
-          } else {
-             notFound();
-          }
-        })
-        .catch(console.error)
-        .finally(() => setIsLoading(false));
-    }
-  }, [firestore, slug]);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
+  const canonicalUrl = `${siteUrl}/${slug}`;
+  const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')
+    ? profile.avatarUrl
+    : undefined;
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!data) {
-    return notFound();
-  }
-
-  const { themeId = 'modern-creative' } = data.profile;
-
-  const renderTemplate = () => {
-    switch (themeId) {
-      case 'monochrome-professional':
-        return <TemplateMonochrome {...data} />;
-      case 'classic-minimalist':
-        return <TemplateClassic {...data} />;
-      case 'modern-creative':
-      default:
-        return <TemplateModern {...data} />;
-    }
+  return {
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      type: 'profile',
+      url: canonicalUrl,
+      title,
+      description,
+      ...(avatarUrl ? { images: [{ url: avatarUrl, width: 400, height: 400, alt: name }] } : {}),
+      firstName: name.split(' ')[0],
+      lastName: name.split(' ').slice(1).join(' ') || undefined,
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      ...(avatarUrl ? { images: [avatarUrl] } : {}),
+    },
+    robots: { index: true, follow: true },
   };
+}
 
-  return renderTemplate();
+function buildPersonSchema(data: ServerProfileData) {
+  const { profile, workExperience, education, skills } = data;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.fullName,
+    url: `${siteUrl}/${profile.slug}`,
+    ...(profile.email ? { email: profile.email } : {}),
+    ...(profile.phone ? { telephone: profile.phone } : {}),
+    ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
+    ...(profile.website ? { sameAs: [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] } : {}),
+    ...(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') ? { image: profile.avatarUrl } : {}),
+    ...(profile.summary ? { description: profile.summary } : {}),
+    ...(skills.length > 0 ? { knowsAbout: skills.map(s => s.name) } : {}),
+    ...(workExperience.length > 0 ? {
+      jobTitle: workExperience[0].title,
+      worksFor: { '@type': 'Organization', name: workExperience[0].company },
+      hasOccupation: workExperience.map(job => ({
+        '@type': 'Occupation',
+        name: job.title,
+        ...(job.description ? { description: job.description.slice(0, 200) } : {}),
+      })),
+    } : {}),
+    ...(education.length > 0 ? {
+      alumniOf: education.map(edu => ({
+        '@type': 'EducationalOrganization',
+        name: edu.institution,
+      })),
+    } : {}),
+  };
+}
+
+export default async function ProfileSlugPage({ params }: PageProps) {
+  const { slug } = await params;
+  const data = await getProfileBySlug(slug);
+  if (!data) notFound();
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildPersonSchema(data)) }}
+      />
+      <ProfilePageClient data={data} slug={slug} />
+    </>
+  );
 }
