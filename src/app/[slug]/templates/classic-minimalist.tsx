@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Mail, Phone, MapPin, Link as LinkIcon, Briefcase, GraduationCap, Star } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import type { ProfileData } from '../page';
+import type { ServerProfileData as ProfileData } from '@/lib/firebase-rest';
 import { cn } from '@/lib/utils';
 
 export default function TemplateClassic(props: ProfileData) {

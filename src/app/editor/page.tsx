@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, Trophy, CheckCircle, XCircle, Palette } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
-import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
+import { useUser, useFirestore, useCollection, useAuth, useMemoFirebase } from '@/firebase';
 import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
 import { getRedirectResult } from 'firebase/auth';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -234,28 +234,25 @@ export default function EditorPage() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [activeThemeId, setActiveThemeId] = useState<string | undefined>('modern-creative');
 
-    const themesQuery = useMemo(() => firestore ? query(collection(firestore, 'themes')) : null, [firestore]);
+    const themesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'themes')) : null, [firestore]);
     const { data: themes } = useCollection<Theme>(themesQuery);
 
 
     const processedPendingResume = useRef(false);
 
     useEffect(() => {
-        if (auth && !isUserLoading) { // Check if auth is initialized and initial check is done
+        if (auth && !isUserLoading) {
             getRedirectResult(auth)
                 .then((result) => {
                     if (result) {
-                        // This means the user has just signed in via redirect.
                         toast({
                             title: 'Login Successful',
                             description: `Welcome, ${result.user.displayName || result.user.email}!`,
                         });
-                        // The onAuthStateChanged listener in FirebaseProvider will handle the rest.
+                        // onAuthStateChanged will fire and trigger fetchProfileData + pending resume
                     }
-                    // If `result` is null, it means the page loaded without a redirect sign-in. Do nothing.
                 })
                 .catch((error) => {
-                    // This handles errors from the redirect sign-in attempt.
                     console.error("Error processing redirect result:", error);
                     toast({
                         variant: 'destructive',

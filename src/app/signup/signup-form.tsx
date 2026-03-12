@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,9 +7,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { Icons } from '@/components/icons';
-import { useUser } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
+
+const GoogleIcon = () => (
+  <svg className="mr-2 h-4 w-4" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+    <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-72.2 72.2C321.7 105.3 287.4 88 248 88c-86.9 0-158.3 70.2-158.3 156s71.4 156 158.3 156c97.2 0 133-66.8 137.9-96.8H248v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.1z" />
+  </svg>
+);
+
+function friendlyAuthError(code: string): string {
+  switch (code) {
+    case 'auth/email-already-in-use':
+      return 'An account with this email already exists.';
+    case 'auth/weak-password':
+      return 'Password must be at least 6 characters.';
+    case 'auth/invalid-email':
+      return 'Invalid email address.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please try again later.';
+    case 'auth/network-request-failed':
+      return 'Network error. Check your connection.';
+    default:
+      return 'Something went wrong. Please try again.';
+  }
+}
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -21,112 +43,88 @@ export default function SignUpForm() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const fromUpload = searchParams.get('from') === 'upload';
 
   useEffect(() => {
     if (!isUserLoading && user) {
-        router.push('/editor');
+      router.push('/editor');
     }
-  },[user, isUserLoading, router]);
+  }, [user, isUserLoading, router]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const auth = getAuth();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Account Created',
-        description: "Welcome! We're redirecting you to the editor.",
-      });
+      toast({ title: 'Account Created', description: "Welcome! Redirecting you to the editor." });
       router.push('/editor');
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign Up Failed',
-        description: error.message,
-      });
+      toast({ variant: 'destructive', title: 'Sign Up Failed', description: friendlyAuthError(error.code) });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleSignUp = async () => {
     setIsGoogleLoading(true);
-    const auth = getAuth();
     const provider = new GoogleAuthProvider();
-    
-    signInWithRedirect(auth, provider)
-      .catch((error: any) => {
-        toast({
-          variant: 'destructive',
-          title: 'Sign Up Failed',
-          description: error.message,
-        });
+    try {
+      await signInWithPopup(auth, provider);
+      router.push('/editor');
+    } catch (error: any) {
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (redirectError: any) {
+          toast({ variant: 'destructive', title: 'Sign Up Failed', description: friendlyAuthError(redirectError.code) });
+          setIsGoogleLoading(false);
+        }
+      } else {
+        toast({ variant: 'destructive', title: 'Sign Up Failed', description: friendlyAuthError(error.code) });
         setIsGoogleLoading(false);
-      });
-  };
-
-    if (fromUpload) {
-        // You can add a special message for users coming from upload
+      }
     }
+  };
 
   return (
     <div className="grid gap-4">
-    <Button variant="outline" className="w-full" onClick={handleGoogleLogin} disabled={isGoogleLoading}>
-        {isGoogleLoading ? (
-        <Icons.logo className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-            // A simple Google icon SVG
-            <svg className="mr-2 h-4 w-4" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-72.2 72.2C321.7 105.3 287.4 88 248 88c-86.9 0-158.3 70.2-158.3 156s71.4 156 158.3 156c97.2 0 133-66.8 137.9-96.8H248v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.1z"></path></svg>
-        )}
+      {fromUpload && (
+        <p className="text-sm text-center text-muted-foreground bg-accent/50 rounded-md p-2">
+          Create an account to generate your profile from your resume.
+        </p>
+      )}
+
+      <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={isGoogleLoading}>
+        {isGoogleLoading ? <Icons.logo className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
         Sign up with Google
-    </Button>
-    <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-        </div>
+      </Button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
         <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-            </span>
+          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
-    </div>
-    <form onSubmit={handleSignUp} className="grid gap-4">
+      </div>
+
+      <form onSubmit={handleSignUp} className="grid gap-4">
         <div className="grid gap-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-        />
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
-        <Input 
-            id="password" 
-            type="password" 
-            required 
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-        />
+          <Label htmlFor="password">Password</Label>
+          <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? 'Creating Account...' : 'Create Account'}
+          {isLoading ? 'Creating Account...' : 'Create Account'}
         </Button>
-    </form>
-    <div className="mt-4 text-center text-sm">
-        Already have an account?{' '}
-        <Link href="/login" className="underline">
-        Login
-        </Link>
-    </div>
-  </div>
-  )
-}
+      </form>
 
-    
+      <div className="mt-4 text-center text-sm">
+        Already have an account?{' '}
+        <Link href="/login" className="underline">Login</Link>
+      </div>
+    </div>
+  );
+}
