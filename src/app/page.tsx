@@ -23,44 +23,33 @@ export default function Home() {
     const file = event.target.files?.[0];
     if (file) {
       if (file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) {
-        toast({
-            variant: 'destructive',
-            title: 'Invalid File',
-            description: 'Please select a PDF file under 10MB.',
-        });
-        event.target.value = ''; // Reset file input
+        toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a PDF file under 10MB.' });
+        event.target.value = '';
         return;
       }
 
       setIsProcessingFile(true);
-      toast({
-        title: 'Resume Selected!',
-        description: `Next, create an account to generate your profile.`,
-      });
+      toast({ title: 'Parsing Resume...', description: 'Extracting your details, just a moment.' });
 
       try {
-        // Read the file as a Data URL and store it in session storage
+        const formData = new FormData();
+        formData.append('resume', file);
+        const res = await fetch('/api/parse-resume', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Failed to parse resume');
+        const parsed = await res.json();
+        sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
+        router.push('/editor');
+      } catch {
+        // Fallback: store raw PDF for processing after sign-in
         const reader = new FileReader();
         reader.onload = (e) => {
-          const dataUrl = e.target?.result as string;
-          sessionStorage.setItem('pendingResume', dataUrl);
+          sessionStorage.setItem('pendingResume', e.target?.result as string);
           sessionStorage.setItem('pendingResumeName', file.name);
-          router.push('/signup?from=upload');
+          router.push('/editor');
         };
-        reader.onerror = () => {
-          throw new Error('Could not read the file.');
-        }
         reader.readAsDataURL(file);
-
-      } catch (error) {
-         toast({
-            variant: 'destructive',
-            title: 'File Error',
-            description: 'Could not process the selected file.',
-        });
-        setIsProcessingFile(false);
       } finally {
-        event.target.value = ''; // Reset file input
+        event.target.value = '';
       }
     }
   };
@@ -122,7 +111,7 @@ export default function Home() {
                 </div>
 
                 <Button variant="outline" size="lg" className="w-full" asChild>
-                  <Link href="/signup?from=manual">
+                  <Link href="/editor">
                     <Edit className="mr-2 h-4 w-4" />
                     Enter details manually
                   </Link>
