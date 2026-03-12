@@ -1,0 +1,37 @@
+# PDFtoPortfolio
+
+> Turn your PDF resume into a beautiful, shareable professional profile website in seconds.
+
+## What is PDFtoPortfolio?
+
+PDFtoPortfolio is a free tool that converts PDF resumes into hosted professional profile pages. Users upload their CV/resume PDF and the app automatically parses it and creates a public profile page accessible at a custom URL.
+
+## Features
+
+- Upload any PDF resume and get a hosted profile page instantly
+- Multiple professional themes (Modern Creative, Classic Minimalist, Monochrome Professional)
+- Editable profile: update work experience, education, skills, summary, and contact info
+- Custom URL (e.g., yourname-abc12)
+- Profile view tracking
+
+## How it works
+
+1. Upload your PDF resume on the homepage
+2. Create an account (email/password or Google sign-in)
+3. Your profile is automatically generated and published
+4. Share your profile URL with employers, on LinkedIn, etc.
+
+## Public profile pages
+
+Each user's profile is accessible at: https://your-domain.com/{slug}
+
+Profile pages include:
+- Full name, contact info, location
+- Professional summary
+- Work experience history
+- Education background
+- Skills list
+
+## Technology
+
+Built with Next.js, Firebase, and TypeScript.
