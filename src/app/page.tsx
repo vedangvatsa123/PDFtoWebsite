@@ -62,12 +62,13 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-6 text-center">
           
-          <Image 
+          <Image
             src="/images/cvtopdf.png"
             alt="Resume to Website"
             width={200}
             height={200}
             className="mb-2"
+            priority
           />
 
           <div className="space-y-2">
