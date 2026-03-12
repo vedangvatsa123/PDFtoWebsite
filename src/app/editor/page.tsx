@@ -150,7 +150,7 @@ const chartConfig = {
   other: { label: "Other", color: "hsl(var(--muted))" }
 } satisfies ChartConfig;
 
-export function ViewsByCountryChart() {
+function ViewsByCountryChart() {
   return (
     <Card>
       <CardHeader>
@@ -178,7 +178,7 @@ export function ViewsByCountryChart() {
 
 const last7DaysConfig = { views: { label: "Views", color: "hsl(var(--chart-1))" } } satisfies ChartConfig;
 
-export function ViewsLast7DaysChart() {
+function ViewsLast7DaysChart() {
     const [last7DaysData, setLast7DaysData] = useState<any[] | null>(null);
     useEffect(() => {
         const data = Array.from({length: 7}, (_, i) => ({ date: `Day ${i+1}`, views: Math.floor(Math.random() * 10) }));
@@ -298,7 +298,7 @@ export default function EditorPage() {
             const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
             const batch = writeBatch(firestore);
             batch.set(userProfileDocRef, profileData, { merge: true });
-            batch.set(slugDocRef, { userId: user.uid, ...profileData }, { merge: true });
+            batch.set(slugDocRef, profileData, { merge: true });
             await batch.commit();
         }
 
@@ -359,7 +359,7 @@ export default function EditorPage() {
             batch.set(profileRef, updatedProfile, { merge: true });
 
             const slugRef = doc(firestore, 'userProfilesBySlug', updatedProfile.slug!);
-            batch.set(slugRef, { userId: user.uid, ...updatedProfile }, { merge: true });
+            batch.set(slugRef, updatedProfile, { merge: true });
 
             // Clear old structured data
             const collectionsToClear = ['workExperience', 'education', 'skills'];
@@ -447,7 +447,7 @@ export default function EditorPage() {
             education: setEducationItems,
             skills: setSkillItems,
         }[collection as 'workExperience' | 'education' | 'skills'];
-        setter?.(prev => prev.map(item => item.id === id ? {...item, [name]: value} : item));
+        (setter as any)?.((prev: any[]) => prev.map((item: any) => item.id === id ? {...item, [name]: value} : item));
     }
 
     const handleItemBlur = (collection: string, id: string, e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -470,7 +470,7 @@ export default function EditorPage() {
         newItem.id = docRef.id;
         
         const setter = { workExperience: setWorkItems, education: setEducationItems, skills: setSkillItems }[collectionName];
-        setter(prev => [...prev, newItem]);
+        (setter as any)((prev: any[]) => [...prev, newItem]);
     };
 
     const handleDeleteItem = (collectionName: string, id: string) => {
@@ -478,7 +478,7 @@ export default function EditorPage() {
         const docRef = doc(firestore, 'users', user.uid, collectionName, id);
         deleteDocumentNonBlocking(docRef);
         const setter = { workExperience: setWorkItems, education: setEducationItems, skills: setSkillItems }[collectionName as 'workExperience' | 'education' | 'skills'];
-        setter?.(prev => prev.filter(item => item.id !== id));
+        (setter as any)?.((prev: any[]) => prev.filter((item: any) => item.id !== id));
     }
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
