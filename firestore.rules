@@ -41,7 +41,7 @@ service cloud.firestore {
     }
 
     match /users/{userId}/userProfile/{profileId} {
-      allow get: if isOwner(userId) || exists(/databases/$(database)/documents/userProfilesBySlug/$(profileId));
+      allow get: if isOwner(userId) || (resource != null && exists(/databases/$(database)/documents/userProfilesBySlug/$(resource.data.slug)));
       allow list: if isOwner(userId);
       allow create: if isOwner(userId) && hasCorrectUserIdOnCreate(userId);
       allow update: if isExistingOwner(userId) && userIdIsImmutable();
