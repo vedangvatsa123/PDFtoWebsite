@@ -50,6 +50,7 @@ export default function Home() {
         reader.readAsDataURL(file);
       } finally {
         event.target.value = '';
+        setIsProcessingFile(false);
       }
     }
   };
