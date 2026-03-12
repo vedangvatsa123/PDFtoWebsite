@@ -97,7 +97,7 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-md space-y-3">
                 <label htmlFor="resume-upload" className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:bg-accent/50 ${isProcessingFile ? 'cursor-wait' : ''}`}>
                     {isProcessingFile ? (
                         <>
@@ -114,8 +114,21 @@ export default function Home() {
                     )}
                     <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isProcessingFile} />
                 </label>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Your profile will be generated automatically. <br/>
+
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-muted-foreground uppercase">or</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+
+                <Button variant="outline" size="lg" className="w-full" asChild>
+                  <Link href="/signup?from=manual">
+                    <Edit className="mr-2 h-4 w-4" />
+                    Enter details manually
+                  </Link>
+                </Button>
+
+                <p className="text-sm text-muted-foreground text-center">
                   Already have an account?{' '}
                   <LoginDialog />
                 </p>
@@ -124,7 +137,7 @@ export default function Home() {
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-6">
                 <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">1</div>
-                    <span className="font-medium">Upload Resume</span>
+                    <span className="font-medium">Upload PDF or Enter Details</span>
                   </div>
                   <div className="h-px w-8 bg-border md:block hidden"></div>
                   <div className="flex items-center gap-2">
