@@ -27,13 +27,8 @@ service cloud.firestore {
       return request.resource.data.userId == resource.data.userId;
     }
 
-    match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if false;
-    }
+
+
 
     match /users/{userId}/userProfile/{profileId} {
       // Allow public reads for profiles that have a published slug
@@ -60,6 +55,20 @@ service cloud.firestore {
       // Allow public reads so profile pages work via REST
       allow read, list: if true;
       allow write: if isOwner(userId);
+    }
+
+    match /users/{userId}/dailyViews/{dateId} {
+      // Owner can read their own analytics; writes handled by Admin SDK (views API)
+      allow read: if isOwner(userId);
+      allow write: if false; // Only server-side via Admin SDK
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isOwner(userId);
     }
 
     match /themes/{themeId} {

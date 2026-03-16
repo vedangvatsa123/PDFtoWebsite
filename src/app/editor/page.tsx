@@ -851,6 +851,56 @@ export default function EditorPage() {
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            {user && (
+                                <Card className="shadow-sm border-destructive/20">
+                                    <CardContent className="pt-4 pb-3">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h3 className="text-sm font-semibold text-destructive">Delete Account</h3>
+                                                <p className="text-[11px] text-muted-foreground">Permanently remove your profile and all data.</p>
+                                            </div>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                className="h-7 text-xs"
+                                                onClick={async () => {
+                                                    if (!confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) return;
+                                                    try {
+                                                        // Delete all subcollections
+                                                        const collections = ['userProfile', 'workExperience', 'education', 'skills', 'dailyViews'];
+                                                        for (const col of collections) {
+                                                            const snap = await getDocs(collection(firestore, 'users', user.uid, col));
+                                                            const batch = writeBatch(firestore);
+                                                            snap.docs.forEach(d => batch.delete(d.ref));
+                                                            if (snap.docs.length > 0) await batch.commit();
+                                                        }
+                                                        // Delete slug mapping
+                                                        if (profile.slug) {
+                                                            const { deleteDoc: delDoc } = await import('firebase/firestore');
+                                                            await delDoc(doc(firestore, 'userProfilesBySlug', profile.slug));
+                                                        }
+                                                        // Delete user doc
+                                                        await deleteDoc(doc(firestore, 'users', user.uid));
+                                                        // Delete auth account
+                                                        await user.delete();
+                                                        toast({ title: 'Account deleted', description: 'All your data has been removed.' });
+                                                        window.location.href = '/';
+                                                    } catch (err: any) {
+                                                        if (err.code === 'auth/requires-recent-login') {
+                                                            toast({ variant: 'destructive', title: 'Re-authentication required', description: 'Please sign out, sign back in, and try again.' });
+                                                        } else {
+                                                            toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete account.' });
+                                                        }
+                                                    }
+                                                }}
+                                            >
+                                                Delete Account
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
                         </div>
 					</div>
 				</div>

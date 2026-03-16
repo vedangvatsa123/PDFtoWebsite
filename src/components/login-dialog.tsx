@@ -137,6 +137,20 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
               <Label htmlFor="dialog-password" className="text-xs">Password</Label>
               <Input id="dialog-password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9" />
             </div>
+            <button
+              type="button"
+              className="text-xs text-muted-foreground hover:text-primary text-left -mt-1"
+              onClick={async () => {
+                if (!email) { toast({ variant: 'destructive', title: 'Enter your email first' }); return; }
+                const { sendPasswordResetEmail } = await import('firebase/auth');
+                try {
+                  await sendPasswordResetEmail(auth, email);
+                  toast({ title: 'Reset email sent', description: 'Check your inbox for a password reset link.' });
+                } catch { toast({ variant: 'destructive', title: 'Error', description: 'Could not send reset email. Check the address.' }); }
+              }}
+            >
+              Forgot password?
+            </button>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Please wait...' : 'Continue'}
             </Button>

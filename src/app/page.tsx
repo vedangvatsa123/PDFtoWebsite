@@ -104,7 +104,7 @@ export default function Home() {
                        <>
                             <UploadCloud className="mr-3 h-6 w-6 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">
-                                Drag & drop or click to upload PDF
+                                Upload your CV
                             </span>
                        </>
                     )}
@@ -151,6 +151,11 @@ export default function Home() {
 
         </div>
       </main>
+      <footer className="py-4 text-center text-xs text-muted-foreground">
+        <a href="/privacy" className="hover:underline">Privacy</a>
+        <span className="mx-2">·</span>
+        <a href="/terms" className="hover:underline">Terms</a>
+      </footer>
     </div>
   );
 }
