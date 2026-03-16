@@ -60,4 +60,21 @@ export type Profile = {
   workExperience: WorkExperience[];
   education: Education[];
   skills: Skill[];
+  customSections: CustomSection[];
+};
+
+export type CustomSectionItem = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  date?: string;
+};
+
+export type CustomSection = {
+  id: string;
+  userProfileId: string;
+  sectionTitle: string;
+  items: CustomSectionItem[];
+  order: number;
 };

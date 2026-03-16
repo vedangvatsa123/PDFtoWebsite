@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
-import type { UserProfile, WorkExperience, Education, Skill } from '@/types';
+import type { UserProfile, WorkExperience, Education, Skill, CustomSection, CustomSectionItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -224,6 +224,7 @@ export default function EditorPage() {
     const [workItems, setWorkItems] = useState<WorkExperience[]>([]);
     const [educationItems, setEducationItems] = useState<Education[]>([]);
     const [skillItems, setSkillItems] = useState<Skill[]>([]);
+    const [customSections, setCustomSections] = useState<CustomSection[]>([]);
     
     const [pageIsLoading, setPageIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -357,9 +358,10 @@ export default function EditorPage() {
         const workQuery = query(collection(firestore, 'users', user.uid, 'workExperience'));
         const eduQuery = query(collection(firestore, 'users', user.uid, 'education'));
         const skillsQuery = query(collection(firestore, 'users', user.uid, 'skills'));
+        const customQuery = query(collection(firestore, 'users', user.uid, 'customSections'));
         
-        const [profileSnap, workSnap, eduSnap, skillsSnap] = await Promise.all([
-            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(skillsQuery)
+        const [profileSnap, workSnap, eduSnap, skillsSnap, customSnap] = await Promise.all([
+            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(skillsQuery), getDocs(customQuery)
         ]);
         
         let profileData: UserProfile;
@@ -391,10 +393,11 @@ export default function EditorPage() {
         setWorkItems(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
         setEducationItems(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
         setSkillItems(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+        setCustomSections(customSnap.docs.map(d => ({ ...d.data(), id: d.id } as CustomSection)).sort((a, b) => (a.order || 0) - (b.order || 0)));
         
         setPageIsLoading(false);
         return { profile: profileData }; // Return data for chaining
-    }, [user, firestore, setPageIsLoading, setProfile, setInitialSlug, setActiveThemeId, setWorkItems, setEducationItems, setSkillItems]);
+    }, [user, firestore, setPageIsLoading, setProfile, setInitialSlug, setActiveThemeId, setWorkItems, setEducationItems, setSkillItems, setCustomSections]);
 
     const autoSave = useCallback((collectionName: string, id: string, data: any) => {
         if (!user || !firestore) return;
@@ -602,7 +605,13 @@ export default function EditorPage() {
         workExperience: workItems.map(w => ({ id: w.id, title: w.title || '', company: w.company || '', startDate: w.startDate || '', endDate: w.endDate || '', description: w.description || '' })),
         education: educationItems.map(e => ({ id: e.id, institution: e.institution || '', degree: e.degree || '', startDate: e.startDate || '', endDate: e.endDate || '' })),
         skills: skillItems.map(s => ({ id: s.id, name: s.name || '' })),
-    }), [profile, workItems, educationItems, skillItems]);
+        customSections: customSections.map(cs => ({
+            id: cs.id,
+            sectionTitle: cs.sectionTitle || '',
+            items: (cs.items || []).map(item => ({ id: item.id, title: item.title || '', subtitle: item.subtitle || '', description: item.description || '', date: item.date || '' })),
+            order: cs.order || 0,
+        })),
+    }), [profile, workItems, educationItems, skillItems, customSections]);
 
     if (isUserLoading || pageIsLoading) {
       return (
@@ -852,6 +861,159 @@ export default function EditorPage() {
                                 </CardContent>
                             </Card>
 
+                            {/* ─── CUSTOM SECTIONS ─── */}
+                            {customSections.map((section, sIdx) => (
+                                <Card key={section.id} className="shadow-sm">
+                                    <CardContent className="pt-4 pb-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <Input
+                                                value={section.sectionTitle}
+                                                placeholder="Section Title (e.g. Projects)"
+                                                className="h-7 text-sm font-semibold border-none bg-transparent p-0 focus-visible:ring-0 w-auto"
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, sectionTitle: val } : s));
+                                                }}
+                                                onBlur={() => {
+                                                    if (user && firestore) {
+                                                        autoSave('customSections', section.id, { sectionTitle: section.sectionTitle });
+                                                    }
+                                                }}
+                                            />
+                                            <div className="flex items-center gap-1">
+                                                <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => {
+                                                    const newItem: CustomSectionItem = { id: `item-${Date.now()}`, title: '', subtitle: '', description: '', date: '' };
+                                                    setCustomSections(prev => prev.map(s => {
+                                                        if (s.id !== section.id) return s;
+                                                        const updated = { ...s, items: [...(s.items || []), newItem] };
+                                                        if (user && firestore) autoSave('customSections', section.id, { items: updated.items });
+                                                        return updated;
+                                                    }));
+                                                }}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
+                                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => {
+                                                    if (user && firestore) {
+                                                        const docRef = doc(firestore, 'users', user.uid, 'customSections', section.id);
+                                                        deleteDocumentNonBlocking(docRef);
+                                                    }
+                                                    setCustomSections(prev => prev.filter(s => s.id !== section.id));
+                                                }}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {(section.items || []).map((item, iIdx) => (
+                                                <div key={item.id} className="border rounded-md p-2 space-y-1.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <Input
+                                                            placeholder="Title"
+                                                            value={item.title}
+                                                            className="h-7 text-xs flex-1"
+                                                            onChange={(e) => {
+                                                                const val = e.target.value;
+                                                                setCustomSections(prev => prev.map(s => {
+                                                                    if (s.id !== section.id) return s;
+                                                                    return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, title: val } : it) };
+                                                                }));
+                                                            }}
+                                                            onBlur={() => {
+                                                                if (user && firestore) {
+                                                                    const sec = customSections.find(s => s.id === section.id);
+                                                                    if (sec) autoSave('customSections', section.id, { items: sec.items });
+                                                                }
+                                                            }}
+                                                        />
+                                                        <Input
+                                                            placeholder="Date"
+                                                            value={item.date || ''}
+                                                            className="h-7 text-xs w-24"
+                                                            onChange={(e) => {
+                                                                const val = e.target.value;
+                                                                setCustomSections(prev => prev.map(s => {
+                                                                    if (s.id !== section.id) return s;
+                                                                    return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, date: val } : it) };
+                                                                }));
+                                                            }}
+                                                            onBlur={() => {
+                                                                if (user && firestore) {
+                                                                    const sec = customSections.find(s => s.id === section.id);
+                                                                    if (sec) autoSave('customSections', section.id, { items: sec.items });
+                                                                }
+                                                            }}
+                                                        />
+                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
+                                                            setCustomSections(prev => prev.map(s => {
+                                                                if (s.id !== section.id) return s;
+                                                                const updated = { ...s, items: s.items.filter(it => it.id !== item.id) };
+                                                                if (user && firestore) autoSave('customSections', section.id, { items: updated.items });
+                                                                return updated;
+                                                            }));
+                                                        }}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+                                                    </div>
+                                                    <Input
+                                                        placeholder="Subtitle (optional)"
+                                                        value={item.subtitle || ''}
+                                                        className="h-7 text-xs"
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            setCustomSections(prev => prev.map(s => {
+                                                                if (s.id !== section.id) return s;
+                                                                return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, subtitle: val } : it) };
+                                                            }));
+                                                        }}
+                                                        onBlur={() => {
+                                                            if (user && firestore) {
+                                                                const sec = customSections.find(s => s.id === section.id);
+                                                                if (sec) autoSave('customSections', section.id, { items: sec.items });
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Textarea
+                                                        placeholder="Description (optional)"
+                                                        value={item.description || ''}
+                                                        className="text-xs min-h-[40px] resize-none"
+                                                        rows={2}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            setCustomSections(prev => prev.map(s => {
+                                                                if (s.id !== section.id) return s;
+                                                                return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, description: val } : it) };
+                                                            }));
+                                                        }}
+                                                        onBlur={() => {
+                                                            if (user && firestore) {
+                                                                const sec = customSections.find(s => s.id === section.id);
+                                                                if (sec) autoSave('customSections', section.id, { items: sec.items });
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full h-8 text-xs border-dashed"
+                                onClick={async () => {
+                                    const newSection: Omit<CustomSection, 'id'> = {
+                                        userProfileId: user?.uid || '',
+                                        sectionTitle: '',
+                                        items: [],
+                                        order: customSections.length,
+                                    };
+                                    if (user && firestore) {
+                                        const colRef = collection(firestore, 'users', user.uid, 'customSections');
+                                        const docRef = await addDoc(colRef, newSection);
+                                        setCustomSections(prev => [...prev, { ...newSection, id: docRef.id }]);
+                                    } else {
+                                        setCustomSections(prev => [...prev, { ...newSection, id: `guest-cs-${Date.now()}` }]);
+                                    }
+                                }}
+                            >
+                                <PlusCircle className="mr-1 h-3 w-3" /> Add Section
+                            </Button>
                             {user && (
                                 <Card className="shadow-sm border-destructive/20">
                                     <CardContent className="pt-4 pb-3">
@@ -868,7 +1030,7 @@ export default function EditorPage() {
                                                     if (!confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) return;
                                                     try {
                                                         // Delete all subcollections
-                                                        const collections = ['userProfile', 'workExperience', 'education', 'skills', 'dailyViews'];
+                                                        const collections = ['userProfile', 'workExperience', 'education', 'skills', 'dailyViews', 'customSections'];
                                                         for (const col of collections) {
                                                             const snap = await getDocs(collection(firestore, 'users', user.uid, col));
                                                             const batch = writeBatch(firestore);
