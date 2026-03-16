@@ -18,79 +18,49 @@ service cloud.firestore {
     function isExistingOwner(userId) {
       return isOwner(userId) && isExistingDoc();
     }
-    
-    function hasCorrectUserIdOnCreate(userId) {
-      return request.resource.data.userId == userId;
-    }
 
-    function userIdIsImmutable() {
-      return request.resource.data.userId == resource.data.userId;
-    }
-
-
-
-
-    match /users/{userId}/userProfile/{profileId} {
-      // Allow public reads for profiles that have a published slug
-      allow get: if true;
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && hasCorrectUserIdOnCreate(userId);
-      allow update: if isExistingOwner(userId) && userIdIsImmutable();
-      allow delete: if isExistingOwner(userId);
-    }
-    
-    match /users/{userId}/workExperience/{experienceId} {
-      // Allow public reads so profile pages work via REST
-      allow read, list: if true;
-      allow write: if isOwner(userId);
-    }
-
-    match /users/{userId}/education/{educationId} {
-      // Allow public reads so profile pages work via REST
-      allow read, list: if true;
-      allow write: if isOwner(userId);
-    }
-
-    match /users/{userId}/skills/{skillId} {
-      // Allow public reads so profile pages work via REST
-      allow read, list: if true;
-      allow write: if isOwner(userId);
-    }
-
-    match /users/{userId}/dailyViews/{dateId} {
-      // Owner can read their own analytics; writes handled by Admin SDK (views API)
-      allow read: if isOwner(userId);
-      allow write: if false; // Only server-side via Admin SDK
-    }
-
-    match /users/{userId}/customSections/{sectionId} {
-      // Public reads so custom sections render on profile pages
-      allow read, list: if true;
-      allow write: if isOwner(userId);
-    }
-
+    // Profile data lives directly on users/{userId}
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
+      allow get: if true;          // Public reads for profile pages
+      allow list: if false;        // No listing all users
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isOwner(userId);
     }
 
+    match /users/{userId}/workExperience/{experienceId} {
+      allow read, list: if true;
+      allow write: if isOwner(userId);
+    }
+
+    match /users/{userId}/education/{educationId} {
+      allow read, list: if true;
+      allow write: if isOwner(userId);
+    }
+
+    match /users/{userId}/customSections/{sectionId} {
+      allow read, list: if true;
+      allow write: if isOwner(userId);
+    }
+
+    match /users/{userId}/dailyViews/{dateId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Server-side only via Admin SDK
+    }
+
     match /themes/{themeId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow write: if false;
     }
 
-    match /userProfilesBySlug/{slug} {
+    // Slim slug lookup: only stores {userId}
+    match /slugs/{slug} {
       allow get: if true;
       allow list: if true;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(request.resource.data.userId) && userIdIsImmutable();
-      allow delete: if isExistingOwner(resource.data.userId);
+      allow update: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
   }
 }

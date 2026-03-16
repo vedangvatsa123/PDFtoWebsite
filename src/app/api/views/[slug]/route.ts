@@ -21,7 +21,8 @@ export async function POST(
   }
 
   try {
-    const slugRef = db.collection('userProfilesBySlug').doc(slug);
+    // Slug lookup: slugs/{slug} → {userId}
+    const slugRef = db.collection('slugs').doc(slug);
     const slugDoc = await slugRef.get();
 
     if (!slugDoc.exists) {
@@ -33,7 +34,8 @@ export async function POST(
       return NextResponse.json({ error: 'User ID not found for slug' }, { status: 500 });
     }
 
-    const profileRef = db.collection('users').doc(userId).collection('userProfile').doc(userId);
+    // Profile lives directly on users/{userId}
+    const profileRef = db.collection('users').doc(userId);
 
     // Date key in YYYY-MM-DD format (UTC)
     const today = new Date().toISOString().slice(0, 10);

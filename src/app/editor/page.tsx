@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
-import type { UserProfile, WorkExperience, Education, Skill, CustomSection, CustomSectionItem } from '@/types';
+import type { UserProfile, WorkExperience, Education, CustomSection, CustomSectionItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -61,7 +61,7 @@ const ResumeUploadPrompt = ({ onFileChange, isGenerating }: { onFileChange: (e: 
     </Card>
 );
 
-const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: Skill[], onNavigate: (tab: string) => void }) => {
+const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: string[], onNavigate: (tab: string) => void }) => {
     const completeness = useMemo(() => {
         const checks = [
             { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')), section: 'content' },
@@ -223,7 +223,7 @@ export default function EditorPage() {
     // Structured data states
     const [workItems, setWorkItems] = useState<WorkExperience[]>([]);
     const [educationItems, setEducationItems] = useState<Education[]>([]);
-    const [skillItems, setSkillItems] = useState<Skill[]>([]);
+    const [skillItems, setSkillItems] = useState<string[]>([]);
     const [customSections, setCustomSections] = useState<CustomSection[]>([]);
     
     const [pageIsLoading, setPageIsLoading] = useState(true);
@@ -261,11 +261,12 @@ export default function EditorPage() {
                         summary: data.summary || '',
                         slug,
                         themeId: 'modern-creative',
+                        skills: (data.skills || []).map((s: any) => s.name || s),
                     });
                     setActiveThemeId('modern-creative');
                     setWorkItems((data.workExperience || []).map((w: any, i: number) => ({ ...w, id: `guest-work-${i}`, userProfileId: '' })));
                     setEducationItems((data.education || []).map((e: any, i: number) => ({ ...e, id: `guest-edu-${i}`, userProfileId: '' })));
-                    setSkillItems((data.skills || []).map((s: any, i: number) => ({ ...s, id: `guest-skill-${i}`, userProfileId: '' })));
+                    setSkillItems((data.skills || []).map((s: any) => s.name || s));
                 } catch {}
             }
             setPageIsLoading(false);
@@ -299,9 +300,11 @@ export default function EditorPage() {
                     avatarHint: 'person portrait',
                     viewCount: 0,
                 };
+                const skillsArr = (snapshot.skills || []).map((s: any) => s.name || s);
+                profileToSave.skills = skillsArr;
                 const batch = writeBatch(firestore);
-                batch.set(doc(firestore, 'users', user.uid, 'userProfile', user.uid), profileToSave, { merge: true });
-                batch.set(doc(firestore, 'userProfilesBySlug', slug), profileToSave, { merge: true });
+                batch.set(doc(firestore, 'users', user.uid), profileToSave, { merge: true });
+                batch.set(doc(firestore, 'slugs', slug), { userId: user.uid });
                 (snapshot.workExperience || []).forEach((item: any) => {
                     const { id, ...rest } = item;
                     batch.set(doc(collection(firestore, 'users', user.uid, 'workExperience')), { ...rest, userProfileId: user.uid });
@@ -309,10 +312,6 @@ export default function EditorPage() {
                 (snapshot.education || []).forEach((item: any) => {
                     const { id, ...rest } = item;
                     batch.set(doc(collection(firestore, 'users', user.uid, 'education')), { ...rest, userProfileId: user.uid });
-                });
-                (snapshot.skills || []).forEach((item: any) => {
-                    const { id, ...rest } = item;
-                    batch.set(doc(collection(firestore, 'users', user.uid, 'skills')), { ...rest, userProfileId: user.uid });
                 });
                 await batch.commit();
                 sessionStorage.removeItem('parsedResume');
@@ -354,14 +353,13 @@ export default function EditorPage() {
         if (!user || !firestore) return;
         setPageIsLoading(true);
 
-        const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+        const profileRef = doc(firestore, 'users', user.uid);
         const workQuery = query(collection(firestore, 'users', user.uid, 'workExperience'));
         const eduQuery = query(collection(firestore, 'users', user.uid, 'education'));
-        const skillsQuery = query(collection(firestore, 'users', user.uid, 'skills'));
         const customQuery = query(collection(firestore, 'users', user.uid, 'customSections'));
         
-        const [profileSnap, workSnap, eduSnap, skillsSnap, customSnap] = await Promise.all([
-            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(skillsQuery), getDocs(customQuery)
+        const [profileSnap, workSnap, eduSnap, customSnap] = await Promise.all([
+            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(customQuery)
         ]);
         
         let profileData: UserProfile;
@@ -378,12 +376,11 @@ export default function EditorPage() {
                 avatarHint: 'person portrait',
                 themeId: 'modern-creative',
                 viewCount: 0,
+                skills: [],
             };
-            const userProfileDocRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
-            const slugDocRef = doc(firestore, 'userProfilesBySlug', profileData.slug!);
             const batch = writeBatch(firestore);
-            batch.set(userProfileDocRef, profileData, { merge: true });
-            batch.set(slugDocRef, profileData, { merge: true });
+            batch.set(profileRef, profileData, { merge: true });
+            batch.set(doc(firestore, 'slugs', profileData.slug!), { userId: user.uid });
             await batch.commit();
         }
 
@@ -392,17 +389,20 @@ export default function EditorPage() {
         setActiveThemeId(profileData.themeId);
         setWorkItems(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
         setEducationItems(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
-        setSkillItems(skillsSnap.docs.map(d => ({ ...d.data(), id: d.id } as Skill)));
+        setSkillItems(profileData.skills || []);
         setCustomSections(customSnap.docs.map(d => ({ ...d.data(), id: d.id } as CustomSection)).sort((a, b) => (a.order || 0) - (b.order || 0)));
         
         setPageIsLoading(false);
-        return { profile: profileData }; // Return data for chaining
+        return { profile: profileData };
     }, [user, firestore, setPageIsLoading, setProfile, setInitialSlug, setActiveThemeId, setWorkItems, setEducationItems, setSkillItems, setCustomSections]);
 
     const autoSave = useCallback((collectionName: string, id: string, data: any) => {
         if (!user || !firestore) return;
         setIsSaving(true);
-        const ref = doc(firestore, 'users', user.uid, collectionName, id);
+        // Profile fields save to users/{uid}, subcollections save to the subcollection doc
+        const ref = (collectionName === 'profile')
+            ? doc(firestore, 'users', user.uid)
+            : doc(firestore, 'users', user.uid, collectionName, id);
         setDocumentNonBlocking(ref, data, { merge: true });
         setTimeout(() => setIsSaving(false), 700);
     }, [user, firestore, setIsSaving]);
@@ -425,12 +425,13 @@ export default function EditorPage() {
             const extractedData = await response.json();
 
             const batch = writeBatch(firestore);
-            const profileRef = doc(firestore, 'users', user.uid, 'userProfile', user.uid);
+            const profileRef = doc(firestore, 'users', user.uid);
             
             const currentProfileSnap = await getDoc(profileRef);
             const currentProfile = currentProfileSnap.data() || {};
             const currentSlug = currentProfile.slug || generateSlug(extractedData.personalInfo.fullName || user.displayName || 'user');
             
+            const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
             const updatedProfile: UserProfile = {
                 ...currentProfile,
                 userId: user.uid,
@@ -441,14 +442,13 @@ export default function EditorPage() {
                 website: extractedData.personalInfo.website || currentProfile.website || '',
                 location: extractedData.personalInfo.location || currentProfile.location || '',
                 slug: currentSlug,
+                skills: skillsArr,
             };
             batch.set(profileRef, updatedProfile, { merge: true });
+            batch.set(doc(firestore, 'slugs', updatedProfile.slug!), { userId: user.uid });
 
-            const slugRef = doc(firestore, 'userProfilesBySlug', updatedProfile.slug!);
-            batch.set(slugRef, updatedProfile, { merge: true });
-
-            // Clear old structured data
-            const collectionsToClear = ['workExperience', 'education', 'skills'];
+            // Clear old subcollection data
+            const collectionsToClear = ['workExperience', 'education'];
             for (const col of collectionsToClear) {
                 const snap = await getDocs(collection(firestore, 'users', user.uid, col));
                 snap.forEach(doc => batch.delete(doc.ref));
@@ -461,10 +461,6 @@ export default function EditorPage() {
             });
             extractedData.education?.forEach((item: Omit<Education, 'id'>) => {
                 const newRef = doc(collection(firestore, 'users', user.uid, 'education'));
-                batch.set(newRef, { ...item, userProfileId: user.uid });
-            });
-            extractedData.skills?.forEach((item: Omit<Skill, 'id'>) => {
-                const newRef = doc(collection(firestore, 'users', user.uid, 'skills'));
                 batch.set(newRef, { ...item, userProfileId: user.uid });
             });
             
@@ -508,7 +504,7 @@ export default function EditorPage() {
         if ((profile as any)[name] === value) return; // No change
         
         if (name === 'slug' && value !== initialSlug) {
-            const slugRef = doc(firestore, 'userProfilesBySlug', value);
+            const slugRef = doc(firestore, 'slugs', value);
             const slugSnap = await getDoc(slugRef);
             if (slugSnap.exists() && slugSnap.data().userId !== user.uid) {
                 toast({ variant: 'destructive', title: 'URL Unavailable', description: `The URL "${value}" is already taken.` });
@@ -516,39 +512,36 @@ export default function EditorPage() {
                 return;
             }
              if (initialSlug) {
-                const oldSlugRef = doc(firestore, 'userProfilesBySlug', initialSlug);
+                const oldSlugRef = doc(firestore, 'slugs', initialSlug);
                 deleteDocumentNonBlocking(oldSlugRef);
             }
-            const newSlugRef = doc(firestore, 'userProfilesBySlug', value);
-            setDocumentNonBlocking(newSlugRef, { userId: user.uid, ...profile, slug: value }, { merge: true });
+            const newSlugRef = doc(firestore, 'slugs', value);
+            setDocumentNonBlocking(newSlugRef, { userId: user.uid }, { merge: true });
             setInitialSlug(value);
         }
-        autoSave('userProfile', user.uid, { [name]: value });
+        autoSave('profile', user.uid, { [name]: value });
     };
 
-    const handleItemChange = (collection: string, id: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleItemChange = (collectionName: string, id: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         const setter = {
             workExperience: setWorkItems,
             education: setEducationItems,
-            skills: setSkillItems,
-        }[collection as 'workExperience' | 'education' | 'skills'];
+        }[collectionName as 'workExperience' | 'education'];
         (setter as any)?.((prev: any[]) => prev.map((item: any) => item.id === id ? {...item, [name]: value} : item));
     }
 
-    const handleItemBlur = (collection: string, id: string, e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleItemBlur = (collectionName: string, id: string, e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        autoSave(collection, id, { [name]: value });
+        autoSave(collectionName, id, { [name]: value });
     };
 
-    const handleAddItem = async (collectionName: 'workExperience' | 'education' | 'skills') => {
+    const handleAddItem = async (collectionName: 'workExperience' | 'education') => {
         let newItem: any;
         if (collectionName === 'workExperience') {
             newItem = { title: '', company: '', startDate: '', endDate: '', description: '' };
-        } else if (collectionName === 'education') {
-            newItem = { institution: '', degree: '', startDate: '', endDate: '' };
         } else {
-            newItem = { name: '' };
+            newItem = { institution: '', degree: '', startDate: '', endDate: '' };
         }
         const guestId = `guest-${collectionName}-${Date.now()}`;
         if (user && firestore) {
@@ -559,7 +552,7 @@ export default function EditorPage() {
             newItem.id = guestId;
             newItem.userProfileId = '';
         }
-        const setter = { workExperience: setWorkItems, education: setEducationItems, skills: setSkillItems }[collectionName];
+        const setter = { workExperience: setWorkItems, education: setEducationItems }[collectionName];
         (setter as any)((prev: any[]) => [...prev, newItem]);
     };
 
@@ -568,7 +561,7 @@ export default function EditorPage() {
             const docRef = doc(firestore, 'users', user.uid, collectionName, id);
             deleteDocumentNonBlocking(docRef);
         }
-        const setter = { workExperience: setWorkItems, education: setEducationItems, skills: setSkillItems }[collectionName as 'workExperience' | 'education' | 'skills'];
+        const setter = { workExperience: setWorkItems, education: setEducationItems }[collectionName as 'workExperience' | 'education'];
         (setter as any)?.((prev: any[]) => prev.filter((item: any) => item.id !== id));
     }
     
@@ -604,7 +597,7 @@ export default function EditorPage() {
         },
         workExperience: workItems.map(w => ({ id: w.id, title: w.title || '', company: w.company || '', startDate: w.startDate || '', endDate: w.endDate || '', description: w.description || '' })),
         education: educationItems.map(e => ({ id: e.id, institution: e.institution || '', degree: e.degree || '', startDate: e.startDate || '', endDate: e.endDate || '' })),
-        skills: skillItems.map(s => ({ id: s.id, name: s.name || '' })),
+        skills: skillItems,
         customSections: customSections.map(cs => ({
             id: cs.id,
             sectionTitle: cs.sectionTitle || '',
@@ -763,12 +756,7 @@ export default function EditorPage() {
                                                         const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                                                         setProfile(prev => ({ ...prev, avatarUrl: dataUrl }));
                                                         if (user && firestore) {
-                                                            autoSave('userProfile', user.uid, { avatarUrl: dataUrl });
-                                                            // Also update slug doc
-                                                            if (profile.slug) {
-                                                                const slugRef = doc(firestore, 'userProfilesBySlug', profile.slug);
-                                                                setDocumentNonBlocking(slugRef, { avatarUrl: dataUrl }, { merge: true });
-                                                            }
+                                                            autoSave('profile', user.uid, { avatarUrl: dataUrl });
                                                         }
                                                         toast({ title: 'Photo updated!' });
                                                     };
@@ -848,13 +836,38 @@ export default function EditorPage() {
                                 <CardContent className="pt-4 pb-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="text-sm font-semibold">Skills</h3>
-                                        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleAddItem('skills')}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
+                                        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => {
+                                            setSkillItems(prev => [...prev, '']);
+                                            if (user && firestore) {
+                                                autoSave('profile', user.uid, { skills: [...skillItems, ''] });
+                                            }
+                                        }}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
                                     </div>
                                     <div className="flex flex-wrap gap-1.5">
-                                        {skillItems.map(item => (
-                                            <div key={item.id} className="flex items-center gap-0.5 bg-secondary px-2 py-1 rounded-md">
-                                                <Input name="name" placeholder="Skill" value={item.name} onChange={(e) => handleItemChange('skills', item.id, e)} onBlur={(e) => handleItemBlur('skills', item.id, e)} className="h-6 text-xs w-20 border-none bg-transparent p-0"/>
-                                                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => handleDeleteItem('skills', item.id)}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                        {skillItems.map((skill, idx) => (
+                                            <div key={idx} className="flex items-center gap-0.5 bg-secondary px-2 py-1 rounded-md">
+                                                <Input
+                                                    placeholder="Skill"
+                                                    value={skill}
+                                                    className="h-6 text-xs w-20 border-none bg-transparent p-0"
+                                                    onChange={(e) => {
+                                                        const newSkills = [...skillItems];
+                                                        newSkills[idx] = e.target.value;
+                                                        setSkillItems(newSkills);
+                                                    }}
+                                                    onBlur={() => {
+                                                        if (user && firestore) {
+                                                            autoSave('profile', user.uid, { skills: skillItems });
+                                                        }
+                                                    }}
+                                                />
+                                                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => {
+                                                    const newSkills = skillItems.filter((_, i) => i !== idx);
+                                                    setSkillItems(newSkills);
+                                                    if (user && firestore) {
+                                                        autoSave('profile', user.uid, { skills: newSkills });
+                                                    }
+                                                }}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
                                         ))}
                                     </div>
@@ -1030,7 +1043,7 @@ export default function EditorPage() {
                                                     if (!confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) return;
                                                     try {
                                                         // Delete all subcollections
-                                                        const collections = ['userProfile', 'workExperience', 'education', 'skills', 'dailyViews', 'customSections'];
+                                                        const collections = ['workExperience', 'education', 'customSections', 'dailyViews'];
                                                         for (const col of collections) {
                                                             const snap = await getDocs(collection(firestore, 'users', user.uid, col));
                                                             const batch = writeBatch(firestore);
@@ -1040,7 +1053,7 @@ export default function EditorPage() {
                                                         // Delete slug mapping
                                                         if (profile.slug) {
                                                             const { deleteDoc: delDoc } = await import('firebase/firestore');
-                                                            await delDoc(doc(firestore, 'userProfilesBySlug', profile.slug));
+                                                            await delDoc(doc(firestore, 'slugs', profile.slug));
                                                         }
                                                         // Delete user doc
                                                         await deleteDoc(doc(firestore, 'users', user.uid));

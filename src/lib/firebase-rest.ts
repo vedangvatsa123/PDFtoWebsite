@@ -87,6 +87,7 @@ export interface ServerProfileData {
     avatarHint?: string;
     website?: string;
     viewCount?: number;
+    skills?: string[];
   };
   workExperience: Array<{
     id: string;
@@ -103,7 +104,6 @@ export interface ServerProfileData {
     startDate: string;
     endDate?: string;
   }>;
-  skills: Array<{ id: string; name: string }>;
   customSections: Array<{
     id: string;
     sectionTitle: string;
@@ -113,24 +113,23 @@ export interface ServerProfileData {
 }
 
 export async function getProfileBySlug(slug: string): Promise<ServerProfileData | null> {
-  // Use no-cache for slug lookup to ensure freshly created profiles are found immediately
-  const slugDoc = await fetchDoc(`userProfilesBySlug/${slug}`, true);
+  // Slug lookup: slugs/{slug} → {userId}
+  const slugDoc = await fetchDoc(`slugs/${slug}`, true);
   if (!slugDoc) return null;
 
   const userId = slugDoc.userId as string;
   if (!userId) return null;
 
-  const [profile, workExperience, education, skills, customSections] = await Promise.all([
-    fetchDoc(`users/${userId}/userProfile/${userId}`),
+  // Profile lives directly on users/{userId}
+  const [profile, workExperience, education, customSections] = await Promise.all([
+    fetchDoc(`users/${userId}`),
     fetchCollection(`users/${userId}/workExperience`),
     fetchCollection(`users/${userId}/education`),
-    fetchCollection(`users/${userId}/skills`),
     fetchCollection(`users/${userId}/customSections`),
   ]);
 
   if (!profile) return null;
 
-  // Ensure required fields have fallbacks so templates never crash
   const safeProfile: ServerProfileData['profile'] = {
     userId: (profile.userId as string) || userId,
     fullName: (profile.fullName as string) || 'Professional Profile',
@@ -144,13 +143,13 @@ export async function getProfileBySlug(slug: string): Promise<ServerProfileData 
     avatarHint: profile.avatarHint as string | undefined,
     website: profile.website as string | undefined,
     viewCount: profile.viewCount as number | undefined,
+    skills: (profile.skills as string[]) || [],
   };
 
   return {
     profile: safeProfile,
     workExperience: workExperience as ServerProfileData['workExperience'],
     education: education as ServerProfileData['education'],
-    skills: skills as ServerProfileData['skills'],
     customSections: (customSections as ServerProfileData['customSections']).sort((a, b) => a.order - b.order),
   };
 }

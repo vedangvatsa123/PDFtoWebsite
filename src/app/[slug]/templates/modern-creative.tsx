@@ -7,7 +7,8 @@ import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight } from 'lucide-react
 import type { ServerProfileData as ProfileData } from '@/lib/firebase-rest';
 
 export default function TemplateModern(props: ProfileData) {
-  const { profile, workExperience, education, skills, customSections } = props;
+  const { profile, workExperience, education, customSections } = props;
+  const skills = profile.skills || [];
 
   const handleDownloadPDF = useCallback(() => {
     window.print();
@@ -181,12 +182,12 @@ export default function TemplateModern(props: ProfileData) {
                     Skills
                   </h2>
                   <div className="flex flex-wrap gap-1.5">
-                    {skills.map(skill => (
+                    {skills.map((skill, idx) => (
                       <span
-                        key={skill.id}
+                        key={idx}
                         className="rounded-md border px-2.5 py-1 text-xs text-muted-foreground"
                       >
-                        {skill.name}
+                        {skill}
                       </span>
                     ))}
                   </div>
