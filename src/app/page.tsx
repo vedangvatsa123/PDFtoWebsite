@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { UploadCloud, Edit, Share2, ArrowRight, Loader2 } from 'lucide-react';
+import { UploadCloud, Edit, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/header';
 import { Input } from '@/components/ui/input';
@@ -62,24 +62,29 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-6 text-center">
           
-          <Image
-            src="/images/cvtopdf.png"
-            alt="Resume to Website"
-            width={200}
-            height={200}
-            className="mb-2"
-            priority
-          />
+          <div className="rounded-2xl bg-white p-4 shadow-sm dark:bg-white/95">
+            <Image
+              src="/images/cvtopdf.png"
+              alt="CVinBio — Turn your resume into a website"
+              width={180}
+              height={180}
+              className="mb-0"
+              priority
+            />
+          </div>
 
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your Resume into a Website
             </h1>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">
+              Upload your PDF or enter details manually. Get a beautiful, shareable profile in seconds.
+            </p>
           </div>
           
           {(isUserLoading) ? null : user ? (
              <div className="w-full max-w-md">
-                <Button size="lg" className="w-full mt-4" asChild>
+                <Button size="lg" className="w-full mt-2" asChild>
                     <Link href="/editor">Go to Your Editor</Link>
                 </Button>
                 <p className="mt-2 text-sm text-muted-foreground">
@@ -89,16 +94,16 @@ export default function Home() {
           ) : (
             <>
               <div className="w-full max-w-md space-y-3">
-                <label htmlFor="resume-upload" className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:bg-accent/50 ${isProcessingFile ? 'cursor-wait' : ''}`}>
+                <label htmlFor="resume-upload" className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors hover:bg-accent/50 ${isProcessingFile ? 'cursor-wait' : ''}`}>
                     {isProcessingFile ? (
                         <>
-                            <Loader2 className="mr-4 h-8 w-8 animate-spin text-muted-foreground" />
-                            <span className="text-muted-foreground">Processing file...</span>
+                            <Loader2 className="mr-3 h-6 w-6 animate-spin text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">Processing file...</span>
                         </>
                     ) : (
                        <>
-                            <UploadCloud className="mr-4 h-8 w-8 text-muted-foreground" />
-                            <span className="text-muted-foreground">
+                            <UploadCloud className="mr-3 h-6 w-6 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
                                 Drag & drop or click to upload PDF
                             </span>
                        </>
@@ -125,20 +130,20 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-6">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-muted-foreground pt-4">
                 <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">1</div>
-                    <span className="font-medium">Upload PDF or Enter Details</span>
+                    <span className="text-sm font-medium">Upload or Enter Details</span>
                   </div>
                   <div className="h-px w-8 bg-border md:block hidden"></div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">2</div>
-                    <span className="font-medium">Customize Profile</span>
+                    <span className="text-sm font-medium">Customize Profile</span>
                   </div>
                    <div className="h-px w-8 bg-border md:block hidden"></div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">3</div>
-                    <span className="font-medium">Publish & Share</span>
+                    <span className="text-sm font-medium">Publish & Share</span>
                   </div>
               </div>
             </>

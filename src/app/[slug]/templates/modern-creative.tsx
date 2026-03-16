@@ -1,127 +1,214 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Link as LinkIcon, Briefcase, GraduationCap, Wrench } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight } from 'lucide-react';
 import type { ServerProfileData as ProfileData } from '@/lib/firebase-rest';
-import { cn } from '@/lib/utils';
 
 export default function TemplateModern(props: ProfileData) {
   const { profile, workExperience, education, skills } = props;
 
-  // Define a consistent primary color for this template
-  const primaryColor = 'blue-600';
-  const primaryHoverColor = 'blue-700';
-  const primaryBgSoftColor = 'blue-50';
+  const handleDownloadPDF = useCallback(() => {
+    window.print();
+  }, []);
 
   return (
-    <div className={cn("min-h-screen bg-gray-50 text-gray-700")}>
-      {/* Header Bar */}
-      <div className={`h-2 bg-${primaryColor}`} />
+    <>
+      {/* Print CSS — clean resume, no browser chrome */}
+      <style jsx global>{`
+        @media print {
+          @page {
+            margin: 0.5in 0.6in;
+            size: letter;
+          }
+          body {
+            background: white !important;
+            color: black !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          /* Hide everything that's not the resume */
+          .no-print { display: none !important; }
+          /* Reset page styling for clean print */
+          .resume-page {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          .resume-outer {
+            background: white !important;
+            padding: 0 !important;
+            min-height: auto !important;
+          }
+        }
+      `}</style>
 
-      <main className="container mx-auto max-w-5xl p-4 sm:p-6 md:p-10">
-        <div className="bg-white shadow-2xl shadow-gray-300/30 rounded-xl overflow-hidden">
-          {/* Profile Header */}
-          <header className="p-8 sm:p-12 flex flex-col sm:flex-row items-center gap-8 bg-white">
-            {profile.avatarUrl && 
-                <Image
-                src={profile.avatarUrl}
-                alt={profile.fullName}
-                width={160}
-                height={160}
-                className="rounded-full border-8 border-white shadow-lg"
-                data-ai-hint={profile.avatarHint || 'person portrait'}
-                />
-            }
-            <div className="space-y-3 text-center sm:text-left">
-              <h1 className={`text-5xl font-extrabold text-gray-800`}>{profile.fullName}</h1>
-              {profile.summary && (
-                <p className="text-xl text-gray-500 leading-relaxed">{profile.summary}</p>
+      <div className="resume-outer min-h-screen bg-background">
+        {/* Floating download button — bottom right, no header */}
+        <button
+          onClick={handleDownloadPDF}
+          className="no-print fixed bottom-6 right-6 z-50 rounded-full border bg-background p-3 shadow-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+          title="Download PDF"
+        >
+          <Download className="h-4 w-4" />
+        </button>
+
+        {/* Resume content */}
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-14">
+          <div className="resume-page space-y-8">
+
+            {/* ─── HEADER ─── */}
+            <header className="text-center">
+              {profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') && (
+                <div className="flex justify-center mb-4">
+                  <Image
+                    src={profile.avatarUrl}
+                    alt={profile.fullName}
+                    width={72}
+                    height={72}
+                    className="rounded-full border object-cover"
+                    style={{ width: 72, height: 72 }}
+                    data-ai-hint={profile.avatarHint || 'person portrait'}
+                  />
+                </div>
               )}
-              <div className={`pt-2 flex flex-wrap justify-center sm:justify-start gap-x-5 gap-y-2 text-gray-500`}>
-                {profile.location && <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>{profile.location}</span>
-                </div>}
-                {profile.email && <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  <a href={`mailto:${profile.email}`} className={`hover:text-${primaryColor}`}>{profile.email}</a>
-                </div>}
-                {profile.phone && <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  <span>{profile.phone}</span>
-                </div>}
-                {profile.website && <div className="flex items-center gap-2">
-                  <LinkIcon className="h-4 w-4" />
-                   <Link href={profile.website!.startsWith('http') ? profile.website! : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className={`hover:text-${primaryColor}`}>
-                    {profile.website}
-                    </Link>
-                </div>}
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter text-foreground">
+                {profile.fullName}
+              </h1>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                {profile.location && (
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    {profile.location}
+                  </span>
+                )}
+                {profile.email && (
+                  <a href={`mailto:${profile.email}`} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+                    <Mail className="h-3 w-3" />
+                    {profile.email}
+                  </a>
+                )}
+                {profile.phone && (
+                  <span className="inline-flex items-center gap-1">
+                    <Phone className="h-3 w-3" />
+                    {profile.phone}
+                  </span>
+                )}
+                {profile.website && (
+                  <a
+                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                  >
+                    <Globe className="h-3 w-3" />
+                    {profile.website.replace(/^https?:\/\//, '')}
+                    <ArrowUpRight className="h-2.5 w-2.5" />
+                  </a>
+                )}
               </div>
-            </div>
-          </header>
 
-          <div className="p-8 sm:p-12 bg-gray-50/70 space-y-12">
-            {/* Work Experience */}
+              {profile.summary && (
+                <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto">
+                  {profile.summary}
+                </p>
+              )}
+            </header>
+
+            <div className="h-px bg-border" />
+
+            {/* ─── EXPERIENCE ─── */}
             {workExperience.length > 0 && (
+              <>
                 <section>
-                    <h2 className={`flex items-center gap-3 text-3xl font-bold text-gray-800 mb-8`}>
-                        <Briefcase className={`text-${primaryColor} h-8 w-8`} /> Work Experience
-                    </h2>
-                    <div className="space-y-8 relative border-l-2 border-gray-200 ml-4 pl-10">
-                        {workExperience.map(job => (
-                            <div key={job.id} className="relative">
-                                <div className={`absolute -left-[45px] top-1.5 h-3 w-3 rounded-full bg-${primaryColor}`} />
-                                <p className="text-sm text-gray-500 mb-1">{job.startDate} - {job.endDate || 'Present'}</p>
-                                <h3 className="font-bold text-xl text-gray-900">{job.title}</h3>
-                                <p className="text-md text-gray-600">{job.company}</p>
-                                <p className="mt-3 text-gray-600 leading-relaxed whitespace-pre-wrap">{job.description}</p>
-                            </div>
-                        ))}
-                    </div>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                    Experience
+                  </h2>
+                  <div className="space-y-5">
+                    {workExperience.map(job => (
+                      <div key={job.id}>
+                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
+                          <div>
+                            <h3 className="text-sm font-semibold text-foreground">{job.title}</h3>
+                            <p className="text-sm text-muted-foreground">{job.company}</p>
+                          </div>
+                          <span className="text-xs text-muted-foreground/60 whitespace-nowrap">
+                            {job.startDate} — {job.endDate || 'Present'}
+                          </span>
+                        </div>
+                        {job.description && (
+                          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            {job.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </section>
+                <div className="h-px bg-border" />
+              </>
             )}
-            
-            <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
-                {/* Education */}
-                {education.length > 0 && (
-                    <section>
-                        <h2 className={`flex items-center gap-3 text-3xl font-bold text-gray-800 mb-8`}>
-                           <GraduationCap className={`text-${primaryColor} h-8 w-8`} /> Education
-                        </h2>
-                        <div className="space-y-6">
-                            {education.map(edu => (
-                            <div key={edu.id}>
-                                <h3 className="font-bold text-xl text-gray-900">{edu.institution}</h3>
-                                <p className="text-md text-gray-600">{edu.degree}</p>
-                                <p className="text-sm text-gray-500 mt-1">{edu.startDate} - {edu.endDate || 'Present'}</p>
-                            </div>
-                            ))}
+
+            {/* ─── EDUCATION ─── */}
+            {education.length > 0 && (
+              <>
+                <section>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                    Education
+                  </h2>
+                  <div className="space-y-3">
+                    {education.map(edu => (
+                      <div key={edu.id} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
+                        <div>
+                          <h3 className="text-sm font-semibold text-foreground">{edu.institution}</h3>
+                          <p className="text-xs text-muted-foreground">{edu.degree}</p>
                         </div>
-                    </section>
-                )}
-            
-                {/* Skills */}
-                {skills.length > 0 && (
-                    <section>
-                        <h2 className={`flex items-center gap-3 text-3xl font-bold text-gray-800 mb-8`}>
-                           <Wrench className={`text-${primaryColor} h-8 w-8`} /> Skills
-                        </h2>
-                        <div className="flex flex-wrap gap-3">
-                            {skills.map(skill => (
-                                <Badge key={skill.id} variant="secondary" className={`text-md bg-white text-gray-700 hover:bg-gray-100 py-2 px-4 shadow-sm border border-gray-200`}>{skill.name}</Badge>
-                            ))}
-                        </div>
-                    </section>
-                )}
+                        <span className="text-xs text-muted-foreground/60 whitespace-nowrap">
+                          {edu.startDate} — {edu.endDate || 'Present'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                <div className="h-px bg-border" />
+              </>
+            )}
+
+            {/* ─── SKILLS ─── */}
+            {skills.length > 0 && (
+              <section>
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                  Skills
+                </h2>
+                <div className="flex flex-wrap gap-1.5">
+                  {skills.map(skill => (
+                    <span
+                      key={skill.id}
+                      className="rounded-md border px-2.5 py-1 text-xs text-muted-foreground"
+                    >
+                      {skill.name}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Footer - branding */}
+            <div className="no-print pt-6 text-center">
+              <p className="text-[11px] text-muted-foreground/40">
+                Built with{' '}
+                <Link href="/" className="hover:text-foreground transition-colors">
+                  CVinBio
+                </Link>
+              </p>
             </div>
 
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

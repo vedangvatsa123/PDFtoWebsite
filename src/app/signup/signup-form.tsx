@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { Icons } from '@/components/icons';
 import { useUser, useAuth } from '@/firebase';
 
@@ -19,14 +19,17 @@ const GoogleIcon = () => (
 
 function friendlyAuthError(code: string): string {
   switch (code) {
-    case 'auth/email-already-in-use':
-      return 'An account with this email already exists.';
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Incorrect password. Please try again.';
     case 'auth/weak-password':
       return 'Password must be at least 6 characters.';
     case 'auth/invalid-email':
-      return 'Invalid email address.';
+      return 'Please enter a valid email address.';
     case 'auth/too-many-requests':
       return 'Too many attempts. Please try again later.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled.';
     case 'auth/network-request-failed':
       return 'Network error. Check your connection.';
     default:
@@ -54,21 +57,39 @@ export default function SignUpForm() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  // Smart auth: try sign-in first, auto-create if user doesn't exist
+  const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Account Created', description: "Welcome! Redirecting you to the editor." });
+      // Try signing in first
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({ title: 'Welcome back!', description: 'Redirecting to your editor.' });
       router.push('/editor');
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Sign Up Failed', description: friendlyAuthError(error.code) });
+    } catch (signInError: any) {
+      // If user doesn't exist, create account automatically
+      if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          toast({ title: 'Account created!', description: 'Welcome to CVinBio. Redirecting to your editor.' });
+          router.push('/editor');
+        } catch (signUpError: any) {
+          // If creation fails with email-already-in-use, it means wrong password
+          if (signUpError.code === 'auth/email-already-in-use') {
+            toast({ variant: 'destructive', title: 'Incorrect password', description: 'An account with this email exists. Please check your password.' });
+          } else {
+            toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signUpError.code) });
+          }
+        }
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signInError.code) });
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleAuth = async () => {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
@@ -79,11 +100,11 @@ export default function SignUpForm() {
         try {
           await signInWithRedirect(auth, provider);
         } catch (redirectError: any) {
-          toast({ variant: 'destructive', title: 'Sign Up Failed', description: friendlyAuthError(redirectError.code) });
+          toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(redirectError.code) });
           setIsGoogleLoading(false);
         }
       } else {
-        toast({ variant: 'destructive', title: 'Sign Up Failed', description: friendlyAuthError(error.code) });
+        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.code) });
         setIsGoogleLoading(false);
       }
     }
@@ -93,45 +114,44 @@ export default function SignUpForm() {
     <div className="grid gap-4">
       {fromUpload && (
         <p className="text-sm text-center text-muted-foreground bg-accent/50 rounded-md p-2">
-          Create an account to generate your profile from your resume.
+          Sign in to generate your profile from your resume.
         </p>
       )}
       {fromManual && (
         <p className="text-sm text-center text-muted-foreground bg-accent/50 rounded-md p-2">
-          Create an account to build your profile and get a shareable link.
+          Sign in to build your profile and get a shareable link.
         </p>
       )}
 
-      <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={isGoogleLoading}>
+      <Button variant="outline" className="w-full" onClick={handleGoogleAuth} disabled={isGoogleLoading}>
         {isGoogleLoading ? <Icons.logo className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-        Sign up with Google
+        Continue with Google
       </Button>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          <span className="bg-background px-2 text-muted-foreground">Or use email</span>
         </div>
       </div>
 
-      <form onSubmit={handleSignUp} className="grid gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+      <form onSubmit={handleEmailAuth} className="grid gap-3">
+        <div className="grid gap-1.5">
+          <Label htmlFor="email" className="text-xs">Email</Label>
+          <Input id="email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-9" />
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <div className="grid gap-1.5">
+          <Label htmlFor="password" className="text-xs">Password</Label>
+          <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9" />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Creating Account...' : 'Create Account'}
+          {isLoading ? 'Please wait...' : 'Continue'}
         </Button>
       </form>
 
-      <div className="mt-4 text-center text-sm">
-        Already have an account?{' '}
-        <Link href="/login" className="underline">Login</Link>
-      </div>
+      <p className="text-xs text-center text-muted-foreground">
+        New users will be registered automatically. Existing users will be signed in.
+      </p>
     </div>
   );
 }

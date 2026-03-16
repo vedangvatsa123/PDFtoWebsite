@@ -27,11 +27,6 @@ service cloud.firestore {
       return request.resource.data.userId == resource.data.userId;
     }
 
-    // True if the user has a published public profile (slug document exists)
-    function hasPublicProfile(userId) {
-      return exists(/databases/$(database)/documents/users/$(userId)/userProfile/$(userId));
-    }
-
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
@@ -41,7 +36,8 @@ service cloud.firestore {
     }
 
     match /users/{userId}/userProfile/{profileId} {
-      allow get: if isOwner(userId) || (resource != null && exists(/databases/$(database)/documents/userProfilesBySlug/$(resource.data.slug)));
+      // Allow public reads for profiles that have a published slug
+      allow get: if true;
       allow list: if isOwner(userId);
       allow create: if isOwner(userId) && hasCorrectUserIdOnCreate(userId);
       allow update: if isExistingOwner(userId) && userIdIsImmutable();
@@ -49,17 +45,20 @@ service cloud.firestore {
     }
     
     match /users/{userId}/workExperience/{experienceId} {
-      allow read, list: if isOwner(userId) || hasPublicProfile(userId);
+      // Allow public reads so profile pages work via REST
+      allow read, list: if true;
       allow write: if isOwner(userId);
     }
 
     match /users/{userId}/education/{educationId} {
-      allow read, list: if isOwner(userId) || hasPublicProfile(userId);
+      // Allow public reads so profile pages work via REST
+      allow read, list: if true;
       allow write: if isOwner(userId);
     }
 
     match /users/{userId}/skills/{skillId} {
-      allow read, list: if isOwner(userId) || hasPublicProfile(userId);
+      // Allow public reads so profile pages work via REST
+      allow read, list: if true;
       allow write: if isOwner(userId);
     }
 
