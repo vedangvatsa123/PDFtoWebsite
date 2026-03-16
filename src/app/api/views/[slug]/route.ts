@@ -12,9 +12,9 @@ const db = getFirestore();
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params;
+  const { slug } = await params;
 
   if (!slug) {
     return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
@@ -35,9 +35,15 @@ export async function POST(
 
     const profileRef = db.collection('users').doc(userId).collection('userProfile').doc(userId);
 
-    await profileRef.update({
-      viewCount: FieldValue.increment(1),
-    });
+    // Date key in YYYY-MM-DD format (UTC)
+    const today = new Date().toISOString().slice(0, 10);
+    const dailyViewRef = db.collection('users').doc(userId).collection('dailyViews').doc(today);
+
+    // Batch: increment total + daily count atomically
+    const batch = db.batch();
+    batch.update(profileRef, { viewCount: FieldValue.increment(1) });
+    batch.set(dailyViewRef, { date: today, views: FieldValue.increment(1) }, { merge: true });
+    await batch.commit();
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

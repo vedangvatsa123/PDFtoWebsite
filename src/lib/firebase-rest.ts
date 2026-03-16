@@ -44,10 +44,11 @@ function decodeFields(fields: Record<string, FirestoreField>): Record<string, un
   return result;
 }
 
-async function fetchDoc(path: string): Promise<Record<string, unknown> | null> {
+async function fetchDoc(path: string, noCache = false): Promise<Record<string, unknown> | null> {
   const url = `${BASE_URL}/${path}`;
   try {
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const fetchOptions = noCache ? { cache: 'no-store' as const } : { next: { revalidate: 10 } };
+    const res = await fetch(url, fetchOptions);
     if (!res.ok) return null;
     const doc: FirestoreDoc = await res.json();
     if (!doc.fields) return null;
@@ -60,7 +61,7 @@ async function fetchDoc(path: string): Promise<Record<string, unknown> | null> {
 async function fetchCollection(path: string): Promise<Array<Record<string, unknown> & { id: string }>> {
   const url = `${BASE_URL}/${path}`;
   try {
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url, { next: { revalidate: 10 } });
     if (!res.ok) return [];
     const body: FirestoreListResponse = await res.json();
     return (body.documents ?? []).map(doc => {
@@ -106,7 +107,8 @@ export interface ServerProfileData {
 }
 
 export async function getProfileBySlug(slug: string): Promise<ServerProfileData | null> {
-  const slugDoc = await fetchDoc(`userProfilesBySlug/${slug}`);
+  // Use no-cache for slug lookup to ensure freshly created profiles are found immediately
+  const slugDoc = await fetchDoc(`userProfilesBySlug/${slug}`, true);
   if (!slugDoc) return null;
 
   const userId = slugDoc.userId as string;

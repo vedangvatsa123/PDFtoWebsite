@@ -14,24 +14,24 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'PDFtoPortfolio — Turn Your Resume into a Website',
-    template: '%s | PDFtoPortfolio',
+    default: 'CVinBio — Turn Your Resume into a Website',
+    template: '%s | CVinBio',
   },
   description: 'Upload your PDF resume and instantly get a beautiful, shareable professional profile website. Free, fast, and no coding required.',
-  keywords: ['resume to website', 'PDF to portfolio', 'online resume', 'professional profile', 'resume website builder'],
-  authors: [{ name: 'PDFtoPortfolio' }],
-  creator: 'PDFtoPortfolio',
+  keywords: ['resume to website', 'CV to bio', 'online resume', 'professional profile', 'resume website builder', 'CVinBio'],
+  authors: [{ name: 'CVinBio' }],
+  creator: 'CVinBio',
   openGraph: {
     type: 'website',
     url: siteUrl,
-    siteName: 'PDFtoPortfolio',
-    title: 'PDFtoPortfolio — Turn Your Resume into a Website',
+    siteName: 'CVinBio',
+    title: 'CVinBio — Turn Your Resume into a Website',
     description: 'Upload your PDF resume and instantly get a beautiful, shareable professional profile website.',
-    images: [{ url: '/images/cvtopdf.png', width: 200, height: 200, alt: 'PDFtoPortfolio' }],
+    images: [{ url: '/images/cvtopdf.png', width: 200, height: 200, alt: 'CVinBio' }],
   },
   twitter: {
     card: 'summary',
-    title: 'PDFtoPortfolio — Turn Your Resume into a Website',
+    title: 'CVinBio — Turn Your Resume into a Website',
     description: 'Upload your PDF resume and instantly get a beautiful, shareable professional profile website.',
     images: ['/images/cvtopdf.png'],
   },
@@ -54,7 +54,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'PDFtoPortfolio',
+              name: 'CVinBio',
               url: siteUrl,
               description: 'Turn your PDF resume into a beautiful, shareable professional profile website.',
               potentialAction: {
