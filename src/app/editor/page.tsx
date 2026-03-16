@@ -656,7 +656,7 @@ export default function EditorPage() {
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <h1 className="text-3xl font-bold">{user ? `Welcome back, ${profile.fullName}!` : 'Build Your Profile'}</h1>
-                            <p className="text-muted-foreground">{user ? 'Edit your profile, manage settings, and see your stats.' : 'Fill in your details below. Preview anytime, sign up to publish.'}</p>
+                            {!user && <p className="text-muted-foreground">Fill in your details below. Preview anytime, sign up to publish.</p>}
                         </div>
                         <div className="flex items-center gap-2">
                            {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
