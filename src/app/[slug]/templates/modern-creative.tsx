@@ -50,7 +50,7 @@ export default function TemplateModern(props: ProfileData) {
         {/* Floating download button — bottom right, no header */}
         <button
           onClick={handleDownloadPDF}
-          className="no-print fixed bottom-6 right-6 z-50 rounded-full border bg-background p-3 shadow-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+          className="no-print fixed bottom-6 right-6 z-50 rounded-full bg-zinc-900 text-white p-3 shadow-lg hover:bg-zinc-700 transition-colors"
           title="Download PDF"
         >
           <Download className="h-4 w-4" />
