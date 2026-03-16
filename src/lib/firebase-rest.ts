@@ -104,6 +104,12 @@ export interface ServerProfileData {
     endDate?: string;
   }>;
   skills: Array<{ id: string; name: string }>;
+  customSections: Array<{
+    id: string;
+    sectionTitle: string;
+    items: Array<{ id: string; title: string; subtitle?: string; description?: string; date?: string }>;
+    order: number;
+  }>;
 }
 
 export async function getProfileBySlug(slug: string): Promise<ServerProfileData | null> {
@@ -114,11 +120,12 @@ export async function getProfileBySlug(slug: string): Promise<ServerProfileData 
   const userId = slugDoc.userId as string;
   if (!userId) return null;
 
-  const [profile, workExperience, education, skills] = await Promise.all([
+  const [profile, workExperience, education, skills, customSections] = await Promise.all([
     fetchDoc(`users/${userId}/userProfile/${userId}`),
     fetchCollection(`users/${userId}/workExperience`),
     fetchCollection(`users/${userId}/education`),
     fetchCollection(`users/${userId}/skills`),
+    fetchCollection(`users/${userId}/customSections`),
   ]);
 
   if (!profile) return null;
@@ -144,5 +151,6 @@ export async function getProfileBySlug(slug: string): Promise<ServerProfileData 
     workExperience: workExperience as ServerProfileData['workExperience'],
     education: education as ServerProfileData['education'],
     skills: skills as ServerProfileData['skills'],
+    customSections: (customSections as ServerProfileData['customSections']).sort((a, b) => a.order - b.order),
   };
 }

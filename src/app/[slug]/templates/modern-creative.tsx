@@ -7,7 +7,7 @@ import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight } from 'lucide-react
 import type { ServerProfileData as ProfileData } from '@/lib/firebase-rest';
 
 export default function TemplateModern(props: ProfileData) {
-  const { profile, workExperience, education, skills } = props;
+  const { profile, workExperience, education, skills, customSections } = props;
 
   const handleDownloadPDF = useCallback(() => {
     window.print();
@@ -28,9 +28,7 @@ export default function TemplateModern(props: ProfileData) {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
-          /* Hide everything that's not the resume */
           .no-print { display: none !important; }
-          /* Reset page styling for clean print */
           .resume-page {
             max-width: 100% !important;
             padding: 0 !important;
@@ -47,7 +45,6 @@ export default function TemplateModern(props: ProfileData) {
       `}</style>
 
       <div className="resume-outer min-h-screen bg-background">
-        {/* Floating download button — bottom right, no header */}
         <button
           onClick={handleDownloadPDF}
           className="no-print fixed bottom-6 right-6 z-50 rounded-full bg-zinc-900 text-white p-3 shadow-lg hover:bg-zinc-700 transition-colors"
@@ -56,7 +53,6 @@ export default function TemplateModern(props: ProfileData) {
           <Download className="h-4 w-4" />
         </button>
 
-        {/* Resume content */}
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-14">
           <div className="resume-page space-y-8">
 
@@ -179,22 +175,57 @@ export default function TemplateModern(props: ProfileData) {
 
             {/* ─── SKILLS ─── */}
             {skills.length > 0 && (
-              <section>
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                  Skills
-                </h2>
-                <div className="flex flex-wrap gap-1.5">
-                  {skills.map(skill => (
-                    <span
-                      key={skill.id}
-                      className="rounded-md border px-2.5 py-1 text-xs text-muted-foreground"
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              </section>
+              <>
+                <section>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                    Skills
+                  </h2>
+                  <div className="flex flex-wrap gap-1.5">
+                    {skills.map(skill => (
+                      <span
+                        key={skill.id}
+                        className="rounded-md border px-2.5 py-1 text-xs text-muted-foreground"
+                      >
+                        {skill.name}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+                {customSections?.length > 0 && <div className="h-px bg-border" />}
+              </>
             )}
+
+            {/* ─── CUSTOM SECTIONS ─── */}
+            {customSections?.map((section, idx) => (
+              <React.Fragment key={section.id}>
+                <section>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                    {section.sectionTitle}
+                  </h2>
+                  <div className="space-y-4">
+                    {section.items?.map(item => (
+                      <div key={item.id}>
+                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
+                          <div>
+                            <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                            {item.subtitle && <p className="text-sm text-muted-foreground">{item.subtitle}</p>}
+                          </div>
+                          {item.date && (
+                            <span className="text-xs text-muted-foreground/60 whitespace-nowrap">{item.date}</span>
+                          )}
+                        </div>
+                        {item.description && (
+                          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                {idx < customSections.length - 1 && <div className="h-px bg-border" />}
+              </React.Fragment>
+            ))}
 
             {/* Footer - branding */}
             <div className="no-print pt-6 text-center">
