@@ -34,8 +34,8 @@ export default async function Image() {
           </div>
 
           {/* Main Title */}
-          <div style={{ display: 'flex', fontSize: 72, fontWeight: 800, letterSpacing: '-0.04em', color: '#09090b', lineHeight: 1.1 }}>
-            Turn Your CV into a Website.
+          <div style={{ display: 'flex', fontSize: 80, fontWeight: 800, letterSpacing: '-0.04em', color: '#09090b', lineHeight: 1.1 }}>
+            Your professional identity, elevated.
           </div>
 
           {/* Expanded Notion-style App Window Mockup */}
