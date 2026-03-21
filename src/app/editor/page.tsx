@@ -408,7 +408,7 @@ export default function EditorPage() {
             }
         }
         
-        if ((profile as any)[name] === value) return; // No change
+        
         
         if (name === 'slug' && value !== initialSlug) {
             const { data } = await supabase.from('profiles').select('id').eq('username', value).single();
