@@ -167,14 +167,21 @@ export default function TemplateModern(props: ProfileData) {
                   </h2>
                   <div className="space-y-3">
                     {education.map(edu => (
-                      <div key={edu.id} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
-                        <div>
-                          <h3 className="text-sm font-semibold text-foreground">{edu.institution}</h3>
-                          <p className="text-xs text-muted-foreground">{edu.degree}</p>
+                      <div key={edu.id}>
+                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
+                          <div>
+                            <h3 className="text-sm font-semibold text-foreground">{edu.institution}</h3>
+                            <p className="text-xs text-muted-foreground">{edu.degree}</p>
+                          </div>
+                          <span className="text-xs text-muted-foreground/60 whitespace-nowrap">
+                            {edu.startDate} — {edu.endDate || 'Present'}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground/60 whitespace-nowrap">
-                          {edu.startDate} — {edu.endDate || 'Present'}
-                        </span>
+                        {edu.description && (
+                          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            {edu.description}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

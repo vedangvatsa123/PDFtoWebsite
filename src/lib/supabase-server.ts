@@ -35,6 +35,7 @@ export interface ServerProfileData {
     degree: string;
     startDate: string;
     endDate?: string;
+    description?: string;
   }>;
   customSections: Array<{
     id: string;
