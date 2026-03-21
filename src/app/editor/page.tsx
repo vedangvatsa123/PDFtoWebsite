@@ -683,7 +683,33 @@ export default function EditorPage() {
                                                         className="h-9" 
                                                     />
                                                 </div>
-                                                <div className="space-y-1 sm:col-span-1 xl:col-span-2"><Label htmlFor="location" className="text-xs">Location</Label><Input id="location" name="location" placeholder="City, State" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                                <div className="space-y-1 sm:col-span-1 xl:col-span-2">
+                                                    <Label htmlFor="location" className="text-xs">Location</Label>
+                                                    <Input 
+                                                        id="location" 
+                                                        name="location" 
+                                                        placeholder={(() => {
+                                                            try {
+                                                                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                                                if (tz.includes('Kolkata') || tz.includes('Calcutta')) return 'Mumbai, India';
+                                                                if (tz.includes('London')) return 'London, UK';
+                                                                if (tz.includes('Australia/Sydney')) return 'Sydney, Australia';
+                                                                if (tz.includes('America/New_York')) return 'New York, NY';
+                                                                if (tz.includes('America/Los_Angeles')) return 'San Francisco, CA';
+                                                                if (tz.includes('Europe/Berlin')) return 'Berlin, Germany';
+                                                                
+                                                                const parts = tz.split('/');
+                                                                if (parts.length > 1) return `${parts[parts.length - 1].replace(/_/g, ' ')}, ${parts[0]}`;
+                                                                
+                                                                return 'San Francisco, CA';
+                                                            } catch { return 'San Francisco, CA'; }
+                                                        })()} 
+                                                        value={profile.location || ''} 
+                                                        onChange={handleProfileChange} 
+                                                        onBlur={handleProfileBlur} 
+                                                        className="h-9" 
+                                                    />
+                                                </div>
                                                 <div className="space-y-1 sm:col-span-2 xl:col-span-2"><Label htmlFor="website" className="text-xs">Website/Portfolio</Label><Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
                                             </div>
                                             <div className="space-y-1"><Label htmlFor="summary" className="text-xs">Summary</Label><Textarea id="summary" name="summary" placeholder="A brief professional summary..." value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={3} className="resize-none" /></div>
