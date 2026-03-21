@@ -63,18 +63,18 @@ export default async function Image() {
              <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#ffffff', padding: '40px 64px' }}>
                
                {/* Left Column: Profile */}
-               <div style={{ display: 'flex', flexDirection: 'column', width: '45%', borderRight: '1px solid #e4e4e7', paddingRight: 48 }}>
-                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80" style={{ width: 220, height: 220, borderRadius: 220, border: '2px solid #e4e4e7', objectFit: 'cover' }} />
+               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '45%', borderRight: '1px solid #e4e4e7', paddingRight: 48 }}>
+                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=360&h=360&q=80" style={{ width: 260, height: 260, borderRadius: 260, border: '2px solid #e4e4e7', objectFit: 'cover' }} />
                  
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 24 }}>
-                   <div style={{ display: 'flex', fontSize: 44, fontWeight: 800, color: '#09090b', letterSpacing: '-0.02em' }}>Emma Davis</div>
-                   <div style={{ display: 'flex', fontSize: 22, color: '#71717a', fontWeight: 500 }}>Lead Software Engineer</div>
+                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginTop: 28 }}>
+                   <div style={{ display: 'flex', fontSize: 48, fontWeight: 800, color: '#09090b', letterSpacing: '-0.02em', textAlign: 'center' }}>Emma Davis</div>
+                   <div style={{ display: 'flex', fontSize: 24, color: '#71717a', fontWeight: 500, textAlign: 'center' }}>Lead Software Engineer</div>
                  </div>
                  
-                 <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-                   <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 14, color: '#52525b', fontWeight: 500 }}>React</div>
-                   <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 14, color: '#52525b', fontWeight: 500 }}>Python</div>
-                   <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 14, color: '#52525b', fontWeight: 500 }}>AI</div>
+                 <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 24, width: '100%' }}>
+                   <div style={{ display: 'flex', padding: '6px 18px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 16, color: '#52525b', fontWeight: 500 }}>React</div>
+                   <div style={{ display: 'flex', padding: '6px 18px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 16, color: '#52525b', fontWeight: 500 }}>Python</div>
+                   <div style={{ display: 'flex', padding: '6px 18px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 16, color: '#52525b', fontWeight: 500 }}>AI</div>
                  </div>
                </div>
                
