@@ -28,8 +28,8 @@ export default async function Image() {
           
           {/* Logo Badge */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 32px', border: '1px solid #27272a', borderRadius: 100, backgroundColor: 'rgba(24, 24, 27, 0.5)', marginBottom: 32 }}>
-            <div style={{ display: 'flex', fontSize: 20, fontWeight: 700, color: '#e4e4e7', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-              CVin.bio
+            <div style={{ display: 'flex', fontSize: 20, fontWeight: 700, color: '#e4e4e7', letterSpacing: '0.15em' }}>
+              CVin.Bio
             </div>
           </div>
 
@@ -44,30 +44,52 @@ export default async function Image() {
           </div>
 
           {/* App Window Mockup Graphic */}
-          <div style={{ display: 'flex', flexDirection: 'column', width: 900, height: 350, marginTop: 60, borderTop: '2px solid #27272a', borderLeft: '2px solid #27272a', borderRight: '2px solid #27272a', borderTopLeftRadius: 24, borderTopRightRadius: 24, backgroundColor: '#09090b', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', width: 920, height: 380, marginTop: 60, border: '1px solid #3f3f46', borderTopLeftRadius: 16, borderTopRightRadius: 16, backgroundColor: '#09090b', overflow: 'hidden', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}>
              
-             {/* Browser Dots */}
-             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '20px 24px', width: '100%', borderBottom: '1px solid #18181b', backgroundColor: '#09090b' }}>
-               <div style={{ display: 'flex', width: 14, height: 14, borderRadius: 14, backgroundColor: '#3f3f46' }} />
-               <div style={{ display: 'flex', width: 14, height: 14, borderRadius: 14, backgroundColor: '#3f3f46' }} />
-               <div style={{ display: 'flex', width: 14, height: 14, borderRadius: 14, backgroundColor: '#3f3f46' }} />
-             </div>
-             
-             {/* Abstract Content */}
-             <div style={{ display: 'flex', flexDirection: 'column', gap: 40, padding: 48, width: '100%' }}>
-               <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-                 <div style={{ display: 'flex', width: 96, height: 96, borderRadius: 96, backgroundColor: '#27272a' }} />
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                   <div style={{ display: 'flex', width: 280, height: 24, borderRadius: 12, backgroundColor: '#ffffff' }} />
-                   <div style={{ display: 'flex', width: 180, height: 20, borderRadius: 10, backgroundColor: '#3f3f46' }} />
-                 </div>
+             {/* Browser Top Bar */}
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', height: 50, width: '100%', backgroundColor: '#18181b', borderBottom: '1px solid #27272a' }}>
+               {/* Mac Dots */}
+               <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: 80 }}>
+                 <div style={{ display: 'flex', width: 12, height: 12, borderRadius: 12, backgroundColor: '#ff5f56' }} />
+                 <div style={{ display: 'flex', width: 12, height: 12, borderRadius: 12, backgroundColor: '#ffbd2e' }} />
+                 <div style={{ display: 'flex', width: 12, height: 12, borderRadius: 12, backgroundColor: '#27c93f' }} />
                </div>
                
-               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                 <div style={{ display: 'flex', width: '100%', height: 16, borderRadius: 8, backgroundColor: '#18181b' }} />
-                 <div style={{ display: 'flex', width: '92%', height: 16, borderRadius: 8, backgroundColor: '#18181b' }} />
-                 <div style={{ display: 'flex', width: '96%', height: 16, borderRadius: 8, backgroundColor: '#18181b' }} />
-                 <div style={{ display: 'flex', width: '75%', height: 16, borderRadius: 8, backgroundColor: '#18181b' }} />
+               {/* Address Bar */}
+               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 340, height: 30, backgroundColor: '#09090b', borderRadius: 8, border: '1px solid #27272a', color: '#d4d4d8', fontSize: 13, fontWeight: 500 }}>
+                 <div style={{ display: 'flex', color: '#52525b', marginRight: 6 }}>🔒</div> cvin.bio/johndoe
+               </div>
+               
+               {/* Flex Spacer */}
+               <div style={{ display: 'flex', width: 80 }} />
+             </div>
+             
+             {/* Real Website Content inside Browser */}
+             <div style={{ display: 'flex', flexDirection: 'column', padding: '48px 64px', width: '100%', height: '100%', backgroundColor: '#000000', borderTop: '1px solid #27272a' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                   <div style={{ display: 'flex', fontSize: 44, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>John Doe</div>
+                   <div style={{ display: 'flex', fontSize: 22, color: '#a1a1aa', fontWeight: 500 }}>Senior Software Engineer</div>
+                   
+                   {/* Skill pills */}
+                   <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                     <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, backgroundColor: '#27272a', fontSize: 12, color: '#e4e4e7', fontWeight: 600 }}>React</div>
+                     <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, backgroundColor: '#27272a', fontSize: 12, color: '#e4e4e7', fontWeight: 600 }}>TypeScript</div>
+                     <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, backgroundColor: '#27272a', fontSize: 12, color: '#e4e4e7', fontWeight: 600 }}>Node.js</div>
+                   </div>
+                 </div>
+                 
+                 {/* Avatar */}
+                 <div style={{ display: 'flex', width: 100, height: 100, borderRadius: 100, backgroundColor: '#27272a', border: '2px solid #3f3f46' }} />
+               </div>
+               
+               {/* Experience Section Mock */}
+               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 48, width: '100%' }}>
+                 <div style={{ display: 'flex', fontSize: 18, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Experience</div>
+                 <div style={{ display: 'flex', width: '100%', height: 100, borderRadius: 12, border: '1px solid #27272a', backgroundColor: '#09090b', padding: 24, flexDirection: 'column', gap: 10 }}>
+                   <div style={{ display: 'flex', width: 240, height: 16, borderRadius: 8, backgroundColor: '#ffffff' }} />
+                   <div style={{ display: 'flex', width: 140, height: 14, borderRadius: 7, backgroundColor: '#3f3f46' }} />
+                 </div>
                </div>
              </div>
              
