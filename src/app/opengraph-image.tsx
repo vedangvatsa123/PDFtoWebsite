@@ -52,7 +52,7 @@ export default async function Image() {
                
                {/* Address Bar */}
                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 360, height: 28, backgroundColor: '#ffffff', borderRadius: 6, border: '1px solid #e4e4e7', color: '#52525b', fontSize: 13, fontWeight: 500, boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
-                 <div style={{ display: 'flex', color: '#a1a1aa', marginRight: 6 }}>🔒</div> cvin.bio/emmadavis
+                 <div style={{ display: 'flex', color: '#a1a1aa', marginRight: 6 }}>🔒</div> cvin.bio/ava
                </div>
                
                {/* Flex Spacer */}
