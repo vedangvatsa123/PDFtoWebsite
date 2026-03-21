@@ -108,46 +108,6 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
 
 const VIEW_MILESTONES = [10, 50, 100, 500, 1000, 5000];
 
-const DashboardStats = ({ viewCount, slug }: { viewCount: number; slug?: string }) => {
-    const { toast } = useToast();
-    const nextMilestone = VIEW_MILESTONES.find(m => viewCount < m) || VIEW_MILESTONES[VIEW_MILESTONES.length - 1];
-    const progress = Math.min(100, (viewCount / nextMilestone) * 100);
-    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${slug || ''}`;
-
-    const copyLink = () => {
-        navigator.clipboard.writeText(profileUrl);
-        toast({ title: 'Link copied!' });
-    };
-
-    return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="shadow-sm">
-                <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground mb-1">Total Views</p>
-                    <p className="text-2xl font-bold">{viewCount}</p>
-                    <div className="mt-2">
-                        <div className="flex justify-between text-[10px] text-muted-foreground mb-0.5">
-                            <span>Next: {nextMilestone}</span>
-                        </div>
-                        <Progress value={progress} className="h-1" />
-                    </div>
-                </CardContent>
-            </Card>
-            <Card className="shadow-sm">
-                <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground mb-1">Share Public Profile</p>
-                    <div className="flex gap-1.5 mt-1">
-                        <Button variant="outline" size="sm" className="h-7 text-xs w-full sm:w-auto px-4" onClick={copyLink}>
-                            <Share2 className="h-3 w-3 mr-2" /> Copy Link
-                        </Button>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground mt-2">Get more views by sharing</p>
-                </CardContent>
-            </Card>
-        </div>
-    );
-};
-
 const last7DaysConfig = { views: { label: "Views", color: "hsl(var(--chart-1))" } } satisfies ChartConfig;
 
 function ViewsLast7DaysChart({ userId }: { userId: string }) {
@@ -314,9 +274,9 @@ export default function EditorPage() {
             setCustomSections([]);
         } else {
             const newSlug = generateSlug(user.user_metadata?.full_name || 'user');
-            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', experience: [], education: [], skills: [], links: [] };
+            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`, experience: [], education: [], skills: [], links: [] };
             await supabase.from('profiles').insert(newProfile);
-            profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: '', avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
+            profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: newProfile.profile_picture_url, avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
             setProfile(profileData);
             setInitialSlug(newSlug);
         }
@@ -609,15 +569,31 @@ export default function EditorPage() {
                             <div className="grid gap-4">
                                 <Card className="shadow-sm">
                                     <CardContent className="pt-4 pb-3">
-                                        <p className="text-xs text-muted-foreground mb-2">Your Public Link</p>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <p className="text-xs text-muted-foreground font-medium">Your Public Link</p>
+                                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-full" title="Total Views">
+                                                <Eye className="h-3 w-3" /> {profile.viewCount || 0} Views
+                                            </div>
+                                        </div>
                                         <div className="flex space-x-2">
                                             <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" />
-                                            <Button asChild variant="secondary" size="sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}><Eye className="mr-1 h-3 w-3" />Visit</Link></Button>
+                                            <Button 
+                                                variant="secondary" 
+                                                size="icon" 
+                                                className="h-9 w-9 shrink-0" 
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`);
+                                                    toast({ title: 'Link copied!' });
+                                                }}
+                                                title="Copy Share Link"
+                                            >
+                                                <Share2 className="h-4 w-4" />
+                                            </Button>
+                                            <Button asChild variant="default" size="sm" className="h-9 shrink-0"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}><Eye className="mr-1 h-4 w-4 hidden sm:block" /> Visit</Link></Button>
                                         </div>
-                                        {profile.slug && <p className="text-xs text-muted-foreground mt-1">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com'}/${profile.slug}`}</p>}
+                                        {profile.slug && <p className="text-[10px] text-muted-foreground mt-1.5 truncate">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`}</p>}
                                     </CardContent>
                                 </Card>
-                                <DashboardStats viewCount={profile.viewCount || 0} slug={profile.slug} />
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <ViewsLast7DaysChart userId={user.id} />
                                     <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
@@ -632,7 +608,7 @@ export default function EditorPage() {
                                     <div className="flex items-center gap-4 pb-2">
                                         <label htmlFor="avatar-upload" className="relative group cursor-pointer flex-shrink-0">
                                             <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
-                                                {profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') ? (
+                                                {profile.avatarUrl ? (
                                                     <img src={profile.avatarUrl} alt="Profile" className="h-full w-full object-cover" />
                                                 ) : (
                                                     <UploadCloud className="h-6 w-6 text-gray-400" />
