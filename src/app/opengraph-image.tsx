@@ -65,32 +65,8 @@ export default async function Image() {
              </div>
              
              {/* Real Website Content inside Browser */}
-             <div style={{ display: 'flex', flexDirection: 'column', padding: '48px 64px', width: '100%', height: '100%', backgroundColor: '#000000', borderTop: '1px solid #27272a' }}>
-               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                   <div style={{ display: 'flex', fontSize: 44, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>John Doe</div>
-                   <div style={{ display: 'flex', fontSize: 22, color: '#a1a1aa', fontWeight: 500 }}>Senior Software Engineer</div>
-                   
-                   {/* Skill pills */}
-                   <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-                     <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, backgroundColor: '#27272a', fontSize: 12, color: '#e4e4e7', fontWeight: 600 }}>React</div>
-                     <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, backgroundColor: '#27272a', fontSize: 12, color: '#e4e4e7', fontWeight: 600 }}>TypeScript</div>
-                     <div style={{ display: 'flex', padding: '6px 16px', borderRadius: 100, backgroundColor: '#27272a', fontSize: 12, color: '#e4e4e7', fontWeight: 600 }}>Node.js</div>
-                   </div>
-                 </div>
-                 
-                 {/* Avatar */}
-                 <div style={{ display: 'flex', width: 100, height: 100, borderRadius: 100, backgroundColor: '#27272a', border: '2px solid #3f3f46' }} />
-               </div>
-               
-               {/* Experience Section Mock */}
-               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 48, width: '100%' }}>
-                 <div style={{ display: 'flex', fontSize: 18, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Experience</div>
-                 <div style={{ display: 'flex', width: '100%', height: 100, borderRadius: 12, border: '1px solid #27272a', backgroundColor: '#09090b', padding: 24, flexDirection: 'column', gap: 10 }}>
-                   <div style={{ display: 'flex', width: 240, height: 16, borderRadius: 8, backgroundColor: '#ffffff' }} />
-                   <div style={{ display: 'flex', width: 140, height: 14, borderRadius: 7, backgroundColor: '#3f3f46' }} />
-                 </div>
-               </div>
+             <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', backgroundColor: '#ffffff', borderTop: '1px solid #27272a' }}>
+               <img src={`${process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://cvin.bio'}/homepage-screenshot.png`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
              </div>
              
           </div>
