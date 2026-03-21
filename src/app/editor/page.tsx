@@ -58,11 +58,12 @@ const ResumeUploadPrompt = ({ onFileChange, isGenerating }: { onFileChange: (e: 
 const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: string[], onNavigate: (tab: string) => void }) => {
     const completeness = useMemo(() => {
         const checks = [
-            { name: "Add a Profile Photo", complete: !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')), section: 'content' },
-            { name: "Write a Summary", complete: !!profile.summary, section: 'content' },
-            { name: "Add at least one Work Experience", complete: work.length > 0, section: 'content' },
-            { name: "Add your Education", complete: education.length > 0, section: 'content' },
-            { name: "Add at least one Skill", complete: skills.length > 0, section: 'content' },
+            { name: "Add a Profile Photo", complete: !!profile.avatarUrl, targetId: 'avatar-upload' },
+            { name: "Write a Summary", complete: !!profile.summary, targetId: 'summary' },
+            { name: "Add your Location", complete: !!profile.location, targetId: 'location' },
+            { name: "Add Work Experience", complete: work.length > 0, targetId: 'work-experience-section' },
+            { name: "Add your Education", complete: education.length > 0, targetId: 'education-section' },
+            { name: "Add at least one Skill", complete: skills.length > 0, targetId: 'skills-section' }
         ];
         const completeCount = checks.filter(c => c.complete).length;
         const totalCount = checks.length;
@@ -74,31 +75,33 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
     const { score, checks, isComplete } = completeness;
 
     return (
-        <Card className="h-full shadow-sm border-primary/20 bg-gradient-to-br from-background to-primary/5 overflow-hidden">
-            <CardHeader className="pb-2 pt-5 px-6 border-b border-primary/10">
-                <CardTitle className="text-base font-bold flex items-center"><CheckCircle className="mr-2 h-4 w-4 text-primary" /> Profile Setup Checklist</CardTitle>
-            </CardHeader>
-            <CardContent className="px-6 py-5">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-6 xl:gap-8">
-                    <div className="w-full sm:w-1/3 xl:w-1/3 space-y-3 shrink-0">
-                        <div className="flex justify-between items-end">
-                            <span className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 tracking-tighter">{score}%</span>
-                            {isComplete && <span className="flex mb-1 items-center text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full uppercase tracking-wider"><CheckCircle className="h-3 w-3 mr-1" /> Completed</span>}
-                        </div>
-                        <Progress value={score} className="h-2.5 w-full bg-primary/10" />
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">{isComplete ? "Ready to share globally" : "Finish the steps to boost views"}</p>
+        <Card className="h-full shadow-sm flex flex-col justify-center">
+            <CardContent className="pt-4 pb-3">
+                <div className="flex justify-between items-center mb-3">
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Job Readiness Score</p>
+                    <div className="flex items-center gap-2">
+                        <Progress value={score} className="h-1.5 w-16 sm:w-24 bg-secondary" />
+                        <span className="text-xs font-bold text-foreground">{score}%</span>
                     </div>
-                    
-                    <div className="flex-1 w-full">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-                            {checks.map(c => (
-                                <div key={c.name} className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${c.complete ? 'bg-background/40 border-primary/10 opacity-60 grayscale-[50%]' : 'bg-background shadow-xs border-primary/20 hover:border-primary/50'}`}>
-                                    {c.complete ? <CheckCircle className="h-5 w-5 text-green-500 shrink-0" /> : <div className="h-4 w-4 rounded-full border-2 border-dashed border-gray-400 shrink-0 ml-0.5" />}
-                                    <span className={`text-xs font-medium leading-tight ${c.complete && 'line-through text-muted-foreground'}`}>{c.name}</span>
-                                </div>
-                            ))}
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {checks.map(c => (
+                        <div 
+                            key={c.name} 
+                            onClick={() => {
+                                const el = document.getElementById(c.targetId);
+                                if (el) {
+                                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    el.focus({ preventScroll: true });
+                                }
+                            }}
+                            className={`cursor-pointer flex items-center gap-2 p-2 rounded-md border text-[10px] transition-all ${c.complete ? 'bg-secondary/40 border-transparent text-muted-foreground/60 line-through grayscale' : 'bg-background shadow-none border-border/60 hover:border-primary/40 font-medium text-foreground hover:shadow-sm'}`}
+                        >
+                            {c.complete ? <CheckCircle className="h-3 w-3 text-green-500 shrink-0" /> : <div className="h-2.5 w-2.5 rounded-full border border-gray-400 shrink-0" />}
+                            <span className="truncate" title={c.name}>{c.name}</span>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </CardContent>
         </Card>
