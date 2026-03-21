@@ -592,7 +592,7 @@ export default function EditorPage() {
                                                 >
                                                     <Share2 className="h-4 w-4" />
                                                 </Button>
-                                                <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}><Eye className="mr-1 h-4 w-4 hidden sm:block" /> Visit</Link></Button>
+                                                <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}>Visit</Link></Button>
                                             </div>
                                             {profile.slug && <p className="text-[10px] text-muted-foreground mt-2 truncate max-w-[250px]">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`}</p>}
                                         </CardContent>
@@ -604,68 +604,71 @@ export default function EditorPage() {
 
                         <div className="space-y-3">
                             <Card className="shadow-sm">
-                                <CardContent className="pt-5 pb-4 space-y-3">
-                                    {/* Avatar Upload */}
-                                    <div className="flex items-center gap-4 pb-2">
-                                        <label htmlFor="avatar-upload" className="relative group cursor-pointer flex-shrink-0">
-                                            <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
-                                                {profile.avatarUrl ? (
-                                                    <img src={profile.avatarUrl} alt="Profile" className="h-full w-full object-cover" />
-                                                ) : (
-                                                    <UploadCloud className="h-6 w-6 text-gray-400" />
-                                                )}
-                                            </div>
-                                            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <UploadCloud className="h-5 w-5 text-white" />
-                                            </div>
-                                            <input
-                                                id="avatar-upload"
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={async (e) => {
-                                                    const f = e.target.files?.[0];
-                                                    if (!f) return;
-                                                    if (f.size > 5 * 1024 * 1024) {
-                                                        toast({ variant: 'destructive', title: 'File too large', description: 'Please select an image under 5MB.' });
-                                                        return;
-                                                    }
-                                                    // Compress and resize to 200x200
-                                                    const canvas = document.createElement('canvas');
-                                                    const ctx = canvas.getContext('2d');
-                                                    const img = new window.Image();
-                                                    img.onload = () => {
-                                                        canvas.width = 200;
-                                                        canvas.height = 200;
-                                                        const size = Math.min(img.width, img.height);
-                                                        const sx = (img.width - size) / 2;
-                                                        const sy = (img.height - size) / 2;
-                                                        ctx?.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-                                                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                                                        setProfile(prev => ({ ...prev, avatarUrl: dataUrl }));
-                                                        if (user) {
-                                                            autoSave('profile', user.id, { avatarUrl: dataUrl });
+                                <CardContent className="pt-5 pb-4">
+                                    <div className="flex flex-col md:flex-row gap-5 items-start">
+                                        <div className="flex flex-col items-center gap-2 pt-1 sm:w-32 shrink-0">
+                                            <label htmlFor="avatar-upload" className="relative group cursor-pointer flex-shrink-0">
+                                                <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
+                                                    {profile.avatarUrl ? (
+                                                        <img src={profile.avatarUrl} alt="Profile" className="h-full w-full object-cover" />
+                                                    ) : (
+                                                        <UploadCloud className="h-6 w-6 text-gray-400" />
+                                                    )}
+                                                </div>
+                                                <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <UploadCloud className="h-5 w-5 text-white" />
+                                                </div>
+                                                <input
+                                                    id="avatar-upload"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={async (e) => {
+                                                        const f = e.target.files?.[0];
+                                                        if (!f) return;
+                                                        if (f.size > 5 * 1024 * 1024) {
+                                                            toast({ variant: 'destructive', title: 'File too large', description: 'Please select an image under 5MB.' });
+                                                            return;
                                                         }
-                                                        toast({ title: 'Photo updated!' });
-                                                    };
-                                                    img.src = URL.createObjectURL(f);
-                                                    e.target.value = '';
-                                                }}
-                                            />
-                                        </label>
-                                        <div className="text-xs text-muted-foreground">
-                                            <p className="font-medium text-foreground text-sm">Profile Photo</p>
-                                            <p>Click to upload. JPG, PNG under 5MB.</p>
+                                                        const canvas = document.createElement('canvas');
+                                                        const ctx = canvas.getContext('2d');
+                                                        const img = new window.Image();
+                                                        img.onload = () => {
+                                                            canvas.width = 200;
+                                                            canvas.height = 200;
+                                                            const size = Math.min(img.width, img.height);
+                                                            const sx = (img.width - size) / 2;
+                                                            const sy = (img.height - size) / 2;
+                                                            ctx?.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+                                                            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                                                            setProfile(prev => ({ ...prev, avatarUrl: dataUrl }));
+                                                            if (user) {
+                                                                autoSave('profile', user.id, { avatarUrl: dataUrl });
+                                                            }
+                                                            toast({ title: 'Photo updated!' });
+                                                        };
+                                                        img.src = URL.createObjectURL(f);
+                                                        e.target.value = '';
+                                                    }}
+                                                />
+                                            </label>
+                                            <div className="text-[10px] text-muted-foreground text-center">
+                                                <p className="font-semibold text-foreground text-xs mb-0.5">Profile Photo</p>
+                                                <p>JPG/PNG &lt; 5MB</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-1 w-full space-y-3">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                                                <div className="space-y-1 sm:col-span-2"><Label htmlFor="fullName" className="text-xs">Full Name</Label><Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                                <div className="space-y-1"><Label htmlFor="email" className="text-xs">Email</Label><Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                                <div className="space-y-1"><Label htmlFor="phone" className="text-xs">Phone</Label><Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                                <div className="space-y-1 sm:col-span-2"><Label htmlFor="location" className="text-xs">Location</Label><Input id="location" name="location" placeholder="City, State" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                                <div className="space-y-1 sm:col-span-2"><Label htmlFor="website" className="text-xs">Website/Portfolio</Label><Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                            </div>
+                                            <div className="space-y-1"><Label htmlFor="summary" className="text-xs">Summary</Label><Textarea id="summary" name="summary" placeholder="A brief professional summary..." value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={3} className="resize-none" /></div>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        <div className="space-y-1"><Label htmlFor="fullName" className="text-xs">Full Name</Label><Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
-                                        <div className="space-y-1"><Label htmlFor="email" className="text-xs">Email</Label><Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
-                                        <div className="space-y-1"><Label htmlFor="phone" className="text-xs">Phone</Label><Input id="phone" name="phone" value={profile.phone || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
-                                        <div className="space-y-1"><Label htmlFor="location" className="text-xs">Location</Label><Input id="location" name="location" placeholder="City, State" value={profile.location || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
-                                        <div className="space-y-1 col-span-2"><Label htmlFor="website" className="text-xs">Website/Portfolio</Label><Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
-                                    </div>
-                                    <div className="space-y-1"><Label htmlFor="summary" className="text-xs">Summary</Label><Textarea id="summary" name="summary" placeholder="A brief professional summary..." value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={2} className="resize-none" /></div>
                                 </CardContent>
                             </Card>
 
