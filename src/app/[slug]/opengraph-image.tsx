@@ -11,7 +11,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
   const { slug } = await props.params;
   const data = await getProfileBySlug(slug);
 
-  const siteDomain = (process.env.NEXT_PUBLIC_SITE_URL || 'cvinbio.com').replace(/^https?:\/\//, '');
+  const siteDomain = (process.env.NEXT_PUBLIC_SITE_URL || 'cvin.bio').replace(/^https?:\/\//, '');
 
   if (!data) {
     return new ImageResponse(
