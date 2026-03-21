@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 import { SupabaseClientProvider } from '@/auth';
 import { Inter } from 'next/font/google';
-
+import { Analytics } from '@vercel/analytics/next';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 
@@ -92,6 +92,7 @@ export default function RootLayout({
           >
             {children}
             <Toaster />
+            <Analytics />
           </ThemeProvider>
         </SupabaseClientProvider>
       </body>
