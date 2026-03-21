@@ -88,7 +88,7 @@ export default function Home() {
                     <Link href="/editor">Go to Your Editor</Link>
                 </Button>
                 <p className="mt-2 text-sm text-muted-foreground">
-                    Welcome back, {user.displayName || user.email}!
+                    Welcome back, {user.user_metadata?.full_name || user.email}!
                 </p>
             </div>
           ) : (

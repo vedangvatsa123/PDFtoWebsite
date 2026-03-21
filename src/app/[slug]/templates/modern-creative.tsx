@@ -61,15 +61,24 @@ export default function TemplateModern(props: ProfileData) {
             <header className="text-center">
               {profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') && (
                 <div className="flex justify-center mb-4">
-                  <Image
-                    src={profile.avatarUrl}
-                    alt={profile.fullName}
-                    width={72}
-                    height={72}
-                    className="rounded-full border object-cover"
-                    style={{ width: 72, height: 72 }}
-                    data-ai-hint={profile.avatarHint || 'person portrait'}
-                  />
+                  {profile.avatarUrl.startsWith('data:') ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.fullName}
+                      className="rounded-full border object-cover"
+                      style={{ width: 72, height: 72 }}
+                    />
+                  ) : (
+                    <Image
+                      src={profile.avatarUrl}
+                      alt={profile.fullName}
+                      width={72}
+                      height={72}
+                      className="rounded-full border object-cover"
+                      style={{ width: 72, height: 72 }}
+                      data-ai-hint={profile.avatarHint || 'person portrait'}
+                    />
+                  )}
                 </div>
               )}
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter text-foreground">

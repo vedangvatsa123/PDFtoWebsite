@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { SupabaseClientProvider } from '@/firebase';
 import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -69,7 +69,7 @@ export default function RootLayout({
       <body className={cn('min-h-screen bg-background font-sans antialiased', 
         inter.variable
         )}>
-        <FirebaseClientProvider>
+        <SupabaseClientProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -79,7 +79,7 @@ export default function RootLayout({
             {children}
             <Toaster />
           </ThemeProvider>
-        </FirebaseClientProvider>
+        </SupabaseClientProvider>
       </body>
     </html>
   );

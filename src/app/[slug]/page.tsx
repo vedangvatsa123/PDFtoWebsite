@@ -54,7 +54,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 function buildPersonSchema(data: ServerProfileData) {
-  const { profile, workExperience, education, skills } = data;
+  const { profile, workExperience, education } = data;
+  const skills = profile.skills || [];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
 
   return {
@@ -62,13 +63,12 @@ function buildPersonSchema(data: ServerProfileData) {
     '@type': 'Person',
     name: profile.fullName,
     url: `${siteUrl}/${profile.slug}`,
-    ...(profile.email ? { email: profile.email } : {}),
     ...(profile.phone ? { telephone: profile.phone } : {}),
     ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
     ...(profile.website ? { sameAs: [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] } : {}),
     ...(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') ? { image: profile.avatarUrl } : {}),
     ...(profile.summary ? { description: profile.summary } : {}),
-    ...(skills.length > 0 ? { knowsAbout: skills.map(s => s.name) } : {}),
+    ...(skills.length > 0 ? { knowsAbout: skills } : {}),
     ...(workExperience.length > 0 ? {
       jobTitle: workExperience[0].title,
       worksFor: { '@type': 'Organization', name: workExperience[0].company },
