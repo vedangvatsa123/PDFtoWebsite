@@ -35,21 +35,21 @@ export default async function Image() {
           <div style={{ display: 'flex', flexDirection: 'column', width: 1080, height: 500, marginTop: 20, border: '1px solid #e4e4e7', borderTopLeftRadius: 16, borderTopRightRadius: 16, backgroundColor: '#ffffff', overflow: 'hidden', boxShadow: '0 30px 100px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04)' }}>
              
              {/* Browser Top Bar - Light Theme */}
-             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: 96, width: '100%', backgroundColor: '#f4f4f5', borderBottom: '1px solid #e4e4e7' }}>
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: 130, width: '100%', backgroundColor: '#f4f4f5', borderBottom: '1px solid #e4e4e7' }}>
                {/* Mac Dots */}
-               <div style={{ display: 'flex', alignItems: 'center', gap: 14, width: 140 }}>
-                 <div style={{ display: 'flex', width: 24, height: 24, borderRadius: 24, backgroundColor: '#ff5f56', border: '1px solid #e0443e' }} />
-                 <div style={{ display: 'flex', width: 24, height: 24, borderRadius: 24, backgroundColor: '#ffbd2e', border: '1px solid #dea123' }} />
-                 <div style={{ display: 'flex', width: 24, height: 24, borderRadius: 24, backgroundColor: '#27c93f', border: '1px solid #1aab29' }} />
+               <div style={{ display: 'flex', alignItems: 'center', gap: 14, width: 120 }}>
+                 <div style={{ display: 'flex', width: 28, height: 28, borderRadius: 28, backgroundColor: '#ff5f56', border: '2px solid #e0443e' }} />
+                 <div style={{ display: 'flex', width: 28, height: 28, borderRadius: 28, backgroundColor: '#ffbd2e', border: '2px solid #dea123' }} />
+                 <div style={{ display: 'flex', width: 28, height: 28, borderRadius: 28, backgroundColor: '#27c93f', border: '2px solid #1aab29' }} />
                </div>
                
                {/* Address Bar */}
-               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 680, height: 60, backgroundColor: '#ffffff', borderRadius: 10, border: '2px solid #e4e4e7', color: '#09090b', fontSize: 34, fontWeight: 700, boxShadow: '0 2px 4px rgba(0,0,0,0.03)' }}>
-                 <div style={{ display: 'flex', color: '#a1a1aa', marginRight: 14, fontSize: 30 }}>🔒</div> cvin.bio/ava
+               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 740, height: 86, backgroundColor: '#ffffff', borderRadius: 16, border: '3px solid #e4e4e7', color: '#09090b', fontSize: 48, fontWeight: 800, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                 <div style={{ display: 'flex', color: '#a1a1aa', marginRight: 20, fontSize: 42 }}>🔒</div> cvin.bio/ava
                </div>
                
                {/* Flex Spacer */}
-               <div style={{ display: 'flex', width: 140 }} />
+               <div style={{ display: 'flex', width: 120 }} />
              </div>
              
              {/* Real Website Content inside Browser */}
