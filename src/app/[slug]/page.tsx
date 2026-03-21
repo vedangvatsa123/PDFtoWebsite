@@ -39,7 +39,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: canonicalUrl,
       title,
       description,
-      ...(avatarUrl ? { images: [{ url: avatarUrl, width: 400, height: 400, alt: name }] } : {}),
       firstName: name.split(' ')[0],
       lastName: name.split(' ').slice(1).join(' ') || undefined,
     },
@@ -47,7 +46,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary',
       title,
       description,
-      ...(avatarUrl ? { images: [avatarUrl] } : {}),
     },
     robots: { index: true, follow: true },
   };
