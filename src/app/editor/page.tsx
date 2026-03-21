@@ -108,7 +108,7 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
 
 const VIEW_MILESTONES = [10, 50, 100, 500, 1000, 5000];
 
-const DashboardStats = ({ viewCount, completenessScore, slug }: { viewCount: number; completenessScore: number; slug?: string }) => {
+const DashboardStats = ({ viewCount, slug }: { viewCount: number; slug?: string }) => {
     const { toast } = useToast();
     const nextMilestone = VIEW_MILESTONES.find(m => viewCount < m) || VIEW_MILESTONES[VIEW_MILESTONES.length - 1];
     const progress = Math.min(100, (viewCount / nextMilestone) * 100);
@@ -120,7 +120,7 @@ const DashboardStats = ({ viewCount, completenessScore, slug }: { viewCount: num
     };
 
     return (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card className="shadow-sm">
                 <CardContent className="pt-4 pb-3">
                     <p className="text-xs text-muted-foreground mb-1">Total Views</p>
@@ -135,19 +135,10 @@ const DashboardStats = ({ viewCount, completenessScore, slug }: { viewCount: num
             </Card>
             <Card className="shadow-sm">
                 <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground mb-1">Profile Score</p>
-                    <p className="text-2xl font-bold">{completenessScore}%</p>
-                    <p className="text-[10px] text-muted-foreground mt-2">
-                        {completenessScore === 100 ? 'Complete' : 'Fill in more details to improve'}
-                    </p>
-                </CardContent>
-            </Card>
-            <Card className="shadow-sm">
-                <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground mb-1">Share</p>
+                    <p className="text-xs text-muted-foreground mb-1">Share Public Profile</p>
                     <div className="flex gap-1.5 mt-1">
-                        <Button variant="outline" size="sm" className="h-7 text-[10px] px-2" onClick={copyLink}>
-                            <Share2 className="h-3 w-3 mr-1" /> Copy Link
+                        <Button variant="outline" size="sm" className="h-7 text-xs w-full sm:w-auto px-4" onClick={copyLink}>
+                            <Share2 className="h-3 w-3 mr-2" /> Copy Link
                         </Button>
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-2">Get more views by sharing</p>
@@ -416,12 +407,14 @@ export default function EditorPage() {
                         
                         const updatedProfile = {
                             id: user.id,
-                            full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
+                            full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
                             username: currentProfile?.username || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user'),
                             about: extractedData.summary || currentProfile?.about || '',
+                            profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                            target_role: extractedData.themeId || currentProfile?.target_role || 'modern-creative',
                             skills: skillsArr,
-                            experience: extractedData.workExperience || [],
-                            education: extractedData.education || [],
+                            experience: extractedData.workExperience || currentProfile?.experience || [],
+                            education: extractedData.education || currentProfile?.education || [],
                         };
                         await supabase.from('profiles').upsert(updatedProfile);
                         toast({ title: 'Success!', description: 'Your profile has been updated from your CV.' });
@@ -582,7 +575,7 @@ export default function EditorPage() {
                             <h1 className="text-3xl font-bold">{user ? `Welcome back, ${profile.fullName}!` : 'Build Your Profile'}</h1>
                             {!user && <p className="text-muted-foreground">Fill in your details below. Preview anytime, sign up to publish.</p>}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                            {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
                            {(workItems.length > 0 || educationItems.length > 0) && (
                                 <label title="Upload New CV (Overwrites Profile)" className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}>
@@ -624,20 +617,7 @@ export default function EditorPage() {
                                         {profile.slug && <p className="text-xs text-muted-foreground mt-1">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com'}/${profile.slug}`}</p>}
                                     </CardContent>
                                 </Card>
-                                <DashboardStats
-                                    viewCount={profile.viewCount || 0}
-                                    completenessScore={(() => {
-                                        const checks = [
-                                            !!(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')),
-                                            !!profile.summary,
-                                            workItems.length > 0,
-                                            educationItems.length > 0,
-                                            skillItems.length > 0,
-                                        ];
-                                        return Math.round((checks.filter(Boolean).length / checks.length) * 100);
-                                    })()}
-                                    slug={profile.slug}
-                                />
+                                <DashboardStats viewCount={profile.viewCount || 0} slug={profile.slug} />
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <ViewsLast7DaysChart userId={user.id} />
                                     <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
