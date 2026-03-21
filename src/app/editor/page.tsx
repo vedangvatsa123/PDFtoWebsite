@@ -600,7 +600,7 @@ export default function EditorPage() {
                                                     size="icon" 
                                                     className="h-9 w-9 shrink-0 bg-primary/10 text-primary hover:bg-primary/20" 
                                                     onClick={() => {
-                                                        navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`);
+                                                        navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio'}/${profile.slug}`);
                                                         toast({ title: 'Link copied!' });
                                                     }}
                                                     title="Copy Share Link"
@@ -609,7 +609,7 @@ export default function EditorPage() {
                                                 </Button>
                                                 <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}>Visit</Link></Button>
                                             </div>
-                                            {profile.slug && <p className="text-[10px] text-muted-foreground mt-2 truncate max-w-[250px]">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`}</p>}
+                                            {profile.slug && <p className="text-[10px] text-muted-foreground mt-2 truncate max-w-[250px]">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio'}/${profile.slug}`}</p>}
                                         </CardContent>
                                     </Card>
                                     <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
@@ -701,7 +701,7 @@ export default function EditorPage() {
                                                         className="h-9" 
                                                     />
                                                 </div>
-                                                <div className="space-y-1 sm:col-span-2 xl:col-span-2"><Label htmlFor="website" className="text-xs">Website/Portfolio</Label><Input id="website" name="website" placeholder="your-website.com" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                                <div className="space-y-1 sm:col-span-2 xl:col-span-2"><Label htmlFor="website" className="text-xs">Website/Portfolio</Label><Input id="website" name="website" placeholder="cvin.bio/johndoe" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
                                             </div>
                                             <div className="space-y-1"><Label htmlFor="summary" className="text-xs">Summary</Label><Textarea id="summary" name="summary" placeholder="A brief professional summary..." value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={3} className="resize-none" /></div>
                                         </div>

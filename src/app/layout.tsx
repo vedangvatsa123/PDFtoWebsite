@@ -9,29 +9,29 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'CVinBio — Turn Your CV into a Website',
+    default: 'CVinBio | Turn Your CV into a Website',
     template: '%s | CVinBio',
   },
-  description: 'Upload your PDF CV and instantly get a beautiful, shareable professional profile website. Free, fast, and no coding required.',
-  keywords: ['CV to website', 'CV to bio', 'online CV', 'professional profile', 'CV website builder', 'CVinBio'],
+  description: 'Use AI to convert your PDF CV into a personal website in seconds. Share your professional portfolio with a custom cvin.bio link.',
+  keywords: ['ai cv builder', 'cv to website', 'cv link', 'digital cv', 'online portfolio', 'professional bio', 'CVinBio'],
   authors: [{ name: 'CVinBio' }],
   creator: 'CVinBio',
   openGraph: {
     type: 'website',
     url: siteUrl,
     siteName: 'CVinBio',
-    title: 'CVinBio — Turn Your CV into a Website',
-    description: 'Upload your PDF CV and instantly get a beautiful, shareable professional profile website.',
+    title: 'CVinBio | Turn Your CV into a Website',
+    description: 'Use AI to convert your PDF CV into a personal website in seconds.',
   },
   twitter: {
-    card: 'summary',
-    title: 'CVinBio — Turn Your CV into a Website',
-    description: 'Upload your PDF CV and instantly get a beautiful, shareable professional profile website.',
+    card: 'summary_large_image',
+    title: 'CVinBio | Turn Your CV into a Website',
+    description: 'Use AI to convert your PDF CV into a personal website in seconds.',
   },
   robots: { index: true, follow: true },
   alternates: { canonical: siteUrl },
