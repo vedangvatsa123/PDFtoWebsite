@@ -617,7 +617,7 @@ export default function EditorPage() {
                             <Card className="shadow-sm">
                                 <CardContent className="pt-4 pb-3">
                                     <div className="flex flex-col md:flex-row gap-6 md:items-center">
-                                        <div className="flex flex-col items-center gap-2 sm:w-32 shrink-0">
+                                        <div className="flex flex-col items-center self-start gap-2 sm:w-32 shrink-0">
                                             <label htmlFor="avatar-upload" className="relative group cursor-pointer flex-shrink-0">
                                                 <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
                                                     {profile.avatarUrl ? (
