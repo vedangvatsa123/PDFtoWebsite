@@ -590,10 +590,7 @@ export default function EditorPage() {
                                         {profile.slug && <p className="text-[10px] text-muted-foreground mt-1.5 truncate">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`}</p>}
                                     </CardContent>
                                 </Card>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <ViewsLast7DaysChart userId={user.id} />
-                                    <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
-                                </div>
+                                <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
                             </div>
                         )}
 
