@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import TemplateModern from './templates/modern-creative';
-import type { ServerProfileData } from '@/lib/firebase-rest';
+import type { ServerProfileData } from '@/lib/supabase-server';
 
 interface Props {
   data: ServerProfileData;

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getProfileBySlug, type ServerProfileData } from '@/lib/firebase-rest';
+import { getProfileBySlug, type ServerProfileData } from '@/lib/supabase-server';
 import ProfilePageClient from './profile-page-client';
 
 export const dynamic = 'force-dynamic';

@@ -5,8 +5,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Static pages
   // Note: Dynamic profile pages (/{slug}) are not included here because
-  // they would require a Firestore query. For dynamic sitemap generation,
-  // consider a cron job that generates and uploads a sitemap to Firebase Hosting.
+  // they would require a Postgres query. For dynamic sitemap generation,
+  // consider a cron job that generates and uploads a sitemap to Supabase Hosting.
   return [
     {
       url: siteUrl,

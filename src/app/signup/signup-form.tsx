@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Icons } from '@/components/icons';
 import { GoogleIcon } from '@/components/google-icon';
 import { friendlyAuthError } from '@/lib/auth-utils';
-import { useUser } from '@/firebase';
+import { useUser } from '@/auth';
 import { createClient } from '@/utils/supabase/client';
 
 export default function SignUpForm() {

@@ -7,7 +7,7 @@ import { LogOut, FilePenLine } from "lucide-react";
 import { Icons } from "./icons";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { useUser } from "@/firebase";
+import { useUser } from "@/auth";
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from "next/navigation";
 import {

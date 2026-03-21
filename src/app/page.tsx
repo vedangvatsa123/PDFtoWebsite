@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { LoginDialog } from '@/components/login-dialog';
-import { useUser } from '@/firebase';
+import { useUser } from '@/auth';
 
 export default function Home() {
   const { user, isUserLoading } = useUser();

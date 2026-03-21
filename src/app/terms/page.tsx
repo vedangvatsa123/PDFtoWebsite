@@ -33,7 +33,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-foreground mb-3">3. User Accounts</h2>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li><strong>Account Registration:</strong> You must provide accurate and complete information when creating an account.</li>
-              <li><strong>Account Security:</strong> You are responsible for safeguarding your login credentials (managed via Firebase Auth or alternate OAuth) and for all activities that occur under your account.</li>
+              <li><strong>Account Security:</strong> You are responsible for safeguarding your login credentials (managed via Supabase Auth or alternate OAuth) and for all activities that occur under your account.</li>
               <li><strong>Notifications:</strong> You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.</li>
             </ul>
           </section>

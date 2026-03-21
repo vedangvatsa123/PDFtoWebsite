@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>To provide, operate, and maintain the CVinBio service.</li>
               <li>To automatically parse and generate your public-facing professional profile.</li>
-              <li>To process authentication securely via Firebase.</li>
+              <li>To process authentication securely via Supabase.</li>
               <li>To track profile and page view analytics to display on your personal dashboard.</li>
               <li>To improve, personalize, and expand our platform functionalities.</li>
               <li>To communicate with you regarding updates, security alerts, and support messages.</li>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li><strong>Recruiters and Partners:</strong> We actively try to get your profile in front of people who are hiring. We may provide your data directly to these third parties to help you land your next gig.</li>
-              <li><strong>Service Providers:</strong> We use trusted third-party services (like Google Cloud and Firebase) to run the website. They strictly help us securely store and manage your data.</li>
+              <li><strong>Service Providers:</strong> We use trusted third-party services (like Google Cloud and Supabase) to run the website. They strictly help us securely store and manage your data.</li>
               <li><strong>Legal Requirements:</strong> If the law requires it, we may need to hand over certain information to public authorities.</li>
             </ul>
           </section>
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">5. Data Security & Storage</h2>
             <p>
-              Security is highly important to us. Your public profile data is stored in Google Cloud Firestore and images are hosted on Firebase Storage. All data is encrypted both in transit (using HTTPS/TLS) and at rest. Authentication securely avoids password storage by utilizing Firebase's robust identity platform. While we strive to use commercially acceptable means to protect your data, remember that no method of transmission over the internet or electronic storage is 100% secure.
+              Security is highly important to us. Your public profile data is stored in Google Cloud Postgres and images are hosted on Supabase Storage. All data is encrypted both in transit (using HTTPS/TLS) and at rest. Authentication securely avoids password storage by utilizing Supabase's robust identity platform. While we strive to use commercially acceptable means to protect your data, remember that no method of transmission over the internet or electronic storage is 100% secure.
             </p>
           </section>
 

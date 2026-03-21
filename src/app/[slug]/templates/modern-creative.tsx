@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight } from 'lucide-react';
-import type { ServerProfileData as ProfileData } from '@/lib/firebase-rest';
+import type { ServerProfileData as ProfileData } from '@/lib/supabase-server';
 
 export default function TemplateModern(props: ProfileData) {
   const { profile, workExperience, education, customSections } = props;
