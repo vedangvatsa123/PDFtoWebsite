@@ -29,7 +29,7 @@ export default function Home() {
       }
 
       setIsProcessingFile(true);
-      toast({ title: 'Parsing Resume...', description: 'Extracting your details, just a moment.' });
+      toast({ title: 'Parsing CV...', description: 'Extracting your details, just a moment.' });
 
       try {
         const formData = new FormData();
@@ -75,11 +75,10 @@ export default function Home() {
 
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Turn Your Resume into a Website
+              Turn Your CV into a Website
             </h1>
             <p className="text-muted-foreground text-sm max-w-md mx-auto">
-              Upload your PDF or enter details manually. Get a shareable profile URL in seconds.
-            </p>
+              Upload your PDF CV and instantly get a beautiful, shareable professional profile website. Free, fast, and no coding required.        </p>
           </div>
           
           {(isUserLoading) ? null : user ? (

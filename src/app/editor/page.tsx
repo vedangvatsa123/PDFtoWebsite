@@ -317,7 +317,7 @@ export default function EditorPage() {
             return;
         }
         setIsGenerating(true);
-        toast({ title: 'Processing Resume...', description: `We're analyzing ${resumeFile.name}. Your profile will update shortly.` });
+        toast({ title: 'Processing CV...', description: `We're analyzing ${resumeFile.name}. Your profile will update shortly.` });
         try {
             const formData = new FormData();
             formData.append('resume', resumeFile);
