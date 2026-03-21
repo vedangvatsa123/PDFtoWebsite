@@ -60,8 +60,47 @@ export default async function Image() {
              </div>
              
              {/* Real Website Content inside Browser */}
-             <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', backgroundColor: '#ffffff' }}>
-               <img src={`${process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://cvin.bio'}/homepage-screenshot.png`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+             <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#ffffff', padding: '48px 64px' }}>
+               
+               {/* Left Column: Profile */}
+               <div style={{ display: 'flex', flexDirection: 'column', width: '40%', borderRight: '1px solid #e4e4e7', paddingRight: 48, gap: 16 }}>
+                 <div style={{ display: 'flex', width: 96, height: 96, borderRadius: 96, backgroundColor: '#f4f4f5', border: '1px solid #e4e4e7', alignItems: 'center', justifyContent: 'center', fontSize: 32, fontWeight: 700, color: '#a1a1aa' }}>J.D.</div>
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 12 }}>
+                   <div style={{ display: 'flex', fontSize: 38, fontWeight: 800, color: '#09090b', letterSpacing: '-0.02em' }}>John Doe</div>
+                   <div style={{ display: 'flex', fontSize: 18, color: '#71717a', fontWeight: 500 }}>Lead Software Engineer</div>
+                 </div>
+                 
+                 <div style={{ display: 'flex', fontSize: 14, color: '#a1a1aa', lineHeight: 1.5, marginTop: 12 }}>
+                   Building modern web interfaces and scalable backend systems.
+                 </div>
+                 
+                 <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                   <div style={{ display: 'flex', padding: '4px 12px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 12, color: '#52525b', fontWeight: 500 }}>React</div>
+                   <div style={{ display: 'flex', padding: '4px 12px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 12, color: '#52525b', fontWeight: 500 }}>Next.js</div>
+                   <div style={{ display: 'flex', padding: '4px 12px', borderRadius: 100, border: '1px solid #e4e4e7', fontSize: 12, color: '#52525b', fontWeight: 500 }}>Go</div>
+                 </div>
+               </div>
+               
+               {/* Right Column: Experience */}
+               <div style={{ display: 'flex', flexDirection: 'column', width: '60%', paddingLeft: 48, gap: 24, paddingTop: 12 }}>
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                   <div style={{ display: 'flex', fontSize: 20, fontWeight: 700, color: '#09090b', letterSpacing: '-0.01em' }}>Senior Engineer @ Stripe</div>
+                   <div style={{ display: 'flex', fontSize: 14, color: '#a1a1aa' }}>2021 — Present  •  San Francisco</div>
+                   <div style={{ display: 'flex', width: '100%', height: 12, borderRadius: 4, backgroundColor: '#f4f4f5', marginTop: 12 }} />
+                   <div style={{ display: 'flex', width: '85%', height: 12, borderRadius: 4, backgroundColor: '#f4f4f5', marginTop: 4 }} />
+                   <div style={{ display: 'flex', width: '60%', height: 12, borderRadius: 4, backgroundColor: '#f4f4f5', marginTop: 4 }} />
+                 </div>
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 16 }}>
+                   <div style={{ display: 'flex', fontSize: 20, fontWeight: 700, color: '#09090b', letterSpacing: '-0.01em' }}>Front-End Dev @ Linear</div>
+                   <div style={{ display: 'flex', fontSize: 14, color: '#a1a1aa' }}>2018 — 2021  •  Remote</div>
+                   <div style={{ display: 'flex', width: '90%', height: 12, borderRadius: 4, backgroundColor: '#f4f4f5', marginTop: 12 }} />
+                   <div style={{ display: 'flex', width: '70%', height: 12, borderRadius: 4, backgroundColor: '#f4f4f5', marginTop: 4 }} />
+                 </div>
+                 
+               </div>
              </div>
              
           </div>
