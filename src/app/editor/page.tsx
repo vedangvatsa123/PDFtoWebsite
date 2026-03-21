@@ -45,18 +45,14 @@ function generateSlug(name: string) {
 }
 
 const ResumeUploadPrompt = ({ onFileChange, isGenerating }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, isGenerating: boolean }) => (
-    <Card className="w-full border-dashed border-2 hover:border-primary transition-colors mb-6">
-        <CardContent className="pt-4 pb-4">
-            <label htmlFor="resume-upload" className={`flex w-full items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors ${isGenerating ? 'pointer-events-none opacity-60' : 'cursor-pointer hover:bg-accent/50'}`}>
-                {isGenerating ? (
-                    <><Loader2 className="mr-3 h-5 w-5 animate-spin text-muted-foreground" /><span className="text-sm text-muted-foreground">Generating your profile...</span></>
-                ) : (
-                    <><UploadCloud className="mr-3 h-5 w-5 text-muted-foreground" /><span className="text-sm text-muted-foreground">Upload your CV</span></>
-                )}
-                <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={onFileChange} disabled={isGenerating} />
-            </label>
-        </CardContent>
-    </Card>
+    <label htmlFor="resume-upload" className={`flex w-full items-center justify-center rounded-lg border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 py-4 px-6 text-center transition-colors mb-4 ${isGenerating ? 'pointer-events-none opacity-60' : 'cursor-pointer'}`}>
+        {isGenerating ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" /><span className="text-sm font-medium text-primary">Generating your profile...</span></>
+        ) : (
+            <><UploadCloud className="mr-2 h-4 w-4 text-primary" /><span className="text-sm font-medium text-primary">Upload your CV to automatically fill details</span></>
+        )}
+        <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={onFileChange} disabled={isGenerating} />
+    </label>
 );
 
 const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: string[], onNavigate: (tab: string) => void }) => {
