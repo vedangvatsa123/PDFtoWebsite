@@ -541,12 +541,12 @@ export default function EditorPage() {
 
             <main className="flex-1 bg-secondary/30">
                 <div className="container mx-auto max-w-4xl p-4 md:p-8">
-                    <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center justify-between mb-6">
                         <div>
                             <h1 className="text-3xl font-bold">{user ? `Welcome back, ${profile.fullName}!` : 'Build Your Profile'}</h1>
                             {!user && <p className="text-muted-foreground">Fill in your details below. Preview anytime, sign up to publish.</p>}
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                        <div className="flex items-center gap-2 justify-end shrink-0">
                            <div className="w-[85px] flex justify-end">
                                {isSaving && <div className="flex items-center gap-1.5 text-sm text-muted-foreground"><Loader2 className="animate-spin h-3.5 w-3.5" /><span>Saving...</span></div>}
                            </div>
