@@ -658,8 +658,8 @@ export default function EditorPage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex-1 w-full space-y-3">
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
+                                        <div className="flex-1 w-full space-y-2">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-x-3 gap-y-2.5">
                                                 <div className="space-y-1 sm:col-span-1 xl:col-span-2"><Label htmlFor="fullName" className="text-xs">Full Name</Label><Input id="fullName" name="fullName" value={profile.fullName || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
                                                 <div className="space-y-1 sm:col-span-1 xl:col-span-4"><Label htmlFor="email" className="text-xs">Email</Label><Input id="email" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
                                                 <div className="space-y-1 sm:col-span-1 xl:col-span-2">
