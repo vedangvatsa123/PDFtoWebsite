@@ -735,11 +735,8 @@ export default function EditorPage() {
                                     </div>
                                     <div className="space-y-3">
                                     {workItems.map(item => (
-                                        <div key={item.id} className="border rounded-lg p-3 space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm font-medium">{item.title || '\u00A0'}{item.company ? ` at ${item.company}` : ''}</span>
-                                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDeleteItem('workExperience', item.id)}><Trash2 className="h-3 w-3 text-destructive"/></Button>
-                                            </div>
+                                        <div key={item.id} className="border rounded-lg p-3 pr-10 relative space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 absolute top-3 right-2 hover:bg-destructive/10 group" onClick={() => handleDeleteItem('workExperience', item.id)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground group-hover:text-destructive transition-colors"/></Button>
                                             <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
                                                 <Input name="title" placeholder="Title" value={item.title} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
                                                 <Input name="company" placeholder="Company" value={item.company} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
@@ -761,11 +758,8 @@ export default function EditorPage() {
                                     </div>
                                     <div className="space-y-3">
                                     {educationItems.map(item => (
-                                        <div key={item.id} className="border rounded-lg p-3 space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm font-medium">{item.institution || '\u00A0'}{item.degree ? ` — ${item.degree}` : ''}</span>
-                                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDeleteItem('education', item.id)}><Trash2 className="h-3 w-3 text-destructive"/></Button>
-                                            </div>
+                                        <div key={item.id} className="border rounded-lg p-3 pr-10 relative space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 absolute top-3 right-2 hover:bg-destructive/10 group" onClick={() => handleDeleteItem('education', item.id)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground group-hover:text-destructive transition-colors"/></Button>
                                             <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
                                                 <Input name="institution" placeholder="Institution" value={item.institution} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
                                                 <Input name="degree" placeholder="Degree" value={item.degree} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
