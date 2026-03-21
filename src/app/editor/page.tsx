@@ -401,17 +401,40 @@ export default function EditorPage() {
 
     useEffect(() => {
         if (user && !processedPendingResume.current) {
-            fetchProfileData().then(data => {
+            processedPendingResume.current = true; // Mark immediately to prevent double-firing
+            fetchProfileData().then(async data => {
+                const parsedData = sessionStorage.getItem('parsedResume');
                 const pendingResumeDataUrl = sessionStorage.getItem('pendingResume');
                 const pendingResumeName = sessionStorage.getItem('pendingResumeName');
-                if (pendingResumeDataUrl && pendingResumeName && data?.profile) {
-                    processedPendingResume.current = true;
+                
+                if (parsedData) {
+                    // Safe manual update mimicking handleResumeUpload using parsed JSON
+                    try {
+                        const extractedData = JSON.parse(parsedData);
+                        const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
+                        const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                        
+                        const updatedProfile = {
+                            id: user.id,
+                            full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
+                            username: currentProfile?.username || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user'),
+                            about: extractedData.summary || currentProfile?.about || '',
+                            skills: skillsArr,
+                            experience: extractedData.workExperience || [],
+                            education: extractedData.education || [],
+                        };
+                        await supabase.from('profiles').upsert(updatedProfile);
+                        toast({ title: 'Success!', description: 'Your profile has been updated from your CV.' });
+                        sessionStorage.removeItem('parsedResume');
+                        await fetchProfileData(); // Reload the UI with updated DB data
+                    } catch (e) { console.error("Parse failed", e); }
+                } else if (pendingResumeDataUrl && pendingResumeName && data?.profile) {
                     const resumeFile = dataURLtoFile(pendingResumeDataUrl, pendingResumeName);
-                    if (resumeFile) handleResumeUpload(resumeFile);
+                    if (resumeFile) handleResumeUpload(resumeFile); // Triggers real generation
                 }
             });
         }
-    }, [user, fetchProfileData, handleResumeUpload]);
+    }, [user, fetchProfileData, handleResumeUpload, supabase, toast]);
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -577,7 +600,16 @@ export default function EditorPage() {
                     </div>
 
                     <div className="space-y-4">
-                        <ResumeUploadPrompt onFileChange={handleFileChange} isGenerating={isGenerating} />
+                        {(workItems.length === 0 && educationItems.length === 0) ? (
+                            <ResumeUploadPrompt onFileChange={handleFileChange} isGenerating={isGenerating} />
+                        ) : (
+                            <div className="flex justify-end">
+                                <label className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                    {isGenerating ? 'Processing...' : 'Upload New CV (Overwrites Profile)'}
+                                    <Input type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isGenerating} />
+                                </label>
+                            </div>
+                        )}
                         
                         {user && (
                             <div className="grid gap-4">
