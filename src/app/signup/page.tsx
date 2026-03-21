@@ -6,7 +6,7 @@ import { Icons } from '@/components/icons';
 import SignUpForm from './signup-form';
 
 export const metadata: Metadata = {
-  title: 'Sign In — CVinBio',
+  title: 'Sign In | CVinBio',
   description: 'Sign in or create a free CVinBio account to turn your resume into a beautiful, shareable professional website. Continue with Google or email.',
   robots: { index: false, follow: false },
 };

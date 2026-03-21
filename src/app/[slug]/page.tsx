@@ -17,14 +17,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { profile } = data;
   const name = profile.fullName;
-  const title = `${name} — Professional Profile`;
+  const title = `${name} | Professional Profile`;
   const latestRole = data.workExperience[0];
   const roleText = latestRole ? ` | ${latestRole.title} at ${latestRole.company}` : '';
   const description = profile.summary
     ? profile.summary.slice(0, 160)
     : `View ${name}'s professional profile${roleText}.`;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
   const canonicalUrl = `${siteUrl}/${slug}`;
   const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')
     ? profile.avatarUrl
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 function buildPersonSchema(data: ServerProfileData) {
   const { profile, workExperience, education } = data;
   const skills = profile.skills || [];
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 
   return {
     '@context': 'https://schema.org',
