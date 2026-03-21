@@ -61,9 +61,9 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
             { name: "Add a Profile Photo", complete: !!profile.avatarUrl, targetId: 'avatar-upload' },
             { name: "Write a Summary", complete: !!profile.summary, targetId: 'summary' },
             { name: "Add your Location", complete: !!profile.location, targetId: 'location' },
-            { name: "Add Work Experience", complete: work.length > 0, targetId: 'work-experience-section' },
-            { name: "Add your Education", complete: education.length > 0, targetId: 'education-section' },
-            { name: "Add at least one Skill", complete: skills.length > 0, targetId: 'skills-section' }
+            { name: "Add Work Experience", complete: work.some(w => (w.title && w.title.trim() !== '') || (w.company && w.company.trim() !== '') || (w.description && w.description.trim() !== '')), targetId: 'work-experience-section' },
+            { name: "Add your Education", complete: education.some(e => (e.institution && e.institution.trim() !== '') || (e.degree && e.degree.trim() !== '')), targetId: 'education-section' },
+            { name: "Add at least one Skill", complete: skills.some(s => typeof s === 'string' ? s.trim() !== '' : !!s), targetId: 'skills-section' }
         ];
         const completeCount = checks.filter(c => c.complete).length;
         const totalCount = checks.length;
