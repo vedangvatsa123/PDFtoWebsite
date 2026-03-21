@@ -15,10 +15,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'CVinBio | PDF to Website Builder',
+    default: 'CVinBio | AI CV to Website Builder',
     template: '%s | CVinBio',
   },
-  description: 'Upload your PDF CV and generate a custom, mobile-ready personal website in seconds.',
+  description: 'Upload your CV and let AI generate a custom, mobile-ready personal website in seconds.',
   keywords: ['ai cv builder', 'cv to website', 'cv link', 'digital cv', 'online portfolio', 'professional bio', 'CVinBio'],
   authors: [{ name: 'CVinBio' }],
   creator: 'CVinBio',
@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: 'CVinBio',
     title: 'Build a personal website from your CV.',
-    description: 'Extract your experience and generate a professional portfolio link to share anywhere.',
+    description: 'Let AI extract your experience and generate a professional portfolio link to share anywhere.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Your PDF CV, converted into a website.',
+    title: 'Your CV, converted into a website using AI.',
     description: 'Launch your professional online portfolio in seconds.',
   },
   robots: { index: true, follow: true },
