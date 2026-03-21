@@ -7,8 +7,8 @@ import { LogOut, FilePenLine } from "lucide-react";
 import { Icons } from "./icons";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { useUser } from "@/firebase/provider";
-import { getAuth, signOut } from "firebase/auth";
+import { useUser } from "@/firebase";
+import { createClient } from '@/utils/supabase/client';
 import { useRouter } from "next/navigation";
 import {
   Tooltip,
@@ -24,9 +24,9 @@ export default function Header({ children }: { children?: React.ReactNode }) {
     const pathname = usePathname();
     
     const handleSignOut = async () => {
-        const auth = getAuth();
+        const supabase = createClient();
         try {
-            await signOut(auth);
+            await supabase.auth.signOut();
             router.push('/');
         } catch (error) {
             console.error("Error signing out: ", error);

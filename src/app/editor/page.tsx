@@ -14,10 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, CheckCircle, XCircle, Share2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
-import { useUser, useFirestore, useAuth } from '@/firebase';
-import { doc, getDoc, setDoc, collection, addDoc, deleteDoc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
-import { getRedirectResult } from 'firebase/auth';
-import { setDocumentNonBlocking, deleteDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useUser } from '@/firebase';
+import { createClient } from '@/utils/supabase/client';
 import { Progress } from '@/components/ui/progress';
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -162,28 +160,16 @@ const DashboardStats = ({ viewCount, completenessScore, slug }: { viewCount: num
 const last7DaysConfig = { views: { label: "Views", color: "hsl(var(--chart-1))" } } satisfies ChartConfig;
 
 function ViewsLast7DaysChart({ userId }: { userId: string }) {
-    const firestore = useFirestore();
+    // Supabase has no daily views tracking yet, stubbing to 0
     const [chartData, setChartData] = useState<{ date: string; views: number }[] | null>(null);
 
     useEffect(() => {
-        if (!firestore || !userId) return;
-        (async () => {
-            const days: { date: string; views: number }[] = [];
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const key = d.toISOString().slice(0, 10);
-                const label = d.toLocaleDateString('en-US', { weekday: 'short' });
-                try {
-                    const snap = await getDoc(doc(firestore, 'users', userId, 'dailyViews', key));
-                    days.push({ date: label, views: snap.exists() ? (snap.data().views || 0) : 0 });
-                } catch {
-                    days.push({ date: label, views: 0 });
-                }
-            }
-            setChartData(days);
-        })();
-    }, [firestore, userId]);
+        const days = [0,1,2,3,4,5,6].map(i => {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            return { date: d.toLocaleDateString('en-US', { weekday: 'short' }), views: 0 };
+        }).reverse();
+        setChartData(days);
+    }, []);
 
     return (
         <Card className="shadow-sm">
@@ -212,8 +198,7 @@ function ViewsLast7DaysChart({ userId }: { userId: string }) {
 
 export default function EditorPage() {
     const { user, isUserLoading } = useUser();
-    const firestore = useFirestore();
-    const auth = useAuth();
+    const supabase = createClient();
     const router = useRouter();
     const { toast } = useToast();
     
@@ -273,9 +258,9 @@ export default function EditorPage() {
         }
     }, [isUserLoading, user]);
 
-    // When guest signs up/logs in, save their sessionStorage snapshot to Firestore
+    // When guest signs up/logs in, save their sessionStorage snapshot to DB
     useEffect(() => {
-        if (!user || !firestore || guestSavedToFirestore.current || processedPendingResume.current) return;
+        if (!user || guestSavedToFirestore.current || processedPendingResume.current) return;
         const rawSnapshot = sessionStorage.getItem('parsedResume');
         if (!rawSnapshot) return;
         guestSavedToFirestore.current = true;
@@ -284,36 +269,22 @@ export default function EditorPage() {
             try {
                 const snapshot = JSON.parse(rawSnapshot);
                 const pi = snapshot.personalInfo || {};
-                const fullName = pi.fullName || user.displayName || 'user';
+                const fullName = pi.fullName || user.user_metadata?.full_name || 'user';
                 const slug = pi.slug || generateSlug(fullName);
-                const profileToSave: UserProfile = {
-                    userId: user.uid,
-                    fullName,
-                    email: pi.email || user.email || '',
-                    phone: pi.phone || '',
-                    location: pi.location || '',
-                    website: pi.website || '',
-                    summary: snapshot.summary || '',
-                    slug,
-                    themeId: snapshot.themeId || 'modern-creative',
-                    avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
-                    avatarHint: 'person portrait',
-                    viewCount: 0,
+                const profileToSave = {
+                    id: user.id,
+                    full_name: fullName,
+                    username: slug,
+                    about: snapshot.summary || '',
+                    target_role: snapshot.themeId || 'modern-creative',
+                    profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                    experience: snapshot.workExperience || [],
+                    education: snapshot.education || [],
+                    skills: (snapshot.skills || []).map((s: any) => s.name || s),
+                    views: 0,
+                    links: []
                 };
-                const skillsArr = (snapshot.skills || []).map((s: any) => s.name || s);
-                profileToSave.skills = skillsArr;
-                const batch = writeBatch(firestore);
-                batch.set(doc(firestore, 'users', user.uid), profileToSave, { merge: true });
-                batch.set(doc(firestore, 'slugs', slug), { userId: user.uid });
-                (snapshot.workExperience || []).forEach((item: any) => {
-                    const { id, ...rest } = item;
-                    batch.set(doc(collection(firestore, 'users', user.uid, 'workExperience')), { ...rest, userProfileId: user.uid });
-                });
-                (snapshot.education || []).forEach((item: any) => {
-                    const { id, ...rest } = item;
-                    batch.set(doc(collection(firestore, 'users', user.uid, 'education')), { ...rest, userProfileId: user.uid });
-                });
-                await batch.commit();
+                await supabase.from('profiles').upsert(profileToSave);
                 sessionStorage.removeItem('parsedResume');
                 toast({ title: 'Profile saved!', description: 'Your profile is now live.' });
             } catch (e) {
@@ -322,152 +293,101 @@ export default function EditorPage() {
                 fetchProfileData();
             }
         })();
-    // intentionally only depends on user/firestore — runs once on auth state change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, firestore]);
-
-    useEffect(() => {
-        if (auth && !isUserLoading) {
-            getRedirectResult(auth)
-                .then((result) => {
-                    if (result) {
-                        toast({
-                            title: 'Login Successful',
-                            description: `Welcome, ${result.user.displayName || result.user.email}!`,
-                        });
-                        // onAuthStateChanged will fire and trigger fetchProfileData + pending resume
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error processing redirect result:", error);
-                    toast({
-                        variant: 'destructive',
-                        title: 'Login Failed',
-                        description: error.message,
-                    });
-                });
-        }
-    }, [auth, isUserLoading, toast]);
+    }, [user, supabase]);
 
     const fetchProfileData = useCallback(async () => {
-        if (!user || !firestore) return;
+        if (!user) return;
         setPageIsLoading(true);
-
-        const profileRef = doc(firestore, 'users', user.uid);
-        const workQuery = query(collection(firestore, 'users', user.uid, 'workExperience'));
-        const eduQuery = query(collection(firestore, 'users', user.uid, 'education'));
-        const customQuery = query(collection(firestore, 'users', user.uid, 'customSections'));
-        
-        const [profileSnap, workSnap, eduSnap, customSnap] = await Promise.all([
-            getDoc(profileRef), getDocs(workQuery), getDocs(eduQuery), getDocs(customQuery)
-        ]);
-        
+        const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         let profileData: UserProfile;
-        if (profileSnap.exists()) {
-            profileData = profileSnap.data() as UserProfile;
-        } else {
+        if (p) {
             profileData = {
-                userId: user.uid,
-                fullName: user.displayName || 'Your Name',
+                userId: p.id,
+                fullName: p.full_name || '',
                 email: user.email || '',
-                summary: '',
-                slug: generateSlug(user.displayName || 'user'),
-                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+                summary: p.about || '',
+                slug: p.username || '',
+                avatarUrl: p.profile_picture_url || `https://picsum.photos/seed/${user.id}/200/200`,
                 avatarHint: 'person portrait',
-                themeId: 'modern-creative',
-                viewCount: 0,
-                skills: [],
+                themeId: p.target_role || 'modern-creative',
+                viewCount: p.views || 0,
+                skills: p.skills || [],
             };
-            const batch = writeBatch(firestore);
-            batch.set(profileRef, profileData, { merge: true });
-            batch.set(doc(firestore, 'slugs', profileData.slug!), { userId: user.uid });
-            await batch.commit();
+            setProfile(profileData);
+            setInitialSlug(profileData.slug);
+            setActiveThemeId(profileData.themeId);
+            setWorkItems(p.experience || []);
+            setEducationItems(p.education || []);
+            setSkillItems(profileData.skills || []);
+            setCustomSections([]);
+        } else {
+            const newSlug = generateSlug(user.user_metadata?.full_name || 'user');
+            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', experience: [], education: [], skills: [], links: [] };
+            await supabase.from('profiles').insert(newProfile);
+            profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: '', avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
+            setProfile(profileData);
+            setInitialSlug(newSlug);
         }
-
-        setProfile(profileData);
-        setInitialSlug(profileData.slug);
-        setActiveThemeId(profileData.themeId);
-        setWorkItems(workSnap.docs.map(d => ({ ...d.data(), id: d.id } as WorkExperience)));
-        setEducationItems(eduSnap.docs.map(d => ({ ...d.data(), id: d.id } as Education)));
-        setSkillItems(profileData.skills || []);
-        setCustomSections(customSnap.docs.map(d => ({ ...d.data(), id: d.id } as CustomSection)).sort((a, b) => (a.order || 0) - (b.order || 0)));
-        
         setPageIsLoading(false);
         return { profile: profileData };
-    }, [user, firestore, setPageIsLoading, setProfile, setInitialSlug, setActiveThemeId, setWorkItems, setEducationItems, setSkillItems, setCustomSections]);
+    }, [user, supabase]);
 
-    const autoSave = useCallback((collectionName: string, id: string, data: any) => {
-        if (!user || !firestore) return;
+    const autoSave = useCallback(async (collectionName: string, id: string, data: any) => {
+        if (!user) return;
         setIsSaving(true);
-        // Profile fields save to users/{uid}, subcollections save to the subcollection doc
-        const ref = (collectionName === 'profile')
-            ? doc(firestore, 'users', user.uid)
-            : doc(firestore, 'users', user.uid, collectionName, id);
-        setDocumentNonBlocking(ref, data, { merge: true });
+        try {
+            if (collectionName === 'profile') {
+                const map: any = {};
+                if ('fullName' in data) map.full_name = data.fullName;
+                if ('summary' in data) map.about = data.summary;
+                if ('avatarUrl' in data) map.profile_picture_url = data.avatarUrl;
+                if ('slug' in data) map.username = data.slug;
+                if ('skills' in data) map.skills = data.skills;
+                if (Object.keys(map).length > 0) await supabase.from('profiles').update(map).eq('id', user.id);
+            }
+        } finally {
+            setTimeout(() => setIsSaving(false), 700);
+        }
+    }, [user, supabase]);
+
+    const syncArray = useCallback(async (column: string, array: any[]) => {
+        if (!user) return;
+        setIsSaving(true);
+        await supabase.from('profiles').update({ [column]: array }).eq('id', user.id);
         setTimeout(() => setIsSaving(false), 700);
-    }, [user, firestore, setIsSaving]);
+    }, [user, supabase]);
 
     const handleResumeUpload = useCallback(async (resumeFile: File) => {
-        if (!resumeFile || !user || !firestore) {
+        if (!resumeFile || !user) {
             toast({ variant: 'destructive', title: 'Error', description: 'No file selected or user not logged in.' });
             return;
         }
-
         setIsGenerating(true);
         toast({ title: 'Processing Resume...', description: `We're analyzing ${resumeFile.name}. Your profile will update shortly.` });
-
         try {
             const formData = new FormData();
             formData.append('resume', resumeFile);
-
             const response = await fetch('/api/parse-resume', { method: 'POST', body: formData });
             if (!response.ok) throw new Error((await response.json()).error || 'Failed to parse resume');
             const extractedData = await response.json();
-
-            const batch = writeBatch(firestore);
-            const profileRef = doc(firestore, 'users', user.uid);
             
-            const currentProfileSnap = await getDoc(profileRef);
-            const currentProfile = currentProfileSnap.data() || {};
-            const currentSlug = currentProfile.slug || generateSlug(extractedData.personalInfo.fullName || user.displayName || 'user');
-            
+            const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            const currentSlug = currentProfile?.username || generateSlug(extractedData.personalInfo.fullName || user.user_metadata?.full_name || 'user');
             const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
-            const updatedProfile: UserProfile = {
-                ...currentProfile,
-                userId: user.uid,
-                fullName: extractedData.personalInfo.fullName || currentProfile.fullName || '',
-                email: currentProfile.email || user.email,
-                summary: extractedData.summary || currentProfile.summary || '',
-                phone: extractedData.personalInfo.phone || currentProfile.phone || '',
-                website: extractedData.personalInfo.website || currentProfile.website || '',
-                location: extractedData.personalInfo.location || currentProfile.location || '',
-                slug: currentSlug,
-                skills: skillsArr,
-            };
-            batch.set(profileRef, updatedProfile, { merge: true });
-            batch.set(doc(firestore, 'slugs', updatedProfile.slug!), { userId: user.uid });
-
-            // Clear old subcollection data
-            const collectionsToClear = ['workExperience', 'education'];
-            for (const col of collectionsToClear) {
-                const snap = await getDocs(collection(firestore, 'users', user.uid, col));
-                snap.forEach(doc => batch.delete(doc.ref));
-            }
-
-            // Add new structured data
-            extractedData.workExperience?.forEach((item: Omit<WorkExperience, 'id'>) => {
-                const newRef = doc(collection(firestore, 'users', user.uid, 'workExperience'));
-                batch.set(newRef, { ...item, userProfileId: user.uid });
-            });
-            extractedData.education?.forEach((item: Omit<Education, 'id'>) => {
-                const newRef = doc(collection(firestore, 'users', user.uid, 'education'));
-                batch.set(newRef, { ...item, userProfileId: user.uid });
-            });
             
-            await batch.commit();
+            const updatedProfile = {
+                id: user.id,
+                full_name: extractedData.personalInfo.fullName || currentProfile?.full_name || '',
+                username: currentSlug,
+                about: extractedData.summary || currentProfile?.about || '',
+                skills: skillsArr,
+                experience: extractedData.workExperience || [],
+                education: extractedData.education || [],
+            };
+            await supabase.from('profiles').upsert(updatedProfile);
             toast({ title: 'Success!', description: 'Your profile has been updated.' });
             await fetchProfileData();
-
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
@@ -477,10 +397,10 @@ export default function EditorPage() {
             sessionStorage.removeItem('pendingResume');
             sessionStorage.removeItem('pendingResumeName');
         }
-    }, [user, firestore, fetchProfileData, toast, setFile, setFileName]);
+    }, [user, supabase, fetchProfileData, toast, setFile, setFileName]);
 
     useEffect(() => {
-        if (user && firestore && !processedPendingResume.current) {
+        if (user && !processedPendingResume.current) {
             fetchProfileData().then(data => {
                 const pendingResumeDataUrl = sessionStorage.getItem('pendingResume');
                 const pendingResumeName = sessionStorage.getItem('pendingResumeName');
@@ -491,7 +411,7 @@ export default function EditorPage() {
                 }
             });
         }
-    }, [user, firestore, fetchProfileData, handleResumeUpload]);
+    }, [user, fetchProfileData, handleResumeUpload]);
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -499,27 +419,22 @@ export default function EditorPage() {
     };
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (!user || !firestore) return;
+        if (!user) return;
         const { name, value } = e.target;
         if ((profile as any)[name] === value) return; // No change
         
         if (name === 'slug' && value !== initialSlug) {
-            const slugRef = doc(firestore, 'slugs', value);
-            const slugSnap = await getDoc(slugRef);
-            if (slugSnap.exists() && slugSnap.data().userId !== user.uid) {
+            const { data } = await supabase.from('profiles').select('id').eq('username', value).single();
+            if (data && data.id !== user.id) {
                 toast({ variant: 'destructive', title: 'URL Unavailable', description: `The URL "${value}" is already taken.` });
                 setProfile(prev => ({ ...prev, slug: initialSlug })); 
                 return;
             }
-             if (initialSlug) {
-                const oldSlugRef = doc(firestore, 'slugs', initialSlug);
-                deleteDocumentNonBlocking(oldSlugRef);
-            }
-            const newSlugRef = doc(firestore, 'slugs', value);
-            setDocumentNonBlocking(newSlugRef, { userId: user.uid }, { merge: true });
+            await autoSave('profile', user.id, { slug: value });
             setInitialSlug(value);
+        } else {
+            autoSave('profile', user.id, { [name]: value });
         }
-        autoSave('profile', user.uid, { [name]: value });
     };
 
     const handleItemChange = (collectionName: string, id: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -532,37 +447,20 @@ export default function EditorPage() {
     }
 
     const handleItemBlur = (collectionName: string, id: string, e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        autoSave(collectionName, id, { [name]: value });
+        if(collectionName === 'workExperience') syncArray('experience', workItems);
+        if(collectionName === 'education') syncArray('education', educationItems);
     };
 
     const handleAddItem = async (collectionName: 'workExperience' | 'education') => {
-        let newItem: any;
-        if (collectionName === 'workExperience') {
-            newItem = { title: '', company: '', startDate: '', endDate: '', description: '' };
-        } else {
-            newItem = { institution: '', degree: '', startDate: '', endDate: '' };
-        }
-        const guestId = `guest-${collectionName}-${Date.now()}`;
-        if (user && firestore) {
-            const colRef = collection(firestore, 'users', user.uid, collectionName);
-            const docRef = await addDoc(colRef, { ...newItem, userProfileId: user.uid });
-            newItem.id = docRef.id;
-        } else {
-            newItem.id = guestId;
-            newItem.userProfileId = '';
-        }
+        let newItem: any = (collectionName === 'workExperience') ? { title: '', company: '', startDate: '', endDate: '', description: '' } : { institution: '', degree: '', startDate: '', endDate: '' };
+        newItem.id = `item-${Date.now()}`;
         const setter = { workExperience: setWorkItems, education: setEducationItems }[collectionName];
-        (setter as any)((prev: any[]) => [...prev, newItem]);
+        (setter as any)((prev: any[]) => { const next = [...prev, newItem]; syncArray(collectionName === 'workExperience' ? 'experience' : 'education', next); return next; });
     };
 
     const handleDeleteItem = (collectionName: string, id: string) => {
-        if (user && firestore) {
-            const docRef = doc(firestore, 'users', user.uid, collectionName, id);
-            deleteDocumentNonBlocking(docRef);
-        }
         const setter = { workExperience: setWorkItems, education: setEducationItems }[collectionName as 'workExperience' | 'education'];
-        (setter as any)?.((prev: any[]) => prev.filter((item: any) => item.id !== id));
+        (setter as any)?.((prev: any[]) => { const next = prev.filter((item: any) => item.id !== id); syncArray(collectionName === 'workExperience' ? 'experience' : 'education', next); return next; });
     }
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -584,7 +482,7 @@ export default function EditorPage() {
     // Build preview data for local preview dialog (must be before early returns — Rules of Hooks)
     const previewData = useMemo(() => ({
         profile: {
-            userId: user?.uid || 'guest',
+            userId: user?.id || 'guest',
             slug: profile.slug || 'preview',
             fullName: profile.fullName || 'Your Name',
             email: profile.email || '',
@@ -708,7 +606,7 @@ export default function EditorPage() {
                                     slug={profile.slug}
                                 />
                                 <div className="grid md:grid-cols-2 gap-4">
-                                    <ViewsLast7DaysChart userId={user.uid} />
+                                    <ViewsLast7DaysChart userId={user.id} />
                                     <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
                                 </div>
                             </div>
@@ -755,8 +653,8 @@ export default function EditorPage() {
                                                         ctx?.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
                                                         const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                                                         setProfile(prev => ({ ...prev, avatarUrl: dataUrl }));
-                                                        if (user && firestore) {
-                                                            autoSave('profile', user.uid, { avatarUrl: dataUrl });
+                                                        if (user) {
+                                                            autoSave('profile', user.id, { avatarUrl: dataUrl });
                                                         }
                                                         toast({ title: 'Photo updated!' });
                                                     };
@@ -838,8 +736,8 @@ export default function EditorPage() {
                                         <h3 className="text-sm font-semibold">Skills</h3>
                                         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => {
                                             setSkillItems(prev => [...prev, '']);
-                                            if (user && firestore) {
-                                                autoSave('profile', user.uid, { skills: [...skillItems, ''] });
+                                            if (user) {
+                                                autoSave('profile', user.id, { skills: [...skillItems, ''] });
                                             }
                                         }}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
                                     </div>
@@ -856,16 +754,16 @@ export default function EditorPage() {
                                                         setSkillItems(newSkills);
                                                     }}
                                                     onBlur={() => {
-                                                        if (user && firestore) {
-                                                            autoSave('profile', user.uid, { skills: skillItems });
+                                                        if (user) {
+                                                            autoSave('profile', user.id, { skills: skillItems });
                                                         }
                                                     }}
                                                 />
                                                 <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => {
                                                     const newSkills = skillItems.filter((_, i) => i !== idx);
                                                     setSkillItems(newSkills);
-                                                    if (user && firestore) {
-                                                        autoSave('profile', user.uid, { skills: newSkills });
+                                                    if (user) {
+                                                        autoSave('profile', user.id, { skills: newSkills });
                                                     }
                                                 }}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
@@ -874,159 +772,6 @@ export default function EditorPage() {
                                 </CardContent>
                             </Card>
 
-                            {/* ─── CUSTOM SECTIONS ─── */}
-                            {customSections.map((section, sIdx) => (
-                                <Card key={section.id} className="shadow-sm">
-                                    <CardContent className="pt-4 pb-3">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <Input
-                                                value={section.sectionTitle}
-                                                placeholder="Section Title (e.g. Projects)"
-                                                className="h-7 text-sm font-semibold border-none bg-transparent p-0 focus-visible:ring-0 w-auto"
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, sectionTitle: val } : s));
-                                                }}
-                                                onBlur={() => {
-                                                    if (user && firestore) {
-                                                        autoSave('customSections', section.id, { sectionTitle: section.sectionTitle });
-                                                    }
-                                                }}
-                                            />
-                                            <div className="flex items-center gap-1">
-                                                <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => {
-                                                    const newItem: CustomSectionItem = { id: `item-${Date.now()}`, title: '', subtitle: '', description: '', date: '' };
-                                                    setCustomSections(prev => prev.map(s => {
-                                                        if (s.id !== section.id) return s;
-                                                        const updated = { ...s, items: [...(s.items || []), newItem] };
-                                                        if (user && firestore) autoSave('customSections', section.id, { items: updated.items });
-                                                        return updated;
-                                                    }));
-                                                }}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => {
-                                                    if (user && firestore) {
-                                                        const docRef = doc(firestore, 'users', user.uid, 'customSections', section.id);
-                                                        deleteDocumentNonBlocking(docRef);
-                                                    }
-                                                    setCustomSections(prev => prev.filter(s => s.id !== section.id));
-                                                }}><Trash2 className="h-3 w-3 text-destructive" /></Button>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {(section.items || []).map((item, iIdx) => (
-                                                <div key={item.id} className="border rounded-md p-2 space-y-1.5">
-                                                    <div className="flex items-center gap-2">
-                                                        <Input
-                                                            placeholder="Title"
-                                                            value={item.title}
-                                                            className="h-7 text-xs flex-1"
-                                                            onChange={(e) => {
-                                                                const val = e.target.value;
-                                                                setCustomSections(prev => prev.map(s => {
-                                                                    if (s.id !== section.id) return s;
-                                                                    return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, title: val } : it) };
-                                                                }));
-                                                            }}
-                                                            onBlur={() => {
-                                                                if (user && firestore) {
-                                                                    const sec = customSections.find(s => s.id === section.id);
-                                                                    if (sec) autoSave('customSections', section.id, { items: sec.items });
-                                                                }
-                                                            }}
-                                                        />
-                                                        <Input
-                                                            placeholder="Date"
-                                                            value={item.date || ''}
-                                                            className="h-7 text-xs w-24"
-                                                            onChange={(e) => {
-                                                                const val = e.target.value;
-                                                                setCustomSections(prev => prev.map(s => {
-                                                                    if (s.id !== section.id) return s;
-                                                                    return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, date: val } : it) };
-                                                                }));
-                                                            }}
-                                                            onBlur={() => {
-                                                                if (user && firestore) {
-                                                                    const sec = customSections.find(s => s.id === section.id);
-                                                                    if (sec) autoSave('customSections', section.id, { items: sec.items });
-                                                                }
-                                                            }}
-                                                        />
-                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
-                                                            setCustomSections(prev => prev.map(s => {
-                                                                if (s.id !== section.id) return s;
-                                                                const updated = { ...s, items: s.items.filter(it => it.id !== item.id) };
-                                                                if (user && firestore) autoSave('customSections', section.id, { items: updated.items });
-                                                                return updated;
-                                                            }));
-                                                        }}><Trash2 className="h-3 w-3 text-destructive" /></Button>
-                                                    </div>
-                                                    <Input
-                                                        placeholder="Subtitle (optional)"
-                                                        value={item.subtitle || ''}
-                                                        className="h-7 text-xs"
-                                                        onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            setCustomSections(prev => prev.map(s => {
-                                                                if (s.id !== section.id) return s;
-                                                                return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, subtitle: val } : it) };
-                                                            }));
-                                                        }}
-                                                        onBlur={() => {
-                                                            if (user && firestore) {
-                                                                const sec = customSections.find(s => s.id === section.id);
-                                                                if (sec) autoSave('customSections', section.id, { items: sec.items });
-                                                            }
-                                                        }}
-                                                    />
-                                                    <Textarea
-                                                        placeholder="Description (optional)"
-                                                        value={item.description || ''}
-                                                        className="text-xs min-h-[40px] resize-none"
-                                                        rows={2}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            setCustomSections(prev => prev.map(s => {
-                                                                if (s.id !== section.id) return s;
-                                                                return { ...s, items: s.items.map(it => it.id === item.id ? { ...it, description: val } : it) };
-                                                            }));
-                                                        }}
-                                                        onBlur={() => {
-                                                            if (user && firestore) {
-                                                                const sec = customSections.find(s => s.id === section.id);
-                                                                if (sec) autoSave('customSections', section.id, { items: sec.items });
-                                                            }
-                                                        }}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full h-8 text-xs border-dashed"
-                                onClick={async () => {
-                                    const newSection: Omit<CustomSection, 'id'> = {
-                                        userProfileId: user?.uid || '',
-                                        sectionTitle: '',
-                                        items: [],
-                                        order: customSections.length,
-                                    };
-                                    if (user && firestore) {
-                                        const colRef = collection(firestore, 'users', user.uid, 'customSections');
-                                        const docRef = await addDoc(colRef, newSection);
-                                        setCustomSections(prev => [...prev, { ...newSection, id: docRef.id }]);
-                                    } else {
-                                        setCustomSections(prev => [...prev, { ...newSection, id: `guest-cs-${Date.now()}` }]);
-                                    }
-                                }}
-                            >
-                                <PlusCircle className="mr-1 h-3 w-3" /> Add Section
-                            </Button>
                             {user && (
                                 <Card className="shadow-sm border-destructive/20">
                                     <CardContent className="pt-4 pb-3">
@@ -1036,42 +781,25 @@ export default function EditorPage() {
                                                 <p className="text-[11px] text-muted-foreground">Permanently remove your profile and all data.</p>
                                             </div>
                                             <Button
-                                                variant="destructive"
-                                                size="sm"
-                                                className="h-7 text-xs"
-                                                onClick={async () => {
-                                                    if (!confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) return;
-                                                    try {
-                                                        // Delete all subcollections
-                                                        const collections = ['workExperience', 'education', 'customSections', 'dailyViews'];
-                                                        for (const col of collections) {
-                                                            const snap = await getDocs(collection(firestore, 'users', user.uid, col));
-                                                            const batch = writeBatch(firestore);
-                                                            snap.docs.forEach(d => batch.delete(d.ref));
-                                                            if (snap.docs.length > 0) await batch.commit();
-                                                        }
-                                                        // Delete slug mapping
-                                                        if (profile.slug) {
-                                                            const { deleteDoc: delDoc } = await import('firebase/firestore');
-                                                            await delDoc(doc(firestore, 'slugs', profile.slug));
-                                                        }
-                                                        // Delete user doc
-                                                        await deleteDoc(doc(firestore, 'users', user.uid));
-                                                        // Delete auth account
-                                                        await user.delete();
-                                                        toast({ title: 'Account deleted', description: 'All your data has been removed.' });
-                                                        window.location.href = '/';
-                                                    } catch (err: any) {
-                                                        if (err.code === 'auth/requires-recent-login') {
-                                                            toast({ variant: 'destructive', title: 'Re-authentication required', description: 'Please sign out, sign back in, and try again.' });
-                                                        } else {
-                                                            toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete account.' });
-                                                        }
-                                                    }
-                                                }}
-                                            >
-                                                Delete Account
-                                            </Button>
+                            variant="destructive"
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={async () => {
+                                if (!confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) return;
+                                try {
+                                    if(user) {
+                                        await supabase.from('profiles').delete().eq('id', user.id);
+                                        await supabase.auth.signOut();
+                                    }
+                                    toast({ title: 'Account deleted', description: 'All your data has been removed.' });
+                                    window.location.href = '/';
+                                } catch (err: any) {
+                                    toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete account.' });
+                                }
+                            }}
+                        >
+                            Delete Account
+                        </Button>
                                         </div>
                                     </CardContent>
                                 </Card>

@@ -14,33 +14,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { Icons } from '@/components/icons';
-import { useAuth } from '@/firebase';
-
-const GoogleIcon = () => (
-  <svg className="mr-2 h-4 w-4" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-    <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-72.2 72.2C321.7 105.3 287.4 88 248 88c-86.9 0-158.3 70.2-158.3 156s71.4 156 158.3 156c97.2 0 133-66.8 137.9-96.8H248v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.1z" />
-  </svg>
-);
-
-function friendlyAuthError(code: string): string {
-  switch (code) {
-    case 'auth/wrong-password':
-    case 'auth/invalid-credential':
-      return 'Incorrect password. Please try again.';
-    case 'auth/weak-password':
-      return 'Password must be at least 6 characters.';
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Please try again later.';
-    case 'auth/user-disabled':
-      return 'This account has been disabled.';
-    case 'auth/network-request-failed':
-      return 'Network error. Check your connection.';
-    default:
-      return 'Something went wrong. Please try again.';
-  }
-}
+import { GoogleIcon } from '@/components/google-icon';
+import { friendlyAuthError } from '@/lib/auth-utils';
+import { useUser } from '@/firebase';
+import { createClient } from '@/utils/supabase/client';
 
 export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
   const [email, setEmail] = useState('');
@@ -50,58 +28,40 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const auth = useAuth();
 
-  // Smart auth: try sign-in first, auto-create if user doesn't exist
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Welcome back!', description: 'Redirecting to editor.' });
-      setOpen(false);
-      router.push('/editor');
-    } catch (signInError: any) {
-      if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      if (error.message.includes('Invalid login credentials')) {
+        const signUpRes = await supabase.auth.signUp({ email, password });
+        if (signUpRes.error) {
+          toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signUpRes.error.message) });
+        } else {
           toast({ title: 'Account created!', description: 'Welcome to CVinBio.' });
           setOpen(false);
           router.push('/editor');
-        } catch (signUpError: any) {
-          if (signUpError.code === 'auth/email-already-in-use') {
-            toast({ variant: 'destructive', title: 'Incorrect password', description: 'An account with this email exists. Please check your password.' });
-          } else {
-            toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signUpError.code) });
-          }
         }
       } else {
-        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signInError.code) });
+        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
       }
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast({ title: 'Welcome back!', description: 'Redirecting to editor.' });
+      setOpen(false);
+      router.push('/editor');
     }
+    setIsLoading(false);
   };
 
   const handleGoogleAuth = async () => {
     setIsGoogleLoading(true);
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      setOpen(false);
-      router.push('/editor');
-    } catch (error: any) {
-      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-        try {
-          await signInWithRedirect(auth, provider);
-        } catch (redirectError: any) {
-          toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(redirectError.code) });
-          setIsGoogleLoading(false);
-        }
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.code) });
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/editor` } });
+    if (error) {
+        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
         setIsGoogleLoading(false);
-      }
     }
   };
 
@@ -142,11 +102,10 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
               className="text-xs text-muted-foreground hover:text-primary text-left -mt-1"
               onClick={async () => {
                 if (!email) { toast({ variant: 'destructive', title: 'Enter your email first' }); return; }
-                const { sendPasswordResetEmail } = await import('firebase/auth');
-                try {
-                  await sendPasswordResetEmail(auth, email);
-                  toast({ title: 'Reset email sent', description: 'Check your inbox for a password reset link.' });
-                } catch { toast({ variant: 'destructive', title: 'Error', description: 'Could not send reset email. Check the address.' }); }
+                const supabase = createClient();
+                const { error } = await supabase.auth.resetPasswordForEmail(email);
+                if (error) { toast({ variant: 'destructive', title: 'Error', description: 'Could not send reset email. Check the address.' }); }
+                else { toast({ title: 'Reset email sent', description: 'Check your inbox for a password reset link.' }); }
               }}
             >
               Forgot password?

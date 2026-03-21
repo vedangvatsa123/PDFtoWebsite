@@ -1,14 +1,10 @@
-
 import { NextRequest, NextResponse } from 'next/server';
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { createClient } from '@supabase/supabase-js';
 
-// Initialize Firebase Admin SDK
-if (!getApps().length) {
-  initializeApp();
-}
-
-const db = getFirestore();
+// We recommend using the service role key for admin privileges in an API route.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(
   request: NextRequest,
@@ -20,34 +16,39 @@ export async function POST(
     return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
   }
 
-  try {
-    // Slug lookup: slugs/{slug} → {userId}
-    const slugRef = db.collection('slugs').doc(slug);
-    const slugDoc = await slugRef.get();
+  // Basic deduplication: check for a view cookie to prevent repeated counting
+  const viewCookieName = `viewed_${slug}`;
+  const alreadyViewed = request.cookies.get(viewCookieName);
 
-    if (!slugDoc.exists) {
+  if (alreadyViewed) {
+    return NextResponse.json({ success: true, deduplicated: true }, { status: 200 });
+  }
+
+  try {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('id, views')
+      .eq('username', slug)
+      .single();
+
+    if (error || !profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    const { userId } = slugDoc.data() as { userId: string };
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID not found for slug' }, { status: 500 });
-    }
+    // Since we don't have an RPC for incrementing yet, we just update the views directly.
+    // In production, an RPC is recommended for true atomic increments.
+    const newViews = (profile.views || 0) + 1;
+    await supabase.from('profiles').update({ views: newViews }).eq('id', profile.id);
 
-    // Profile lives directly on users/{userId}
-    const profileRef = db.collection('users').doc(userId);
-
-    // Date key in YYYY-MM-DD format (UTC)
-    const today = new Date().toISOString().slice(0, 10);
-    const dailyViewRef = db.collection('users').doc(userId).collection('dailyViews').doc(today);
-
-    // Batch: increment total + daily count atomically
-    const batch = db.batch();
-    batch.update(profileRef, { viewCount: FieldValue.increment(1) });
-    batch.set(dailyViewRef, { date: today, views: FieldValue.increment(1) }, { merge: true });
-    await batch.commit();
-
-    return NextResponse.json({ success: true }, { status: 200 });
+    // Set a cookie to prevent duplicate counting (expires in 24 hours)
+    const response = NextResponse.json({ success: true }, { status: 200 });
+    response.cookies.set(viewCookieName, '1', {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24, // 24 hours
+      sameSite: 'lax',
+      path: '/',
+    });
+    return response;
   } catch (error) {
     console.error('Error incrementing view count:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
