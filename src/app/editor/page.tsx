@@ -547,7 +547,9 @@ export default function EditorPage() {
                             {!user && <p className="text-muted-foreground">Fill in your details below. Preview anytime, sign up to publish.</p>}
                         </div>
                         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-                           {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
+                           <div className="w-[85px] flex justify-end">
+                               {isSaving && <div className="flex items-center gap-1.5 text-sm text-muted-foreground"><Loader2 className="animate-spin h-3.5 w-3.5" /><span>Saving...</span></div>}
+                           </div>
                            {(workItems.length > 0 || educationItems.length > 0) && (
                                 <label title="Upload New CV (Overwrites Profile)" className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                     {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4 md:mr-2" />}
