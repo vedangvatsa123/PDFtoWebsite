@@ -569,34 +569,36 @@ export default function EditorPage() {
                         
                         {user && (
                             <div className="grid gap-4">
-                                <Card className="shadow-sm">
-                                    <CardContent className="pt-4 pb-3">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <p className="text-xs text-muted-foreground font-medium">Your Public Link</p>
-                                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-full" title="Total Views">
-                                                <Eye className="h-3 w-3" /> {profile.viewCount || 0} Views
+                                <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-4 lg:gap-6 mb-6">
+                                    <Card className="shadow-sm h-full flex flex-col justify-center">
+                                        <CardContent className="pt-4 pb-3">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Your Public Link</p>
+                                                <div className="flex items-center gap-1.5 text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold" title="Total Views">
+                                                    <Eye className="h-3.5 w-3.5" /> {profile.viewCount || 0}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex space-x-2">
-                                            <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" />
-                                            <Button 
-                                                variant="secondary" 
-                                                size="icon" 
-                                                className="h-9 w-9 shrink-0" 
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`);
-                                                    toast({ title: 'Link copied!' });
-                                                }}
-                                                title="Copy Share Link"
-                                            >
-                                                <Share2 className="h-4 w-4" />
-                                            </Button>
-                                            <Button asChild variant="default" size="sm" className="h-9 shrink-0"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}><Eye className="mr-1 h-4 w-4 hidden sm:block" /> Visit</Link></Button>
-                                        </div>
-                                        {profile.slug && <p className="text-[10px] text-muted-foreground mt-1.5 truncate">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`}</p>}
-                                    </CardContent>
-                                </Card>
-                                <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
+                                            <div className="flex space-x-2">
+                                                <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9 font-medium" />
+                                                <Button 
+                                                    variant="secondary" 
+                                                    size="icon" 
+                                                    className="h-9 w-9 shrink-0 bg-primary/10 text-primary hover:bg-primary/20" 
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`);
+                                                        toast({ title: 'Link copied!' });
+                                                    }}
+                                                    title="Copy Share Link"
+                                                >
+                                                    <Share2 className="h-4 w-4" />
+                                                </Button>
+                                                <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}><Eye className="mr-1 h-4 w-4 hidden sm:block" /> Visit</Link></Button>
+                                            </div>
+                                            {profile.slug && <p className="text-[10px] text-muted-foreground mt-2 truncate max-w-[250px]">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvinbio.com'}/${profile.slug}`}</p>}
+                                        </CardContent>
+                                    </Card>
+                                    <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
+                                </div>
                             </div>
                         )}
 
