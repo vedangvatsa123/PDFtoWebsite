@@ -737,7 +737,7 @@ export default function EditorPage() {
                                     {workItems.map(item => (
                                         <div key={item.id} className="border rounded-lg p-3 space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-sm font-medium">{item.title || 'New Role'}{item.company ? ` at ${item.company}` : ''}</span>
+                                                <span className="text-sm font-medium">{item.title || 'Untitled Experience'}{item.company ? ` at ${item.company}` : ''}</span>
                                                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDeleteItem('workExperience', item.id)}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
                                             <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
@@ -746,7 +746,7 @@ export default function EditorPage() {
                                                 <Input name="startDate" placeholder="Start (Jan 2020)" value={item.startDate} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
                                                 <Input name="endDate" placeholder="End (Present)" value={item.endDate || ''} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
                                             </div>
-                                            <Textarea name="description" placeholder="Key achievements..." value={item.description} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} rows={2} className="text-sm resize-none" />
+                                            <Textarea name="description" placeholder="Describe your responsibilities and achievements..." value={item.description} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} rows={2} className="text-sm resize-none" />
                                         </div>
                                     ))}
                                     </div>
@@ -763,7 +763,7 @@ export default function EditorPage() {
                                     {educationItems.map(item => (
                                         <div key={item.id} className="border rounded-lg p-3 space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-sm font-medium">{item.institution || 'New Education'}{item.degree ? ` — ${item.degree}` : ''}</span>
+                                                <span className="text-sm font-medium">{item.institution || 'Untitled Education'}{item.degree ? ` — ${item.degree}` : ''}</span>
                                                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDeleteItem('education', item.id)}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
                                             <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
