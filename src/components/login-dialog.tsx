@@ -72,8 +72,7 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Welcome to CVinBio</DialogTitle>
-          <DialogDescription>Enter your details to continue. New accounts are created automatically.</DialogDescription>
+          <DialogTitle className="sr-only">Sign In to CVinBio</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-2">
           <Button variant="outline" className="w-full" onClick={handleGoogleAuth} disabled={isGoogleLoading}>
@@ -114,6 +113,10 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
               {isLoading ? 'Please wait...' : 'Continue'}
             </Button>
           </form>
+
+          <p className="text-[11px] text-center text-muted-foreground px-2">
+            By continuing, you agree to our <a href="/terms" target="_blank" className="underline hover:text-foreground">Terms</a> and <a href="/privacy" target="_blank" className="underline hover:text-foreground">Privacy Policy</a>.
+          </p>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,75 +1,56 @@
-# PDFtoWebsite: Your Resume, Reimagined as a Website
+# CVinBio
 
-PDFtoWebsite is a web application that transforms a standard PDF resume into a beautiful, shareable, and professional online portfolio. Stop sending PDF attachments and start sharing a dynamic web profile that you can customize and track.
+**Turn Your CV into a Professional Website**
 
-This project is built with a modern, full-stack TypeScript setup, leveraging Next.js for the frontend and **Supabase** for the backend services.
+CVinBio is a modern, ultra-minimalist web application that transforms traditional PDF CVs into beautiful, shareable, and intensely professional online portfolios natively hosted on your own unique URL. Bypassing clunky templates, this platform mathematically restructures your credentials into a crisp, high-performing digital identity.
 
-## Key Features
+## 🚀 Key Features
 
-- **📄 PDF Resume Parsing**: Upload your resume in PDF format, and the application will automatically parse the content, extracting key sections like personal information, work experience, education, and skills.
-- **✏️ Rich Content Editor**: Easily edit the parsed content or rewrite summaries. The editor saves your changes automatically in real-time.
-- **📊 Analytics Dashboard**: Get insights into your profile's performance with a built-in dashboard that tracks total views.
-- **🎨 Customizable Themes**: Choose from multiple visual themes to personalize the look and feel of your public profile page.
-- **🔗 Shareable Public URL**: Get a unique, customizable URL (e.g., your-portfolio.com/your-name) to share with recruiters, colleagues, and on your social media.
-- **⚡ Supabase Integration**: Built on a robust, PostgreSQL-powered backend using Supabase Authentication for secure user management and Row Level Security (RLS) for data privacy.
+*   **📄 Algorithmic CV Parsing:** Upload an arbitrary PDF CV and the backend uses an advanced local heuristic text-extraction engine (`pdf-parse`) to instantly map, categorize, and seamlessly structure your personal information, work history, education, and skills.
+*   **🎨 Aggressive Minimalism:** The frontend deploys a highly disciplined monochromatic design system (Inter font, stark whitespace, tight tracking, zero drop-shadows) specifically engineered to mimic the aesthetic of a premium SaaS application or high-end digital business card. *(No messy themes or templates required)*
+*   **⚡ Edge-Computed Link Previews (OpenGraph):** When sharing your `cvinbio.com/[slug]` URL on LinkedIn or Twitter/iMessage, Next.js natively utilizes the Edge Runtime (Satori) to physically draw a perfectly symmetrical, personalized `1200x630` PNG image in microseconds containing your avatar, name, and job title.
+*   **🔐 Supabase Architecture:** Completely integrated into a hardcore PostgreSQL backend utilizing strictly bound Row Level Security (RLS) and GoTrue Auth to permanently secure and seamlessly sync your professional edits in real-time.
+*   **✏️ Frictionless Editor:** A fully dynamic client-side interface allowing you to instantly restructure your extracted logic, upload compressed avatars, and rewrite work summaries effortlessly.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-This project uses a modern, type-safe, and performant tech stack:
+This project strictly utilizes a bleeding-edge, type-safe, and highly-performant production stack:
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router, Server Components)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **UI**: [React](https://react.dev/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
-- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL & GoTrue Authentication)
-- **Deployment**: [Vercel](https://vercel.com/)
-- **Charts & Data Viz**: [Recharts](https://recharts.org/)
+*   **Framework:** [Next.js 15](https://nextjs.org/) (App Router, Server Components, Turbopack)
+*   **Language:** [TypeScript](https://www.typescriptlang.org/)
+*   **UI & Styling:** [Tailwind CSS v3](https://tailwindcss.com/) & [Shadcn UI](https://ui.shadcn.com/)
+*   **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL & Auth)
+*   **PDF Extraction Engine:** `pdf-parse` mapping custom RegEx structures
+*   **Image Generation:** [Next/OG](https://vercel.com/docs/functions/og-image-generation) (Satori Edge computing)
 
-## Project Structure
-
-Here is a high-level overview of the most important files and directories:
+## 📁 Project Structure
 
 ```
 /
 ├── src/
 │   ├── app/
-│   │   ├── [slug]/page.tsx      # The public, dynamic profile page for a user.
-│   │   ├── editor/page.tsx      # The main editor dashboard where users manage their profile.
-│   │   ├── api/parse-resume/    # API route for handling PDF resume parsing.
-│   │   ├── page.tsx             # The application's landing page.
-│   │   └── layout.tsx           # The root layout with Supabase context provider.
+│   │   ├── [slug]/                   # Public Candidate Profile routes
+│   │   │   ├── page.tsx              # Clean Server Component fetching public profiles
+│   │   │   └── opengraph-image.tsx   # Edge rendering script natively drawing the SVG/PNG previews
+│   │   ├── editor/                   # Authorized CV editing interface
+│   │   ├── api/parse-resume/         # Local algorithmic RegEx parsing route
+│   │   ├── opengraph-image.tsx       # Root landing page dynamic fallback preview
+│   │   ├── page.tsx                  # Primary Landing interface
+│   │   └── layout.tsx                # Symmetrical Universal UI boundaries
 │   │
-│   ├── components/
-│   │   ├── ui/                  # Reusable UI components from ShadCN.
-│   │   ├── header.tsx           # The main site header.
-│   │   └── login-dialog.tsx     # The authentication dialog using Supabase.
-│   │
-│   ├── auth/
-│   │   └── index.tsx            # Supabase Auth context provider and hooks.
-│   │
-│   ├── lib/
-│   │   ├── supabase-server.ts   # Secure server-side data fetching from PostgreSQL.
-│   │   └── auth-utils.ts        # Handlers for auth errors.
-│   │
-│   ├── utils/
-│   │   └── supabase/            # Client and Server utility constructors for Supabase SSR.
+│   ├── components/                   # Shadcn UI atoms and universal Header elements
+│   ├── lib/                          # Server utilities (Supabase Admin, Heuristics arrays)
+│   ├── utils/                        # Client-side Supabase Browser constructors
+│   └── types/                        # Strict universal TypeScript interfaces
 │
-├── package.json                 # Project dependencies and scripts.
-└── next.config.ts               # Next.js configuration file.
+├── docs/                             
+│   └── design_guidelines.md          # Internal Brand identity and AI Prompts rules
+└── ...
 ```
 
-## How It Works
+## 🏗️ Getting Started Locally
 
-1.  **Upload**: A user uploads their PDF resume on the homepage.
-2.  **Parse**: The PDF is sent to a server API endpoint (`/api/parse-resume`) which extracts the text content and structures it into JSON.
-3.  **Edit**: The user is taken to the editor, where the parsed information populates the forms. The user can then edit, add, or delete sections. All changes are automatically synced to the Supabase Postgres database.
-4.  **Publish & Share**: The user can customize their public URL and share it. When someone visits the URL, the page safely fetches the user's profile data from Supabase and renders it.
-5.  **Track**: The user can visit their dashboard in the editor to see how many views their profile is getting.
-
-## Getting Started
-
-To run this project locally, you will need Node.js and npm installed.
+To run CVinBio perfectly locally, you will strictly only need a Supabase Database instance.
 
 1.  **Install Dependencies**:
     ```bash
@@ -77,19 +58,19 @@ To run this project locally, you will need Node.js and npm installed.
     ```
 
 2.  **Environment Variables**:
-    Create a `.env.local` file in the root directory and add your Supabase details:
+    Create a new `.env.local` file strictly mapping your keys into the repository root:
     ```env
     NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    NEXT_PUBLIC_SITE_URL=http://localhost:3000
     ```
 
-3.  **Run the Development Server**:
+3.  **Boot Development Server**:
     ```bash
     npm run dev
     ```
 
-The application will be available at `http://localhost:3000`.
+The application strictly renders natively on `http://localhost:3000`.
 
-### Database Setup
-
-The project requires a Supabase PostgreSQL database with a `profiles` table. The table should contain the following columns natively matching the `UserProfile` schema, and have Row Level Security enabled to ensure users can only modify their own profiles.
+---
+*Built with strict mathematical geometry and aggressive minimalism.*

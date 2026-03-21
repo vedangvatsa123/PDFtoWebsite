@@ -22,6 +22,7 @@ import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 import { LoginDialog } from '@/components/login-dialog';
 import TemplateModern from '@/app/[slug]/templates/modern-creative';
+import CustomSectionsEditor from './custom-sections-editor';
 
 function dataURLtoFile(dataurl: string, filename: string): File | null {
     const arr = dataurl.split(',');
@@ -233,6 +234,7 @@ export default function EditorPage() {
                     profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
                     experience: snapshot.workExperience || [],
                     education: snapshot.education || [],
+                    custom_sections: snapshot.customSections || [],
                     skills: (snapshot.skills || []).map((s: any) => s.name || s),
                     views: 0,
                     links: []
@@ -273,10 +275,10 @@ export default function EditorPage() {
             setWorkItems(p.experience || []);
             setEducationItems(p.education || []);
             setSkillItems(profileData.skills || []);
-            setCustomSections([]);
+            setCustomSections(p.custom_sections || []);
         } else {
             const newSlug = generateSlug(user.user_metadata?.full_name || 'user');
-            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`, experience: [], education: [], skills: [], links: [] };
+            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`, experience: [], education: [], custom_sections: [], skills: [], links: [] };
             await supabase.from('profiles').insert(newProfile);
             profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: newProfile.profile_picture_url, avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
             setProfile(profileData);
@@ -337,6 +339,7 @@ export default function EditorPage() {
                 skills: skillsArr,
                 experience: extractedData.workExperience || [],
                 education: extractedData.education || [],
+                custom_sections: extractedData.customSections || [],
             };
             await supabase.from('profiles').upsert(updatedProfile);
             toast({ title: 'Success!', description: 'Your profile has been updated.' });
@@ -377,6 +380,7 @@ export default function EditorPage() {
                             skills: skillsArr,
                             experience: extractedData.workExperience || currentProfile?.experience || [],
                             education: extractedData.education || currentProfile?.education || [],
+                            custom_sections: extractedData.customSections || currentProfile?.custom_sections || [],
                         };
                         await supabase.from('profiles').upsert(updatedProfile);
                         toast({ title: 'Success!', description: 'Your profile has been updated from your CV.' });
@@ -828,6 +832,13 @@ export default function EditorPage() {
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            <CustomSectionsEditor 
+                                customSections={customSections} 
+                                setCustomSections={setCustomSections} 
+                                syncArray={syncArray} 
+                                user={user} 
+                            />
 
                             {user && (
                                 <Card className="shadow-sm border-destructive/20">

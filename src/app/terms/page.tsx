@@ -44,9 +44,9 @@ export default function TermsPage() {
               When you use our service, you'll be uploading and providing information like your resume, contact details, and work history.
             </p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
-              <li><strong>Data Ownership:</strong> To make sure we have the freedom to do everything possible to boost your career—like sharing your profile with our recruiter network—any data, text, or profile details you upload become our property once they are on CVinBio. We officially own this platform data.</li>
-              <li><strong>How We Use It:</strong> Because we own this data, we can securely host it, proudly display it on your unique profile URL, and freely share it with third parties who might help you land your next big role!</li>
-              <li><strong>Your Responsibility:</strong> You just need to make sure the information you give us is actually truthful and relates safely to you. You're responsible for the accuracy of what you share with us.</li>
+              <li><strong>Data Ownership:</strong> You retain complete ownership of the professional details and resume data you provide. By uploading your information, you grant CVinBio a license to securely host, format, and display your data strictly to power your unique profile URL.</li>
+              <li><strong>Proactive Matchmaking:</strong> To actively help you land your next big role, we may surface your profile to verified hiring partners within our network. You maintain absolute control over this visibility. If you prefer to remove your profile from our network completely, you can instantly revoke this access by permanently deleting your account and all associated data through your dashboard settings.</li>
+              <li><strong>Your Responsibility:</strong> You are responsible for ensuring the information you provide is accurate and truthful.</li>
             </ul>
           </section>
 

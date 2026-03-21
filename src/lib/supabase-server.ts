@@ -20,6 +20,7 @@ export interface ServerProfileData {
     website?: string;
     viewCount?: number;
     skills?: string[];
+    links?: any[];
   };
   workExperience: Array<{
     id: string;
@@ -63,10 +64,11 @@ export async function getProfileBySlug(slug: string): Promise<ServerProfileData 
             avatarHint: 'person portrait',
             website: undefined,
             viewCount: profile.views || 0,
-            skills: profile.skills || []
+            skills: profile.skills || [],
+            links: profile.links || []
         },
         workExperience: profile.experience || [],
         education: profile.education || [],
-        customSections: []
+        customSections: profile.custom_sections || []
     };
 }
