@@ -667,7 +667,7 @@ export default function EditorPage() {
                             <Card className="shadow-sm">
                                 <CardContent className="pt-4 pb-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-semibold">Work Experience</h3>
+                                        <h3 id="work-experience-section" className="text-sm font-semibold scroll-mt-24">Work Experience</h3>
                                         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleAddItem('workExperience')}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
                                     </div>
                                     <div className="space-y-3">
@@ -693,7 +693,7 @@ export default function EditorPage() {
                             <Card className="shadow-sm">
                                 <CardContent className="pt-4 pb-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-semibold">Education</h3>
+                                        <h3 id="education-section" className="text-sm font-semibold scroll-mt-24">Education</h3>
                                         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleAddItem('education')}><PlusCircle className="mr-1 h-3 w-3" /> Add</Button>
                                     </div>
                                     <div className="space-y-3">
@@ -718,7 +718,7 @@ export default function EditorPage() {
                             <Card className="shadow-sm">
                                 <CardContent className="pt-4 pb-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-semibold">Skills</h3>
+                                        <h3 id="skills-section" className="text-sm font-semibold scroll-mt-24">Skills</h3>
                                         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => {
                                             setSkillItems(prev => [...prev, '']);
                                             if (user) {
