@@ -27,13 +27,11 @@ export const metadata: Metadata = {
     siteName: 'CVinBio',
     title: 'CVinBio — Turn Your CV into a Website',
     description: 'Upload your PDF CV and instantly get a beautiful, shareable professional profile website.',
-    images: [{ url: '/images/cvtopdf.png', width: 200, height: 200, alt: 'CVinBio' }],
   },
   twitter: {
     card: 'summary',
     title: 'CVinBio — Turn Your CV into a Website',
     description: 'Upload your PDF CV and instantly get a beautiful, shareable professional profile website.',
-    images: ['/images/cvtopdf.png'],
   },
   robots: { index: true, follow: true },
   alternates: { canonical: siteUrl },
@@ -51,18 +49,34 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: 'CVinBio',
-              url: siteUrl,
-              description: 'Turn your PDF CV into a beautiful, shareable professional profile website.',
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/{slug}` },
-                'query-input': 'required name=slug',
+            __html: JSON.stringify([
+              {
+                '@context': 'https://schema.org',
+                '@type': 'WebSite',
+                name: 'CVinBio',
+                url: siteUrl,
+                description: 'Turn your PDF CV into a beautiful, shareable professional profile website.',
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/{search_term_string}` },
+                  'query-input': 'required name=search_term_string',
+                },
               },
-            }),
+              {
+                '@context': 'https://schema.org',
+                '@type': 'SoftwareApplication',
+                name: 'CVinBio',
+                applicationCategory: 'BusinessApplication',
+                operatingSystem: 'All',
+                url: siteUrl,
+                description: 'AI-powered resume parsing and portfolio generation platform for professionals.',
+                offers: {
+                  '@type': 'Offer',
+                  price: '0',
+                  priceCurrency: 'USD',
+                },
+              }
+            ]),
           }}
         />
       </head>

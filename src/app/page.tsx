@@ -77,9 +77,7 @@ export default function Home() {
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your CV into a Website
             </h1>
-            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-              Upload your CV and instantly get a shareable website link. No coding required.
-            </p>
+
           </div>
           
           {(isUserLoading) ? null : user ? (
@@ -151,11 +149,6 @@ export default function Home() {
 
         </div>
       </main>
-      <footer className="py-4 text-center text-xs text-muted-foreground">
-        <a href="/privacy" className="hover:underline">Privacy</a>
-        <span className="mx-2">·</span>
-        <a href="/terms" className="hover:underline">Terms</a>
-      </footer>
     </div>
   );
 }

@@ -13,6 +13,7 @@ export type UserProfile = {
     website?: string;
     viewCount?: number;
     skills?: string[];
+    links?: any[];
 };
 
 export type WorkExperience = {

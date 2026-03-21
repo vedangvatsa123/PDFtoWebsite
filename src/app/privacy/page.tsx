@@ -48,12 +48,12 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">4. Information Sharing and Disclosure</h2>
             <p>
-              A big part of CVinBio is helping you get noticed! Because of this, we might share your public profile data, resume details, and contact info with recruiters, potential employers, or other groups we think might be relevant to your career.
+              CVinBio is meticulously designed to help you proactively grow your career. To do this, we offer powerful features that can match your public profile data with relevant recruiters and exciting job opportunities.
             </p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
-              <li><strong>Recruiters and Partners:</strong> We actively try to get your profile in front of people who are hiring. We may provide your data directly to these third parties to help you land your next gig.</li>
-              <li><strong>Service Providers:</strong> We use trusted third-party services (like Supabase and Vercel) to run the website. They strictly help us securely host the platform and manage your data.</li>
-              <li><strong>Legal Requirements:</strong> If the law requires it, we may need to hand over certain information to public authorities.</li>
+              <li><strong>Recruiters and Partners:</strong> We strictly use this sharing capability exclusively to benefit your career. You retain full autonomous control. If you ever decide you no longer want to participate in this network, you can securely opt-out by permanently deleting your account and all associated professional data directly from your dashboard. We never sell your personal contact data to bulk marketing lists.</li>
+              <li><strong>Service Providers:</strong> We use trusted third-party cloud infrastructure (like Supabase and Vercel) to run the website. They strictly help us securely host the platform and process data securely.</li>
+              <li><strong>Legal Requirements:</strong> If required by valid legal process, we may need to securely disclose information to authorized public authorities.</li>
             </ul>
           </section>
 

@@ -67,13 +67,20 @@ function buildPersonSchema(data: ServerProfileData) {
     ...(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') ? { image: profile.avatarUrl } : {}),
     ...(profile.summary ? { description: profile.summary } : {}),
     ...(skills.length > 0 ? { knowsAbout: skills } : {}),
+    ...(profile.links && Array.isArray(profile.links) && profile.links.length > 0 ? {
+      sameAs: [
+        ...(profile.website ? [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] : []),
+        ...profile.links.map((link: any) => link.url || link)
+      ]
+    } : (profile.website ? { sameAs: [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] } : {})),
     ...(workExperience.length > 0 ? {
       jobTitle: workExperience[0].title,
       worksFor: { '@type': 'Organization', name: workExperience[0].company },
       hasOccupation: workExperience.map(job => ({
         '@type': 'Occupation',
         name: job.title,
-        ...(job.description ? { description: job.description.slice(0, 200) } : {}),
+        ...(job.description ? { description: job.description.slice(0, 500) } : {}),
+        estimatedSalary: [],
       })),
     } : {}),
     ...(education.length > 0 ? {
