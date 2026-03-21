@@ -78,7 +78,7 @@ export default function Home() {
               Turn Your Resume into a Website
             </h1>
             <p className="text-muted-foreground text-sm max-w-md mx-auto">
-              Upload your PDF or enter details manually. Get a beautiful, shareable profile in seconds.
+              Upload your PDF or enter details manually. Get a shareable profile URL in seconds.
             </p>
           </div>
           
