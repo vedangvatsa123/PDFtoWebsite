@@ -74,13 +74,13 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
     const { score, checks, isComplete } = completeness;
 
     return (
-        <Card className="shadow-sm border-primary/20 bg-gradient-to-br from-background to-primary/5 mb-6 overflow-hidden">
+        <Card className="h-full shadow-sm border-primary/20 bg-gradient-to-br from-background to-primary/5 overflow-hidden">
             <CardHeader className="pb-2 pt-5 px-6 border-b border-primary/10">
                 <CardTitle className="text-base font-bold flex items-center"><CheckCircle className="mr-2 h-4 w-4 text-primary" /> Profile Setup Checklist</CardTitle>
             </CardHeader>
             <CardContent className="px-6 py-5">
-                <div className="flex flex-col md:flex-row md:items-center gap-8">
-                    <div className="md:w-1/3 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 xl:gap-8">
+                    <div className="w-full sm:w-1/3 xl:w-1/3 space-y-3 shrink-0">
                         <div className="flex justify-between items-end">
                             <span className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 tracking-tighter">{score}%</span>
                             {isComplete && <span className="flex mb-1 items-center text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full uppercase tracking-wider"><CheckCircle className="h-3 w-3 mr-1" /> Completed</span>}
@@ -90,7 +90,7 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
                     </div>
                     
                     <div className="flex-1 w-full">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                             {checks.map(c => (
                                 <div key={c.name} className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${c.complete ? 'bg-background/40 border-primary/10 opacity-60 grayscale-[50%]' : 'bg-background shadow-xs border-primary/20 hover:border-primary/50'}`}>
                                     {c.complete ? <CheckCircle className="h-5 w-5 text-green-500 shrink-0" /> : <div className="h-4 w-4 rounded-full border-2 border-dashed border-gray-400 shrink-0 ml-0.5" />}
