@@ -735,15 +735,21 @@ export default function EditorPage() {
                                     </div>
                                     <div className="space-y-3">
                                     {workItems.map(item => (
-                                        <div key={item.id} className="border rounded-lg p-3 pr-10 relative space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
-                                            <Button variant="ghost" size="icon" className="h-6 w-6 absolute top-3 right-2 hover:bg-destructive/10 group" onClick={() => handleDeleteItem('workExperience', item.id)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground group-hover:text-destructive transition-colors"/></Button>
-                                            <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
-                                                <Input name="title" placeholder="Title" value={item.title} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
-                                                <Input name="company" placeholder="Company" value={item.company} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
-                                                <Input name="startDate" placeholder="Start (Jan 2020)" value={item.startDate} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
-                                                <Input name="endDate" placeholder="End (Present)" value={item.endDate || ''} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
+                                        <div key={item.id} className="border rounded-lg p-3 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
+                                            <div className="flex gap-2 items-start">
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
+                                                        <Input name="title" placeholder="Title" value={item.title} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
+                                                        <Input name="company" placeholder="Company" value={item.company} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
+                                                        <Input name="startDate" placeholder="Start" value={item.startDate} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
+                                                        <Input name="endDate" placeholder="End" value={item.endDate || ''} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
+                                                    </div>
+                                                    <Textarea name="description" placeholder="Describe your responsibilities and achievements..." value={item.description} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} rows={2} className="text-sm resize-none" />
+                                                </div>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 hover:bg-destructive/10 group" onClick={() => handleDeleteItem('workExperience', item.id)}>
+                                                    <Trash2 className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors"/>
+                                                </Button>
                                             </div>
-                                            <Textarea name="description" placeholder="Describe your responsibilities and achievements..." value={item.description} onChange={(e) => handleItemChange('workExperience', item.id, e)} onBlur={(e) => handleItemBlur('workExperience', item.id, e)} rows={2} className="text-sm resize-none" />
                                         </div>
                                     ))}
                                     </div>
@@ -758,13 +764,20 @@ export default function EditorPage() {
                                     </div>
                                     <div className="space-y-3">
                                     {educationItems.map(item => (
-                                        <div key={item.id} className="border rounded-lg p-3 pr-10 relative space-y-2 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
-                                            <Button variant="ghost" size="icon" className="h-6 w-6 absolute top-3 right-2 hover:bg-destructive/10 group" onClick={() => handleDeleteItem('education', item.id)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground group-hover:text-destructive transition-colors"/></Button>
-                                            <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
-                                                <Input name="institution" placeholder="Institution" value={item.institution} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
-                                                <Input name="degree" placeholder="Degree" value={item.degree} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
-                                                <Input name="startDate" placeholder="Start" value={item.startDate} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
-                                                <Input name="endDate" placeholder="End" value={item.endDate || ''} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
+                                        <div key={item.id} className="border rounded-lg p-3 transition-all hover:border-primary/40 hover:bg-secondary/10 hover:shadow-sm">
+                                            <div className="flex gap-2 items-start">
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="grid grid-cols-2 md:grid-cols-12 gap-2">
+                                                        <Input name="institution" placeholder="Institution" value={item.institution} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
+                                                        <Input name="degree" placeholder="Degree" value={item.degree} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-2 sm:col-span-1 md:col-span-4 h-8 text-sm" />
+                                                        <Input name="startDate" placeholder="Start" value={item.startDate} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
+                                                        <Input name="endDate" placeholder="End" value={item.endDate || ''} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} className="col-span-1 sm:col-span-1 md:col-span-2 h-8 text-sm" />
+                                                    </div>
+                                                    <Textarea name="description" placeholder="Describe your studies, honors, or extracurricular achievements..." value={item.description || ''} onChange={(e) => handleItemChange('education', item.id, e)} onBlur={(e) => handleItemBlur('education', item.id, e)} rows={2} className="text-sm resize-none" />
+                                                </div>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 hover:bg-destructive/10 group" onClick={() => handleDeleteItem('education', item.id)}>
+                                                    <Trash2 className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors"/>
+                                                </Button>
                                             </div>
                                         </div>
                                     ))}
