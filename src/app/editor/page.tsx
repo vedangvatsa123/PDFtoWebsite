@@ -584,6 +584,13 @@ export default function EditorPage() {
                         </div>
                         <div className="flex items-center gap-2">
                            {isSaving && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="animate-spin h-4 w-4" /><span>Saving...</span></div>}
+                           {(workItems.length > 0 || educationItems.length > 0) && (
+                                <label title="Upload New CV (Overwrites Profile)" className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                    {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4 md:mr-2" />}
+                                    <span className="hidden md:inline">{isGenerating ? 'Processing...' : 'Update CV'}</span>
+                                    <Input type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isGenerating} />
+                                </label>
+                           )}
                             {user && profile.slug ? (
                                 <Button variant="outline" asChild>
                                     <Link href={`/${profile.slug}`} prefetch={false} target="_blank">
@@ -601,15 +608,8 @@ export default function EditorPage() {
                     </div>
 
                     <div className="space-y-4">
-                        {(workItems.length === 0 && educationItems.length === 0) ? (
+                        {(workItems.length === 0 && educationItems.length === 0) && (
                             <ResumeUploadPrompt onFileChange={handleFileChange} isGenerating={isGenerating} />
-                        ) : (
-                            <div className="flex justify-end">
-                                <label className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                                    {isGenerating ? 'Processing...' : 'Upload New CV (Overwrites Profile)'}
-                                    <Input type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isGenerating} />
-                                </label>
-                            </div>
                         )}
                         
                         {user && (
