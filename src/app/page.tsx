@@ -77,8 +77,9 @@ export default function Home() {
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your CV into a Website
             </h1>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto">
-              Upload your CV and instantly get a shareable website link. No coding required.        </p>
+            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
+              Upload your CV and instantly get a shareable website link. No coding required.
+            </p>
           </div>
           
           {(isUserLoading) ? null : user ? (
