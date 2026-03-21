@@ -40,7 +40,6 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
             <Icons.logo className="h-6 w-6" />
-            <span className="font-semibold text-sm tracking-tight">CVinBio</span>
           </Link>
         </div>
 
