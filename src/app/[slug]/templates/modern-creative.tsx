@@ -28,7 +28,7 @@ export default function TemplateModern(props: ProfileData) {
 
     const opt = {
       margin: [15, 15, 20, 15], // More generous bottom margin (20mm)
-      filename: `${profile.fullName.replace(/\s+/g, '_')}_Resume.pdf`,
+      filename: `${profile.fullName.replace(/\s+/g, '')}-CVinBio.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2, 
