@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const startTime = Date.now();
 
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
@@ -78,10 +79,12 @@ export async function POST(request: NextRequest) {
 
     try {
       let requestBody;
+      let pageCount = 0;
 
       if (fileType === 'pdf') {
         // PDF: Vision Mode (send binary for visual analysis)
         const pdfData = await pdf(fileBuffer);
+        pageCount = pdfData.numpages;
         if (pdfData.numpages > 10) {
           return NextResponse.json({ error: `Document is ${pdfData.numpages} pages. Max 10.` }, { status: 400 });
         }
@@ -151,10 +154,34 @@ export async function POST(request: NextRequest) {
       let rawResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
       const aiStructuredData = JSON.parse(rawResponse);
 
+      const duration = Date.now() - startTime;
+      console.log(JSON.stringify({
+        event: 'cv_parse_success',
+        fileType,
+        fileSizeKB: Math.round(file.size / 1024),
+        pageCount,
+        durationMs: duration,
+        sectionsFound: {
+          work: aiStructuredData.workExperience?.length || 0,
+          education: aiStructuredData.education?.length || 0,
+          skills: aiStructuredData.skills?.length || 0,
+          custom: aiStructuredData.customSections?.length || 0,
+        },
+        ip,
+      }));
+
       return NextResponse.json(aiStructuredData, { status: 200 });
     } catch (aiError) {
-      console.error('AI Parse Error:', aiError);
+      const duration = Date.now() - startTime;
       const message = aiError instanceof Error ? aiError.message : 'Unknown error';
+      console.log(JSON.stringify({
+        event: 'cv_parse_failure',
+        fileType,
+        fileSizeKB: Math.round(file.size / 1024),
+        durationMs: duration,
+        error: message,
+        ip,
+      }));
       return NextResponse.json({ error: `Parse failed: ${message}` }, { status: 500 });
     }
 
