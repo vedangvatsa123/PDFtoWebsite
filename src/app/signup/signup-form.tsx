@@ -114,12 +114,12 @@ export default function SignUpForm() {
           <Input id="email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-9" />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Sending...' : 'Send Secure Link'}
+          {isLoading ? 'Sending...' : 'Send sign-in link'}
         </Button>
       </form>
 
-      <p className="text-xs text-center text-muted-foreground mt-2">
-        No password needed. We&apos;ll email you a secure link to log in instantly.
+      <p className="text-xs text-center text-muted-foreground">
+        No password needed. We will email you a secure sign-in link.
       </p>
     </div>
   );

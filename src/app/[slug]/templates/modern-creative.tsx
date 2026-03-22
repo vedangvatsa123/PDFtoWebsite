@@ -3,16 +3,27 @@
 import React, { useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight, FileDown } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import type { ServerProfileData as ProfileData } from '@/lib/supabase-server';
 
 export default function TemplateModern(props: ProfileData) {
   const { profile, workExperience, education, customSections } = props;
   const skills = profile.skills || [];
 
+  const { toast } = useToast();
+
   const handleDownloadPDF = useCallback(() => {
-    window.print();
-  }, []);
+    toast({
+      title: "Preparing PDF",
+      description: "Select 'Save as PDF' from the destination menu to download your resume.",
+    });
+    // Slight delay so the toast can be seen before the modal blocks the UI
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  }, [toast]);
+
 
   return (
     <>
@@ -48,10 +59,11 @@ export default function TemplateModern(props: ProfileData) {
       <div className="resume-outer min-h-screen bg-background">
         <button
           onClick={handleDownloadPDF}
-          className="no-print fixed bottom-6 right-6 z-50 rounded-full bg-zinc-900 text-white p-3 shadow-lg hover:bg-zinc-700 transition-colors"
-          title="Download PDF"
+          className="no-print fixed bottom-6 right-6 z-[60] rounded-full bg-zinc-900 text-white p-4 shadow-xl hover:bg-zinc-800 transition-all hover:scale-105 active:scale-95 group flex items-center gap-2"
+          title="Save as PDF"
         >
-          <Download className="h-4 w-4" />
+          <FileDown className="h-5 w-5" />
+          <span className="text-xs font-semibold pr-1">Save PDF</span>
         </button>
 
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-14">
