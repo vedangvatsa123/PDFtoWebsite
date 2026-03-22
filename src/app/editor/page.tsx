@@ -461,10 +461,21 @@ export default function EditorPage() {
                         
                         const combinedLinks = Array.from(newLinksMap.entries()).map(([type, value]) => ({ type, value })).filter(l => !!l.value);
 
+                        let finalSlug = currentProfile?.username || extractedData.personalInfo?.slug || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user');
+                        let isUnique = false;
+                        while (!isUnique) {
+                            const { data: existing } = await supabase.from('profiles').select('id').eq('username', finalSlug).maybeSingle();
+                            if (!existing || existing.id === user.id) {
+                                isUnique = true;
+                            } else {
+                                finalSlug = `${generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user')}-${Math.random().toString(36).substring(2,6)}`;
+                            }
+                        }
+
                         const updatedProfile = {
                             id: user.id,
                             full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
-                            username: currentProfile?.username || extractedData.personalInfo?.slug || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user'),
+                            username: finalSlug,
                             about: extractedData.summary || currentProfile?.about || '',
                             profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
                             target_role: extractedData.themeId || currentProfile?.target_role || 'modern-creative',
@@ -700,12 +711,19 @@ export default function EditorPage() {
                                 </label>
                            )}
                             {user && profile.slug ? (
-                                <Button variant="outline" asChild>
-                                    <Link href={`/${profile.slug}`} prefetch={false} target="_blank">
+                                slugError || isCheckingSlug ? (
+                                    <Button variant="outline" disabled>
                                         <Eye className="mr-2 h-4 w-4" />
                                         Preview
-                                    </Link>
-                                </Button>
+                                    </Button>
+                                ) : (
+                                    <Button variant="outline" asChild>
+                                        <Link href={`/${profile.slug}`} prefetch={false} target="_blank">
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            Preview
+                                        </Link>
+                                    </Button>
+                                )
                             ) : !user ? (
                                 <Button variant="outline" onClick={() => setShowPreview(true)}>
                                     <Eye className="mr-2 h-4 w-4" />
@@ -749,10 +767,17 @@ export default function EditorPage() {
                                                         toast({ title: 'Link copied!' });
                                                     }}
                                                     title="Copy Share Link"
+                                                    disabled={!!slugError || isCheckingSlug}
                                                 >
                                                     <Share2 className="h-4 w-4" />
                                                 </Button>
-                                                <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}>Visit</Link></Button>
+                                                {slugError || isCheckingSlug ? (
+                                                    <Button variant="default" size="sm" className="h-9 shrink-0 shadow-sm" disabled>Visit</Button>
+                                                ) : (
+                                                    <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm">
+                                                        <Link href={`/${profile.slug}`} target="_blank" prefetch={false}>Visit</Link>
+                                                    </Button>
+                                                )}
                                             </div>
                                             {isCheckingSlug ? (
                                                 <p className="text-[10px] text-muted-foreground mt-2 font-medium animate-pulse">Checking availability...</p>

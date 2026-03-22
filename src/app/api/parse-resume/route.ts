@@ -10,9 +10,9 @@ Return ONLY RAW JSON matching EXACTLY this structure (do not use markdown blocks
 {
   "personalInfo": { "fullName": "", "email": "", "phone": "", "location": "", "website": "", "github": "", "linkedin": "" },
   "summary": "",
-  "workExperience": [], 
-  "education": [],
-  "skills": [],
+  "workExperience": [{ "company": "", "title": "", "startDate": "", "endDate": "", "description": "" }], 
+  "education": [{ "institution": "", "degree": "", "fieldOfStudy": "", "startDate": "", "endDate": "", "description": "" }],
+  "skills": [""],
   "customSections": []
 }
 
