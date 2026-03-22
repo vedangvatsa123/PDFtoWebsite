@@ -54,26 +54,28 @@ export async function POST(request: NextRequest) {
       try {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         
-        // Convert to base64 so Gemini can visually analyze the PDF
         const base64Pdf = fileBuffer.toString('base64');
         const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
 
         const result = await model.generateContent([systemInstruction, pdfPart]);
         let rawResponse = result.response.text();
         
-        // Clean markdown and JSON markers
         rawResponse = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
         const aiStructuredData = JSON.parse(rawResponse);
         
-        return NextResponse.json(aiStructuredData, { status: 200 });
+        // Success: Mark as AI-sourced
+        return NextResponse.json({ ...aiStructuredData, source: 'ai_vision' }, { status: 200 });
       } catch (aiError) {
-        console.error('AI Engine Failure:', aiError);
+        console.error('CRITICAL: Gemini AI Engine Failure:', aiError);
+        // We only fall back if we absolutely have to, but we mark it clearly
       }
+    } else {
+      console.warn('WARNING: No GEMINI_API_KEY found in environment variables.');
     }
 
     // 3. Absolute Safety Fallback: Local Extraction
     const fallbackData = parseResumeText(pdfData.text);
-    return NextResponse.json(fallbackData, { status: 200 });
+    return NextResponse.json({ ...fallbackData, source: 'local_fallback_warning' }, { status: 200 });
 
   } catch (error) {
     console.error('Error parsing resume:', error);
