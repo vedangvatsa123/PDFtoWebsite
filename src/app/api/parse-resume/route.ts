@@ -16,8 +16,10 @@ Return ONLY RAW JSON matching EXACTLY this structure (do not use markdown blocks
   "skills": [""],
   "customSections": [{ "id": "1", "userProfileId": "", "sectionTitle": "Section Name", "order": 1, "items": [{ "id": "1", "title": "", "subtitle": "", "description": "", "date": "" }] }]
 }
+
+OCR CLEANING RULE: If the input PDF contains garbled characters (like Ä, Ê, ó), use your visual reasoning to determine the correct English word intended. For example, if you see 'ÄÊóOSGeoGoogle', correctly extract 'Google Summer of Code'.
 If a field doesn't exist, leave it as an empty string or array.
-CRITICAL RULE FOR UNMAPPED SECTIONS: If the CV contains extra sections like 'Publications', 'Patents', 'Hackathons', or 'Awards' that don't fit into Experience or Education, you MUST logically extract them into the "customSections" array precisely correctly creating strict unique "sectionTitle" strings identically mapping.
+CRITICAL RULE FOR UNMAPPED SECTIONS: If the CV contains extra sections like 'Publications', 'Patents', 'Hackathons', or 'Awards' that don't fit into Experience or Education, you MUST logically extract them into the "customSections" array. 
 DO NOT throw data away!`;
 
 export async function POST(request: NextRequest) {
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
     // 1. Primary Engine: Smart Multimodal AI Parsing (Handles Scanned PDFs & Images)
     if (genAI) {
       try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         
         // Convert the raw PDF binary into a base64 encoded stream so Gemini can visually "see" the CV
         const base64Pdf = fileBuffer.toString('base64');
