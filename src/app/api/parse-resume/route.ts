@@ -49,23 +49,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `This document is ${pdfData.numpages} pages long. Please upload a professional resume under 10 pages.` }, { status: 400 });
     }
 
-    // --- 100% FORCED AI VISION ENGINE ---
-    const apiKey = process.env.GEMINI_API_KEY;
+    // --- 100% FORCED AI VISION ENGINE (v1 Stable) ---
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
-       return NextResponse.json({ error: 'Production Error: GEMINI_API_KEY is missing from environment variables. Please check your Vercel settings.' }, { status: 500 });
+       return NextResponse.json({ error: 'Production Error: GEMINI_API_KEY is missing. Check Vercel Settings.' }, { status: 500 });
     }
 
     try {
+      console.log(`Initializing Gemini 1.5 Flash (Key Length: ${apiKey.length})`);
       const genAIInstance = new GoogleGenerativeAI(apiKey);
+      
+      // Use the stable model ID. 'gemini-1.5-flash' is the most compatible.
       const model = genAIInstance.getGenerativeModel({ model: 'gemini-1.5-flash' });
       
       const base64Pdf = fileBuffer.toString('base64');
       const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
 
       const result = await model.generateContent([systemInstruction, pdfPart]);
-      let rawResponse = result.response.text();
+      const responseText = result.response.text();
       
-      rawResponse = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+      let rawResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
       const aiStructuredData = JSON.parse(rawResponse);
       
       return NextResponse.json(aiStructuredData, { status: 200 });
@@ -73,7 +76,7 @@ export async function POST(request: NextRequest) {
       console.error('LIVE PRODUCTION AI ERROR:', aiError);
       const message = aiError instanceof Error ? aiError.message : 'Unknown AI error';
       return NextResponse.json({ 
-        error: `AI Engine failed: ${message}. If this persists, verify your API Key quota and region.`,
+        error: `AI Engine failed (404/Auth): ${message}. Check Project/Region access for Gemini 1.5 Flash.`,
         source: 'ai_error_report'
       }, { status: 500 });
     }
