@@ -616,16 +616,19 @@ export default function EditorPage() {
         }
         
         if (['email', 'phone', 'location', 'website', 'github', 'linkedin'].includes(name)) {
-            const nextProfile = { ...profile, [name]: value };
-            const linksObject = [
-                { type: 'email', value: nextProfile.email },
-                { type: 'phone', value: nextProfile.phone },
-                { type: 'location', value: nextProfile.location },
-                { type: 'website', value: nextProfile.website },
-                { type: 'github', value: nextProfile.github },
-                { type: 'linkedin', value: nextProfile.linkedin },
-            ].filter(l => !!l.value);
-            autoSave('profile', user.id, { links: linksObject });
+            setProfile(prev => {
+                const nextProfile = { ...prev, [name]: value };
+                const linksObject = [
+                    { type: 'email', value: nextProfile.email },
+                    { type: 'phone', value: nextProfile.phone },
+                    { type: 'location', value: nextProfile.location },
+                    { type: 'website', value: nextProfile.website },
+                    { type: 'github', value: nextProfile.github },
+                    { type: 'linkedin', value: nextProfile.linkedin },
+                ].filter(l => !!l.value);
+                autoSave('profile', user.id, { links: linksObject });
+                return nextProfile;
+            });
         } else if (name === 'slug' && value !== initialSlug) {
             if (slugError) return; // Wait until they fix the error before saving
             setSlugSuccess(false);

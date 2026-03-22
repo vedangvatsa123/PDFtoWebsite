@@ -221,7 +221,7 @@ export default function TemplateModern(props: ProfileData) {
               )}
             </header>
 
-            {(workExperience.length > 0 || education.length > 0 || skills.length > 0 || customSections?.length > 0) && <div className="h-px bg-border" />}
+            {(workExperience.length > 0 || education.length > 0 || skills.length > 0 || customSections?.some(s => s.items?.length > 0)) && <div className="h-px bg-border" />}
 
             {/* ─── EXPERIENCE ─── */}
             {workExperience.length > 0 && (
@@ -251,7 +251,7 @@ export default function TemplateModern(props: ProfileData) {
                     ))}
                   </div>
                 </section>
-                {(education.length > 0 || skills.length > 0 || customSections?.length > 0) && <div className="h-px bg-border" />}
+                {(education.length > 0 || skills.length > 0 || customSections?.some(s => s.items?.length > 0)) && <div className="h-px bg-border" />}
               </>
             )}
 
@@ -283,7 +283,7 @@ export default function TemplateModern(props: ProfileData) {
                     ))}
                   </div>
                 </section>
-                {(skills.length > 0 || customSections?.length > 0) && <div className="h-px bg-border" />}
+                {(skills.length > 0 || customSections?.some(s => s.items?.length > 0)) && <div className="h-px bg-border" />}
               </>
             )}
 
@@ -306,12 +306,12 @@ export default function TemplateModern(props: ProfileData) {
                     ))}
                   </div>
                 </section>
-                {customSections?.length > 0 && <div className="h-px bg-border" />}
+                {customSections?.some(s => s.items?.length > 0) && <div className="h-px bg-border" />}
               </>
             )}
 
             {/* ─── CUSTOM SECTIONS ─── */}
-            {customSections?.map((section, idx) => (
+            {customSections?.filter(s => s.items && s.items.length > 0).map((section, idx, filteredArr) => (
               <React.Fragment key={section.id}>
                 <section>
                   <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5">
@@ -338,7 +338,7 @@ export default function TemplateModern(props: ProfileData) {
                     ))}
                   </div>
                 </section>
-                {idx < customSections.length - 1 && <div className="h-px bg-border" />}
+                {idx < filteredArr.length - 1 && <div className="h-px bg-border" />}
               </React.Fragment>
             ))}
 
