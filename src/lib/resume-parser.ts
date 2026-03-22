@@ -5,6 +5,8 @@ export interface ParsedResume {
     phone?: string;
     location?: string;
     website?: string;
+    github?: string;
+    linkedin?: string;
   };
   summary: string;
   workExperience: {
@@ -220,6 +222,8 @@ function extractPersonalInfo(lines: string[]): ParsedResume['personalInfo'] {
   let email = '';
   let phone: string | undefined;
   let website: string | undefined;
+  let github: string | undefined;
+  let linkedin: string | undefined;
   let location: string | undefined;
   let fullName = '';
 
@@ -233,19 +237,25 @@ function extractPersonalInfo(lines: string[]): ParsedResume['personalInfo'] {
       if (m) { email = m[0]; }
     }
     
-    // Website / LinkedIn / GitHub
+    // LinkedIn
+    if (!linkedin) {
+      const match = line.match(LINKEDIN_RE);
+      if (match) { linkedin = match[0]; continue; }
+    }
+    
+    // GitHub
+    if (!github) {
+      const match = line.match(GITHUB_RE);
+      if (match) { github = match[0]; continue; }
+    }
+    
+    // Website (if not already matched as LinkedIn or GitHub)
     if (!website) {
-      const linkedin = line.match(LINKEDIN_RE);
-      if (linkedin) { website = linkedin[0]; continue; }
-      
-      const github = line.match(GITHUB_RE);
-      if (github && !website) { website = github[0]; continue; }
-      
       const strictUrl = line.match(STRICT_URL_RE);
       if (strictUrl && !EMAIL_RE.test(strictUrl[0])) { website = strictUrl[0]; continue; }
       
       const url = line.match(URL_RE);
-      if (url && !EMAIL_RE.test(url[0])) { website = url[0]; continue; }
+      if (url && !EMAIL_RE.test(url[0]) && !LINKEDIN_RE.test(url[0]) && !GITHUB_RE.test(url[0])) { website = url[0]; continue; }
     }
     
     // Phone
@@ -324,7 +334,7 @@ function extractPersonalInfo(lines: string[]): ParsedResume['personalInfo'] {
     }
   }
 
-  return { fullName: fullName || 'Unknown', email, phone, location, website };
+  return { fullName: fullName || 'Unknown', email, phone, location, website, github, linkedin };
 }
 
 // ─── Section Splitter ─────────────────────────────────────────────────────────

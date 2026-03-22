@@ -165,7 +165,7 @@ export default function TemplateModern(props: ProfileData) {
                     className="flex items-center hover:text-foreground transition-colors"
                   >
                     <Github className="h-3 w-3 shrink-0 mr-1.5" />
-                    <span>{profile.github.replace(/^https?:\/\/(www\.)?github\.com\//, '').replace(/\/$/, '')}</span>
+                    <span>{profile.github.replace(/^(?:https?:\/\/)?(?:www\.)?github\.com\//i, '').replace(/\/$/, '')}</span>
                     <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1" />
                   </a>
                 )}
@@ -177,7 +177,7 @@ export default function TemplateModern(props: ProfileData) {
                     className="flex items-center hover:text-foreground transition-colors"
                   >
                     <Linkedin className="h-3 w-3 shrink-0 mr-1.5" />
-                    <span>{profile.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, '').replace(/\/$/, '')}</span>
+                    <span>{profile.linkedin.replace(/^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\//i, '').replace(/\/$/, '')}</span>
                     <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1" />
                   </a>
                 )}
