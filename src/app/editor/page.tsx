@@ -318,36 +318,69 @@ export default function EditorPage() {
     }, [user, supabase]);
 
     const handleResumeUpload = useCallback(async (resumeFile: File) => {
-        if (!resumeFile || !user) {
-            toast({ variant: 'destructive', title: 'Error', description: 'No file selected or user not logged in.' });
+        if (!resumeFile) {
+            toast({ variant: 'destructive', title: 'Error', description: 'No file selected.' });
             return;
         }
+        
         setIsGenerating(true);
         toast({ title: 'Processing CV...', description: `We're analyzing ${resumeFile.name}. Your profile will update shortly.` });
+        
         try {
             const formData = new FormData();
             formData.append('resume', resumeFile);
             const response = await fetch('/api/parse-resume', { method: 'POST', body: formData });
+            
             if (!response.ok) throw new Error((await response.json()).error || 'Failed to parse resume');
             const extractedData = await response.json();
             
-            const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-            const currentSlug = currentProfile?.username || generateSlug(extractedData.personalInfo.fullName || user.user_metadata?.full_name || 'user');
-            const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
-            
-            const updatedProfile = {
-                id: user.id,
-                full_name: extractedData.personalInfo.fullName || currentProfile?.full_name || '',
-                username: currentSlug,
-                about: extractedData.summary || currentProfile?.about || '',
-                skills: skillsArr,
-                experience: extractedData.workExperience || [],
-                education: extractedData.education || [],
-                custom_sections: extractedData.customSections || [],
-            };
-            await supabase.from('profiles').upsert(updatedProfile);
-            toast({ title: 'Success!', description: 'Your profile has been updated.' });
-            await fetchProfileData();
+            // If user is logged in, save to Supabase
+            if (user) {
+                const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                const currentSlug = currentProfile?.username || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user');
+                const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
+                
+                const updatedProfile = {
+                    id: user.id,
+                    full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
+                    username: currentSlug,
+                    about: extractedData.summary || currentProfile?.about || '',
+                    skills: skillsArr,
+                    experience: extractedData.workExperience || [],
+                    education: extractedData.education || [],
+                    custom_sections: extractedData.customSections || [],
+                };
+                
+                await supabase.from('profiles').upsert(updatedProfile);
+                toast({ title: 'Success!', description: 'Your profile has been updated.' });
+                await fetchProfileData();
+            } else {
+                // GUEST MODE: Save to local state and sessionStorage
+                const slug = generateSlug(extractedData.personalInfo?.fullName || 'user');
+                const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
+                
+                setProfile({
+                    fullName: extractedData.personalInfo?.fullName || '',
+                    email: extractedData.personalInfo?.email || '',
+                    phone: extractedData.personalInfo?.phone || '',
+                    location: extractedData.personalInfo?.location || '',
+                    website: extractedData.personalInfo?.website || '',
+                    summary: extractedData.summary || '',
+                    slug,
+                    themeId: 'modern-creative',
+                    skills: skillsArr,
+                });
+                
+                setWorkItems((extractedData.workExperience || []).map((w: any, i: number) => ({ ...w, id: `guest-work-${i}`, userProfileId: '' })));
+                setEducationItems((extractedData.education || []).map((e: any, i: number) => ({ ...e, id: `guest-edu-${i}`, userProfileId: '' })));
+                setSkillItems(skillsArr);
+                setCustomSections((extractedData.customSections || []).map((cs: any, i: number) => ({ ...cs, id: `guest-section-${i}`, userProfileId: '' })));
+                
+                // Keep session storage in sync for login transition
+                sessionStorage.setItem('parsedResume', JSON.stringify(extractedData));
+                
+                toast({ title: 'Success!', description: 'Your CV has been parsed. Sign up to publish!' });
+            }
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
