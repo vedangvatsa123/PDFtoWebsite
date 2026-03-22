@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
               { inline_data: { mime_type: 'application/pdf', data: fileBuffer.toString('base64') } }
             ]
           }],
-          generationConfig: { temperature: 0.1, topP: 0.95, topK: 64, maxOutputTokens: 8192, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } }
+          generationConfig: { temperature: 0.1, maxOutputTokens: 8192, responseMimeType: 'application/json' }
         };
 
       } else {
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
               { text: `${systemInstruction}\n\nRESUME TEXT:\n${extractedText}` }
             ]
           }],
-          generationConfig: { temperature: 0.1, topP: 0.95, topK: 64, maxOutputTokens: 8192, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } }
+          generationConfig: { temperature: 0.1, maxOutputTokens: 8192, responseMimeType: 'application/json' }
         };
       }
 
@@ -154,7 +154,13 @@ export async function POST(request: NextRequest) {
       }
 
       const result = await response.json();
-      const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      const parts = result.candidates?.[0]?.content?.parts || [];
+      
+      // Gemini 2.5 Flash may return multiple parts (thinking + response). Get the last text part.
+      let responseText = '';
+      for (const part of parts) {
+        if (part.text) responseText = part.text;
+      }
       if (!responseText) throw new Error('Empty response from AI engine');
 
       let rawResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
