@@ -11,12 +11,13 @@ import { GoogleIcon } from '@/components/google-icon';
 import { friendlyAuthError } from '@/lib/auth-utils';
 import { useUser } from '@/auth';
 import { createClient } from '@/utils/supabase/client';
+import { Mail } from 'lucide-react';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -31,27 +32,20 @@ export default function SignUpForm() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const supabase = createClient();
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/editor`,
+      },
+    });
     if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        const signUpRes = await supabase.auth.signUp({ email, password });
-        if (signUpRes.error) {
-          toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signUpRes.error.message) });
-        } else if (signUpRes.data?.user?.identities?.length === 0) {
-          toast({ variant: 'destructive', title: 'Account already exists', description: 'An account with this email already exists. Try signing in or resetting your password.' });
-        } else {
-          toast({ title: 'Check your email', description: 'We sent a confirmation link to ' + email + '. Please verify your email to continue.' });
-        }
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
-      }
+      toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
     } else {
-      toast({ title: 'Welcome back!', description: 'Redirecting to your editor.' });
-      router.push('/editor');
+      setEmailSent(true);
     }
     setIsLoading(false);
   };
@@ -59,26 +53,35 @@ export default function SignUpForm() {
   const handleGoogleAuth = async () => {
     setIsGoogleLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/editor` } });
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?next=/editor` } });
     if (error) {
         toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
         setIsGoogleLoading(false);
     }
   };
 
-  const handlePasswordReset = async () => {
-    if (!email) {
-      toast({ variant: 'destructive', title: 'Enter your email first' });
-      return;
-    }
-    const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not send reset email. Check the address.' });
-    } else {
-      toast({ title: 'Reset email sent', description: 'Check your inbox for a password reset link.' });
-    }
-  };
+  if (emailSent) {
+    return (
+      <div className="grid gap-4 text-center py-4">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <Mail className="h-6 w-6 text-primary" />
+        </div>
+        <div className="grid gap-1">
+          <h3 className="text-lg font-semibold">Check your email</h3>
+          <p className="text-sm text-muted-foreground">
+            We sent a sign-in link to <span className="font-medium text-foreground">{email}</span>. Click the link in your email to continue.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          onClick={() => { setEmailSent(false); setEmail(''); }}
+        >
+          Use a different email
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4">
@@ -105,29 +108,18 @@ export default function SignUpForm() {
         </div>
       </div>
 
-      <form onSubmit={handleEmailAuth} className="grid gap-3">
+      <form onSubmit={handleMagicLink} className="grid gap-3">
         <div className="grid gap-1.5">
           <Label htmlFor="email" className="text-xs">Email</Label>
           <Input id="email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-9" />
         </div>
-        <div className="grid gap-1.5">
-          <Label htmlFor="password" className="text-xs">Password</Label>
-          <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9" />
-        </div>
-        <button
-          type="button"
-          className="text-xs text-muted-foreground hover:text-primary text-left -mt-1"
-          onClick={handlePasswordReset}
-        >
-          Forgot password?
-        </button>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Please wait...' : 'Continue'}
+          {isLoading ? 'Sending...' : 'Send sign-in link'}
         </Button>
       </form>
 
       <p className="text-xs text-center text-muted-foreground">
-        New users will be registered automatically. Existing users will be signed in.
+        No password needed. We will email you a secure sign-in link.
       </p>
     </div>
   );

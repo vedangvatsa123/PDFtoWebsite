@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -17,41 +15,31 @@ import { useToast } from '@/hooks/use-toast';
 import { Icons } from '@/components/icons';
 import { GoogleIcon } from '@/components/google-icon';
 import { friendlyAuthError } from '@/lib/auth-utils';
-import { useUser } from '@/auth';
 import { createClient } from '@/utils/supabase/client';
+import { Mail } from 'lucide-react';
 
 export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [open, setOpen] = useState(false);
-  const router = useRouter();
   const { toast } = useToast();
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const supabase = createClient();
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/editor`,
+      },
+    });
     if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        const signUpRes = await supabase.auth.signUp({ email, password });
-        if (signUpRes.error) {
-          toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signUpRes.error.message) });
-        } else if (signUpRes.data?.user?.identities?.length === 0) {
-          toast({ variant: 'destructive', title: 'Account already exists', description: 'An account with this email already exists. Try signing in or resetting your password.' });
-        } else {
-          toast({ title: 'Check your email', description: 'We sent a confirmation link to ' + email + '. Please verify your email to continue.' });
-          setOpen(false);
-        }
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
-      }
+      toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
     } else {
-      toast({ title: 'Welcome back!', description: 'Redirecting to editor.' });
-      setOpen(false);
-      router.push('/editor');
+      setEmailSent(true);
     }
     setIsLoading(false);
   };
@@ -59,15 +47,23 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
   const handleGoogleAuth = async () => {
     setIsGoogleLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/editor` } });
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?next=/editor` } });
     if (error) {
         toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
         setIsGoogleLoading(false);
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setEmailSent(false);
+      setEmail('');
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || <button className="underline hover:text-primary">Sign in</button>}
       </DialogTrigger>
@@ -75,50 +71,59 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
         <DialogHeader>
           <DialogTitle className="sr-only">Sign In to CVinBio</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-2">
-          <Button variant="outline" className="w-full" onClick={handleGoogleAuth} disabled={isGoogleLoading}>
-            {isGoogleLoading ? <Icons.logo className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-            Continue with Google
-          </Button>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or use email</span>
+        {emailSent ? (
+          <div className="grid gap-4 text-center py-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <Mail className="h-6 w-6 text-primary" />
             </div>
-          </div>
-
-          <form onSubmit={handleEmailAuth} className="grid gap-3">
-            <div className="grid gap-1.5">
-              <Label htmlFor="dialog-email" className="text-xs">Email</Label>
-              <Input id="dialog-email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-9" />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="dialog-password" className="text-xs">Password</Label>
-              <Input id="dialog-password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9" />
+            <div className="grid gap-1">
+              <h3 className="text-lg font-semibold">Check your email</h3>
+              <p className="text-sm text-muted-foreground">
+                We sent a sign-in link to <span className="font-medium text-foreground">{email}</span>. Click the link in your email to continue.
+              </p>
             </div>
             <button
               type="button"
-              className="text-xs text-muted-foreground hover:text-primary text-left -mt-1"
-              onClick={async () => {
-                if (!email) { toast({ variant: 'destructive', title: 'Enter your email first' }); return; }
-                const supabase = createClient();
-                const { error } = await supabase.auth.resetPasswordForEmail(email);
-                if (error) { toast({ variant: 'destructive', title: 'Error', description: 'Could not send reset email. Check the address.' }); }
-                else { toast({ title: 'Reset email sent', description: 'Check your inbox for a password reset link.' }); }
-              }}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              onClick={() => { setEmailSent(false); setEmail(''); }}
             >
-              Forgot password?
+              Use a different email
             </button>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Please wait...' : 'Continue'}
+          </div>
+        ) : (
+          <div className="grid gap-4 py-2">
+            <Button variant="outline" className="w-full" onClick={handleGoogleAuth} disabled={isGoogleLoading}>
+              {isGoogleLoading ? <Icons.logo className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+              Continue with Google
             </Button>
-          </form>
 
-          <p className="text-[11px] text-center text-muted-foreground px-2">
-            By continuing, you agree to our <a href="/terms" target="_blank" className="underline hover:text-foreground">Terms</a> and <a href="/privacy" target="_blank" className="underline hover:text-foreground">Privacy Policy</a>.
-          </p>
-        </div>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or use email</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleMagicLink} className="grid gap-3">
+              <div className="grid gap-1.5">
+                <Label htmlFor="dialog-email" className="text-xs">Email</Label>
+                <Input id="dialog-email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-9" />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send sign-in link'}
+              </Button>
+            </form>
+
+            <p className="text-xs text-center text-muted-foreground">
+              No password needed. We will email you a secure sign-in link.
+            </p>
+
+            <p className="text-[11px] text-center text-muted-foreground px-2">
+              By continuing, you agree to our <a href="/terms" target="_blank" className="underline hover:text-foreground">Terms</a> and <a href="/privacy" target="_blank" className="underline hover:text-foreground">Privacy Policy</a>.
+            </p>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
