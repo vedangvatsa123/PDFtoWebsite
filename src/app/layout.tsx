@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'CVinBio' }],
   creator: 'CVinBio',
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.png',
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   openGraph: {
     type: 'website',
