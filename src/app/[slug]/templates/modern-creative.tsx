@@ -27,9 +27,10 @@ export default function TemplateModern(props: ProfileData) {
     });
 
     const opt = {
-      margin: [15, 15, 20, 15], // More generous bottom margin (20mm)
+      margin: [12, 12, 12, 12], // Reduced global margins slightly for a denser fit
       filename: `${profile.fullName.replace(/\s+/g, '')}-CVinBio.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
+      pagebreak: { mode: 'css', avoid: '.avoid-break' },
       html2canvas: { 
         scale: 2, 
         useCORS: true,
@@ -75,7 +76,34 @@ export default function TemplateModern(props: ProfileData) {
             margin: 0 !important;
             border: none !important;
             box-shadow: none !important;
+            gap: 1rem !important;
           }
+          .resume-page .space-y-5 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.75rem !important; /* Denser top level */
+          }
+          .resume-page .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.35rem !important; /* Denser items */
+          }
+          .resume-page .space-y-2\\.5 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.35rem !important;
+          }
+          .resume-page p, .resume-page span, .resume-page h3 {
+            line-height: 1.35 !important;
+          }
+          .resume-page h2 {
+            margin-bottom: 0.25rem !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+          .resume-page .mb-4 { margin-bottom: 0.5rem !important; }
+          .resume-page .mt-4 { margin-top: 0.5rem !important; }
+          .resume-page .pt-6 { padding-top: 0.5rem !important; }
+          
+          .avoid-break {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          
           .resume-outer {
             background: white !important;
             padding: 0 !important;
@@ -85,6 +113,7 @@ export default function TemplateModern(props: ProfileData) {
       `}</style>
 
       <div className="resume-outer min-h-screen bg-background">
+        {/* Temporarily disabled PDF button: 
         <button
           onClick={handleDownloadPDF}
           className="no-print fixed bottom-6 right-6 z-[60] rounded-full bg-zinc-900 text-white p-4 shadow-xl hover:bg-zinc-800 transition-all hover:scale-105 active:scale-95 group flex items-center gap-2"
@@ -92,7 +121,8 @@ export default function TemplateModern(props: ProfileData) {
         >
           <FileDown className="h-5 w-5" />
           <span className="text-xs font-semibold pr-1">Save PDF</span>
-        </button>
+        </button> 
+        */}
 
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 sm:py-8">
           <div className="resume-page space-y-5 pb-8">
@@ -101,47 +131,48 @@ export default function TemplateModern(props: ProfileData) {
             <header className="text-center">
               {profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') && (
                 <div className="flex justify-center mb-4">
-                  {profile.avatarUrl.startsWith('data:') ? (
-                    <img
-                      src={profile.avatarUrl}
-                      alt={profile.fullName}
-                      className="rounded-full border object-cover"
-                      style={{ width: 72, height: 72 }}
-                    />
-                  ) : (
-                    <Image
-                      src={profile.avatarUrl}
-                      alt={profile.fullName}
-                      width={72}
-                      height={72}
-                      className="rounded-full border object-cover"
-                      style={{ width: 72, height: 72 }}
-                      unoptimized={true}
-                      crossOrigin="anonymous"
-                      data-ai-hint={profile.avatarHint || 'person portrait'}
-                    />
-                  )}
+                  <div className="relative overflow-hidden rounded-full border bg-muted shrink-0 flex items-center justify-center transform-gpu" style={{ width: 72, height: 72, borderRadius: '50%' }}>
+                    {profile.avatarUrl.startsWith('data:') ? (
+                      <img
+                        src={profile.avatarUrl}
+                        alt={profile.fullName}
+                        className="w-full h-full object-cover"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <Image
+                        src={profile.avatarUrl}
+                        alt={profile.fullName}
+                        fill
+                        className="object-cover"
+                        style={{ width: '100%', height: '100%' }}
+                        unoptimized={true}
+                        crossOrigin="anonymous"
+                        data-ai-hint={profile.avatarHint || 'person portrait'}
+                      />
+                    )}
+                  </div>
                 </div>
               )}
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter text-foreground">
                 {profile.fullName}
               </h1>
-              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+              <div className="mt-2 text-center text-xs text-muted-foreground">
                 {profile.location && (
-                  <span className="flex items-center">
-                    <MapPin className="h-3 w-3 shrink-0 mr-1.5" />
+                  <span className="inline-flex items-center mx-2 my-1">
+                    <MapPin className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
                     <span>{profile.location}</span>
                   </span>
                 )}
                 {profile.email && (
-                  <a href={`mailto:${profile.email}`} className="flex items-center hover:text-foreground transition-colors">
-                    <Mail className="h-3 w-3 shrink-0 mr-1.5" />
+                  <a href={`mailto:${profile.email}`} className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1">
+                    <Mail className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
                     <span>{profile.email}</span>
                   </a>
                 )}
                 {profile.phone && (
-                  <span className="flex items-center">
-                    <Phone className="h-3 w-3 shrink-0 mr-1.5" />
+                  <span className="inline-flex items-center mx-2 my-1">
+                    <Phone className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
                     <span>{profile.phone}</span>
                   </span>
                 )}
@@ -150,11 +181,11 @@ export default function TemplateModern(props: ProfileData) {
                     href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center hover:text-foreground transition-colors"
+                    className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
                   >
-                    <Globe className="h-3 w-3 shrink-0 mr-1.5" />
+                    <Globe className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
                     <span>{profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                    <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1" />
+                    <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
                   </a>
                 )}
                 {profile.github && (
@@ -162,11 +193,11 @@ export default function TemplateModern(props: ProfileData) {
                     href={profile.github.startsWith('http') ? profile.github : `https://${profile.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center hover:text-foreground transition-colors"
+                    className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
                   >
-                    <Github className="h-3 w-3 shrink-0 mr-1.5" />
+                    <Github className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
                     <span>{profile.github.replace(/^(?:https?:\/\/)?(?:www\.)?github\.com\//i, '').replace(/\/$/, '')}</span>
-                    <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1" />
+                    <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
                   </a>
                 )}
                 {profile.linkedin && (
@@ -174,11 +205,11 @@ export default function TemplateModern(props: ProfileData) {
                     href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center hover:text-foreground transition-colors"
+                    className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
                   >
-                    <Linkedin className="h-3 w-3 shrink-0 mr-1.5" />
+                    <Linkedin className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
                     <span>{profile.linkedin.replace(/^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\//i, '').replace(/\/$/, '')}</span>
-                    <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1" />
+                    <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
                   </a>
                 )}
               </div>
@@ -201,7 +232,7 @@ export default function TemplateModern(props: ProfileData) {
                   </h2>
                   <div className="space-y-3">
                     {workExperience.map(job => (
-                      <div key={job.id}>
+                      <div key={job.id} className="avoid-break">
                         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                           <div>
                             <h3 className="text-sm font-semibold text-foreground">{job.title}</h3>
@@ -233,7 +264,7 @@ export default function TemplateModern(props: ProfileData) {
                   </h2>
                   <div className="space-y-2.5">
                     {education.map(edu => (
-                      <div key={edu.id}>
+                      <div key={edu.id} className="avoid-break">
                         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                           <div>
                             <h3 className="text-sm font-semibold text-foreground">{edu.institution}</h3>
@@ -263,11 +294,12 @@ export default function TemplateModern(props: ProfileData) {
                   <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5">
                     Skills
                   </h2>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="block" style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                     {skills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="rounded-md border px-2.5 py-1 text-xs text-muted-foreground"
+                        className="inline-block rounded-md border text-xs text-muted-foreground"
+                        style={{ padding: '4px 10px', margin: '0 6px 6px 0', backgroundColor: '#fafafa' }}
                       >
                         {skill}
                       </span>
@@ -287,7 +319,7 @@ export default function TemplateModern(props: ProfileData) {
                   </h2>
                   <div className="space-y-3">
                     {section.items?.map(item => (
-                      <div key={item.id}>
+                      <div key={item.id} className="avoid-break">
                         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                           <div>
                             <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>

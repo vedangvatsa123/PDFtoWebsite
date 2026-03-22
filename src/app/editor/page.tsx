@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/
 import { LoginDialog } from '@/components/login-dialog';
 import TemplateModern from '@/app/[slug]/templates/modern-creative';
 import CustomSectionsEditor from './custom-sections-editor';
+import { AvatarCropper } from '@/components/avatar-cropper';
 
 function dataURLtoFile(dataurl: string, filename: string): File | null {
     const arr = dataurl.split(',');
@@ -174,6 +175,7 @@ export default function EditorPage() {
     const [activeThemeId, setActiveThemeId] = useState<string | undefined>('modern-creative');
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
+    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
 
 
@@ -181,6 +183,9 @@ export default function EditorPage() {
     const processedPendingResume = useRef(false);
     const guestInitDone = useRef(false);
     const guestSavedToFirestore = useRef(false);
+    
+    // Unique ID binding this specific editor tab tightly to any previews it opens preventing multi-tab broadcast storms
+    const channelId = useRef(`preview_${Math.random().toString(36).substring(2, 10)}`);
 
     // Guest mode: load parsed resume from sessionStorage without needing auth
     useEffect(() => {
@@ -233,14 +238,27 @@ export default function EditorPage() {
                 const snapshot = JSON.parse(rawSnapshot);
                 const pi = snapshot.personalInfo || {};
                 const fullName = pi.fullName || user.user_metadata?.full_name || 'user';
-                const slug = pi.slug || generateSlug(fullName);
+                let slug = pi.slug || generateSlug(fullName);
+
+                // --- NEW: Hardened DB Upsert Isolation to Prevent Fatal 23505 Uniqueness Crashes ---
+                let isUnique = false;
+                while (!isUnique) {
+                    const { data: existingProfile } = await supabase.from('profiles').select('id').eq('username', slug).maybeSingle();
+                    if (!existingProfile || existingProfile.id === user.id) {
+                        isUnique = true;
+                    } else {
+                        const suffix = Math.random().toString(36).substring(2, 6);
+                        slug = `${generateSlug(fullName)}-${suffix}`;
+                    }
+                }
+
                 const profileToSave = {
                     id: user.id,
                     full_name: fullName,
                     username: slug,
                     about: snapshot.summary || '',
                     target_role: snapshot.themeId || 'modern-creative',
-                    profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                    profile_picture_url: pi.avatarUrl || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
                     experience: snapshot.workExperience || [],
                     education: snapshot.education || [],
                     custom_sections: snapshot.customSections || [],
@@ -400,6 +418,7 @@ export default function EditorPage() {
                     full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
                     username: currentProfile?.username || slug,
                     about: extractedData.summary || currentProfile?.about || '',
+                    profile_picture_url: currentProfile?.profile_picture_url, // Explicitly preserve their existing custom Avatar
                     skills: skillsArr,
                     experience: workItemsWithIds,
                     education: eduItemsWithIds,
@@ -538,6 +557,47 @@ export default function EditorPage() {
         return () => clearTimeout(timer);
     }, [profile.slug, initialSlug, user, supabase]);
 
+    // =========================================================================
+    // BROADCAST CHANNEL: Ephemeral Sync to Preview Tab (Zero-Disk PII Leaks)
+    // =========================================================================
+    useEffect(() => {
+        const bc = new BroadcastChannel(channelId.current);
+        const broadcastState = () => {
+            const snapshot = {
+                personalInfo: { 
+                    fullName: profile.fullName, 
+                    email: profile.email, 
+                    phone: profile.phone, 
+                    location: profile.location, 
+                    website: profile.website, 
+                    github: profile.github, 
+                    linkedin: profile.linkedin, 
+                    slug: profile.slug,
+                    avatarUrl: profile.avatarUrl 
+                },
+                summary: profile.summary,
+                themeId: activeThemeId,
+                workExperience: workItems,
+                education: educationItems,
+                skills: skillItems,
+                customSections: customSections
+            };
+            bc.postMessage({ type: 'UPDATE', payload: snapshot });
+        };
+
+        // Broadcast automatically whenever any of these state variables change natively
+        broadcastState();
+
+        // If the Preview tab is freshly opened, it shouts "REQUEST_STATE". We instantly beam it over.
+        bc.onmessage = (event) => {
+            if (event.data === 'REQUEST_STATE') {
+                broadcastState();
+            }
+        };
+
+        return () => bc.close();
+    }, [profile, activeThemeId, workItems, educationItems, skillItems, customSections]);
+
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setProfile(prev => ({...prev, [name]: (name === 'slug' ? value.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-') : value) }));
@@ -606,8 +666,16 @@ export default function EditorPage() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const f = e.target.files?.[0];
         if (f) {
-            if (f.type !== 'application/pdf' || f.size > 10 * 1024 * 1024) {
-                toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a PDF file under 10MB.' });
+            const allowedTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/rtf',
+                'text/rtf',
+                'text/plain'
+            ];
+            
+            if (!allowedTypes.includes(f.type) || f.size > 10 * 1024 * 1024) {
+                toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a PDF, DOCX, or TXT file under 10MB.' });
                 setFile(null); setFileName(null);
             } else {
                 setFile(f); setFileName(f.name);
@@ -727,7 +795,29 @@ export default function EditorPage() {
                                     </Button>
                                 )
                             ) : !user ? (
-                                <Button variant="outline" onClick={() => setShowPreview(true)}>
+                                <Button variant="outline" onClick={() => {
+                                    const snapshot = {
+                                        personalInfo: { 
+                                            fullName: profile.fullName, 
+                                            email: profile.email, 
+                                            phone: profile.phone, 
+                                            location: profile.location, 
+                                            website: profile.website, 
+                                            github: profile.github, 
+                                            linkedin: profile.linkedin, 
+                                            slug: profile.slug,
+                                            avatarUrl: profile.avatarUrl 
+                                        },
+                                        summary: profile.summary,
+                                        themeId: activeThemeId,
+                                        workExperience: workItems,
+                                        education: educationItems,
+                                        skills: skillItems,
+                                        customSections: customSections
+                                    };
+                                    sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
+                                    window.open(`/preview?channel=${channelId.current}`, '_blank');
+                                }}>
                                     <Eye className="mr-2 h-4 w-4" />
                                     Preview
                                 </Button>
@@ -818,31 +908,15 @@ export default function EditorPage() {
                                                     type="file"
                                                     accept="image/*"
                                                     className="hidden"
-                                                    onChange={async (e) => {
+                                                    onChange={(e) => {
                                                         const f = e.target.files?.[0];
                                                         if (!f) return;
                                                         if (f.size > 5 * 1024 * 1024) {
                                                             toast({ variant: 'destructive', title: 'File too large', description: 'Please select an image under 5MB.' });
                                                             return;
                                                         }
-                                                        const canvas = document.createElement('canvas');
-                                                        const ctx = canvas.getContext('2d');
-                                                        const img = new window.Image();
-                                                        img.onload = () => {
-                                                            canvas.width = 200;
-                                                            canvas.height = 200;
-                                                            const size = Math.min(img.width, img.height);
-                                                            const sx = (img.width - size) / 2;
-                                                            const sy = (img.height - size) / 2;
-                                                            ctx?.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-                                                            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                                                            setProfile(prev => ({ ...prev, avatarUrl: dataUrl }));
-                                                            if (user) {
-                                                                autoSave('profile', user.id, { avatarUrl: dataUrl });
-                                                            }
-                                                            toast({ title: 'Photo updated!' });
-                                                        };
-                                                        img.src = URL.createObjectURL(f);
+                                                        const url = URL.createObjectURL(f);
+                                                        setCropImageSrc(url);
                                                         e.target.value = '';
                                                     }}
                                                 />
@@ -1007,6 +1081,21 @@ export default function EditorPage() {
                                         </div>
                                     </CardContent>
                                 </Card>
+                            )}
+                            
+                            {cropImageSrc && (
+                                <AvatarCropper
+                                    imageSrc={cropImageSrc}
+                                    onCropComplete={(croppedImage) => {
+                                        setProfile(prev => ({ ...prev, avatarUrl: croppedImage }));
+                                        if (user) {
+                                            autoSave('profile', user.id, { avatarUrl: croppedImage });
+                                        }
+                                        setCropImageSrc(null);
+                                        toast({ title: 'Photo updated!' });
+                                    }}
+                                    onCancel={() => setCropImageSrc(null)}
+                                />
                             )}
                         </div>
 					</div>

@@ -55,19 +55,26 @@ export default function Home() {
         const formData = new FormData();
         formData.append('resume', file);
         const res = await fetch('/api/parse-resume', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('Failed to parse resume');
+        
+        if (!res.ok) {
+            let errorMsg = 'Failed to parse resume. Internal Server Error.';
+            try {
+                const errData = await res.json();
+                if (errData.error) errorMsg = errData.error;
+            } catch (e) {}
+            
+            toast({ variant: 'destructive', title: 'Upload Rejected', description: errorMsg });
+            setIsProcessingFile(false);
+            event.target.value = '';
+            return;
+        }
+        
         const parsed = await res.json();
         sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
         router.push('/editor');
-      } catch {
-        // Fallback: store raw PDF for processing after sign-in
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          sessionStorage.setItem('pendingResume', e.target?.result as string);
-          sessionStorage.setItem('pendingResumeName', file.name);
-          router.push('/editor');
-        };
-        reader.readAsDataURL(file);
+      } catch (err) {
+         // Network Disconnect 
+         toast({ variant: 'destructive', title: 'Network Offline', description: 'Could not connect to the parsing server.' });
       } finally {
         event.target.value = '';
         setIsProcessingFile(false);
