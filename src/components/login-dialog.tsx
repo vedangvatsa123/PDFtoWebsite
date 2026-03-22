@@ -39,10 +39,11 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
         const signUpRes = await supabase.auth.signUp({ email, password });
         if (signUpRes.error) {
           toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(signUpRes.error.message) });
+        } else if (signUpRes.data?.user?.identities?.length === 0) {
+          toast({ variant: 'destructive', title: 'Account already exists', description: 'An account with this email already exists. Try signing in or resetting your password.' });
         } else {
-          toast({ title: 'Account created!', description: 'Welcome to CVinBio.' });
+          toast({ title: 'Check your email', description: 'We sent a confirmation link to ' + email + '. Please verify your email to continue.' });
           setOpen(false);
-          router.push('/editor');
         }
       } else {
         toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
