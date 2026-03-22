@@ -59,9 +59,21 @@ export const blogPosts: BlogPost[] = [
 
         <h2 className={h2}>The Better Way</h2>
         <p>A web link sidesteps every one of these problems. The browser handles rendering natively. Content reflows to fit any screen. Nothing to download, nothing to scan, nothing to delete.</p>
-        <div className={callout}>
-          <h3 className={h3}>Why this matters for your candidacy</h3>
-          <p>If you are applying for any role adjacent to technology, product, or design, delivering information in the most frictionless format is itself a signal of competence. <span className={bold}>Your resume is your first project deliverable.</span> Make it a good one.</p>
+
+        <h2 className={h2}>Common Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Can I still print my web profile?</h3>
+            <p>Yes. CVinBio is optimized for print. If a recruiter clicks "Print" in their browser, they get a perfectly formatted 8.5x11 PDF without the browser UI clutter. You get the best of both worlds.</p>
+          </div>
+          <div>
+            <h3 className={h3}>What if the recruiter does not have internet?</h3>
+            <p>In modern corporate hiring, this is virtually impossible. Recruiters use cloud-based tools (ATS, LinkedIn, Slack) all day. If they cannot access your URL, they cannot access their job posting either.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Is a link less professional than a file?</h3>
+            <p>Currently, it is perceived as more professional in the tech industry. It shows technical fluency and a focus on the recipient&apos;s user experience.</p>
+          </div>
         </div>
       </div>
     )
@@ -101,8 +113,21 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>Interactivity and Deep Dives</h2>
         <p>A non-responsive PDF is static. A web profile can have expandable sections. If a recruiter is interested in a specific project, they can click to see more details without cluttering the main page view. This allows you to provide high-level summaries and detailed deep-dives in the same document without overwhelming the reader.</p>
 
-        <h2 className={h2}>The Speed of Decisions</h2>
-        <p>When a recruiter can read your profile easily on their phone, they can act faster. They flip through profiles like a social feed. If your profile loads perfectly and looks great, you stay in the pipeline. If it feels like work, you get skipped. <span className={bold}>Responsiveness directly affects how fast you move through the process.</span></p>
+        <h2 className={h2}>Frequently Asked Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Does a responsive profile work on older phones?</h3>
+            <p>Yes. Our templates use standard modern CSS that works on any smartphone from the last decade. If they have a browser, your resume will look perfect.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Will my multi-column layout look confusing on mobile?</h3>
+            <p>No. On mobile, columns are intelligently stacked vertically. Your sidebars and skills move naturally below your main summary so the text remains wide and legible.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Can recruiters see the desktop version on their phone?</h3>
+            <p>It is best that they don&apos;t. Forcing the desktop view on a phone creates the "pinch-zoom" problem we are trying to solve. The responsive layout is designed specifically for their context.</p>
+          </div>
+        </div>
       </div>
     )
   },
@@ -139,8 +164,21 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>The Analytics Benefit</h2>
         <p>One thing an attachment can never tell you is when it has been opened. With a web profile, you can track views. Knowing that your profile was viewed three times in the last hour from a specific city gives you a clear indication that a team is currently discussing you. This information is invaluable for managing your own nerves and following up at the right time.</p>
 
-        <h2 className={h2}>The Psychology of Clean URLs</h2>
-        <p>There is a subtle effect at work. When someone receives <span className={bold}>&quot;cvin.bio/james&quot;</span> versus a file called &quot;James_Lee_SeniorDev_Resume_March2026_FINAL.pdf,&quot; the URL feels more credible. This person has their act together. They are not just looking for a job. They are managing a career.</p>
+        <h2 className={h2}>Common Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Will people think my URL is spam?</h3>
+            <p>Not if you use a clean, professional domain like cvin.bio. In modern tech recruiting, URLs for portfolios and GitHub are the standard expectation.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Can I hide my profile if I am not currently looking?</h3>
+            <p>Yes. You can toggle your profile to "Private" or "Draft" anytime. Unlike a PDF, you maintain full control over who sees your data and when.</p>
+          </div>
+          <div>
+            <h3 className={h3}>How do I change my URL?</h3>
+            <p>You can customize your slug (the "james" in cvin.bio/james) once per account. We recommend using your first and last name for maximum searchability.</p>
+          </div>
+        </div>
       </div>
     )
   },
@@ -177,12 +215,21 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>Keyword Optimization for the Robot</h2>
         <p>In your plain text document, you can afford to be repetitive. You can include a "Skills Tag Cloud" at the bottom that lists every technology you have ever touched. The robot loves this. It ranks you higher for more searches. But you would never do this on your "real" resume because it looks desperate to a human. The dual-submission flow lets you be optimized for keywords and optimized for design simultaneously.</p>
 
-        <h2 className={h2}>Do Recruiters Actually Click?</h2>
-        <p>Yes, if you make it obvious. Put the URL right below your name, above everything else:</p>
-        <div className={callout}>
-          <p className="text-center italic">&quot;View my complete profile at <span className={bold}>cvin.bio/sarah</span>&quot;</p>
+        <h2 className={h2}>Common Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Do ATS systems strip URLs from documents?</h3>
+            <p>No. In fact, most modern ATS platforms auto-detect links and make them clickable for the recruiter in the dashboard view. It is often the only way they can see your real design.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Will a two-column PDF really fail that often?</h3>
+            <p>Independent tests show that complex two-column layouts have a <span className={bold}>30-40% failure rate</span> in extracting contact info or job dates correctly. It is a massive risk to take.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Should I only provide a link and no file?</h3>
+            <p>No. Most application portals require a file upload to continue. Use a plain text version for that upload and put your URL at the very top. This is the "Dual-Submission" gold standard.</p>
+          </div>
         </div>
-        <p>Recruiters prefer good user experiences. When they see a clean link promising a better version of the clunky ATS view, they click it out of relief. You have given both the algorithm and the person exactly what they need.</p>
       </div>
     )
   },
@@ -227,13 +274,21 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>Interactive Portfolios</h2>
         <p>A web profile is not just for text. You can embed links to live projects, GitHub repositories, or even video introductions. A PDF that says "I built a trading platform" is a claim. A web profile with a "View Live" button that opens the actual platform is proof. Recruiters value proof over claims every single time.</p>
 
-        <h2 className={h2}>Easy to Forward, Easy to Remember</h2>
-        <p>Links compound in value:</p>
-        <ul className={ul}>
-          <li><span className={bold}>Easy to share</span>: copy the URL, drop it in Slack. Everyone views it instantly.</li>
-          <li><span className={bold}>Easy to remember</span>: &quot;cvin.bio/david&quot; sticks in your head. &quot;David_Chen_FrontendSenior_Resume_v4_March2026.pdf&quot; does not.</li>
-          <li><span className={bold}>Easy to revisit</span>: two days later in a debrief meeting, the recruiter can pull up your profile from memory instead of digging through Downloads.</li>
-        </ul>
+        <h2 className={h2}>Frequently Asked Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>What if a recruiter cannot click links for security reasons?</h3>
+            <p>In highly regulated industries (defense, federal government), this is common. However, for 95% of commercial companies, links are the primary way information is shared. We recommend including your URL but also providing a plain document just in case.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Does a link work in LinkedIn messages?</h3>
+            <p>Yes. LinkedIn creates a beautiful, large preview card when you paste a CVinBio link. It takes up much more space than a tiny PDF icon, making it more likely to be clicked.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Can I track who clicked my link?</h3>
+            <p>You can see total view counts. This tells you that your application was opened and even which city the viewer is in, providing a strong signal of interest.</p>
+          </div>
+        </div>
       </div>
     )
   },
@@ -271,8 +326,21 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>Semantic Tags for the Win</h2>
         <p>Web profiles use semantic HTML tags. This tells the reader (and the machine) exactly what is what. An h1 tag is always a title. A li tag is always a list item. This eliminates the "coordinate guessing game" that PDF parsers have to play. It is the difference between reading a recipe and trying to guess one from a picture of a meal.</p>
 
-        <h2 className={h2}>Why HTML Just Works</h2>
-        <p>A web page has none of these problems because the content structure is explicit. No ambiguous coordinates. No overlapping layers. No character recognition. Text is stored as actual text, perfectly machine-readable every single time.</p>
+        <h2 className={h2}>Common Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Do big tech companies use OCR on resumes?</h3>
+            <p>Almost all of them do. They handle thousands of applications per day, and manual data entry is impossible. If their machine cannot read your file, you are essentially invisible.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Is an exported Word document better than a Canva PDF?</h3>
+            <p>Usually, yes, because Word tends to preserve text layers better. However, it still lacks the screen-responsiveness and brand-authority of a custom web profile.</p>
+          </div>
+          <div>
+            <h3 className={h3}>How can I check if my current PDF is machine-readable?</h3>
+            <p>Try to copy a paragraph and paste it into a plain text editor. If the words are joined together or letters are replaced with symbols, it is failing the machine test.</p>
+          </div>
+        </div>
       </div>
     )
   },
@@ -310,8 +378,21 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>Visual Anchors and Scanning Signals</h2>
         <p>Use visual anchors like bold text for job titles and skill names. These act as "scanning signals" that help the recruiter jump from one relevant point to the next. If they can see "Senior Dev," "Node.js," and "AWS" in under two seconds, they will commit to reading the rest of the page.</p>
 
-        <h2 className={h2}>Front-Load Every Bullet</h2>
-        <p>Start each bullet point with the most important word. The keyword hits their eye immediately. The context follows for anyone who wants depth. This is the principle newspaper writers have used for a hundred years: <span className={bold}>lead with the important thing.</span></p>
+        <h2 className={h2}>Common Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Should I bold every technology name?</h3>
+            <p>Be strategic. If you bold everything, nothing is bold. Bold only the core technologies that define your role to help the eye land on the most important points first.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Is a one-page limit still relevant for web profiles?</h3>
+            <p>No. On the web, people are used to scrolling. Vertical space is free. Focus on clear hierarchy rather than cramming everything into a specific physical height.</p>
+          </div>
+          <div>
+            <h3 className={h3}>What is the ideal font size for a resume?</h3>
+            <p>For web profiles, we recommend 16px to 18px for body text. This ensures accessibility and makes the text "jump" off the screen during a fast scan.</p>
+          </div>
+        </div>
       </div>
     )
   },
@@ -341,6 +422,22 @@ export const blogPosts: BlogPost[] = [
         <div className={callout}>
           <h3 className={h3}>The "Right Candidate" Effect</h3>
           <p>The panel reviews your link and sees a candidate who <span className={bold}>perfectly matches their current priorities</span>. It feels like fate to the hiring manager. It is actually just smart use of a live, editable profile. A PDF cannot do this. Once sent, it is frozen. <span className={bold}>A link is alive.</span></p>
+        </div>
+
+        <h2 className={h2}>Common Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className={h3}>Does a refresh happen instantly?</h3>
+            <p>Yes. As soon as you hit save in our editor, your live URL is updated globally. Any recruiter who reloads the page (or clicks your link for the first time) sees the new version.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Can I revert to an older version of my profile?</h3>
+            <p>We are currently working on a version history feature. For now, we recommend doing a "Select All" and saving a copy of your current text before making major changes.</p>
+          </div>
+          <div>
+            <h3 className={h3}>Is there a limit to how many changes I can make?</h3>
+            <p>No. You can update your profile as often as you like. We encourage making small tweaks for different job applications to ensure you always have the best product-market fit.</p>
+          </div>
         </div>
       </div>
     )
