@@ -85,8 +85,8 @@ export default function Home() {
             <Image
               src="/images/cvtopdf.png"
               alt="CVin.Bio | Turn your CV into a website"
-              width={250}
-              height={250}
+              width={300}
+              height={300}
               className="mb-0"
               priority
             />
