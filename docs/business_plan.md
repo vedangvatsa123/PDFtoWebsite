@@ -1,7 +1,7 @@
-# CVinBio: Strategic Business Plan & Technical Roadmap
+# CVin.Bio: Strategic Business Plan & Technical Roadmap
 
 ## 1. Executive Summary
-CVinBio is an aggressively minimalist, AI-native "Link-in-Bio" platform designed specifically for professionals. Unlike LinkedIn, which is cluttered with social feeds and marketing noise, CVinBio provides professionals with an instant, beautiful, and highly shareable digital portfolio. By lowering the barrier to entry (uploading a PDF) via Google's Multimodal Gemini AI, CVinBio rapidly builds a structured, high-value dataset of candidates. This flawless dataset serves as the foundation for a highly lucrative two-sided marketplace (B2C portfolio hosting and B2B recruiter matchmaking).
+CVin.Bio is an aggressively minimalist, AI-native "Link-in-Bio" platform designed specifically for professionals. Unlike LinkedIn, which is cluttered with social feeds and marketing noise, CVin.Bio provides professionals with an instant, beautiful, and highly shareable digital portfolio. By lowering the barrier to entry (uploading a PDF) via Google's Multimodal Gemini AI, CVin.Bio rapidly builds a structured, high-value dataset of candidates. This flawless dataset serves as the foundation for a highly lucrative two-sided marketplace (B2C portfolio hosting and B2B recruiter matchmaking).
 
 ---
 
@@ -63,7 +63,7 @@ A two-sided matching marketplace lives or dies on user trust.
 
 **Year 1: Growth & Optimization**
 - **Focus:** 0 to 10,000 active candidate profiles.
-- **Revenue:** Negligible. Focus is strictly on B2C viral sharing ("Built with CVinBio" watermarks on free accounts).
+- **Revenue:** Negligible. Focus is strictly on B2C viral sharing ("Built with CVin.Bio" watermarks on free accounts).
 - **Costs:** Keep AI costs at near-zero via the implemented Firewall logic.
 
 **Year 2: First Cash Flow (B2C + B2B Launch)**

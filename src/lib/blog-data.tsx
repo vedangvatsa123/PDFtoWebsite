@@ -63,7 +63,7 @@ export const blogPosts: BlogPost[] = [
         <div className="space-y-6">
           <div>
             <h3 className={h3}>Can I still print my web profile?</h3>
-            <p>Yes. CVinBio is optimized for print. If a recruiter clicks "Print" in their browser, they get a perfectly formatted 8.5x11 PDF without the browser UI clutter. You get the best of both worlds.</p>
+            <p>Yes. CVin.Bio is optimized for print. If a recruiter clicks "Print" in their browser, they get a perfectly formatted 8.5x11 PDF without the browser UI clutter. You get the best of both worlds.</p>
           </div>
           <div>
             <h3 className={h3}>What if the recruiter does not have internet?</h3>
@@ -309,7 +309,7 @@ export const blogPosts: BlogPost[] = [
           </div>
           <div>
             <h3 className={h3}>Does a link work in LinkedIn messages?</h3>
-            <p>Yes. LinkedIn creates a beautiful, large preview card when you paste a CVinBio link. It takes up much more space than a tiny PDF icon, making it more likely to be clicked.</p>
+            <p>Yes. LinkedIn creates a beautiful, large preview card when you paste a CVin.Bio link. It takes up much more space than a tiny PDF icon, making it more likely to be clicked.</p>
           </div>
           <div>
             <h3 className={h3}>Can I track who clicked my link?</h3>

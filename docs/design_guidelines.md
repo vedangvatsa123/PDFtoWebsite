@@ -1,11 +1,11 @@
-# CVinBio — Design Integrity & Layout Guidelines
+# CVin.Bio — Design Integrity & Layout Guidelines
 
-The CVinBio functional interface relies on extremely strictly disciplined, ultra-minimalist geometric mechanics. The entire UI is built mathematically to instantly convey premium, clean structural authority avoiding any generic "drag-and-drop template" aesthetics.
+The CVin.Bio functional interface relies on extremely strictly disciplined, ultra-minimalist geometric mechanics. The entire UI is built mathematically to instantly convey premium, clean structural authority avoiding any generic "drag-and-drop template" aesthetics.
 
 ## Core Philosophical Alignment
 1. **Aggressive Minimalism**: Zero redundant verbiage, zero unnecessary gradients, and absolutely no complex shadow depths. Structural integrity comes from strict mathematical spacing, not visual "fluff."
 2. **Symmetrical Geometry**: Components implicitly must mathematically perfectly bridge columns perfectly horizontally spanning viewport boundaries. Never let arbitrary text sizes dictate horizontal planes—always force structural CSS limits (e.g. `max-w-xl`, strict `px-8` bounding limits). 
-3. **Professional Edge**: Everything rendered from CVinBio to the candidate's custom URL must look aggressively sharp mirroring exactly high-end digital business cards.
+3. **Professional Edge**: Everything rendered from CVin.Bio to the candidate's custom URL must look aggressively sharp mirroring exactly high-end digital business cards.
 
 ---
 
@@ -50,10 +50,10 @@ When parsing external parameters mapping URL configurations to platforms like Tw
 ---
 
 ## 5. Universal Design / Asset Prompt (For AI Generators & Designers)
-If you need to generate any marketing materials, social media posts, posters, or digital assets related to CVinBio, copy and paste this exact prompt to ensure absolute brand consistency:
+If you need to generate any marketing materials, social media posts, posters, or digital assets related to CVin.Bio, copy and paste this exact prompt to ensure absolute brand consistency:
 
 **[COPY BELOW]**
-> "Generate a visual design asset for a professional software platform called 'CVinBio', a tool that instantly turns traditional PDF resumes into live, beautifully structured portfolio websites. 
+> "Generate a visual design asset for a professional software platform called 'CVin.Bio', a tool that instantly turns traditional PDF resumes into live, beautifully structured portfolio websites. 
 > 
 > The brand identity strictly follows an 'Aggressive Minimalism' philosophy. The aesthetic must be extremely clean, utilizing a monochromatic core palette (stark whites `#FFFFFF`, deep blacks `#09090B`, and subtle muted sophisticated grays `#71717A` or `#FAFAFA`). Absolutely NO excessive gradients, heavy drop-shadows, or chaotic overlapping elements.
 >

@@ -280,7 +280,7 @@ export default function TemplateModern(props: ProfileData) {
               <p className="text-[11px] text-muted-foreground/40">
                 Built with{' '}
                 <Link href="/" className="hover:text-foreground transition-colors">
-                  CVinBio
+                  CVin.Bio
                 </Link>
               </p>
             </div>

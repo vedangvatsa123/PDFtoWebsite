@@ -4,7 +4,7 @@ import { blogMetadata } from '@/lib/blog-metadata';
 
 export const runtime = 'edge';
 
-export const alt = 'CVinBio SEO Preview';
+export const alt = 'CVin.Bio SEO Preview';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -48,7 +48,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     return new ImageResponse(
       (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', backgroundColor: '#09090b', color: '#ffffff' }}>
-          <div style={{ fontSize: 90, fontWeight: 800, letterSpacing: '-0.05em', marginBottom: 20 }}>CVinBio</div>
+          <div style={{ fontSize: 90, fontWeight: 800, letterSpacing: '-0.05em', marginBottom: 20 }}>CVin.Bio</div>
           <div style={{ fontSize: 44, color: '#a1a1aa' }}>Turn Your CV into a Website</div>
         </div>
       ), { ...size }

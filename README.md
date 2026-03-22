@@ -1,6 +1,6 @@
-# CVinBio
+# CVin.Bio
 
-CVinBio generates web profiles from CV documents using AI. Users upload their CVs, and the application extracts and routes the structured data into an editable profile hosted at a custom URL.
+CVin.Bio generates web profiles from CV documents using AI. Users upload their CVs, and the application extracts and routes the structured data into an editable profile hosted at a custom URL.
 
 ## 🚀 Key Features
 
@@ -45,7 +45,7 @@ CVinBio generates web profiles from CV documents using AI. Users upload their CV
 
 ## 🏗️ Getting Started Locally
 
-To run CVinBio perfectly locally, you will strictly only need a Supabase Database instance.
+To run CVin.Bio perfectly locally, you will strictly only need a Supabase Database instance.
 
 1.  **Install Dependencies**:
     ```bash

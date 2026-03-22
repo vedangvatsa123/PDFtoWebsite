@@ -69,7 +69,7 @@ export function LoginDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle className="sr-only">Sign In to CVinBio</DialogTitle>
+          <DialogTitle className="sr-only">Sign In to CVin.Bio</DialogTitle>
         </DialogHeader>
 
         {emailSent ? (

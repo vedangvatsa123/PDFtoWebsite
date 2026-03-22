@@ -16,12 +16,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: 'Convert your CV to a Website',
-    template: '%s | CVinBio',
+    template: '%s | CVin.Bio',
   },
   description: 'Upload your CV and let AI generate a custom, mobile-ready personal website in seconds.',
-  keywords: ['ai cv builder', 'cv to website', 'cv link', 'digital cv', 'online portfolio', 'professional bio', 'CVinBio'],
-  authors: [{ name: 'CVinBio' }],
-  creator: 'CVinBio',
+  keywords: ['ai cv builder', 'cv to website', 'cv link', 'digital cv', 'online portfolio', 'professional bio', 'CVin.Bio'],
+  authors: [{ name: 'CVin.Bio' }],
+  creator: 'CVin.Bio',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: siteUrl,
-    siteName: 'CVinBio',
+    siteName: 'CVin.Bio',
     title: 'Build a personal website from your CV.',
     description: 'Let AI extract your experience and generate a professional portfolio link to share anywhere.',
   },
@@ -59,7 +59,7 @@ export default function RootLayout({
               {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
-                name: 'CVinBio',
+                name: 'CVin.Bio',
                 url: siteUrl,
                 description: 'Turn your PDF CV into a beautiful, shareable professional profile website.',
                 potentialAction: {
@@ -71,7 +71,7 @@ export default function RootLayout({
               {
                 '@context': 'https://schema.org',
                 '@type': 'SoftwareApplication',
-                name: 'CVinBio',
+                name: 'CVin.Bio',
                 applicationCategory: 'BusinessApplication',
                 operatingSystem: 'All',
                 url: siteUrl,

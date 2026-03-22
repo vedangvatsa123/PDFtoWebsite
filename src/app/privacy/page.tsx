@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Header from '@/components/header';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - CVinBio',
-  description: 'Detailed information regarding how CVinBio collects, uses, and protects your data.',
+  title: 'Privacy Policy - CVin.Bio',
+  description: 'Detailed information regarding how CVin.Bio collects, uses, and protects your data.',
 };
 
 export default function PrivacyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">1. Introduction</h2>
             <p>
-              Welcome to CVinBio ("we", "our", or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our services. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of your information when you use the CVinBio website and services.
+              Welcome to CVin.Bio ("we", "our", or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our services. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of your information when you use the CVin.Bio website and services.
             </p>
           </section>
 
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-foreground mb-3">3. How We Use Your Information</h2>
             <p>We use the collected information for various purposes, including:</p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
-              <li>To provide, operate, and maintain the CVinBio service.</li>
+              <li>To provide, operate, and maintain the CVin.Bio service.</li>
               <li>To automatically parse and generate your public-facing professional profile.</li>
               <li>To process authentication securely via Supabase.</li>
               <li>To track profile and page view analytics to display on your personal dashboard.</li>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">4. Information Sharing and Disclosure</h2>
             <p>
-              CVinBio is meticulously designed to help you proactively grow your career. To do this, we offer powerful features that can match your public profile data with relevant recruiters and exciting job opportunities.
+              CVin.Bio is meticulously designed to help you proactively grow your career. To do this, we offer powerful features that can match your public profile data with relevant recruiters and exciting job opportunities.
             </p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li><strong>Recruiters and Partners:</strong> We strictly use this sharing capability exclusively to benefit your career. You retain full autonomous control. If you ever decide you no longer want to participate in this network, you can securely opt-out by permanently deleting your account and all associated professional data directly from your dashboard. We never sell your personal contact data to bulk marketing lists.</li>

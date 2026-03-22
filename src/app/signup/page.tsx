@@ -6,8 +6,8 @@ import { Icons } from '@/components/icons';
 import SignUpForm from './signup-form';
 
 export const metadata: Metadata = {
-  title: 'Sign In | CVinBio',
-  description: 'Sign in or create a free CVinBio account to turn your resume into a beautiful, shareable professional website. Continue with Google or email.',
+  title: 'Sign In | CVin.Bio',
+  description: 'Sign in or create a free CVin.Bio account to turn your resume into a beautiful, shareable professional website. Continue with Google or email.',
   robots: { index: false, follow: false },
 };
 
@@ -18,12 +18,12 @@ export default function SignUpPage() {
         <div className="absolute left-4 top-4">
           <Link href="/" className="flex items-center space-x-2 text-primary hover:underline">
             <Icons.logo className="h-6 w-6" />
-            <span className="font-semibold text-sm">CVinBio</span>
+            <span className="font-semibold text-sm">CVin.Bio</span>
           </Link>
         </div>
         <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="text-2xl">Welcome to CVinBio</CardTitle>
+            <CardTitle className="text-2xl">Welcome to CVin.Bio</CardTitle>
             <CardDescription>Sign in or create an account to get started.</CardDescription>
           </CardHeader>
           <CardContent>

@@ -3,7 +3,7 @@ import Header from '@/components/header';
 import { blogPosts } from '@/lib/blog-data';
 
 export const metadata = {
-  title: 'Blog | CVinBio',
+  title: 'Blog | CVin.Bio',
   description: 'Practical guides and technical insights for modern job seekers.',
 };
 

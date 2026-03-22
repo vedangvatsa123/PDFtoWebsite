@@ -77,7 +77,7 @@ export default function Home() {
           <div className="rounded-2xl p-4 transition-colors dark:bg-white dark:shadow-md">
             <Image
               src="/images/cvtopdf.png"
-              alt="CVinBio | Turn your CV into a website"
+              alt="CVin.Bio | Turn your CV into a website"
               width={250}
               height={250}
               className="mb-0"

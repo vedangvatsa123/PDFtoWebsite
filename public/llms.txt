@@ -1,10 +1,10 @@
-# CVinBio
+# CVin.Bio
 
 > Convert your CV to a Website using AI.
 
 ## Overview
 
-CVinBio is a utility that converts CV documents into hosted web profiles. Users upload a CV, and the system extracts the data to generate a public profile page at a custom URL.
+CVin.Bio is a utility that converts CV documents into hosted web profiles. Users upload a CV, and the system extracts the data to generate a public profile page at a custom URL.
 
 ## High-Value Content & Guides
 

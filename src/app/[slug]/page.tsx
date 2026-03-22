@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (post) {
     return {
-      title: `${post.title} | CVinBio`,
+      title: `${post.title} | CVin.Bio`,
       description: post.excerpt,
       alternates: { canonical: canonicalUrl },
       openGraph: {
