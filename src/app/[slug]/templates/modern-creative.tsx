@@ -13,16 +13,34 @@ export default function TemplateModern(props: ProfileData) {
 
   const { toast } = useToast();
 
-  const handleDownloadPDF = useCallback(() => {
+  const handleDownloadPDF = useCallback(async () => {
+    // Dynamically import to avoid SSR errors
+    // @ts-ignore
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    const element = document.querySelector('.resume-page');
+    if (!element) return;
+
     toast({
-      title: "Preparing PDF",
-      description: "Select 'Save as PDF' from the destination menu to download your resume.",
+      title: "Generating PDF",
+      description: "Your professional resume is being prepared for download.",
     });
-    // Slight delay so the toast can be seen before the modal blocks the UI
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  }, [toast]);
+
+    const opt = {
+      margin: 10,
+      filename: `${profile.fullName.replace(/\s+/g, '_')}_Resume.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true,
+        letterRendering: true
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Use any as html2pdf has non-standard type definitions
+    (html2pdf() as any).set(opt).from(element as HTMLElement).save();
+  }, [profile.fullName, toast]);
 
 
   return (
