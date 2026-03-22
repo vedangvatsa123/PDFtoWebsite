@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export type Author = {
   name: string;
@@ -20,6 +21,7 @@ const callout = "bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-zin
 const ul = "list-disc pl-6 space-y-2";
 const ol = "list-decimal pl-6 space-y-2";
 const bold = "font-semibold text-zinc-900 dark:text-zinc-50 transition-colors";
+const link = "text-primary underline hover:text-primary/80 transition-colors font-medium";
 
 export const blogPosts: BlogPost[] = [
   {
@@ -35,7 +37,7 @@ export const blogPosts: BlogPost[] = [
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>Files Look Different Everywhere</h2>
         <p>You spent hours getting the margins right in Google Docs, exported a clean PDF, and sent it off. The problem? The recruiter opened it on their phone during lunch.</p>
-        <p>Your two-column layout is now a jumbled mess of overlapping text that requires pinching and zooming just to read your name. They close it and move on.</p>
+        <p>Your two-column layout is now a jumbled mess of overlapping text that requires pinching and zooming just to read your name. This is a common issue with <Link href="/mobile-responsive-cv" className={link}>non-responsive resumes</Link>. They close it and move on.</p>
         <div className={callout}>
           <h3 className={h3}>The hard truth about PDF rendering</h3>
           <ul className={ul}>
@@ -47,18 +49,15 @@ export const blogPosts: BlogPost[] = [
         </div>
 
         <h2 className={h2}>Security Rules Kill Attachments</h2>
-        <p>Enterprise email systems at large companies <span className={bold}>strip PDFs from emails entirely</span> or quarantine them for 24 hours. By the time your resume clears, fifty other candidates who sent links have already been reviewed.</p>
+        <p>Enterprise email systems at large companies <span className={bold}>strip PDFs from emails entirely</span> or quarantine them for 24 hours. By the time your resume clears, fifty other candidates who sent <Link href="/cv-web-link" className={link}>clean profile links</Link> have already been reviewed.</p>
         <p>Even when it goes through, every attachment requires the recipient to download a file, which is a significant friction point. Modern hiring is about speed.</p>
         
         <h2 className={h2}>The Versioning Nightmare</h2>
-        <p>When you send an attachment, you lose control of the content. If you find a better way to describe your current project or catch a minor error, that PDF in their inbox is now a historical relic. You cannot update it.</p>
+        <p>When you send an attachment, you lose control of the content. If you find a better way to describe your current project or catch a minor error, that PDF in their inbox is now a historical relic. You cannot update it. This is why many candidates are <Link href="/update-cv-anytime" className={link}>switching to live profiles</Link> where they can fix typos instantly.</p>
         <div className={callout}>
           <h3 className={h3}>The advantage of the living document</h3>
           <p>A web profile is always current. If a recruiter clicks your link three days after you sent it, they see your latest accomplishments. You can even tailor the content specifically for different phases of the interview process without ever sending a second file.</p>
         </div>
-
-        <h2 className={h2}>The Better Way</h2>
-        <p>A web link sidesteps every one of these problems. The browser handles rendering natively. Content reflows to fit any screen. Nothing to download, nothing to scan, nothing to delete.</p>
 
         <h2 className={h2}>Common Questions</h2>
         <div className="space-y-6">
@@ -75,6 +74,12 @@ export const blogPosts: BlogPost[] = [
             <p>Currently, it is perceived as more professional in the tech industry. It shows technical fluency and a focus on the recipient&apos;s user experience.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Read Next</h2>
+        <ul className={ul}>
+          <li><Link href="/mobile-responsive-cv" className={link}>Why mobile responsiveness is the new status quo</Link></li>
+          <li><Link href="/cv-web-link" className={link}>How clean URLs build your professional brand</Link></li>
+        </ul>
       </div>
     )
   },
@@ -90,7 +95,7 @@ export const blogPosts: BlogPost[] = [
     content: (
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>The Annoyance of Scrolling Sideways</h2>
-        <p>Open any traditional PDF resume on your phone right now. You will immediately notice the text is too small to read. To read one line, you pinch-zoom and then scroll right. For the next line, scroll down and back left. <span className={bold}>Every single line requires this tedious zigzag.</span></p>
+        <p>Open any traditional PDF resume on your phone right now. You will immediately notice the text is too small to read. This is one major reason <Link href="/cv-attachments" className={link}>why PDFs are losing to web profiles</Link>. To read one line, you pinch-zoom and then scroll right. For the next line, scroll down and back left. <span className={bold}>Every single line requires this tedious zigzag.</span></p>
         <p>This is called forced horizontal scrolling, and every usability study in the last twenty years classifies it as a <span className={bold}>critical interface failure</span>.</p>
         <div className={callout}>
           <h3 className={h3}>The math of the 6-second scan</h3>
@@ -99,6 +104,7 @@ export const blogPosts: BlogPost[] = [
 
         <h2 className={h2}>The Power of Font Legibility</h2>
         <p>On a mobile screen, font choice is not just about style. It is about physical readability. A web-based profile uses web fonts optimized for back-lit screens, not paper. The contrast is higher, the character spacing is wider, and the eye does not have to work as hard.</p>
+        <p>This matters especially if you want to ensure your <Link href="/tech-resume-keywords" className={link}>technical keywords actually get seen</Link> during a fast mobile scan.</p>
         <p>When a reader does not have to strain to understand your words, they focus on your achievements. Physical comfort in reading leads to higher retention of what you actually did.</p>
 
         <h2 className={h2}>Websites Fix This Automatically</h2>
@@ -128,6 +134,12 @@ export const blogPosts: BlogPost[] = [
             <p>It is best that they don&apos;t. Forcing the desktop view on a phone creates the "pinch-zoom" problem we are trying to solve. The responsive layout is designed specifically for their context.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Recommended Guides</h2>
+        <ul className={ul}>
+          <li><Link href="/tech-resume-keywords" className={link}>How visual hierarchy impacts recruiter scanning</Link></li>
+          <li><Link href="/cv-attachments" className={link}>Why email attachments are a security and UX risk</Link></li>
+        </ul>
       </div>
     )
   },
@@ -144,7 +156,7 @@ export const blogPosts: BlogPost[] = [
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>Sharing Is Effortless</h2>
         <p>A recruiter receives your URL and wants to share you with the hiring manager. They copy the link, paste it into Slack, and hit send. The hiring manager sees a <span className={bold}>rich preview card</span> with your photo, name, and headline, all rendered automatically.</p>
-        <p>Now think about the PDF version of the same workflow. It involves downloading, hunting for the file, and re-uploading. Every step is a chance for the momentum to die.</p>
+        <p>Now think about the PDF version of the same workflow. It involves downloading, hunting for the file, and re-uploading. This is why many hiring teams are choosing <Link href="/stand-out-inbox" className={link}>candidates who simplify their inbox</Link>. Every step is a chance for the momentum to die.</p>
 
         <h2 className={h2}>Building a Personal Brand</h2>
         <p>A custom URL like cvin.bio/yourname is the beginning of your professional brand. It shows you have taken the time to curate your online presence. It moves you from being a "file on a server" to a "person with a platform." This subtle shift in status makes you more memorable when the team discusses candidates at the end of the week.</p>
@@ -164,6 +176,9 @@ export const blogPosts: BlogPost[] = [
         <h2 className={h2}>The Analytics Benefit</h2>
         <p>One thing an attachment can never tell you is when it has been opened. With a web profile, you can track views. Knowing that your profile was viewed three times in the last hour from a specific city gives you a clear indication that a team is currently discussing you. This information is invaluable for managing your own nerves and following up at the right time.</p>
 
+        <h2 className={h2}>The Psychology of Clean URLs</h2>
+        <p>There is a subtle effect at work. When someone receives <span className={bold}>&quot;cvin.bio/james&quot;</span> versus a file called &quot;James_Lee_SeniorDev_Resume_March2026_FINAL.pdf,&quot; the URL feels more credible. This person has their act together. They are not just looking for a job. They are managing a career.</p>
+
         <h2 className={h2}>Common Questions</h2>
         <div className="space-y-6">
           <div>
@@ -179,6 +194,12 @@ export const blogPosts: BlogPost[] = [
             <p>You can customize your slug (the "james" in cvin.bio/james) once per account. We recommend using your first and last name for maximum searchability.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Next Steps</h2>
+        <ul className={ul}>
+          <li><Link href="/stand-out-inbox" className={link}>How to use clean URLs to stand out in a crowded inbox</Link></li>
+          <li><Link href="/update-cv-anytime" className={link}>The hidden benefit of being able to fix typos in real time</Link></li>
+        </ul>
       </div>
     )
   },
@@ -195,7 +216,7 @@ export const blogPosts: BlogPost[] = [
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>How Parsers Destroy Your Resume</h2>
         <p>Systems like <span className={bold}>Taleo, Workday, Greenhouse, and Lever</span> all process resumes by ripping out every character of text and dropping it into a database. A recruiter then runs keyword searches against that database.</p>
-        <p>The problem: the extraction engine reads text from top-left to bottom-right based on character coordinates. It does not understand columns.</p>
+        <p>The problem: the extraction engine reads text from top-left to bottom-right based on character coordinates. It does not understand columns. This is even worse if your <Link href="/pdf-breaks-ats" className={link}>PDF contains complex layers</Link> that confuse the robot even more.</p>
         <div className={callout}>
           <h3 className={h3}>What actually happens</h3>
           <p>If your skills are on the left and job history on the right, the parser merges them line by line. Your profile becomes gibberish like <span className={bold}>&quot;Python Senior Engineer 2019&quot;</span> where your skill got smashed into your job title. A keyword search for &quot;Python&quot; will not match this mangled string.</p>
@@ -213,7 +234,7 @@ export const blogPosts: BlogPost[] = [
         </ol>
 
         <h2 className={h2}>Keyword Optimization for the Robot</h2>
-        <p>In your plain text document, you can afford to be repetitive. You can include a "Skills Tag Cloud" at the bottom that lists every technology you have ever touched. The robot loves this. It ranks you higher for more searches. But you would never do this on your "real" resume because it looks desperate to a human. The dual-submission flow lets you be optimized for keywords and optimized for design simultaneously.</p>
+        <p>In your plain text document, you can afford to be repetitive. You can include a "Skills Tag Cloud" at the bottom that lists every technology you have ever touched. The robot loves this. It ranks you higher for more searches. But you would never do this on your "real" resume because it looks desperate to a human. This dual-submission flow lets you be optimized for keywords and optimized for design simultaneously. This ensures your <Link href="/tech-resume-keywords" className={link}>visual hierarchy actually works</Link> for the people who view your profile.</p>
 
         <h2 className={h2}>Common Questions</h2>
         <div className="space-y-6">
@@ -230,6 +251,12 @@ export const blogPosts: BlogPost[] = [
             <p>No. Most application portals require a file upload to continue. Use a plain text version for that upload and put your URL at the very top. This is the "Dual-Submission" gold standard.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Deep Dive Articles</h2>
+        <ul className={ul}>
+          <li><Link href="/pdf-breaks-ats" className={link}>Deep dive: Why complex PDFs break recruiter algorithms</Link></li>
+          <li><Link href="/tech-resume-keywords" className={link}>Expert guide: Mapping visual hierarchy for technical recruiters</Link></li>
+        </ul>
       </div>
     )
   },
@@ -251,11 +278,11 @@ export const blogPosts: BlogPost[] = [
           <li>&quot;Resume_JohnSmith_2026.pdf&quot;</li>
           <li>&quot;JS_FrontendDev_Final.pdf&quot;</li>
         </ul>
-        <p>Click. Download. Wait. Scan for six seconds. Close. Repeat, dozens of times per hour. The cognitive fatigue is real.</p>
+        <p>Click. Download. Wait. Scan for six seconds. Close. Repeat, dozens of times per hour. The cognitive fatigue is real. This is why <Link href="/cv-attachments" className={link}>attachments are a UX disaster</Link> for the recipient.</p>
         <p>Now imagine one email does not have an attachment. Instead, it says: <span className={bold}>&quot;My profile is at cvin.bio/david.&quot;</span> The recruiter clicks it. A polished page loads in under a second. No download. No hunting through files.</p>
 
         <h2 className={h2}>The Forwarding Chain</h2>
-        <p>Resumes are rarely read by one person. They are forwarded from recruiters to hiring managers, and from managers to team leads. With a PDF, this chain creates multiple copies of the file floating around Slack and Email. If you find a mistake and send a "corrected" version, you have now doubled the number of files in the chain.</p>
+        <p>Resumes are rarely read by one person. They are forwarded from recruiters to hiring managers, and from managers to team leads. With a PDF, this chain creates multiple copies of the file floating around Slack and Email. If you find a mistake and send a "corrected" version, you have now doubled the number of files in the chain. This is a common pain point discussed in our guide on <Link href="/update-cv-anytime" className={link}>fixing typos in real time</Link>.</p>
         <div className={callout}>
           <h3 className={h3}>The link is the single source of truth</h3>
           <p>When you share a link, everyone in the chain is looking at the same thing. If you update your profile, the entire chain is updated instantly. There is no risk of the CEO looking at "Resume_v1" while the manager looks at "Resume_Final_v3."</p>
@@ -272,7 +299,7 @@ export const blogPosts: BlogPost[] = [
         </div>
 
         <h2 className={h2}>Interactive Portfolios</h2>
-        <p>A web profile is not just for text. You can embed links to live projects, GitHub repositories, or even video introductions. A PDF that says "I built a trading platform" is a claim. A web profile with a "View Live" button that opens the actual platform is proof. Recruiters value proof over claims every single time.</p>
+        <p>A web profile is not just for text. You can embed links to live projects, GitHub repositories, or even video introductions. A PDF that says "I built a trading platform" is a claim. A web profile with a "View Live" button that opens the actual platform is proof. Recruiters value proof over claims every single time. This contributes to the <Link href="/cv-web-link" className={link}>ultimate professional brand image</Link>.</p>
 
         <h2 className={h2}>Frequently Asked Questions</h2>
         <div className="space-y-6">
@@ -289,6 +316,12 @@ export const blogPosts: BlogPost[] = [
             <p>You can see total view counts. This tells you that your application was opened and even which city the viewer is in, providing a strong signal of interest.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Read Next</h2>
+        <ul className={ul}>
+          <li><Link href="/cv-web-link" className={link}>How URLs change your professional perception</Link></li>
+          <li><Link href="/cv-attachments" className={link}>Stop sending attachments: The technical case against PDFs</Link></li>
+        </ul>
       </div>
     )
   },
@@ -304,7 +337,7 @@ export const blogPosts: BlogPost[] = [
     content: (
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>Fonts Turning Into Pictures</h2>
-        <p>Canva, Figma, and many online templates handle custom fonts by converting them into <span className={bold}>vector outlines</span> instead of embedding font data. Visually identical. But underneath, the text is now a collection of shapes.</p>
+        <p>Canva, Figma, and many online templates handle custom fonts by converting them into <span className={bold}>vector outlines</span> instead of embedding font data. Visually identical. But underneath, the text is now a collection of shapes. This is one of the biggest reasons why <Link href="/bypass-ats" className={link}>dual-submission strategies</Link> are now required for technical roles.</p>
         <p>When an ATS encounters these shapes, it runs OCR to convert them back into text. The result:</p>
         <div className={callout}>
           <p><span className={bold}>What you wrote:</span> &quot;5 years of experience with React and TypeScript&quot;</p>
@@ -313,10 +346,10 @@ export const blogPosts: BlogPost[] = [
         <p><span className={bold}>Test this yourself:</span> open your PDF, select all text, copy it, and paste into Notepad. If it is garbled, that is exactly what the ATS sees.</p>
 
         <h2 className={h2}>The Data Integrity Gap</h2>
-        <p>Recruiters rely on automated filters. If the ATS reads your "2023" as "2O23" (using the letter O instead of the number zero), you might be filtered out of a search for candidates with recent experience. Subtle glitches in OCR create massive gaps in your data integrity. Web profiles provide the raw text, ensuring 100% accuracy for every tool that reads them.</p>
+        <p>Recruiters rely on automated filters. If the ATS reads your "2023" as "2O23" (using the letter O instead of the number zero), you might be filtered out of a search for candidates with recent experience. Subtle glitches in OCR create massive gaps in your data integrity. Web profiles provide the raw text, ensuring 100% accuracy for every tool that reads them. This accuracy is vital for your <Link href="/tech-resume-keywords" className={link}>visual hierarchy to remain effective</Link>.</p>
 
         <h2 className={h2}>Messy Background Layers</h2>
-        <p>Designed resumes use background colors and sidebars as separate layers. The parser does not understand layers. It reads characters in coordinate order regardless of which visual layer they belong to.</p>
+        <p>Designed resumes use background colors and sidebars as separate layers. The parser does not understand layers. It reads characters in coordinate order regardless of which visual layer they belong to. This is another reason <Link href="/cv-attachments" className={link}>static PDFs are increasingly unreliable</Link>.</p>
         <p>A sidebar heading &quot;Experience&quot; next to a job title &quot;Senior Software Engineer&quot; can become:</p>
         <div className={callout}>
           <p className="font-mono text-sm">&quot;ExSenior Software Engineerperience&quot;</p>
@@ -341,6 +374,12 @@ export const blogPosts: BlogPost[] = [
             <p>Try to copy a paragraph and paste it into a plain text editor. If the words are joined together or letters are replaced with symbols, it is failing the machine test.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Further Reading</h2>
+        <ul className={ul}>
+          <li><Link href="/bypass-ats" className={link}>The definitive guide to bypassing ATS formatting destruction</Link></li>
+          <li><Link href="/mobile-responsive-cv" className={link}>Why your resume must be mobile-responsive in 2026</Link></li>
+        </ul>
       </div>
     )
   },
@@ -356,10 +395,10 @@ export const blogPosts: BlogPost[] = [
     content: (
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>Stop Burying Your Keywords</h2>
-        <p>Most resumes bury critical information inside dense paragraphs. A recruiter looking for React experience has to read through three sentences about team size and timelines before finding &quot;React&quot; mentioned casually on line four. <span className={bold}>By that point, they have already left.</span></p>
+        <p>Most resumes bury critical information inside dense paragraphs. A recruiter looking for React experience has to read through three sentences about team size and timelines before finding &quot;React&quot; mentioned casually on line four. <span className={bold}>By that point, they have already left.</span> This is why many candidates <Link href="/stand-out-inbox" className={link}>fail the initial scan</Link> entirely.</p>
         <div className={callout}>
           <h3 className={h3}>How recruiters actually scan</h3>
-          <p>Eyes follow an <span className={bold}>F-shaped pattern</span>: read the top line, drop down the left edge, scan again. If your keywords are not in those zones, they literally do not register.</p>
+          <p>Eyes follow an <span className={bold}>F-shaped pattern</span>: read the top line, drop down the left edge, scan again. If your keywords are not in those zones, they literally do not register. This behavior is amplified when they are <Link href="/mobile-responsive-cv" className={link}>scanning on a small phone screen</Link>.</p>
         </div>
         <p>The fix is simple:</p>
         <ul className={ul}>
@@ -373,7 +412,7 @@ export const blogPosts: BlogPost[] = [
 
         <h2 className={h2}>White Space Is a Feature</h2>
         <p>When every inch of your resume is packed with text, <span className={bold}>nothing stands out</span>. Everything blurs into a single grey block. Adding generous margins around headings and breathing room between bullets makes each piece of information distinct and scannable.</p>
-        <p>A web-based profile enforces this naturally because the template handles spacing, fonts, and hierarchy for you. You do not have to fight the urge to "fill the page."</p>
+        <p>A web-based profile enforces this naturally because the template handles spacing, fonts, and hierarchy for you. You do not have to fight the urge to "fill the page." This is a core benefit of <Link href="/cv-attachments" className={link}>ditching the restricted A4/Letter format</Link>.</p>
 
         <h2 className={h2}>Visual Anchors and Scanning Signals</h2>
         <p>Use visual anchors like bold text for job titles and skill names. These act as "scanning signals" that help the recruiter jump from one relevant point to the next. If they can see "Senior Dev," "Node.js," and "AWS" in under two seconds, they will commit to reading the rest of the page.</p>
@@ -393,6 +432,12 @@ export const blogPosts: BlogPost[] = [
             <p>For web profiles, we recommend 16px to 18px for body text. This ensures accessibility and makes the text "jump" off the screen during a fast scan.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Recommended Guides</h2>
+        <ul className={ul}>
+          <li><Link href="/mobile-responsive-cv" className={link}>Designing for the tiny screen: Mobile responsiveness guide</Link></li>
+          <li><Link href="/stand-out-inbox" className={link}>Standing out in the inbox: Using preview cards and URLs</Link></li>
+        </ul>
       </div>
     )
   },
@@ -408,14 +453,14 @@ export const blogPosts: BlogPost[] = [
     content: (
       <div className="space-y-5 text-lg text-zinc-800 dark:text-zinc-300 transition-colors leading-relaxed">
         <h2 className={h2}>The 10:15 AM Panic</h2>
-        <p>You submitted at 10 AM. At 10:15, you realize you wrote <span className={bold}>&quot;Javscript&quot;</span> instead of &quot;JavaScript&quot; in your skills section. With a PDF, your options are limited and awkward. You can do nothing and hope they do not notice, or send a correction email that looks even worse than the typo.</p>
+        <p>You submitted at 10 AM. At 10:15, you realize you wrote <span className={bold}>&quot;Javscript&quot;</span> instead of &quot;JavaScript&quot; in your skills section. With a PDF, your options are limited and awkward. You can do nothing and hope they do not notice, or send a correction email that looks even worse than the typo. This is a common stressor we address in <Link href="/cv-attachments" className={link}>Why PDF attachments are a relic of the past</Link>.</p>
         <p>With a web profile, you open the editor, fix the typo, and save. The recruiter clicks your link at 2 PM and sees the corrected version. <span className={bold}>They never knew the typo existed.</span></p>
 
         <h2 className={h2}>Iterate Between Applications</h2>
-        <p>Real-time updates let you do something PDFs never could: <span className={bold}>run experiments</span>. Submit your profile, see if you hear back. If not, tweak your headline and reorder your projects. Apply to the next role with an improved version. There is only one version, and it is always your latest and best work.</p>
+        <p>Real-time updates let you do something PDFs never could: <span className={bold}>run experiments</span>. Submit your profile, see if you hear back. If not, <Link href="/tech-resume-keywords" className={link}>tweak your visual hierarchy</Link> and reorder your projects. Apply to the next role with an improved version. There is only one version, and it is always your latest and best work.</p>
 
         <h2 className={h2}>Adapting to Industry Trends</h2>
-        <p>The tech landscape moves fast. If a new framework becomes the "must-have" for your target roles, you can add your relevant experience to your profile tonight and every recruiter who has your link will see it tomorrow. You do not have to re-send files to everyone you have talked to this month. Your link is an evolving record of your expertise.</p>
+        <p>The tech landscape moves fast. If a new framework becomes the "must-have" for your target roles, you can add your relevant experience to your profile tonight and every recruiter who has your link will see it tomorrow. You do not have to re-send files to everyone you have talked to this month. This is the <Link href="/cv-web-link" className={link}>power of the modern professional URL</Link>.</p>
 
         <h2 className={h2}>The Mid-Interview Pivot</h2>
         <p>This advantage is most powerful during an active interview process. Phone screen on Monday where the interviewer mentions the team is migrating to <span className={bold}>Kubernetes</span>. You have Kubernetes experience but did not highlight it. Before Thursday&apos;s on-site, you add a Kubernetes section and reorder your projects.</p>
@@ -439,6 +484,12 @@ export const blogPosts: BlogPost[] = [
             <p>No. You can update your profile as often as you like. We encourage making small tweaks for different job applications to ensure you always have the best product-market fit.</p>
           </div>
         </div>
+
+        <h2 className={h2}>Further Discovery</h2>
+        <ul className={ul}>
+          <li><Link href="/cv-attachments" className={link}>Ditching PDFs: The technical and psychological advantage</Link></li>
+          <li><Link href="/tech-resume-keywords" className={link}>How to optimize your profile hierarchy for fast scans</Link></li>
+        </ul>
       </div>
     )
   }
