@@ -17,12 +17,12 @@ Return ONLY RAW JSON matching EXACTLY this structure (do not use markdown blocks
 }
 
 CRITICAL RULES:
-1. ONLY extract information that is explicitly present in the provided resume text. DO NOT hallucinate, guess, or invent ANY details, dummy sections, or placeholders.
-2. If a field or section (like workExperience, education, skills, or customSections) doesn't exist in the resume, leave that array completely EMPTY ([]). Do NOT populate [] with dummy objects.
-3. If a string field doesn't exist, leave it as an empty string "". 
-4. If the CV actually contains extra logical sections (e.g., 'Publications', 'Patents', 'Awards', 'Projects') that don't fit standard arrays, logically extract them into the "customSections" array with the following object schema: { "id": "1", "userProfileId": "", "sectionTitle": "Exact Section Name From CV", "order": 1, "items": [{ "id": "1", "title": "", "subtitle": "", "description": "", "date": "" }] }. DO NOT CREATE CUSTOM SECTIONS IF THEY ARE NOT IN THE CV!
-5. OCR CLEANING RULE: If the input contains garbled characters, use your reasoning to correct the word intended.
-DO NOT throw real data away!`;
+1. ONLY extract information that is explicitly present in the provided resume text. DO NOT hallucinate, guess, or invent ANY details or dummy placeholders.
+2. If a section (like workExperience, education) doesn't exist, leave that array completely EMPTY ([]). Do NOT populate [] with dummy objects.
+3. EXTRACT ALL PROFESSIONAL EXPERIENCE into "workExperience"! Even if it is labeled irregularly (e.g. 'Internships', 'Freelance', 'Partnerships', 'Self-Employed', 'Leadership'), aggressively map it to "workExperience" to ensure no primary job data is lost.
+4. If the CV contains extra supplementary sections (e.g. 'Publications', 'Patents', 'Awards', 'Testimonials') map them purely into "customSections" using this schema: { "id": "1", "userProfileId": "", "sectionTitle": "Exact Section Name From CV", "order": 1, "items": [{ "id": "1", "title": "", "subtitle": "", "description": "", "date": "" }] }.
+5. OCR CLEANING RULE: If the input contains garbled characters, aggressively apply reasoning to reconstruct the intended words. Maintain detailed descriptions and retain bullet point formatting.
+DO NOT THROW ANY REAL WORK DATA AWAY!`;
 
 // Supported file types
 const ALLOWED_TYPES: Record<string, string> = {
