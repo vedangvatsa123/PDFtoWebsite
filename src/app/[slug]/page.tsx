@@ -49,9 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? profile.summary.slice(0, 160)
     : `View ${name}'s professional profile${roleText}.`;
 
-  const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')
-    ? profile.avatarUrl
-    : undefined;
+  const avatarUrl = profile.avatarUrl || undefined;
 
   return {
     title,
@@ -87,7 +85,7 @@ function buildPersonSchema(data: ServerProfileData) {
     ...(profile.phone ? { telephone: profile.phone } : {}),
     ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
     ...(profile.website ? { sameAs: [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] } : {}),
-    ...(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') ? { image: profile.avatarUrl } : {}),
+    ...(profile.avatarUrl ? { image: profile.avatarUrl } : {}),
     ...(profile.summary ? { description: profile.summary } : {}),
     ...(skills.length > 0 ? { knowsAbout: skills } : {}),
     ...(profile.links && Array.isArray(profile.links) && profile.links.length > 0 ? {

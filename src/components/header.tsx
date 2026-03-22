@@ -35,7 +35,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
     }
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-sm border-b border-border/40">
       <div className="mx-auto flex h-16 w-full max-w-screen-2xl items-center justify-between px-4 sm:px-8">
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">

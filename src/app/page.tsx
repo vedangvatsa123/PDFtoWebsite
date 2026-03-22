@@ -35,8 +35,9 @@ export default function Home() {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) {
-        toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a PDF file under 10MB.' });
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf', 'text/rtf', 'text/plain'];
+      if (!allowedTypes.includes(file.type) || file.size > 10 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a supported file (PDF, DOC, DOCX, RTF, TXT) under 10MB.' });
         event.target.value = '';
         return;
       }
@@ -53,14 +54,8 @@ export default function Home() {
         sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
         router.push('/editor');
       } catch {
-        // Fallback: store raw PDF for processing after sign-in
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          sessionStorage.setItem('pendingResume', e.target?.result as string);
-          sessionStorage.setItem('pendingResumeName', file.name);
-          router.push('/editor');
-        };
-        reader.readAsDataURL(file);
+        toast({ variant: 'destructive', title: 'Parse failed', description: 'Could not parse your CV. Try again or enter details manually.' });
+        router.push('/editor');
       } finally {
         event.target.value = '';
         setIsProcessingFile(false);
@@ -114,11 +109,11 @@ export default function Home() {
                        <>
                             <UploadCloud className="mr-3 h-6 w-6 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">
-                                Upload your CV
+                                Upload your CV <span className="text-xs opacity-60">(PDF, DOC, DOCX, TXT)</span>
                             </span>
                        </>
                     )}
-                    <Input id="resume-upload" type="file" className="hidden" accept=".pdf" onChange={handleFileChange} disabled={isProcessingFile} />
+                    <Input id="resume-upload" type="file" className="hidden" accept=".pdf,.doc,.docx,.rtf,.txt" onChange={handleFileChange} disabled={isProcessingFile} />
                 </label>
 
                 <div className="flex items-center gap-3">
@@ -152,6 +147,14 @@ export default function Home() {
 
         </div>
       </main>
+      <footer className="py-4 text-center text-xs text-muted-foreground border-t">
+        <p className="font-semibold text-foreground mb-1">CVin.Bio</p>
+        <div className="flex items-center justify-center gap-3">
+          <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+          <span>·</span>
+          <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+        </div>
+      </footer>
     </div>
   );
 }

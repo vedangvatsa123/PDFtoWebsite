@@ -3,7 +3,7 @@
 import React, { useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight, FileDown } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight, FileDown, Github, Linkedin, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ServerProfileData as ProfileData } from '@/lib/supabase-server';
 
@@ -14,7 +14,6 @@ export default function TemplateModern(props: ProfileData) {
   const { toast } = useToast();
 
   const handleDownloadPDF = useCallback(async () => {
-    // Dynamically import to avoid SSR errors
     // @ts-ignore
     const html2pdf = (await import('html2pdf.js')).default;
     
@@ -26,22 +25,85 @@ export default function TemplateModern(props: ProfileData) {
       description: "Your professional resume is being prepared for download.",
     });
 
+    // Clone the element so we can modify it without affecting the UI
+    const clone = element.cloneNode(true) as HTMLElement;
+    
+    // Replace all SVG icons with clean text equivalents (html2canvas breaks SVGs)
+    const svgs = clone.querySelectorAll('svg');
+    svgs.forEach(svg => {
+      const parent = svg.parentElement;
+      if (!parent) return;
+      
+      const classes = svg.getAttribute('class') || '';
+      let replacement = '';
+      
+      if (classes.includes('lucide-map-pin') || parent.textContent?.includes(profile.location || '')) replacement = '📍';
+      else if (classes.includes('lucide-mail') || parent.querySelector('a[href^="mailto"]')) replacement = '✉';
+      else if (classes.includes('lucide-phone')) replacement = '📞';
+      else if (classes.includes('lucide-globe')) replacement = '🌐';
+      else if (classes.includes('lucide-github')) replacement = '🐙';
+      else if (classes.includes('lucide-linkedin')) replacement = '💼';
+      else if (classes.includes('lucide-external-link')) replacement = '🔗';
+      else if (classes.includes('lucide-arrow-up-right')) replacement = '↗';
+      else replacement = '•';
+      
+      const span = document.createElement('span');
+      span.textContent = replacement + ' ';
+      span.style.fontSize = '12px';
+      span.style.verticalAlign = 'middle';
+      svg.replaceWith(span);
+    });
+
+    // Replace favicon <img> elements (Google Favicon API) with link emoji
+    const favicons = clone.querySelectorAll('img[src*="google.com/s2/favicons"]');
+    favicons.forEach(img => {
+      const span = document.createElement('span');
+      span.textContent = '🔗 ';
+      span.style.fontSize = '12px';
+      span.style.verticalAlign = 'middle';
+      img.replaceWith(span);
+    });
+
+    // Force light theme on clone for PDF
+    clone.style.color = '#1a1a1a';
+    clone.style.background = 'white';
+
+    // Prevent page breaks from cutting through sections
+    const style = document.createElement('style');
+    style.textContent = `
+      section { page-break-inside: avoid; break-inside: avoid; }
+      section > div > div { page-break-inside: avoid; break-inside: avoid; }
+      h2 { page-break-after: avoid; break-after: avoid; }
+      header { page-break-inside: avoid; break-inside: avoid; }
+    `;
+    clone.prepend(style);
+
+    // Temporarily add clone to DOM (hidden) for html2canvas
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.width = '800px';
+    document.body.appendChild(clone);
+
     const opt = {
-      margin: [15, 15, 20, 15], // More generous bottom margin (20mm)
+      margin: [12, 15, 15, 15],
       filename: `${profile.fullName.replace(/\s+/g, '')}-CVinBio.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2, 
         useCORS: true,
         letterRendering: true,
-        windowWidth: 800 // Stable width for consistent rendering
+        width: 800,
+        windowWidth: 800
       },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    // Use any as html2pdf has non-standard type definitions
-    (html2pdf() as any).set(opt).from(element as HTMLElement).save();
-  }, [profile.fullName, toast]);
+    await (html2pdf() as any).set(opt).from(clone).save();
+    
+    // Clean up
+    document.body.removeChild(clone);
+  }, [profile.fullName, profile.location, toast]);
 
 
   return (
@@ -90,7 +152,7 @@ export default function TemplateModern(props: ProfileData) {
 
             {/* ─── HEADER ─── */}
             <header className="text-center">
-              {profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') && (
+              {profile.avatarUrl && (
                 <div className="flex justify-center mb-4">
                   {profile.avatarUrl.startsWith('data:') ? (
                     <img
@@ -154,6 +216,43 @@ export default function TemplateModern(props: ProfileData) {
                 </p>
               )}
             </header>
+
+            {/* ─── LINKS ─── */}
+            {profile.links && profile.links.length > 0 && (
+              <>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {profile.links.map((link: any, idx: number) => {
+                    const label = (link.label || '').toLowerCase();
+                    let icon = null;
+                    
+                    if (label.includes('github')) icon = <Github className="h-4 w-4" />;
+                    else if (label.includes('linkedin')) icon = <Linkedin className="h-4 w-4" />;
+                    else {
+                      // Dynamic favicon for any unknown domain
+                      try {
+                        const domain = new URL(link.url).hostname;
+                        icon = <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`} alt="" className="h-4 w-4 rounded-sm" />;
+                      } catch {
+                        icon = <ExternalLink className="h-4 w-4" />;
+                      }
+                    }
+                    
+                    return (
+                      <a
+                        key={idx}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                      >
+                        {icon}
+                        {link.label || 'Link'}
+                      </a>
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
             <div className="h-px bg-border" />
 

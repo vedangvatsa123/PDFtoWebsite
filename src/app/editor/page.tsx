@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, CheckCircle, XCircle, Share2 } from 'lucide-react';
+import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, CheckCircle, XCircle, Share2, UserCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
 import { useUser } from '@/auth';
@@ -19,9 +19,10 @@ import { createClient } from '@/utils/supabase/client';
 import { Progress } from '@/components/ui/progress';
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
+
 import { LoginDialog } from '@/components/login-dialog';
-import TemplateModern from '@/app/[slug]/templates/modern-creative';
+
+
 import CustomSectionsEditor from './custom-sections-editor';
 
 function dataURLtoFile(dataurl: string, filename: string): File | null {
@@ -173,7 +174,6 @@ export default function EditorPage() {
 
     const [activeThemeId, setActiveThemeId] = useState<string | undefined>('modern-creative');
     const [showSaveDialog, setShowSaveDialog] = useState(false);
-    const [showPreview, setShowPreview] = useState(false);
 
 
 
@@ -206,6 +206,7 @@ export default function EditorPage() {
                     setWorkItems((data.workExperience || []).map((w: any, i: number) => ({ ...w, id: `guest-work-${i}`, userProfileId: '' })));
                     setEducationItems((data.education || []).map((e: any, i: number) => ({ ...e, id: `guest-edu-${i}`, userProfileId: '' })));
                     setSkillItems((data.skills || []).map((s: any) => s.name || s));
+                    setCustomSections((data.customSections || []).map((cs: any, i: number) => ({ ...cs, id: cs.id || `guest-section-${i}`, userProfileId: '' })));
                 } catch (e) {
                     console.error('Failed to restore guest session:', e);
                     toast({ variant: 'destructive', title: 'Restore Error', description: e instanceof Error ? e.message : 'Could not restore your previous session.' });
@@ -234,13 +235,18 @@ export default function EditorPage() {
                     username: slug,
                     about: snapshot.summary || '',
                     target_role: snapshot.themeId || 'modern-creative',
-                    profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                    profile_picture_url: user.user_metadata?.avatar_url || '',
                     experience: snapshot.workExperience || [],
                     education: snapshot.education || [],
                     custom_sections: snapshot.customSections || [],
                     skills: (snapshot.skills || []).map((s: any) => s.name || s),
                     views: 0,
-                    links: []
+                    links: [
+                        ...(pi.email ? [{ label: 'Email', url: `mailto:${pi.email}` }] : []),
+                        ...(pi.phone ? [{ label: 'Phone', url: `tel:${pi.phone}` }] : []),
+                        ...(pi.location ? [{ label: 'Location', url: '', value: pi.location }] : []),
+                        ...(pi.website ? [{ label: 'Website', url: pi.website.startsWith('http') ? pi.website : `https://${pi.website}` }] : []),
+                    ]
                 };
                 await supabase.from('profiles').upsert(profileToSave);
                 sessionStorage.removeItem('parsedResume');
@@ -267,7 +273,7 @@ export default function EditorPage() {
                 email: user.email || '',
                 summary: p.about || '',
                 slug: p.username || '',
-                avatarUrl: p.profile_picture_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                avatarUrl: p.profile_picture_url || '',
                 avatarHint: 'person portrait',
                 themeId: p.target_role || 'modern-creative',
                 viewCount: p.views || 0,
@@ -282,7 +288,7 @@ export default function EditorPage() {
             setCustomSections(p.custom_sections || []);
         } else {
             const newSlug = generateSlug(user.user_metadata?.full_name || 'user');
-            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`, experience: [], education: [], custom_sections: [], skills: [], links: [] };
+            const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || '', experience: [], education: [], custom_sections: [], skills: [], links: [] };
             await supabase.from('profiles').insert(newProfile);
             profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: newProfile.profile_picture_url, avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
             setProfile(profileData);
@@ -303,12 +309,35 @@ export default function EditorPage() {
                 if ('avatarUrl' in data) map.profile_picture_url = data.avatarUrl;
                 if ('slug' in data) map.username = data.slug;
                 if ('skills' in data) map.skills = data.skills;
+                
+                // Contact fields are stored in the links JSON array
+                const contactFields = ['email', 'phone', 'location', 'website'];
+                if (contactFields.some(f => f in data)) {
+                    // Fetch current links to preserve non-contact links (GitHub, LinkedIn, etc.)
+                    const { data: currentProfile } = await supabase.from('profiles').select('links').eq('id', user.id).single();
+                    const existingLinks = (currentProfile?.links || []).filter((l: any) => !['Email', 'Phone', 'Location', 'Website'].includes(l.label));
+                    
+                    // Get latest contact values from profile state + new data
+                    const email = data.email ?? profile.email;
+                    const phone = data.phone ?? profile.phone;
+                    const location = data.location ?? profile.location;
+                    const website = data.website ?? profile.website;
+                    
+                    const contactLinks: any[] = [];
+                    if (email) contactLinks.push({ label: 'Email', url: `mailto:${email}` });
+                    if (phone) contactLinks.push({ label: 'Phone', url: `tel:${phone}` });
+                    if (location) contactLinks.push({ label: 'Location', url: '', value: location });
+                    if (website) contactLinks.push({ label: 'Website', url: website.startsWith('http') ? website : `https://${website}` });
+                    
+                    map.links = [...contactLinks, ...existingLinks];
+                }
+                
                 if (Object.keys(map).length > 0) await supabase.from('profiles').update(map).eq('id', user.id);
             }
         } finally {
             setTimeout(() => setIsSaving(false), 700);
         }
-    }, [user, supabase]);
+    }, [user, supabase, profile]);
 
     const syncArray = useCallback(async (column: string, array: any[]) => {
         if (!user) return;
@@ -350,9 +379,21 @@ export default function EditorPage() {
                 slug: prev.slug || slug,
                 skills: skillsArr,
             }));
+
+            // Build links from extracted personal info
+            const links: any[] = [];
+            if (extractedData.personalInfo?.github) links.push({ label: 'GitHub', url: extractedData.personalInfo.github.startsWith('http') ? extractedData.personalInfo.github : `https://${extractedData.personalInfo.github}` });
+            if (extractedData.personalInfo?.linkedin) links.push({ label: 'LinkedIn', url: extractedData.personalInfo.linkedin.startsWith('http') ? extractedData.personalInfo.linkedin : `https://${extractedData.personalInfo.linkedin}` });
+            if (extractedData.personalInfo?.website) links.push({ label: 'Website', url: extractedData.personalInfo.website.startsWith('http') ? extractedData.personalInfo.website : `https://${extractedData.personalInfo.website}` });
+            // Include any other links the AI discovered (Portfolio, Behance, Twitter, etc.)
+            if (extractedData.otherLinks) {
+                for (const link of extractedData.otherLinks) {
+                    if (link.url && link.url !== 'https://...') links.push({ label: link.label || 'Link', url: link.url });
+                }
+            }
             
-            setWorkItems((extractedData.workExperience || []).map((w: any, i: number) => ({ ...w, id: w.id || `work-${Date.now()}-${i}`, userProfileId: user?.id || '' })));
-            setEducationItems((extractedData.education || []).map((e: any, i: number) => ({ ...e, id: e.id || `edu-${Date.now()}-${i}`, userProfileId: user?.id || '' })));
+            setWorkItems((extractedData.workExperience || []).map((w: any, i: number) => ({ ...w, id: w.id || `work-${Date.now()}-${i}`, userProfileId: user?.id || '', description: Array.isArray(w.description) ? w.description.join('\n') : (w.description || '') })));
+            setEducationItems((extractedData.education || []).map((e: any, i: number) => ({ ...e, id: e.id || `edu-${Date.now()}-${i}`, userProfileId: user?.id || '', description: Array.isArray(e.description) ? e.description.join('\n') : (e.description || '') })));
             setSkillItems(skillsArr);
             setCustomSections((extractedData.customSections || []).map((cs: any, i: number) => ({ ...cs, id: cs.id || `section-${Date.now()}-${i}`, userProfileId: user?.id || '' })));
 
@@ -364,10 +405,12 @@ export default function EditorPage() {
                     full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
                     username: currentProfile?.username || slug,
                     about: extractedData.summary || currentProfile?.about || '',
+                    profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || '',
                     skills: skillsArr,
-                    experience: extractedData.workExperience || [],
-                    education: extractedData.education || [],
+                    experience: (extractedData.workExperience || []).map((w: any) => ({ ...w, description: Array.isArray(w.description) ? w.description.join('\n') : (w.description || '') })),
+                    education: (extractedData.education || []).map((e: any) => ({ ...e, description: Array.isArray(e.description) ? e.description.join('\n') : (e.description || '') })),
                     custom_sections: extractedData.customSections || [],
+                    links: links,
                 };
                 
                 const { error: upsertError } = await supabase.from('profiles').upsert(updatedProfile);
@@ -409,12 +452,28 @@ export default function EditorPage() {
                             full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
                             username: currentProfile?.username || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user'),
                             about: extractedData.summary || currentProfile?.about || '',
-                            profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                            profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || '',
                             target_role: extractedData.themeId || currentProfile?.target_role || 'modern-creative',
                             skills: skillsArr,
-                            experience: extractedData.workExperience || currentProfile?.experience || [],
-                            education: extractedData.education || currentProfile?.education || [],
+                            experience: (extractedData.workExperience || currentProfile?.experience || []).map((w: any) => ({ ...w, description: Array.isArray(w.description) ? w.description.join('\n') : (w.description || '') })),
+                            education: (extractedData.education || currentProfile?.education || []).map((e: any) => ({ ...e, description: Array.isArray(e.description) ? e.description.join('\n') : (e.description || '') })),
                             custom_sections: extractedData.customSections || currentProfile?.custom_sections || [],
+                            links: (() => {
+                                const l: any[] = [];
+                                const pi = extractedData.personalInfo || {};
+                                if (pi.email) l.push({ label: 'Email', url: `mailto:${pi.email}` });
+                                if (pi.phone) l.push({ label: 'Phone', url: `tel:${pi.phone}` });
+                                if (pi.location) l.push({ label: 'Location', url: '', value: pi.location });
+                                if (pi.website) l.push({ label: 'Website', url: pi.website.startsWith('http') ? pi.website : `https://${pi.website}` });
+                                if (pi.github) l.push({ label: 'GitHub', url: pi.github.startsWith('http') ? pi.github : `https://${pi.github}` });
+                                if (pi.linkedin) l.push({ label: 'LinkedIn', url: pi.linkedin.startsWith('http') ? pi.linkedin : `https://${pi.linkedin}` });
+                                if (extractedData.otherLinks) {
+                                    for (const link of extractedData.otherLinks) {
+                                        if (link.url && link.url !== 'https://...') l.push({ label: link.label || 'Link', url: link.url });
+                                    }
+                                }
+                                return l.length > 0 ? l : (currentProfile?.links || []);
+                            })(),
                         };
                         await supabase.from('profiles').upsert(updatedProfile);
                         toast({ title: 'Success!', description: 'Your profile has been updated from your CV.' });
@@ -452,6 +511,14 @@ export default function EditorPage() {
         
         
         if (name === 'slug' && value !== initialSlug) {
+            // Sanitize slug: only lowercase alphanumeric and hyphens
+            value = value.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+            if (!value) {
+                toast({ variant: 'destructive', title: 'Invalid URL', description: 'Slug must contain at least one alphanumeric character.' });
+                setProfile(prev => ({ ...prev, slug: initialSlug }));
+                return;
+            }
+            setProfile(prev => ({ ...prev, slug: value }));
             const { data } = await supabase.from('profiles').select('id').eq('username', value).single();
             if (data && data.id !== user.id) {
                 toast({ variant: 'destructive', title: 'URL Unavailable', description: `The URL "${value}" is already taken.` });
@@ -494,12 +561,12 @@ export default function EditorPage() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const f = e.target.files?.[0];
         if (f) {
-            if (f.type !== 'application/pdf' || f.size > 10 * 1024 * 1024) {
-                toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a PDF file under 10MB.' });
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf', 'text/rtf', 'text/plain'];
+            if (!allowedTypes.includes(f.type) || f.size > 10 * 1024 * 1024) {
+                toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a supported file (PDF, DOC, DOCX, RTF, TXT) under 10MB.' });
                 setFile(null); setFileName(null);
             } else {
                 setFile(f); setFileName(f.name);
-                // Auto-trigger generation immediately
                 handleResumeUpload(f);
             }
         }
@@ -556,13 +623,23 @@ export default function EditorPage() {
                         <div className="flex items-center justify-center shrink-0">
                             <LoginDialog trigger={
                                 <Button size="sm" className="px-6 font-semibold" onClick={() => {
+                                    // Retrieve github/linkedin from original parse data if available
+                                    let originalParse: any = {};
+                                    try { originalParse = JSON.parse(sessionStorage.getItem('parsedResume') || '{}'); } catch(e) {}
                                     const snapshot = {
-                                        personalInfo: { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website, slug: profile.slug },
+                                        personalInfo: { 
+                                            fullName: profile.fullName, email: profile.email, phone: profile.phone, 
+                                            location: profile.location, website: profile.website, slug: profile.slug,
+                                            github: originalParse.personalInfo?.github || '',
+                                            linkedin: originalParse.personalInfo?.linkedin || '',
+                                        },
                                         summary: profile.summary,
                                         themeId: activeThemeId,
                                         workExperience: workItems,
                                         education: educationItems,
                                         skills: skillItems,
+                                        customSections: customSections,
+                                        otherLinks: originalParse.otherLinks || [],
                                     };
                                     sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
                                 }}>Publish</Button>
@@ -571,14 +648,6 @@ export default function EditorPage() {
                     </div>
                 </div>
             )}
-
-            {/* Local Preview Dialog */}
-            <Dialog open={showPreview} onOpenChange={setShowPreview}>
-                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
-                    <DialogTitle className="sr-only">Profile Preview</DialogTitle>
-                    <TemplateModern {...previewData} />
-                </DialogContent>
-            </Dialog>
 
             <main className="flex-1 bg-secondary/30">
                 <div className="container mx-auto max-w-4xl p-4 md:p-8">
@@ -599,14 +668,39 @@ export default function EditorPage() {
                                 </label>
                            )}
                             {user && profile.slug ? (
-                                <Button variant="outline" asChild>
-                                    <Link href={`/${profile.slug}`} prefetch={false} target="_blank">
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        Preview
-                                    </Link>
+                                <Button variant="outline" onClick={() => {
+                                    // Save current state for preview
+                                    const previewData = {
+                                        personalInfo: (() => { let op: any = {}; try { op = JSON.parse(sessionStorage.getItem('parsedResume') || '{}'); } catch(e) {} return { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website, slug: profile.slug, github: op.personalInfo?.github || '', linkedin: op.personalInfo?.linkedin || '' }; })(),
+                                        summary: profile.summary,
+                                        avatarUrl: profile.avatarUrl,
+                                        workExperience: workItems,
+                                        education: educationItems,
+                                        skills: skillItems,
+                                        customSections: customSections,
+                                        otherLinks: (() => { try { return JSON.parse(sessionStorage.getItem('parsedResume') || '{}').otherLinks || []; } catch(e) { return []; } })(),
+                                    };
+                                    sessionStorage.setItem('parsedResume', JSON.stringify(previewData));
+                                    window.open('/preview', '_blank');
+                                }}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Preview
                                 </Button>
                             ) : !user ? (
-                                <Button variant="outline" onClick={() => setShowPreview(true)}>
+                                <Button variant="outline" onClick={() => {
+                                    const previewData = {
+                                        personalInfo: (() => { let op: any = {}; try { op = JSON.parse(sessionStorage.getItem('parsedResume') || '{}'); } catch(e) {} return { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website, github: op.personalInfo?.github || '', linkedin: op.personalInfo?.linkedin || '' }; })(),
+                                        summary: profile.summary,
+                                        avatarUrl: profile.avatarUrl,
+                                        workExperience: workItems,
+                                        education: educationItems,
+                                        skills: skillItems,
+                                        customSections: customSections,
+                                        otherLinks: (() => { try { return JSON.parse(sessionStorage.getItem('parsedResume') || '{}').otherLinks || []; } catch(e) { return []; } })(),
+                                    };
+                                    sessionStorage.setItem('parsedResume', JSON.stringify(previewData));
+                                    window.open('/preview', '_blank');
+                                }}>
                                     <Eye className="mr-2 h-4 w-4" />
                                     Preview
                                 </Button>
@@ -664,7 +758,7 @@ export default function EditorPage() {
                                                     {profile.avatarUrl ? (
                                                         <img src={profile.avatarUrl} alt="Profile" className="h-full w-full object-cover" />
                                                     ) : (
-                                                        <UploadCloud className="h-6 w-6 text-gray-400" />
+                                                        <UserCircle className="h-10 w-10 text-gray-300" />
                                                     )}
                                                 </div>
                                                 <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -698,6 +792,7 @@ export default function EditorPage() {
                                                                 autoSave('profile', user.id, { avatarUrl: dataUrl });
                                                             }
                                                             toast({ title: 'Photo updated!' });
+                                                            URL.revokeObjectURL(img.src);
                                                         };
                                                         img.src = URL.createObjectURL(f);
                                                         e.target.value = '';

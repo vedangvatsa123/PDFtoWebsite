@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
 import mammoth from 'mammoth';
-import { parseResumeText } from '@/lib/resume-parser';
 
 const systemInstruction = `You are a strict, highly accurate JSON API extracting candidate resumes.
 Return ONLY RAW JSON matching EXACTLY this structure (do not use markdown blocks like \`\`\`json):
@@ -11,6 +10,7 @@ Return ONLY RAW JSON matching EXACTLY this structure (do not use markdown blocks
   "workExperience": [{ "company": "", "title": "", "startDate": "", "endDate": "", "description": [""] }],
   "education": [{ "institution": "", "degree": "", "fieldOfStudy": "", "startDate": "", "endDate": "", "description": "" }],
   "skills": [""],
+  "otherLinks": [{ "label": "Portfolio", "url": "https://..." }],
   "customSections": [{ "id": "1", "userProfileId": "", "sectionTitle": "Section Name", "order": 1, "items": [{ "id": "1", "title": "", "subtitle": "", "description": "", "date": "" }] }]
 }
 
@@ -133,20 +133,34 @@ export async function POST(request: NextRequest) {
         };
       }
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      // Retry logic for temporary API overload
+      let response: Response | null = null;
+      const MAX_RETRIES = 3;
+      
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
-          signal: controller.signal
-        }
-      );
+        response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody),
+            signal: controller.signal
+          }
+        );
 
-      clearTimeout(timeout);
+        clearTimeout(timeout);
+
+        // If success or a non-retryable error, break
+        if (response.ok || (response.status !== 429 && response.status !== 503)) break;
+        
+        // Wait before retry (2s, 4s)
+        if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, attempt * 2000));
+      }
+
+      if (!response) throw new Error('No response from AI engine');
 
       if (!response.ok) {
         const errorData = await response.json();
