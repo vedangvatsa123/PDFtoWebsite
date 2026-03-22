@@ -65,7 +65,12 @@ export async function POST(request: NextRequest) {
 
     // 2. Intelligent Hybrid Analysis
     const localParsed = parseResumeText(extractedText);
-    const isGarbled = (extractedText.match(/[ÄÊó]/g)?.length ?? 0) > 3;
+    
+    // Aggressive Garbled Detection: Any non-standard/binary-looking characters trigger Vision.
+    // We look for common PDF encoding artifacts: ÄÊó, but also control chars and high-count symbols.
+    const isGarbled = /[ÄÊó\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFD]/.test(extractedText) || 
+                     (extractedText.match(/[^a-zA-Z0-9\s.,!?;:'"()\-\/]/g)?.length ?? 0) > (extractedText.length * 0.05);
+    
     const wordCount = extractedText.split(/\s+/).length;
     
     // 3. Adaptive AI Pathway (The Mix)
@@ -75,17 +80,16 @@ export async function POST(request: NextRequest) {
         
         let response;
         if (!isGarbled && wordCount > 50) {
-          // MODE A: Cost-Efficient Text Pathway (Cheapest)
-          // We provide the raw text + local parse hints to the AI
-          const prompt = `${systemInstruction}\n\nRAW TEXT EXTRACTED LOCALLY:\n${extractedText}\n\nLOCAL PARSE HINT (Use if accurate):\n${JSON.stringify(localParsed)}`;
+          // MODE A: Clean Text Pathway (Cheapest)
+          const prompt = `${systemInstruction}\n\nRAW TEXT:\n${extractedText}\n\nLOCAL PARSE HINTS:\n${JSON.stringify(localParsed)}`;
           response = await model.generateContent(prompt);
-          console.log('Using Cost-Efficient Text Pathway');
+          console.log('Mode: Clean Text');
         } else {
-          // MODE B: High-Fidelity Multimodal Pathway (Handles garbled/columns/images)
+          // MODE B: High-Fidelity Vision Pathway (Safest)
           const base64Pdf = fileBuffer.toString('base64');
           const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
           response = await model.generateContent([systemInstruction, pdfPart]);
-          console.log('Using High-Fidelity Multimodal Pathway');
+          console.log('Mode: High-Fidelity Vision');
         }
 
         let rawResponse = response.response.text();
