@@ -324,7 +324,7 @@ export default function EditorPage() {
         }
         
         setIsGenerating(true);
-        toast({ title: 'Processing CV...', description: `We're analyzing ${resumeFile.name}. Your profile will update shortly.` });
+        toast({ title: 'Processing CV...', description: `Analyzing ${resumeFile.name}...` });
         
         try {
             const formData = new FormData();
@@ -333,17 +333,36 @@ export default function EditorPage() {
             
             if (!response.ok) throw new Error((await response.json()).error || 'Failed to parse resume');
             const extractedData = await response.json();
+            console.log('CV Parsed Successfully:', extractedData);
+
+            const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
+            const slug = extractedData.personalInfo?.slug || generateSlug(extractedData.personalInfo?.fullName || 'user');
+
+            // --- SHARED UI UPDATE (Instant) ---
+            setProfile(prev => ({
+                ...prev,
+                fullName: extractedData.personalInfo?.fullName || prev.fullName || '',
+                email: extractedData.personalInfo?.email || prev.email || '',
+                phone: extractedData.personalInfo?.phone || prev.phone || '',
+                location: extractedData.personalInfo?.location || prev.location || '',
+                website: extractedData.personalInfo?.website || prev.website || '',
+                summary: extractedData.summary || prev.summary || '',
+                slug: prev.slug || slug,
+                skills: skillsArr,
+            }));
             
-            // If user is logged in, save to Supabase
+            setWorkItems((extractedData.workExperience || []).map((w: any, i: number) => ({ ...w, id: w.id || `work-${Date.now()}-${i}`, userProfileId: user?.id || '' })));
+            setEducationItems((extractedData.education || []).map((e: any, i: number) => ({ ...e, id: e.id || `edu-${Date.now()}-${i}`, userProfileId: user?.id || '' })));
+            setSkillItems(skillsArr);
+            setCustomSections((extractedData.customSections || []).map((cs: any, i: number) => ({ ...cs, id: cs.id || `section-${Date.now()}-${i}`, userProfileId: user?.id || '' })));
+
+            // --- DATABASE SYNC (If Auth) ---
             if (user) {
                 const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                const currentSlug = currentProfile?.username || generateSlug(extractedData.personalInfo?.fullName || user.user_metadata?.full_name || 'user');
-                const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
-                
                 const updatedProfile = {
                     id: user.id,
-                    full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
-                    username: currentSlug,
+                    full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
+                    username: currentProfile?.username || slug,
                     about: extractedData.summary || currentProfile?.about || '',
                     skills: skillsArr,
                     experience: extractedData.workExperience || [],
@@ -351,44 +370,22 @@ export default function EditorPage() {
                     custom_sections: extractedData.customSections || [],
                 };
                 
-                await supabase.from('profiles').upsert(updatedProfile);
-                toast({ title: 'Success!', description: 'Your profile has been updated.' });
+                const { error: upsertError } = await supabase.from('profiles').upsert(updatedProfile);
+                if (upsertError) throw upsertError;
+                
+                toast({ title: 'Success!', description: 'Your profile has been saved.' });
                 await fetchProfileData();
             } else {
-                // GUEST MODE: Save to local state and sessionStorage
-                const slug = generateSlug(extractedData.personalInfo?.fullName || 'user');
-                const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
-                
-                setProfile({
-                    fullName: extractedData.personalInfo?.fullName || '',
-                    email: extractedData.personalInfo?.email || '',
-                    phone: extractedData.personalInfo?.phone || '',
-                    location: extractedData.personalInfo?.location || '',
-                    website: extractedData.personalInfo?.website || '',
-                    summary: extractedData.summary || '',
-                    slug,
-                    themeId: 'modern-creative',
-                    skills: skillsArr,
-                });
-                
-                setWorkItems((extractedData.workExperience || []).map((w: any, i: number) => ({ ...w, id: `guest-work-${i}`, userProfileId: '' })));
-                setEducationItems((extractedData.education || []).map((e: any, i: number) => ({ ...e, id: `guest-edu-${i}`, userProfileId: '' })));
-                setSkillItems(skillsArr);
-                setCustomSections((extractedData.customSections || []).map((cs: any, i: number) => ({ ...cs, id: `guest-section-${i}`, userProfileId: '' })));
-                
-                // Keep session storage in sync for login transition
+                // Keep session storage in sync for later login transition
                 sessionStorage.setItem('parsedResume', JSON.stringify(extractedData));
-                
-                toast({ title: 'Success!', description: 'Your CV has been parsed. Sign up to publish!' });
+                toast({ title: 'CV Parsed!', description: 'Sign up to publish this profile.' });
             }
         } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Upload Failed', description: error instanceof Error ? error.message : 'An unknown error occurred.' });
+            console.error('Upload Process Error:', error);
+            toast({ variant: 'destructive', title: 'Update Failed', description: error instanceof Error ? error.message : 'Could not update fields.' });
         } finally {
             setIsGenerating(false);
             setFile(null); setFileName(null);
-            sessionStorage.removeItem('pendingResume');
-            sessionStorage.removeItem('pendingResumeName');
         }
     }, [user, supabase, fetchProfileData, toast, setFile, setFileName]);
 
