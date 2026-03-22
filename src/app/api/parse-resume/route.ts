@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/server';
 import pdf from 'pdf-parse';
 import mammoth from 'mammoth';
 import { parseResumeText } from '@/lib/resume-parser';
@@ -167,6 +169,69 @@ export async function POST(request: NextRequest) {
       const aiStructuredData = JSON.parse(rawResponse);
 
       const duration = Date.now() - startTime;
+      
+      // ---------- Option C: Safe Slug Generation (No Aggressive Backend Upsert) ----------
+      const supabaseUserClient = await createClient();
+      const { data: { user } } = await supabaseUserClient.auth.getUser();
+
+      let finalSlug;
+
+      if (user) {
+        const supabaseAdmin = createAdminClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+
+        // 1. Prioritize keeping their existing URL stable if they already have one
+        const { data: currentProfile, error: profileErr } = await supabaseAdmin
+          .from('profiles')
+          .select('username')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (currentProfile && currentProfile.username) {
+          finalSlug = currentProfile.username;
+        } else {
+          // 2. Generate a new universally unique slug for them using FIRST NAME only
+          const rawFullName = aiStructuredData.personalInfo?.fullName || 'profile';
+          const firstNameOnly = rawFullName.trim().split(/\s+/)[0].toLowerCase();
+          
+          const prefixSlug = firstNameOnly
+            .replace(/[^a-z0-9-]/g, '')
+            .slice(0, 40) || 'profile';
+
+          finalSlug = prefixSlug;
+          let isUnique = false;
+          
+          while (!isUnique) {
+            const { data: existingProfile, error: existErr } = await supabaseAdmin
+              .from('profiles')
+              .select('id')
+              .eq('username', finalSlug)
+              .maybeSingle();
+            
+            // If the query failed (e.g., timeout), don't falsely assume uniqueness
+            if (existErr) {
+              console.error("Database connection issue assessing DB uniqueness", existErr);
+              throw new Error("Unable to create a unique URL presently. Please try again.");
+            }
+
+            if (!existingProfile || existingProfile.id === user.id) {
+              isUnique = true;
+            } else {
+              const suffix = Math.random().toString(36).substring(2, 6);
+              finalSlug = `${prefixSlug}-${suffix}`;
+            }
+          }
+        }
+        
+        // Inject the safe unique slug into the payload to allow the frontend to safely upsert and preview it
+        if (!aiStructuredData.personalInfo) {
+          aiStructuredData.personalInfo = {};
+        }
+        aiStructuredData.personalInfo.slug = finalSlug;
+      }
+
       console.log(JSON.stringify({
         event: 'cv_parse_success',
         fileType,

@@ -432,9 +432,46 @@ export default function EditorPage() {
         }
     }, [user, fetchProfileData, handleResumeUpload, supabase, toast]);
 
+    const [slugError, setSlugError] = useState<string | null>(null);
+    const [slugSuccess, setSlugSuccess] = useState<boolean>(false);
+    const [isCheckingSlug, setIsCheckingSlug] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!user || profile.slug === undefined || profile.slug === initialSlug) {
+            setSlugError(null);
+            setSlugSuccess(false);
+            return;
+        }
+        
+        const cleanSlug = profile.slug.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+        if (cleanSlug.length < 3) {
+            setSlugError('Must be at least 3 characters.');
+            setSlugSuccess(false);
+            return;
+        }
+
+        setIsCheckingSlug(true);
+        setSlugError(null);
+        setSlugSuccess(false);
+
+        const timer = setTimeout(async () => {
+            const { data } = await supabase.from('profiles').select('id').eq('username', profile.slug).maybeSingle();
+            if (data && data.id !== user.id) {
+                setSlugError('This URL is already taken.');
+                setSlugSuccess(false);
+            } else {
+                setSlugError(null);
+                setSlugSuccess(true);
+            }
+            setIsCheckingSlug(false);
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [profile.slug, initialSlug, user, supabase]);
+
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setProfile(prev => ({...prev, [name]: value}));
+        setProfile(prev => ({...prev, [name]: (name === 'slug' ? value.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-') : value) }));
     };
     
     const handleProfileBlur = async (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -449,17 +486,12 @@ export default function EditorPage() {
             }
         }
         
-        
-        
         if (name === 'slug' && value !== initialSlug) {
-            const { data } = await supabase.from('profiles').select('id').eq('username', value).single();
-            if (data && data.id !== user.id) {
-                toast({ variant: 'destructive', title: 'URL Unavailable', description: `The URL "${value}" is already taken.` });
-                setProfile(prev => ({ ...prev, slug: initialSlug })); 
-                return;
-            }
+            if (slugError) return; // Wait until they fix the error before saving
+            setSlugSuccess(false);
             await autoSave('profile', user.id, { slug: value });
             setInitialSlug(value);
+            toast({ title: 'URL Updated!', description: `Your new link is ready.` });
         } else {
             autoSave('profile', user.id, { [name]: value });
         }
@@ -631,7 +663,14 @@ export default function EditorPage() {
                                                 </div>
                                             </div>
                                             <div className="flex space-x-2">
-                                                <Input id="slug" name="slug" value={profile.slug || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9 font-medium" />
+                                                <Input 
+                                                    id="slug" 
+                                                    name="slug" 
+                                                    value={profile.slug || ''} 
+                                                    onChange={handleProfileChange} 
+                                                    onBlur={handleProfileBlur} 
+                                                    className={`h-9 font-medium ${slugError ? 'border-red-500 focus-visible:ring-red-500 text-red-600' : slugSuccess ? 'border-green-500 focus-visible:ring-green-500 text-green-700' : ''}`} 
+                                                />
                                                 <Button 
                                                     variant="secondary" 
                                                     size="icon" 
@@ -646,7 +685,15 @@ export default function EditorPage() {
                                                 </Button>
                                                 <Button asChild variant="default" size="sm" className="h-9 shrink-0 shadow-sm"><Link href={`/${profile.slug}`} target="_blank" prefetch={false}>Visit</Link></Button>
                                             </div>
-                                            {profile.slug && <p className="text-[10px] text-muted-foreground mt-2 truncate max-w-[250px]">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio'}/${profile.slug}`}</p>}
+                                            {isCheckingSlug ? (
+                                                <p className="text-[10px] text-muted-foreground mt-2 font-medium animate-pulse">Checking availability...</p>
+                                            ) : slugError ? (
+                                                <p className="text-[10px] text-red-500 mt-2 font-medium">❌ {slugError}</p>
+                                            ) : slugSuccess ? (
+                                                <p className="text-[10px] text-green-600 mt-2 font-medium">✅ This URL is available!</p>
+                                            ) : profile.slug ? (
+                                                <p className="text-[10px] text-muted-foreground mt-2 truncate max-w-[250px]">{`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio'}/${profile.slug}`}</p>
+                                            ) : null}
                                         </CardContent>
                                     </Card>
                                     <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
