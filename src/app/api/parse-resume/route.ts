@@ -63,42 +63,46 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 2. High-Quality Local Bypass (Algorithm Engine)
-    // We try to parse it locally first. If it's "Grade A", we skip the AI bill.
+    // 2. Intelligent Hybrid Analysis
     const localParsed = parseResumeText(extractedText);
-    
-    const hasName = localParsed.personalInfo.fullName && localParsed.personalInfo.fullName !== 'Unknown';
-    const hasEmail = !!localParsed.personalInfo.email;
-    const hasExperience = localParsed.workExperience.length >= 2;
-    const hasEducation = localParsed.education.length >= 1;
-    
-    // Check for "Garbage" or "Garbled" text in the local parse
     const isGarbled = (extractedText.match(/[ÄÊó]/g)?.length ?? 0) > 3;
-
-    // IF it's a solid, clean parse, return it immediately and save $$$
-    if (hasName && hasEmail && hasExperience && hasEducation && !isGarbled) {
-      return NextResponse.json({ ...localParsed, source: 'local_high_quality' }, { status: 200 });
-    }
-
-    // 3. Primary AI Engine: Multimodal Parsing (Fallback for complex or messy CVs)
+    const wordCount = extractedText.split(/\s+/).length;
+    
+    // 3. Adaptive AI Pathway (The Mix)
     if (genAI) {
       try {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-        const base64Pdf = fileBuffer.toString('base64');
-        const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
+        
+        let response;
+        if (!isGarbled && wordCount > 50) {
+          // MODE A: Cost-Efficient Text Pathway (Cheapest)
+          // We provide the raw text + local parse hints to the AI
+          const prompt = `${systemInstruction}\n\nRAW TEXT EXTRACTED LOCALLY:\n${extractedText}\n\nLOCAL PARSE HINT (Use if accurate):\n${JSON.stringify(localParsed)}`;
+          response = await model.generateContent(prompt);
+          console.log('Using Cost-Efficient Text Pathway');
+        } else {
+          // MODE B: High-Fidelity Multimodal Pathway (Handles garbled/columns/images)
+          const base64Pdf = fileBuffer.toString('base64');
+          const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
+          response = await model.generateContent([systemInstruction, pdfPart]);
+          console.log('Using High-Fidelity Multimodal Pathway');
+        }
 
-        const result = await model.generateContent([systemInstruction, pdfPart]);
-        let rawResponse = result.response.text();
+        let rawResponse = response.response.text();
         rawResponse = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
         const aiStructuredData = JSON.parse(rawResponse);
         
-        return NextResponse.json({ ...aiStructuredData, source: 'ai_multimodal' }, { status: 200 });
+        return NextResponse.json({ 
+          ...aiStructuredData, 
+          source: isGarbled ? 'hybrid_vision' : 'hybrid_text' 
+        }, { status: 200 });
+        
       } catch (aiError) {
-        console.warn('AI Parsing failed, falling back to basic local extraction:', aiError);
+        console.warn('AI Hybrid Pathway failed:', aiError);
       }
     }
 
-    // 4. Absolute Fallback: Basic Local Extraction (Source of garbled text if AI fails)
+    // 4. Absolute Fallback: Basic Local Extraction
     return NextResponse.json({ ...localParsed, source: 'local_fallback' }, { status: 200 });
 
   } catch (error) {
