@@ -550,8 +550,8 @@ export default function EditorPage() {
                 <div className="border-b bg-background shadow-sm">
                     <div className="container mx-auto max-w-4xl px-4 md:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-4">
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-md sm:max-w-none">
-                            <span className="font-semibold text-foreground">Preview is ready!</span>{' '}
-                            Sign up to publish your profile and get a shareable link.
+                            <span className="font-semibold text-foreground block sm:inline mb-1 sm:mb-0">Preview is ready!</span>{' '}
+                            <span className="block sm:inline">Sign up to publish your profile and get a shareable link.</span>
                         </p>
                         <div className="flex items-center justify-center shrink-0">
                             <LoginDialog trigger={
