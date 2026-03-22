@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
               { inline_data: { mime_type: 'application/pdf', data: fileBuffer.toString('base64') } }
             ]
           }],
-          generationConfig: { temperature: 0.1, topP: 0.95, topK: 64, maxOutputTokens: 65536, responseMimeType: 'application/json' }
+          generationConfig: { temperature: 0.1, topP: 0.95, topK: 64, maxOutputTokens: 8192, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } }
         };
 
       } else {
@@ -129,18 +129,24 @@ export async function POST(request: NextRequest) {
               { text: `${systemInstruction}\n\nRESUME TEXT:\n${extractedText}` }
             ]
           }],
-          generationConfig: { temperature: 0.1, topP: 0.95, topK: 64, maxOutputTokens: 65536, responseMimeType: 'application/json' }
+          generationConfig: { temperature: 0.1, topP: 0.95, topK: 64, maxOutputTokens: 8192, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } }
         };
       }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
         }
       );
+
+      clearTimeout(timeout);
 
       if (!response.ok) {
         const errorData = await response.json();
