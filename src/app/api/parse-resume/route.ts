@@ -43,71 +43,37 @@ export async function POST(request: NextRequest) {
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     
-    // 1. Initial Local Text Extraction
+    // 1. Zero-Cost Firewall: Page Count
     const pdfData = await pdf(fileBuffer);
-    
-    // --- ZERO-COST FIREWALL (Rule 2): Max 10 Pages ---
     if (pdfData.numpages > 10) {
-      return NextResponse.json({ error: `This document is ${pdfData.numpages} pages long. Standard CVs are under 10 pages. Please upload a professional resume.` }, { status: 400 });
+      return NextResponse.json({ error: `This document is ${pdfData.numpages} pages long. Please upload a professional resume under 10 pages.` }, { status: 400 });
     }
 
-    const extractedText = pdfData.text;
-    
-    // --- ZERO-COST FIREWALL (Rule 3): Keyword Heuristics ---
-    const lowerExtractedText = extractedText.toLowerCase();
-    if (lowerExtractedText.length > 100) {
-      const professionalKeywords = ['experience', 'work', 'education', 'skills', 'university', 'college', 'job', 'project', 'resume', 'cv'];
-      const hasKeywords = professionalKeywords.some(keyword => lowerExtractedText.includes(keyword));
-      if (!hasKeywords) {
-        return NextResponse.json({ error: 'This file lacks fundamental professional identifiers (like "Experience" or "Education"). Please upload a valid CV.' }, { status: 400 });
-      }
-    }
-
-    // 2. Intelligent Hybrid Analysis
-    const localParsed = parseResumeText(extractedText);
-    
-    // Aggressive Garbled Detection: Any non-standard/binary-looking characters trigger Vision.
-    // We look for common PDF encoding artifacts: ÄÊó, but also control chars and high-count symbols.
-    const isGarbled = /[ÄÊó\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFD]/.test(extractedText) || 
-                     (extractedText.match(/[^a-zA-Z0-9\s.,!?;:'"()\-\/]/g)?.length ?? 0) > (extractedText.length * 0.05);
-    
-    const wordCount = extractedText.split(/\s+/).length;
-    
-    // 3. Adaptive AI Pathway (The Mix)
+    // 2. High-Fidelity AI Vision Engine (Primary)
     if (genAI) {
       try {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         
-        let response;
-        if (!isGarbled && wordCount > 50) {
-          // MODE A: Clean Text Pathway (Cheapest)
-          const prompt = `${systemInstruction}\n\nRAW TEXT:\n${extractedText}\n\nLOCAL PARSE HINTS:\n${JSON.stringify(localParsed)}`;
-          response = await model.generateContent(prompt);
-          console.log('Mode: Clean Text');
-        } else {
-          // MODE B: High-Fidelity Vision Pathway (Safest)
-          const base64Pdf = fileBuffer.toString('base64');
-          const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
-          response = await model.generateContent([systemInstruction, pdfPart]);
-          console.log('Mode: High-Fidelity Vision');
-        }
+        // Convert to base64 so Gemini can visually analyze the PDF
+        const base64Pdf = fileBuffer.toString('base64');
+        const pdfPart = { inlineData: { data: base64Pdf, mimeType: 'application/pdf' } };
 
-        let rawResponse = response.response.text();
+        const result = await model.generateContent([systemInstruction, pdfPart]);
+        let rawResponse = result.response.text();
+        
+        // Clean markdown and JSON markers
         rawResponse = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
         const aiStructuredData = JSON.parse(rawResponse);
         
-        return NextResponse.json({ 
-          ...aiStructuredData, 
-          source: isGarbled ? 'hybrid_vision' : 'hybrid_text' 
-        }, { status: 200 });
-        
+        return NextResponse.json(aiStructuredData, { status: 200 });
       } catch (aiError) {
-        console.warn('AI Hybrid Pathway failed:', aiError);
+        console.error('AI Engine Failure:', aiError);
       }
     }
 
-    // 4. Absolute Fallback: Basic Local Extraction
-    return NextResponse.json({ ...localParsed, source: 'local_fallback' }, { status: 200 });
+    // 3. Absolute Safety Fallback: Local Extraction
+    const fallbackData = parseResumeText(pdfData.text);
+    return NextResponse.json(fallbackData, { status: 200 });
 
   } catch (error) {
     console.error('Error parsing resume:', error);
