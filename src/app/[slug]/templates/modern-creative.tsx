@@ -27,13 +27,14 @@ export default function TemplateModern(props: ProfileData) {
     });
 
     const opt = {
-      margin: 10,
+      margin: [15, 15, 20, 15], // More generous bottom margin (20mm)
       filename: `${profile.fullName.replace(/\s+/g, '_')}_Resume.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        letterRendering: true
+        letterRendering: true,
+        windowWidth: 800 // Stable width for consistent rendering
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
@@ -85,7 +86,7 @@ export default function TemplateModern(props: ProfileData) {
         </button>
 
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-14">
-          <div className="resume-page space-y-8">
+          <div className="resume-page space-y-8 pb-12">
 
             {/* ─── HEADER ─── */}
             <header className="text-center">
