@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   keywords: ['ai cv builder', 'cv to website', 'cv link', 'digital cv', 'online portfolio', 'professional bio', 'CVinBio'],
   authors: [{ name: 'CVinBio' }],
   creator: 'CVinBio',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.png',
+  },
   openGraph: {
     type: 'website',
     url: siteUrl,
