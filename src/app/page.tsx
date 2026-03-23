@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { UploadCloud, Edit, Loader2 } from 'lucide-react';
@@ -32,6 +32,13 @@ export default function Home() {
   const { toast } = useToast();
   const router = useRouter();
   const [isProcessingFile, setIsProcessingFile] = useState(false);
+
+  // If user lands here after OAuth with pending resume data, redirect to editor
+  useEffect(() => {
+    if (!isUserLoading && user && localStorage.getItem('parsedResume')) {
+      router.push('/editor');
+    }
+  }, [user, isUserLoading, router]);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -72,6 +79,7 @@ export default function Home() {
         
         const parsed = await res.json();
         sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
+        try { localStorage.setItem('parsedResume', JSON.stringify(parsed)); } catch (e) { /* quota exceeded */ }
         router.push('/editor');
       } catch (err) {
          // Network Disconnect 
@@ -113,7 +121,7 @@ export default function Home() {
                     <Link href="/editor">Go to Your Editor</Link>
                 </Button>
                 <p className="mt-2 text-sm text-muted-foreground">
-                    Welcome back, {user.user_metadata?.full_name || user.email}!
+                    Welcome, {user.user_metadata?.full_name?.split(' ')[0] || user.email}!
                 </p>
             </div>
           ) : (

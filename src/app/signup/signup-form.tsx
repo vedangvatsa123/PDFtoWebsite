@@ -58,6 +58,8 @@ export default function SignUpForm() {
         toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
         setIsGoogleLoading(false);
     }
+    // Reset loading state after 10s if redirect was blocked (popup blocker, etc.)
+    setTimeout(() => setIsGoogleLoading(false), 10000);
   };
 
   if (emailSent) {

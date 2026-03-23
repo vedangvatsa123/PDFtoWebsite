@@ -29,8 +29,8 @@ export interface ParsedResume {
 
 const EMAIL_RE = /[\w.+-]+@[\w-]+\.[a-z]{2,}/i;
 
-// Phone: handles international formats, parentheses, dots, dashes
-const PHONE_RE = /(?:\+?\d{1,3}[\s.-]?)?\(?\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{3,4}/;
+// Phone: handles international formats, parentheses, dots, dashes, continuous digits with country code
+const PHONE_RE = /(?:(?:tel:\s*)?\+?\d{1,4}[\s.\-/]?)?\(?\d{2,5}\)?[\s.\-/]?\d{2,5}[\s.\-/]?\d{2,5}(?:[\s.\-/]?\d{1,5})?/;
 
 // URL patterns - broader to catch LinkedIn, GitHub, personal sites
 const URL_RE = /(?:https?:\/\/)?(?:www\.)?(?:linkedin\.com\/in\/[\w-]+|github\.com\/[\w-]+|[\w-]+\.(?:com|org|net|io|dev|me|co|app|xyz|tech|design|page|site|portfolio)(?:\/[\w./-]*)?)/i;
@@ -261,13 +261,23 @@ function extractPersonalInfo(lines: string[]): ParsedResume['personalInfo'] {
     // Phone
     if (!phone) {
       // Skip lines that are clearly not phone numbers
-      if (lower.includes('page') || lower.includes('gpa')) continue;
+      if (lower.includes('page') || lower.includes('gpa') || lower.includes('zip') || lower.includes('postal')) continue;
+      // Check for labeled phone lines first
+      const labeledPhone = line.match(/(?:phone|tel|mobile|cell|contact|ph)[:\s]*([+\d][\d\s.\-()]{6,})/i);
+      if (labeledPhone) {
+        const candidate = labeledPhone[1].trim();
+        const digits = candidate.replace(/\D/g, '');
+        if (digits.length >= 7 && digits.length <= 15) {
+          phone = candidate;
+          continue;
+        }
+      }
       const m = line.match(PHONE_RE);
       if (m) {
         const candidate = m[0].trim();
         const digits = candidate.replace(/\D/g, '');
         // Must be 7-15 digits, and the line shouldn't be a date
-        if (digits.length >= 7 && digits.length <= 15 && !DATE_RE.test(line)) {
+        if (digits.length >= 7 && digits.length <= 15 && !DATE_RE.test(candidate)) {
           phone = candidate;
         }
       }

@@ -48,33 +48,19 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         <div className="flex items-center space-x-4">
           {!isUserLoading && user && (
               <TooltipProvider>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-1">
                   {pathname !== '/editor' && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" asChild>
-                          <Link href="/editor">
-                            <FilePenLine />
-                            <span className="sr-only">Editor</span>
-                          </Link>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Editor</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <Button variant="ghost" size="sm" asChild className="h-8 px-2.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                      <Link href="/editor">
+                        <FilePenLine className="h-3.5 w-3.5" />
+                        <span>Editor</span>
+                      </Link>
+                    </Button>
                   )}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                        <LogOut />
-                         <span className="sr-only">Sign Out</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Sign Out</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <Button variant="ghost" size="sm" onClick={handleSignOut} className="h-8 px-2.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Logout</span>
+                  </Button>
                 </div>
               </TooltipProvider>
           )}

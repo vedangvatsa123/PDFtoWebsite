@@ -27,7 +27,7 @@ export async function POST(
   try {
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('id, views')
+      .select('id')
       .eq('username', slug)
       .single();
 
@@ -35,10 +35,14 @@ export async function POST(
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // Since we don't have an RPC for incrementing yet, we just update the views directly.
-    // In production, an RPC is recommended for true atomic increments.
-    const newViews = (profile.views || 0) + 1;
-    await supabase.from('profiles').update({ views: newViews }).eq('id', profile.id);
+    // Atomic increment: try RPC first, fall back to read-write
+    const { error: rpcError } = await supabase.rpc('increment_views', { profile_id: profile.id });
+    if (rpcError) {
+      // Fallback if RPC doesn't exist: read and write (not atomic but functional)
+      const { data: current } = await supabase.from('profiles').select('views').eq('id', profile.id).single();
+      const newViews = ((current?.views) || 0) + 1;
+      await supabase.from('profiles').update({ views: newViews }).eq('id', profile.id);
+    }
 
     // Set a cookie to prevent duplicate counting (expires in 24 hours)
     const response = NextResponse.json({ success: true }, { status: 200 });

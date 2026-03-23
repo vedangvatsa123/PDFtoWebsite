@@ -182,7 +182,6 @@ export default function EditorPage() {
 
     const processedPendingResume = useRef(false);
     const guestInitDone = useRef(false);
-    const guestSavedToFirestore = useRef(false);
     
     // Unique ID binding this specific editor tab tightly to any previews it opens preventing multi-tab broadcast storms
     const channelId = useRef(`preview_${Math.random().toString(36).substring(2, 10)}`);
@@ -191,7 +190,7 @@ export default function EditorPage() {
     useEffect(() => {
         if (!isUserLoading && !user && !guestInitDone.current) {
             guestInitDone.current = true;
-            const parsed = sessionStorage.getItem('parsedResume');
+            const parsed = sessionStorage.getItem('parsedResume') || localStorage.getItem('parsedResume');
             if (parsed) {
                 try {
                     const data = JSON.parse(parsed);
@@ -227,58 +226,6 @@ export default function EditorPage() {
         }
     }, [isUserLoading, user]);
 
-    // When guest signs up/logs in, save their sessionStorage snapshot to DB
-    useEffect(() => {
-        if (!user || guestSavedToFirestore.current || processedPendingResume.current) return;
-        const rawSnapshot = sessionStorage.getItem('parsedResume');
-        if (!rawSnapshot) return;
-        guestSavedToFirestore.current = true;
-        processedPendingResume.current = true;
-        (async () => {
-            try {
-                const snapshot = JSON.parse(rawSnapshot);
-                const pi = snapshot.personalInfo || {};
-                const fullName = pi.fullName || user.user_metadata?.full_name || 'user';
-                let slug = pi.slug || generateSlug(fullName);
-
-                // --- NEW: Hardened DB Upsert Isolation to Prevent Fatal 23505 Uniqueness Crashes ---
-                let isUnique = false;
-                while (!isUnique) {
-                    const { data: existingProfile } = await supabase.from('profiles').select('id').eq('username', slug).maybeSingle();
-                    if (!existingProfile || existingProfile.id === user.id) {
-                        isUnique = true;
-                    } else {
-                        const suffix = Math.random().toString(36).substring(2, 6);
-                        slug = `${generateSlug(fullName)}-${suffix}`;
-                    }
-                }
-
-                const profileToSave = {
-                    id: user.id,
-                    full_name: fullName,
-                    username: slug,
-                    about: snapshot.summary || '',
-                    target_role: snapshot.themeId || 'modern-creative',
-                    profile_picture_url: pi.avatarUrl || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
-                    experience: snapshot.workExperience || [],
-                    education: snapshot.education || [],
-                    custom_sections: snapshot.customSections || [],
-                    skills: (snapshot.skills || []).map((s: any) => s.name || s),
-                    views: 0,
-                    links: []
-                };
-                await supabase.from('profiles').upsert(profileToSave);
-                sessionStorage.removeItem('parsedResume');
-                toast({ title: 'Profile saved!', description: 'Your profile is now live.' });
-            } catch (e) {
-                console.error('Failed to save guest data:', e);
-                toast({ variant: 'destructive', title: 'Save Failed', description: e instanceof Error ? e.message : 'Could not save your profile. Please try again.' });
-            } finally {
-                fetchProfileData();
-            }
-        })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, supabase]);
 
     const fetchProfileData = useCallback(async () => {
         if (!user) return;
@@ -334,7 +281,7 @@ export default function EditorPage() {
                 if ('fullName' in data) map.full_name = data.fullName;
                 if ('summary' in data) map.about = data.summary;
                 if ('avatarUrl' in data) map.profile_picture_url = data.avatarUrl;
-                if ('slug' in data) map.username = data.slug;
+                if ('slug' in data) map.username = data.slug?.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
                 if ('skills' in data) map.skills = data.skills;
                 if ('links' in data) map.links = data.links;
                 if (Object.keys(map).length > 0) await supabase.from('profiles').update(map).eq('id', user.id);
@@ -409,6 +356,14 @@ export default function EditorPage() {
             if (extractedData.personalInfo?.github) newLinksMap.set('github', extractedData.personalInfo.github);
             if (extractedData.personalInfo?.linkedin) newLinksMap.set('linkedin', extractedData.personalInfo.linkedin);
             
+            // Merge additional links (ResearchGate, Google Scholar, Twitter, etc.)
+            const additionalLinks = extractedData.personalInfo?.additionalLinks || [];
+            for (const link of additionalLinks) {
+              if (link.url && link.label) {
+                newLinksMap.set(link.label.toLowerCase().replace(/\s+/g, '-'), link.url);
+              }
+            }
+            
             const combinedLinks = Array.from(newLinksMap.entries()).map(([type, value]) => ({ type, value })).filter(l => !!l.value);
 
             // --- DATABASE SYNC (If Auth) ---
@@ -433,8 +388,9 @@ export default function EditorPage() {
                 toast({ title: 'Success!', description: 'Your profile has been saved.' });
                 await fetchProfileData();
             } else {
-                // Keep session storage in sync for later login transition
+                // Keep session storage AND localStorage in sync for later login transition
                 sessionStorage.setItem('parsedResume', JSON.stringify(extractedData));
+                try { localStorage.setItem('parsedResume', JSON.stringify(extractedData)); } catch (e) { /* quota exceeded */ }
                 toast({ title: 'CV Parsed!', description: 'Sign up to publish this profile.' });
             }
         } catch (error) {
@@ -450,7 +406,7 @@ export default function EditorPage() {
         if (user && !processedPendingResume.current) {
             processedPendingResume.current = true; // Mark immediately to prevent double-firing
             fetchProfileData().then(async data => {
-                const parsedData = sessionStorage.getItem('parsedResume');
+                const parsedData = sessionStorage.getItem('parsedResume') || localStorage.getItem('parsedResume');
                 const pendingResumeDataUrl = sessionStorage.getItem('pendingResume');
                 const pendingResumeName = sessionStorage.getItem('pendingResumeName');
                 
@@ -478,6 +434,14 @@ export default function EditorPage() {
                         if (extractedData.personalInfo?.website) newLinksMap.set('website', extractedData.personalInfo.website);
                         if (extractedData.personalInfo?.github) newLinksMap.set('github', extractedData.personalInfo.github);
                         if (extractedData.personalInfo?.linkedin) newLinksMap.set('linkedin', extractedData.personalInfo.linkedin);
+                        
+                        // Merge additional links (ResearchGate, Google Scholar, Twitter, etc.)
+                        const additionalLinks = extractedData.personalInfo?.additionalLinks || [];
+                        for (const link of additionalLinks) {
+                          if (link.url && link.label) {
+                            newLinksMap.set(link.label.toLowerCase().replace(/\s+/g, '-'), link.url);
+                          }
+                        }
                         
                         const combinedLinks = Array.from(newLinksMap.entries()).map(([type, value]) => ({ type, value })).filter(l => !!l.value);
 
@@ -508,6 +472,7 @@ export default function EditorPage() {
                         await supabase.from('profiles').upsert(updatedProfile);
                         toast({ title: 'Success!', description: 'Your profile has been updated from your CV.' });
                         sessionStorage.removeItem('parsedResume');
+                        localStorage.removeItem('parsedResume');
                         await fetchProfileData(); // Reload the UI with updated DB data
                     } catch (e) {
                         console.error('Parse failed', e);
@@ -704,6 +669,8 @@ export default function EditorPage() {
             github: profile.github || '',
             linkedin: profile.linkedin || '',
             summary: profile.summary || '',
+            skills: skillItems,
+            links: [],  // populated from DB on live page
             avatarUrl: profile.avatarUrl || '',
             avatarHint: profile.avatarHint || 'person portrait',
         },
@@ -752,6 +719,7 @@ export default function EditorPage() {
                                         customSections: customSections
                                     };
                                     sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
+                                    try { localStorage.setItem('parsedResume', JSON.stringify(snapshot)); } catch (e) { /* quota exceeded */ }
                                 }}>Publish</Button>
                             } />
                         </div>
@@ -771,8 +739,8 @@ export default function EditorPage() {
                 <div className="container mx-auto max-w-4xl p-4 md:p-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold">{user ? `Welcome back, ${profile.fullName}!` : 'Build Your Profile'}</h1>
-                            {!user && <p className="text-muted-foreground">Fill in your details below. Preview anytime, sign up to publish.</p>}
+                            <h1 className="text-2xl md:text-3xl font-bold truncate max-w-[65vw] md:max-w-none">{user ? <><span className="sm:hidden">Welcome!</span><span className="hidden sm:inline">Welcome, {profile.fullName?.split(' ')[0] || ''}!</span></> : 'Your Profile'}</h1>
+                            {!user && <p className="text-muted-foreground text-xs md:text-sm hidden sm:block">Preview anytime, sign up to publish.</p>}
                         </div>
                         <div className="flex items-center gap-2 justify-end shrink-0">
                            <div className="w-5 flex justify-center items-center">
@@ -780,8 +748,8 @@ export default function EditorPage() {
                            </div>
                            {(workItems.length > 0 || educationItems.length > 0) && (
                                 <label title="Upload New CV (Overwrites Profile)" className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                                    {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4 md:mr-2" />}
-                                    <span className="hidden md:inline">{isGenerating ? 'Processing...' : 'Update CV'}</span>
+                                    {isGenerating ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <UploadCloud className="h-4 w-4 mr-1.5" />}
+                                    <span className="text-xs md:text-sm">{isGenerating ? 'Processing...' : 'Update CV'}</span>
                                     <Input type="file" className="hidden" accept=".pdf,.docx,.rtf,.txt" onChange={handleFileChange} disabled={isGenerating} />
                                 </label>
                            )}

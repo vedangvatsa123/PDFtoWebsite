@@ -3,9 +3,89 @@
 import React, { useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight, FileDown, Github, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, Download, ArrowUpRight, FileDown, Github, Linkedin, Twitter, Youtube, Facebook, Instagram, BookOpen, GraduationCap, Palette, Code2, Pen, MessageCircle, Send, Music, Headphones, Tv, Hash, Figma, Package, Gamepad2, Megaphone, Users, Briefcase, Rss, FileCode2, GitBranch } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ServerProfileData as ProfileData } from '@/lib/supabase-server';
+
+const LINK_ICON_MAP: Record<string, { icon: React.ComponentType<any>; color: string }> = {
+  // Major social
+  'twitter': { icon: Twitter, color: '#1DA1F2' },
+  'x': { icon: Twitter, color: '#000000' },
+  'youtube': { icon: Youtube, color: '#FF0000' },
+  'facebook': { icon: Facebook, color: '#1877F2' },
+  'instagram': { icon: Instagram, color: '#E4405F' },
+  'tiktok': { icon: Music, color: '#000000' },
+  'threads': { icon: Hash, color: '#000000' },
+  'pinterest': { icon: Palette, color: '#E60023' },
+  'snapchat': { icon: MessageCircle, color: '#FFFC00' },
+  // Messaging (regional)
+  'telegram': { icon: Send, color: '#26A5E4' },
+  'whatsapp': { icon: MessageCircle, color: '#25D366' },
+  'wechat': { icon: MessageCircle, color: '#07C160' },
+  'weixin': { icon: MessageCircle, color: '#07C160' },
+  'line': { icon: MessageCircle, color: '#00C300' },
+  'kakaotalk': { icon: MessageCircle, color: '#FFE812' },
+  'kakao': { icon: MessageCircle, color: '#FFE812' },
+  'discord': { icon: Gamepad2, color: '#5865F2' },
+  'slack': { icon: Hash, color: '#4A154B' },
+  // Professional (regional)
+  'xing': { icon: Briefcase, color: '#006567' },
+  'vk': { icon: Users, color: '#4680C2' },
+  'vkontakte': { icon: Users, color: '#4680C2' },
+  // Fediverse / New social
+  'mastodon': { icon: Megaphone, color: '#6364FF' },
+  'bluesky': { icon: Globe, color: '#0085FF' },
+  // Writing & Publishing
+  'medium': { icon: Pen, color: '#000000' },
+  'substack': { icon: Rss, color: '#FF6719' },
+  'hashnode': { icon: Hash, color: '#2962FF' },
+  'dev': { icon: Code2, color: '#0A0A0A' },
+  'devto': { icon: Code2, color: '#0A0A0A' },
+  'dev.to': { icon: Code2, color: '#0A0A0A' },
+  // Design
+  'dribbble': { icon: Palette, color: '#EA4C89' },
+  'behance': { icon: Palette, color: '#1769FF' },
+  'figma': { icon: Figma, color: '#F24E1E' },
+  'artstation': { icon: Palette, color: '#13AFF0' },
+  'deviantart': { icon: Palette, color: '#00E59B' },
+  // Developer
+  'stackoverflow': { icon: Code2, color: '#F48024' },
+  'stack-overflow': { icon: Code2, color: '#F48024' },
+  'kaggle': { icon: Code2, color: '#20BEFF' },
+  'gitlab': { icon: GitBranch, color: '#FC6D26' },
+  'bitbucket': { icon: GitBranch, color: '#0052CC' },
+  'codepen': { icon: FileCode2, color: '#000000' },
+  'hackerrank': { icon: Code2, color: '#00EA64' },
+  'leetcode': { icon: Code2, color: '#FFA116' },
+  'codeforces': { icon: Code2, color: '#1F8ACB' },
+  'npm': { icon: Package, color: '#CB3837' },
+  'pypi': { icon: Package, color: '#3775A9' },
+  'notion': { icon: BookOpen, color: '#000000' },
+  // Academic
+  'researchgate': { icon: BookOpen, color: '#00CCBB' },
+  'google-scholar': { icon: GraduationCap, color: '#4285F4' },
+  'orcid': { icon: BookOpen, color: '#A6CE39' },
+  'scholar': { icon: GraduationCap, color: '#4285F4' },
+  'academia': { icon: GraduationCap, color: '#41454A' },
+  'pubmed': { icon: BookOpen, color: '#326599' },
+  'scopus': { icon: BookOpen, color: '#E9711C' },
+  // Media & Entertainment
+  'soundcloud': { icon: Headphones, color: '#FF5500' },
+  'spotify': { icon: Music, color: '#1DB954' },
+  'twitch': { icon: Tv, color: '#9146FF' },
+  'vimeo': { icon: Tv, color: '#1AB7EA' },
+};
+
+function getLinkIcon(type: string): { Icon: React.ComponentType<any>; color: string } {
+  const key = type.toLowerCase().replace(/\s+/g, '-');
+  const match = LINK_ICON_MAP[key];
+  if (match) return { Icon: match.icon, color: match.color };
+  // Try partial matching for labels like "Google Scholar Profile"
+  for (const [k, v] of Object.entries(LINK_ICON_MAP)) {
+    if (key.includes(k)) return { Icon: v.icon, color: v.color };
+  }
+  return { Icon: Globe, color: '#4285F4' };
+}
 
 function LinkifiedText({ text }: { text?: string }) {
   if (!text) return null;
@@ -186,19 +266,19 @@ export default function TemplateModern(props: ProfileData) {
               <div className="mt-2 text-center text-xs text-muted-foreground">
                 {profile.location && (
                   <span className="inline-flex items-center mx-2 my-1">
-                    <MapPin className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
+                    <MapPin className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px] text-[#E74C3C]" />
                     <span>{profile.location}</span>
                   </span>
                 )}
                 {profile.email && (
                   <a href={`mailto:${profile.email}`} className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1">
-                    <Mail className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
+                    <Mail className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px] text-[#EA4335]" />
                     <span>{profile.email}</span>
                   </a>
                 )}
                 {profile.phone && (
                   <span className="inline-flex items-center mx-2 my-1">
-                    <Phone className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
+                    <Phone className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px] text-[#25D366]" />
                     <span>{profile.phone}</span>
                   </span>
                 )}
@@ -209,7 +289,7 @@ export default function TemplateModern(props: ProfileData) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
                   >
-                    <Globe className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
+                    <Globe className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px] text-[#4285F4]" />
                     <span>{profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
                     <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
                   </a>
@@ -221,7 +301,7 @@ export default function TemplateModern(props: ProfileData) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
                   >
-                    <Github className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
+                    <Github className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px] text-[#181717] dark:text-[#f0f6fc]" />
                     <span>{profile.github.replace(/^(?:https?:\/\/)?(?:www\.)?github\.com\//i, '').replace(/\/$/, '')}</span>
                     <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
                   </a>
@@ -233,11 +313,28 @@ export default function TemplateModern(props: ProfileData) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
                   >
-                    <Linkedin className="h-3 w-3 shrink-0 mr-1.5 relative top-[-1px]" />
+                    <Linkedin className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px] text-[#0A66C2]" />
                     <span>{profile.linkedin.replace(/^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\//i, '').replace(/\/$/, '')}</span>
                     <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
                   </a>
                 )}
+                {/* Additional links (ResearchGate, Google Scholar, Twitter, etc.) */}
+                {profile.links?.filter((l: any) => !['email', 'phone', 'location', 'website', 'github', 'linkedin'].includes(l.type)).map((link: any, idx: number) => {
+                  const { Icon, color } = getLinkIcon(link.type);
+                  return (
+                    <a
+                      key={idx}
+                      href={link.value.startsWith('http') ? link.value : `https://${link.value}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center hover:text-foreground transition-colors mx-2 my-1"
+                    >
+                      <Icon className="h-3.5 w-3.5 shrink-0 mr-1.5 relative top-[-1px]" style={{ color }} />
+                      <span>{link.type.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
+                      <ArrowUpRight className="h-2.5 w-2.5 shrink-0 ml-1 relative top-[1px]" />
+                    </a>
+                  );
+                })}
               </div>
 
               {profile.summary && (
