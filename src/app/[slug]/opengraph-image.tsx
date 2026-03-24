@@ -58,7 +58,9 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
   const { profile, workExperience } = data;
   const name = profile.fullName;
-  const role = workExperience.length > 0 ? `${workExperience[0].title} at ${workExperience[0].company}` : profile.summary?.slice(0, 70) || 'Professional CV Profile';
+  const jobTitle = workExperience.length > 0 ? workExperience[0].title : null;
+  const company = workExperience.length > 0 ? workExperience[0].company : null;
+  const fallbackRole = profile.summary?.slice(0, 70) || 'Professional Profile';
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio';
   const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')
     ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `${siteUrl}/api/avatar/${slug}`)
@@ -73,35 +75,41 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
   return new ImageResponse(
     (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', height: '100%', backgroundColor: '#ffffff', padding: '70px 90px', justifyContent: 'space-between', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', backgroundColor: '#ffffff', padding: '0 90px', gap: 18, fontFamily: 'sans-serif' }}>
         
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 24 }}>
-          {avatarUrl ? (
-            <img 
-              src={avatarUrl} 
-              alt={name} 
-              style={{ width: 160, height: 160, borderRadius: 160, objectFit: 'cover', border: '1px solid #e4e4e7', background: '#fafafa' }} 
-            />
-          ) : (
-            <div style={{ width: 160, height: 160, borderRadius: 160, background: '#f4f4f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 62, fontWeight: 600, color: '#a1a1aa', border: '1px solid #e4e4e7' }}>
-              {name.charAt(0).toUpperCase()}
-            </div>
-          )}
-          
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <div style={{ fontSize: 78, fontWeight: 800, color: '#09090b', letterSpacing: '-0.03em', lineHeight: 1, textAlign: 'center' }}>
-              {name}
-            </div>
-            <div style={{ fontSize: 38, fontWeight: 500, color: '#52525b', lineHeight: 1.3, maxWidth: 960, textAlign: 'center' }}>
-              {role}
-            </div>
+        {/* Avatar */}
+        {avatarUrl ? (
+          <img 
+            src={avatarUrl} 
+            alt={name} 
+            style={{ width: 160, height: 160, borderRadius: 160, objectFit: 'cover', border: '1px solid #e4e4e7', background: '#fafafa' }} 
+          />
+        ) : (
+          <div style={{ width: 160, height: 160, borderRadius: 160, background: '#f4f4f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 60, fontWeight: 600, color: '#a1a1aa', border: '1px solid #e4e4e7' }}>
+            {name.charAt(0).toUpperCase()}
           </div>
+        )}
+        
+        {/* Name — largest, boldest */}
+        <div style={{ display: 'flex', fontSize: 76, fontWeight: 800, color: '#09090b', letterSpacing: '-0.03em', lineHeight: 1, whiteSpace: 'nowrap', textAlign: 'center' }}>
+          {name}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-          <div style={{ display: 'flex', fontSize: 28, fontWeight: 500, color: '#71717a' }}>
-            {`${siteDomain}/${slug}`}
+        {/* Job Title — bold, dark, clearly readable */}
+        <div style={{ display: 'flex', fontSize: 34, fontWeight: 600, color: '#18181b', lineHeight: 1, whiteSpace: 'nowrap', textAlign: 'center' }}>
+          {jobTitle ? (jobTitle.length > 52 ? jobTitle.slice(0, 52) + '…' : jobTitle) : fallbackRole}
+        </div>
+
+        {/* Company — secondary, readable, bigger than URL */}
+        {company && (
+          <div style={{ display: 'flex', fontSize: 30, fontWeight: 400, color: '#52525b', lineHeight: 1, whiteSpace: 'nowrap', textAlign: 'center' }}>
+            {company.length > 52 ? company.slice(0, 52) + '…' : company}
           </div>
+        )}
+
+        {/* URL — footer branding, indigo */}
+        <div style={{ display: 'flex', fontSize: 24, fontWeight: 500, color: '#6366f1', marginTop: 10, textAlign: 'center' }}>
+          {`${siteDomain}/${slug}`}
         </div>
 
       </div>
