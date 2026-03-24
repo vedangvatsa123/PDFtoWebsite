@@ -15,18 +15,9 @@ const ACCESS_TOKEN_SECRET = process.env.X_ACCESS_TOKEN_SECRET;
 const STATE_FILE = path.join(__dirname, 'x-state.json');
 const IMAGES_DIR = path.join(__dirname, '../images');
 
-// Angle image map: 0-5 → salary, 6-11 → ghosting, etc.
-const ANGLE_IMAGES = [
-  path.join(IMAGES_DIR, 'salary.png'),
-  path.join(IMAGES_DIR, 'ghosting.png'),
-  path.join(IMAGES_DIR, 'entry.png'),
-  path.join(IMAGES_DIR, 'understaffing.png'),
-  path.join(IMAGES_DIR, 'pdf.png'),
-];
-
-// ── 30-post pool — unique CTA connecting naturally from each post ──────────
+// ── 16 posts, each with its own matching image (post_01.png – post_16.png) ──
 const POSTS = [
-  // ANGLE 1: Salary (posts 0-5)
+  // Post 1 → post_01.png (salary: "they said 15% raise. they gave 1.75%.")
   `Someone on Reddit shared this. 2,000 upvotes in a day.
 
 Work of 3 people. $53k. No raise.
@@ -39,50 +30,7 @@ Nobody was surprised.
 
 If they don't value you, someone else will. cvin.bio`,
 
-  `Annual review.
-
-Manager: "We value you."
-HR: "Budget constraints."
-Letter: 2.1% raise.
-Inflation: 3.8%.
-
-Effective pay cut dressed up as a raise.
-
-Your next raise starts with being visible to the right people. cvin.bio`,
-
-  `"We'll revisit your compensation in 6 months."
-
-That was 18 months ago.
-
-Verbal commitments in this economy are not commitments. They're stalling tactics.
-
-Get it in writing. Or get better options. cvin.bio`,
-
-  `The real math of staying loyal to one company:
-
-Year 1: market rate.
-Year 4: budget freeze.
-
-Meanwhile, someone hired externally gets 20% more than you on day one.
-
-Loyalty is not a career strategy. Options are. cvin.bio`,
-
-  `Biggest lie in performance reviews:
-
-"We can only raise exceptional performers this cycle."
-
-Translation: the exceptional performers already left.
-
-Be easy to find when the right company comes looking. cvin.bio`,
-
-  `Why external hires get paid more than you.
-
-When you're already there, they pay what you accepted.
-When someone new comes in, they have to compete.
-
-Having options isn't aggressive. It's how this works. cvin.bio`,
-
-  // ANGLE 2: Ghosting (posts 6-11)
+  // Post 2 → post_02.png (ghosting: "job ghosting is the norm now.")
   `Job hunting in 2026:
 
 45 minutes filling a form that already had your CV.
@@ -92,50 +40,7 @@ Two weeks later: nothing. Not a rejection. Just silence.
 
 A profile that works for you even when companies don't. cvin.bio`,
 
-  `Companies post about psychological safety.
-
-Then ghost candidates after the final round.
-
-The application experience is a preview of the culture.
-
-The companies worth joining will find you first. cvin.bio`,
-
-  `Recruiter called. Said it was urgent. Great fit.
-
-Three interviews in two weeks.
-
-Radio silence for a month.
-
-Then: "Hey, are you still exploring opportunities?"
-
-Let the right ones find you instead. cvin.bio`,
-
-  `"We'll be in touch by end of week."
-
-Week 3: new hire announced on LinkedIn.
-
-You were never going to hear back. They just didn't want to say so.
-
-Stop waiting. Build the profile that keeps working. cvin.bio`,
-
-  `The worst part of job hunting isn't rejection.
-
-It's preparing hard, doing well, and then never hearing anything again.
-
-At least rejection gives you information.
-
-Make your profile something that stays visible regardless. cvin.bio`,
-
-  `"Expect to hear from us Monday."
-
-Monday: nothing.
-Thursday: "We went another direction."
-
-Could have said that before Monday.
-
-Your next opportunity won't start with a 45-minute form. cvin.bio`,
-
-  // ANGLE 3: Entry level (posts 12-17)
+  // Post 3 → post_03.png (entry: "entry level. 3-5 years required.")
   `Real job listing.
 
 Entry level.
@@ -147,12 +52,91 @@ The talent is there. The listing is broken.
 
 You're more than a listing can capture. Show it at cvin.bio`,
 
+  // Post 4 → post_04.png (understaffing: "companies say they can't find talent.")
+  `Companies say they can't find talent.
+
+They fired 3 people. Told 1 to cover it all.
+
+Talent shortages at a 17-year high. Employee engagement at a 10-year low.
+
+Know your worth before they pretend they don't. cvin.bio`,
+
+  // Post 5 → post_05.png (pdf: "your CV is a PDF going nowhere.")
+  `Someone posted a Sunday newspaper to r/jobs.
+
+Job listings section: completely empty.
+
+We still hire like it's that newspaper. PDF. ATS scans it. Bot rejects it. Hear nothing.
+
+Skip the ATS. Share a link instead. cvin.bio`,
+
+  // Post 6 → post_06.png (salary: "annual review season.")
+  `Annual review.
+
+Manager: "We value you."
+HR: "Budget constraints."
+Letter: 2.1% raise.
+Inflation: 3.8%.
+
+Effective pay cut dressed up as a raise.
+
+Your next raise starts with being visible to the right people. cvin.bio`,
+
+  // Post 7 → post_07.png (ghosting: "companies ghost after final round.")
+  `Companies post about psychological safety.
+
+Then ghost candidates after the final round.
+
+The application experience is a preview of the culture.
+
+The companies worth joining will find you first. cvin.bio`,
+
+  // Post 8 → post_08.png (entry: "entry level used to mean you could learn.")
   `Entry level used to mean you could learn on the job.
 
 Now it means: want someone senior, not paying senior rates, not willing to train.
 
 Let your actual skills speak louder than the requirements. cvin.bio`,
 
+  // Post 9 → post_09.png (understaffing: "the talent shortage isn't real.")
+  `The talent shortage isn't real.
+
+What's real: below-market pay, poor management, no flexibility.
+
+The talent moved somewhere that treats it better.
+
+Be somewhere better. cvin.bio`,
+
+  // Post 10 → post_10.png (pdf: "72% of resumes rejected before a human sees them.")
+  `72% of resumes are rejected before a human sees them.
+
+The ATS was built to help recruiters manage volume.
+
+It now filters out qualified candidates before anyone human reads them.
+
+A link doesn't go through an ATS. cvin.bio`,
+
+  // Post 11 → post_11.png (salary: "verbal promises aren't commitments.")
+  `"We'll revisit your compensation in 6 months."
+
+That was 18 months ago.
+
+Verbal commitments in this economy are not commitments. They're stalling tactics.
+
+Get it in writing. Or get better options. cvin.bio`,
+
+  // Post 12 → post_12.png (ghosting: "recruiter said it was urgent.")
+  `Recruiter called. Said it was urgent. Great fit.
+
+Three interviews in two weeks.
+
+Radio silence for a month.
+
+Then: "Hey, are you still exploring opportunities?"
+
+Let the right ones find you instead. cvin.bio`,
+
+  // Post 13 → post_13.png (entry: "the ladder isn't broken. someone pulled it up.")
   `Fresh grad: degree, two internships, portfolio.
 
 Entry level role: 3 years experience.
@@ -163,91 +147,14 @@ Someone pulled the ladder up.
 
 Build the profile that bypasses the first filter. cvin.bio`,
 
-  `Entry Level Data Analyst.
-Skills: Python, SQL, Tableau, Power BI, Excel, R, ML preferred.
-Salary: $38,000.
-
-And then a paragraph about "growth opportunities."
-
-Your growth doesn't need their permission. cvin.bio`,
-
-  `Hiring manager: we can't find qualified candidates.
-
-Job listing: 5 years experience. Master's degree. Salary undisclosed.
-
-The candidates exist. They moved on when they saw the listing.
-
-Be somewhere better before they fix it. cvin.bio`,
-
-  `The culture fit rejection:
-
-Posted entry level. Wanted senior. Found one who'd accept entry pay.
-
-That person leaves in 8 months. Cycle repeats.
-
-Don't wait for it to repeat on you. cvin.bio`,
-
-  // ANGLE 4: Understaffing (posts 18-23)
-  `Companies say they can't find talent.
-
-They fired 3 people. Told 1 to cover it all.
-
-Talent shortages at a 17-year high. Employee engagement at a 10-year low.
-
-Know your worth before they pretend they don't. cvin.bio`,
-
-  `The talent shortage isn't real.
-
-What's real: below-market pay, poor management, no flexibility.
-
-The talent moved somewhere that treats it better.
-
-Be somewhere better. cvin.bio`,
-
+  // Post 14 → post_14.png (understaffing: "understaffing is a business decision.")
   `Understaffing is a business decision dressed up as a market problem.
 
 "We can't find anyone" means: nobody will work these hours for this pay with this manager.
 
 Until they fix the conditions, you have options. cvin.bio`,
 
-  `Shortages at a 17-year high.
-Engagement at a 10-year low.
-
-These two things are connected.
-
-Companies keep acting like they're not. Your next employer will show you the difference. cvin.bio`,
-
-  `You can't treat people like disposable assets for a decade and act confused when they stop applying.
-
-The engagement drop isn't mysterious.
-
-Your energy belongs somewhere it's matched. cvin.bio`,
-
-  `Companies spend thousands per hire on recruitment.
-
-Almost nothing on retention.
-
-Then wonder why they're always hiring.
-
-Let the right companies find you at cvin.bio`,
-
-  // ANGLE 5: PDF/ATS (posts 24-29)
-  `Someone posted a Sunday newspaper to r/jobs.
-
-Job listings section: completely empty.
-
-We still hire like it's that newspaper. PDF. ATS scans it. Bot rejects it. Hear nothing.
-
-Skip the ATS. Share a link instead. cvin.bio`,
-
-  `72% of resumes are rejected before a human sees them.
-
-The ATS was built to help recruiters manage volume.
-
-It now filters out qualified candidates before anyone human reads them.
-
-A link doesn't go through an ATS. cvin.bio`,
-
+  // Post 15 → post_15.png (pdf: "your CV goes to a pile.")
   `Your CV goes to:
 1. Email inbox.
 2. ATS keyword filter.
@@ -258,28 +165,15 @@ None of these care about your actual work.
 
 Don't be a pile. Be a link. cvin.bio`,
 
-  `The application process, translated:
+  // Post 16 → post_16.png (salary: "loyalty is not a career strategy.")
+  `The real math of staying loyal to one company:
 
-You: here is my career on one page.
-ATS: does it have the exact keyword? No. Rejected.
-Recruiter: why can't we find anyone good?
+Year 1: market rate.
+Year 4: budget freeze.
 
-Be findable. cvin.bio`,
+Meanwhile, someone hired externally gets 20% more than you on day one.
 
-  `PDFs don't update.
-Can't show your work.
-Get lost in inboxes.
-Look identical to everyone else's.
-
-A link is alive. It shows who you are, what you built, how to reach you.
-
-Turn your CV into a website at cvin.bio`,
-
-  `The hiring process is broken. You know it. Recruiters know it. Even managers know it.
-
-The candidates who stand out are the ones who don't rely on the system to do it for them.
-
-Your profile. Your link. Your terms. cvin.bio`,
+Loyalty is not a career strategy. Options are. cvin.bio`,
 ];
 
 // ── OAuth 1.0a ────────────────────────────────────────────────────────────
@@ -385,24 +279,29 @@ async function main() {
     const elapsed = Date.now() - new Date(state.lastPostedAt).getTime();
     if (elapsed < COOLDOWN_MS) {
       const hoursLeft = ((COOLDOWN_MS - elapsed) / 3600000).toFixed(1);
-      console.log(`⏸ Cooldown: last post was ${(elapsed / 3600000).toFixed(1)}h ago. Next post in ${hoursLeft}h. Skipping.`);
+      console.log(`⏸ Cooldown: last post was ${(elapsed / 3600000).toFixed(1)}h ago. Next in ${hoursLeft}h. Skipping.`);
       process.exit(0);
     }
   }
 
-  const poolIndex  = state.index % POSTS.length;
-  const imageIndex = poolIndex % ANGLE_IMAGES.length; // cycle through all 5 images
-  const imagePath  = ANGLE_IMAGES[imageIndex];
+  // Stop if all 16 posts exhausted (don't cycle)
+  if (state.index >= POSTS.length) {
+    console.log(`✅ All ${POSTS.length} posts published. Waiting for more content to be added.`);
+    process.exit(0);
+  }
 
-  let text = POSTS[poolIndex].trim();
-  // Trim to 270 chars at last sentence boundary if needed
+  const postIndex = state.index;
+  const imageNum  = String(postIndex + 1).padStart(2, '0');
+  const imagePath = path.join(IMAGES_DIR, `post_${imageNum}.png`);
+
+  let text = POSTS[postIndex].trim();
   if (text.length > 270) {
     text = text.substring(0, 270).replace(/\n[^\n]*$/, '') + '…';
   }
 
-  console.log(`Posting X #${state.index + 1} (pool ${poolIndex}, angle ${angleIndex + 1})`);
+  console.log(`Posting X #${postIndex + 1}/${POSTS.length}`);
+  console.log('Image:', `post_${imageNum}.png`);
   console.log('Preview:', text.substring(0, 80) + '...');
-  console.log('Image:', path.basename(imagePath));
 
   // Upload image
   let mediaId = null;
@@ -416,7 +315,7 @@ async function main() {
   const result = await postTweet(text, mediaId);
 
   if (result.status === 201) {
-    console.log(`✅ Tweet #${state.index + 1} posted at ${new Date().toISOString()}`);
+    console.log(`✅ Tweet #${postIndex + 1} posted at ${new Date().toISOString()}`);
     state.index++;
     state.lastPostedAt = new Date().toISOString();
     fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
