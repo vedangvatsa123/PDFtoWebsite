@@ -51,9 +51,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? profile.summary.slice(0, 160)
     : `View ${name}'s professional profile${roleText}.`;
 
-  const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')
-    ? profile.avatarUrl
-    : undefined;
+  const hasAvatar = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos');
+  const proxyAvatarUrl = hasAvatar ? `${siteUrl}/api/avatar/${slug}` : undefined;
 
   return {
     title,
@@ -66,11 +65,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       firstName: name.split(' ')[0],
       lastName: name.split(' ').slice(1).join(' ') || undefined,
+      images: proxyAvatarUrl ? [{ url: proxyAvatarUrl, width: 400, height: 400 }] : [],
     },
     twitter: {
       card: 'summary',
       title,
       description,
+      images: proxyAvatarUrl ? [{ url: proxyAvatarUrl }] : [],
     },
     robots: { index: true, follow: true },
   };

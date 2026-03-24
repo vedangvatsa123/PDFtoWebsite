@@ -58,7 +58,10 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
   const { profile, workExperience } = data;
   const name = profile.fullName;
   const role = workExperience.length > 0 ? `${workExperience[0].title} at ${workExperience[0].company}` : profile.summary?.slice(0, 70) || 'Professional CV Profile';
-  const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') && profile.avatarUrl.startsWith('http') ? profile.avatarUrl : null;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio';
+  const avatarUrl = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos')
+    ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `${siteUrl}/api/avatar/${slug}`)
+    : null;
 
   return new ImageResponse(
     (

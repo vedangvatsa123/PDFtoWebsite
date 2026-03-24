@@ -344,9 +344,11 @@ export default function TemplateModern(props: ProfileData) {
               </div>
 
               {profile.summary && (
-                <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto">
-                  {profile.summary}
-                </p>
+                <div className="mt-8 text-left w-full">
+                  <p className="text-sm font-medium text-foreground/80 leading-relaxed">
+                    {profile.summary}
+                  </p>
+                </div>
               )}
             </header>
 
