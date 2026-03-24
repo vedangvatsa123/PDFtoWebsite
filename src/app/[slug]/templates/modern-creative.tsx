@@ -531,12 +531,13 @@ export default function TemplateModern(props: ProfileData) {
 
             {/* Footer - branding */}
             <div className="no-print pt-6 text-center">
-              <p className="text-[11px] text-muted-foreground/40">
-                Built with{' '}
-                <Link href="/" className="hover:text-foreground transition-colors">
-                  CVin.Bio
-                </Link>
-              </p>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-950/40 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              >
+                <span className="text-[10px]">✦</span>
+                Made with CVin.Bio
+              </Link>
             </div>
 
           </div>
