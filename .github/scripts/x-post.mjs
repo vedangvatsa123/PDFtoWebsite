@@ -391,8 +391,8 @@ async function main() {
   }
 
   const poolIndex  = state.index % POSTS.length;
-  const angleIndex = Math.floor(poolIndex / 6);
-  const imagePath  = ANGLE_IMAGES[angleIndex];
+  const imageIndex = poolIndex % ANGLE_IMAGES.length; // cycle through all 5 images
+  const imagePath  = ANGLE_IMAGES[imageIndex];
 
   let text = POSTS[poolIndex].trim();
   // Trim to 270 chars at last sentence boundary if needed
