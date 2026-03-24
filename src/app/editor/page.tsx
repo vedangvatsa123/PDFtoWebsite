@@ -240,6 +240,9 @@ export default function EditorPage() {
     const [copiedLinkedIn, setCopiedLinkedIn] = useState('');
     const [copiedX, setCopiedX] = useState('');
     const [copiedWhatsApp, setCopiedWhatsApp] = useState('');
+    const [newLinkType, setNewLinkType] = useState('');
+    const [newLinkValue, setNewLinkValue] = useState('');
+
 
     const fireCelebration = useCallback((slug: string) => {
         if (typeof window === 'undefined') return;
@@ -485,6 +488,41 @@ export default function EditorPage() {
             setTimeout(() => setIsSaving(false), 700);
         }
     }, [user, supabase, toast]);
+
+    // ── Extra (non-core) links helpers ──
+    const CORE_LINK_TYPES_SET = new Set(['email', 'phone', 'location', 'website', 'github', 'linkedin']);
+
+    const saveExtraLinks = useCallback(async (extraLinks: Array<{type: string; value: string}>) => {
+        if (!user) return;
+        const coreLinks = [
+            { type: 'email',    value: profile.email },
+            { type: 'phone',    value: profile.phone },
+            { type: 'location', value: profile.location },
+            { type: 'website',  value: profile.website },
+            { type: 'github',   value: profile.github },
+            { type: 'linkedin', value: profile.linkedin },
+        ].filter(l => !!l.value) as Array<{type: string; value: string}>;
+        const merged = [...coreLinks, ...extraLinks];
+        setProfile(prev => ({ ...prev, links: merged }));
+        autoSave('profile', user.id, { links: merged });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, profile.email, profile.phone, profile.location, profile.website, profile.github, profile.linkedin, autoSave]);
+
+    const addExtraLink = useCallback(() => {
+        const t = newLinkType.trim().toLowerCase().replace(/\s+/g, '-');
+        const v = newLinkValue.trim();
+        if (!t || !v) return;
+        const current = (profile.links || []).filter((l: any) => !CORE_LINK_TYPES_SET.has(l.type));
+        saveExtraLinks([...current, { type: t, value: v }]);
+        setNewLinkType('');
+        setNewLinkValue('');
+    }, [newLinkType, newLinkValue, profile.links, saveExtraLinks]);
+
+    const removeExtraLink = useCallback((idx: number) => {
+        const current = (profile.links || []).filter((l: any) => !CORE_LINK_TYPES_SET.has(l.type));
+        saveExtraLinks(current.filter((_: any, i: number) => i !== idx));
+    }, [profile.links, saveExtraLinks]);
+
 
     const syncArray = useCallback(async (column: string, array: any[]) => {
         if (!user) return;
@@ -1342,6 +1380,50 @@ export default function EditorPage() {
                                                 <div className="space-y-1 sm:col-span-2 xl:col-span-2"><Label htmlFor="website" className="text-xs">Website/Portfolio</Label><Input id="website" name="website" placeholder="cvin.bio/johndoe" value={profile.website || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
                                                 <div className="space-y-1 sm:col-span-1 xl:col-span-3"><Label htmlFor="github" className="text-xs">GitHub</Label><Input id="github" name="github" placeholder="github.com/..." value={profile.github || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
                                                 <div className="space-y-1 sm:col-span-1 xl:col-span-3"><Label htmlFor="linkedin" className="text-xs">LinkedIn</Label><Input id="linkedin" name="linkedin" placeholder="linkedin.com/in/..." value={profile.linkedin || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} className="h-9" /></div>
+                                            </div>
+                                            {/* ── More Links ── */}
+                                            <div className="space-y-2">
+                                                <Label className="text-xs text-muted-foreground">More Links <span className="font-normal">(Twitter, Instagram, Dribbble, Behance, Medium…)</span></Label>
+                                                {/* Existing extra links as deletable chips */}
+                                                {((profile.links || []).filter((l: any) => !CORE_LINK_TYPES_SET.has(l.type))).length > 0 && (
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {(profile.links || []).filter((l: any) => !CORE_LINK_TYPES_SET.has(l.type)).map((link: any, i: number) => (
+                                                            <span key={i} className="inline-flex items-center gap-1.5 text-xs bg-secondary border border-border rounded-md px-2 py-1">
+                                                                <span className="font-medium capitalize">{link.type}</span>
+                                                                <span className="text-muted-foreground truncate max-w-[140px]">{link.value.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                                                                <button onClick={() => removeExtraLink(i)} className="ml-0.5 text-muted-foreground hover:text-destructive transition-colors leading-none" aria-label="Remove">
+                                                                    <XCircle className="h-3.5 w-3.5" />
+                                                                </button>
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {/* Add link row */}
+                                                <div className="flex gap-1.5">
+                                                    <Input
+                                                        placeholder="Platform (e.g. twitter)"
+                                                        value={newLinkType}
+                                                        onChange={e => setNewLinkType(e.target.value)}
+                                                        onKeyDown={e => e.key === 'Enter' && addExtraLink()}
+                                                        className="h-9 text-sm w-36 shrink-0"
+                                                        list="platform-suggestions"
+                                                    />
+                                                    <datalist id="platform-suggestions">
+                                                        {['twitter','instagram','tiktok','youtube','facebook','threads','snapchat','telegram','discord','dribbble','behance','figma','medium','substack','stackoverflow','gitlab','codepen','leetcode','hackerrank','bluesky','mastodon','notion','spotify','soundcloud'].map(p => (
+                                                            <option key={p} value={p} />
+                                                        ))}
+                                                    </datalist>
+                                                    <Input
+                                                        placeholder="URL or username"
+                                                        value={newLinkValue}
+                                                        onChange={e => setNewLinkValue(e.target.value)}
+                                                        onKeyDown={e => e.key === 'Enter' && addExtraLink()}
+                                                        className="h-9 text-sm flex-1"
+                                                    />
+                                                    <Button size="sm" onClick={addExtraLink} disabled={!newLinkType.trim() || !newLinkValue.trim()} className="h-9 shrink-0">
+                                                        <PlusCircle className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </div>
                                             <div className="space-y-1"><Label htmlFor="summary" className="text-xs">Summary</Label><Textarea id="summary" name="summary" placeholder="A brief professional summary..." value={profile.summary || ''} onChange={handleProfileChange} onBlur={handleProfileBlur} rows={3} className="resize-none" /></div>
                                         </div>
