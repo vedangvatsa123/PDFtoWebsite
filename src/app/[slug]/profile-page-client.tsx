@@ -15,17 +15,25 @@ interface Props {
   slug: string;
 }
 
-/** Profile is "complete enough" to celebrate — name + summary + some content */
+/** Mirrors the editor's Job Readiness Score exactly — all 6 must pass (100%) */
 function isProfileComplete(data: ServerProfileData): boolean {
-  const { profile, workExperience, education, customSections } = data;
-  return !!(
-    profile.fullName &&
-    profile.summary &&
-    (workExperience.length > 0 ||
-      education.length > 0 ||
-      (customSections && customSections.some(s => s.items?.length > 0)))
+  const { profile, workExperience, education } = data;
+  const skills: string[] = profile.skills || [];
+
+  const hasPhoto    = !!profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos');
+  const hasSummary  = !!profile.summary?.trim();
+  const hasLocation = !!profile.location?.trim();
+  const hasWork     = workExperience.some(w =>
+    w.title?.trim() || w.company?.trim() || w.description?.trim()
   );
+  const hasEdu      = education.some(e =>
+    e.institution?.trim() || e.degree?.trim()
+  );
+  const hasSkills   = skills.some(s => (typeof s === 'string' ? s.trim() : s) !== '');
+
+  return hasPhoto && hasSummary && hasLocation && hasWork && hasEdu && hasSkills;
 }
+
 
 export default function ProfilePageClient({ data, slug }: Props) {
   const { toast } = useToast();
