@@ -374,9 +374,21 @@ function postTweet(text, mediaId) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────
+const COOLDOWN_MS = 7 * 60 * 60 * 1000; // 7 hours
+
 async function main() {
-  let state = { index: 0 };
+  let state = { index: 0, lastPostedAt: null };
   if (fs.existsSync(STATE_FILE)) state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+
+  // Cooldown: skip if last post was less than 7 hours ago
+  if (state.lastPostedAt) {
+    const elapsed = Date.now() - new Date(state.lastPostedAt).getTime();
+    if (elapsed < COOLDOWN_MS) {
+      const hoursLeft = ((COOLDOWN_MS - elapsed) / 3600000).toFixed(1);
+      console.log(`⏸ Cooldown: last post was ${(elapsed / 3600000).toFixed(1)}h ago. Next post in ${hoursLeft}h. Skipping.`);
+      process.exit(0);
+    }
+  }
 
   const poolIndex  = state.index % POSTS.length;
   const angleIndex = Math.floor(poolIndex / 6);
@@ -406,6 +418,7 @@ async function main() {
   if (result.status === 201) {
     console.log(`✅ Tweet #${state.index + 1} posted at ${new Date().toISOString()}`);
     state.index++;
+    state.lastPostedAt = new Date().toISOString();
     fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
   } else {
     console.error('❌ Failed:', JSON.stringify(result.body, null, 2));
