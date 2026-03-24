@@ -51,9 +51,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? profile.summary.slice(0, 160)
     : `View ${name}'s professional profile${roleText}.`;
 
-  const hasAvatar = profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos');
-  const proxyAvatarUrl = hasAvatar ? `${siteUrl}/api/avatar/${slug}` : undefined;
-
   return {
     title,
     description,
@@ -65,13 +62,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       firstName: name.split(' ')[0],
       lastName: name.split(' ').slice(1).join(' ') || undefined,
-      images: proxyAvatarUrl ? [{ url: proxyAvatarUrl, width: 400, height: 400 }] : [],
+      // og:image is auto-set by Next.js from opengraph-image.tsx (the branded Satori card)
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
       description,
-      images: proxyAvatarUrl ? [{ url: proxyAvatarUrl }] : [],
+      // twitter:image auto-set from opengraph-image.tsx
     },
     robots: { index: true, follow: true },
   };
