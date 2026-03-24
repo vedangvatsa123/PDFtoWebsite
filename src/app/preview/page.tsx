@@ -37,6 +37,12 @@ export default function PreviewPage() {
                             data.personalInfo?.website && { type: 'website', value: data.personalInfo.website },
                             data.personalInfo?.github && { type: 'github', value: data.personalInfo.github },
                             data.personalInfo?.linkedin && { type: 'linkedin', value: data.personalInfo.linkedin },
+                            // Include extra links (twitter, instagram, etc) from editor broadcast
+                            ...(Array.isArray(data.personalInfo?.links)
+                                ? data.personalInfo.links.filter((l: any) =>
+                                    !['email','phone','location','website','github','linkedin'].includes(l?.type)
+                                  )
+                                : []),
                         ].filter(Boolean) as Array<{type: string; value: string}>,
                     },
                     workExperience: data.workExperience || [],

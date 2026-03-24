@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, CheckCircle, XCircle, Share2, Copy, Link2 } from 'lucide-react';
+import { Eye, Trash2, PlusCircle, Loader2, UploadCloud, FileUp, CheckCircle, XCircle, Share2, Copy, Link2, Download } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/header';
 import { useUser } from '@/auth';
@@ -812,7 +812,8 @@ export default function EditorPage() {
                     github: profile.github, 
                     linkedin: profile.linkedin, 
                     slug: profile.slug,
-                    avatarUrl: profile.avatarUrl 
+                    avatarUrl: profile.avatarUrl,
+                    links: profile.links || []
                 },
                 summary: profile.summary,
                 themeId: activeThemeId,
@@ -1245,8 +1246,45 @@ export default function EditorPage() {
                                                     <PopoverContent className="w-56 p-2" align="end" sideOffset={8}>
                                                         {(() => {
                                                             const url = `https://cvin.bio/${profile.slug}`;
-                                                            const chatMsg = `My resume is a link now.\nhttps://cvin.bio/${profile.slug}`;
-                                                            const socialMsg = `Stopped attaching my resume. Here's the link.\nhttps://cvin.bio/${profile.slug}`;
+                                                            const chatMsg = `My CV is a link now.\nhttps://cvin.bio/${profile.slug}`;
+                                                            const socialMsg = `Stopped attaching my CV. Here's the link.\nhttps://cvin.bio/${profile.slug}`;
+                                                            const downloadStoryCard = async () => {
+                                                                const W = 1080, H = 1920;
+                                                                const canvas = document.createElement('canvas');
+                                                                canvas.width = W; canvas.height = H;
+                                                                const ctx = canvas.getContext('2d')!;
+                                                                const grad = ctx.createLinearGradient(0, 0, W, H);
+                                                                grad.addColorStop(0, '#0f0d2e'); grad.addColorStop(0.45, '#2d2b7a'); grad.addColorStop(1, '#3b1f6e');
+                                                                ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+                                                                ctx.fillStyle = 'rgba(255,255,255,0.04)';
+                                                                for (let x = 80; x < W; x += 90) for (let y = 80; y < H; y += 90) { ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill(); }
+                                                                try { await document.fonts.load('bold 96px Inter'); } catch (_) {}
+                                                                const font = document.fonts.check('bold 96px Inter') ? 'Inter' : '-apple-system,BlinkMacSystemFont,sans-serif';
+                                                                ctx.fillStyle = 'rgba(165,180,252,0.8)'; ctx.font = `500 46px ${font}`; ctx.textAlign = 'center';
+                                                                ctx.fillText('CVin.Bio', W / 2, 180);
+                                                                ctx.strokeStyle = 'rgba(129,140,248,0.3)'; ctx.lineWidth = 1.5;
+                                                                ctx.beginPath(); ctx.moveTo(240, 220); ctx.lineTo(840, 220); ctx.stroke();
+                                                                const name = profile.fullName || '';
+                                                                ctx.fillStyle = 'rgba(255,255,255,0.97)';
+                                                                let fs = 108; ctx.font = `bold ${fs}px ${font}`;
+                                                                while (ctx.measureText(name).width > 920 && fs > 56) { fs -= 4; ctx.font = `bold ${fs}px ${font}`; }
+                                                                ctx.fillText(name, W / 2, 780);
+                                                                ctx.fillStyle = 'rgba(199,210,254,0.82)'; ctx.font = `400 56px ${font}`;
+                                                                ctx.fillText('pdf is dead.', W / 2, 880);
+                                                                ctx.font = `400 52px ${font}`; ctx.fillText("here's my link ↓", W / 2, 960);
+                                                                const urlText = `cvin.bio/${profile.slug}`;
+                                                                ctx.fillStyle = 'rgba(99,102,241,0.18)'; ctx.strokeStyle = 'rgba(165,180,252,0.35)'; ctx.lineWidth = 2;
+                                                                ctx.beginPath(); ctx.roundRect(120, 1080, 840, 130, 28); ctx.fill(); ctx.stroke();
+                                                                let ufs = 76; ctx.font = `bold ${ufs}px ${font}`;
+                                                                while (ctx.measureText(urlText).width > 780 && ufs > 44) { ufs -= 4; ctx.font = `bold ${ufs}px ${font}`; }
+                                                                ctx.fillStyle = 'white'; ctx.fillText(urlText, W / 2, 1162);
+                                                                ctx.fillStyle = 'rgba(148,163,184,0.5)'; ctx.font = `400 38px ${font}`;
+                                                                ctx.fillText('Scan · Click · Connect', W / 2, 1800);
+                                                                const a = document.createElement('a');
+                                                                a.href = canvas.toDataURL('image/png');
+                                                                a.download = `cvin-${profile.slug}.png`;
+                                                                a.click();
+                                                            };
                                                             return (
                                                                 <div className="flex flex-col gap-0.5">
                                                                     <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(chatMsg)}`, '_blank')} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
@@ -1269,6 +1307,11 @@ export default function EditorPage() {
                                                                     <button onClick={() => { navigator.clipboard.writeText(chatMsg); toast({ title: 'Message copied!', description: 'Paste it anywhere to share.' }); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
                                                                         <Copy className="h-4 w-4 shrink-0" />
                                                                         Copy with message
+                                                                    </button>
+                                                                    <div className="h-px bg-border my-1" />
+                                                                    <button onClick={downloadStoryCard} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
+                                                                        <Download className="h-4 w-4 shrink-0 text-indigo-500" />
+                                                                        Story card <span className="text-[10px] text-muted-foreground ml-1">IG · TikTok</span>
                                                                     </button>
                                                                 </div>
                                                             );
@@ -1298,10 +1341,7 @@ export default function EditorPage() {
                                                             {`${(process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio').replace(/^https?:\/\//, '')}/${profile.slug}`}
                                                         </a>
                                                     </p>
-                                                    <div className="flex items-center gap-2 mt-1.5">
-                                                        <Share2 className="h-3 w-3 text-muted-foreground" />
-                                                        <span className="text-[10px] text-muted-foreground">Use the Share button above to post your link</span>
-                                                    </div>
+
                                                 </div>
                                             ) : null}
                                         </CardContent>
@@ -1381,7 +1421,7 @@ export default function EditorPage() {
                                                 {/* Add link row */}
                                                 <div className="flex gap-1.5">
                                                     <Input
-                                                        placeholder="Platform (e.g. twitter)"
+                                                        placeholder="Choose"
                                                         value={newLinkType}
                                                         onChange={e => setNewLinkType(e.target.value)}
                                                         onKeyDown={e => e.key === 'Enter' && addExtraLink()}
