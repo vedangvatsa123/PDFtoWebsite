@@ -1245,8 +1245,8 @@ export default function EditorPage() {
                                                     <PopoverContent className="w-56 p-2" align="end" sideOffset={8}>
                                                         {(() => {
                                                             const url = `https://cvin.bio/${profile.slug}`;
-                                                            const chatMsg = `my resume is a link now\nhttps://cvin.bio/${profile.slug}`;
-                                                            const socialMsg = `stopped attaching my resume. here's the link instead\nhttps://cvin.bio/${profile.slug}`;
+                                                            const chatMsg = `My resume is a link now.\nhttps://cvin.bio/${profile.slug}`;
+                                                            const socialMsg = `Stopped attaching my resume. Here's the link.\nhttps://cvin.bio/${profile.slug}`;
                                                             return (
                                                                 <div className="flex flex-col gap-0.5">
                                                                     <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(chatMsg)}`, '_blank')} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
