@@ -78,114 +78,114 @@ export default function ProfilePageClient({ data, slug }: Props) {
       const W = 1080, H = 1920;
       const canvas = document.createElement('canvas');
       canvas.width = W; canvas.height = H;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-      // — Background gradient (site's indigo palette)
+      // roundRect polyfill for older browsers
+      const roundRect = (x: number, y: number, w: number, h: number, r: number) => {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      };
+
+      // — Guaranteed solid dark background first (canvas default is transparent)
+      ctx.fillStyle = '#0f0d2e';
+      ctx.fillRect(0, 0, W, H);
+      // — Gradient overlay
       const grad = ctx.createLinearGradient(0, 0, W, H);
-      grad.addColorStop(0, '#0f0d2e');   // near-black indigo
-      grad.addColorStop(0.45, '#2d2b7a'); // indigo deep
-      grad.addColorStop(1, '#3b1f6e');   // violet-dark
+      grad.addColorStop(0, '#0f0d2e');
+      grad.addColorStop(0.45, '#2d2b7a');
+      grad.addColorStop(1, '#3b1f6e');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // — Dot grid texture
+      // — Subtle dot grid
       ctx.fillStyle = 'rgba(255,255,255,0.04)';
       for (let x = 80; x < W; x += 90) for (let y = 80; y < H; y += 90) {
         ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
       }
 
-      // — Try to load Inter from the browser's already-loaded font cache
-      try {
-        await document.fonts.load('bold 96px Inter');
-        await document.fonts.load('500 44px Inter');
-      } catch (_) { /* fall back to system font gracefully */ }
+      try { await document.fonts.load('bold 96px Inter'); await document.fonts.load('500 44px Inter'); } catch (_) {}
       const font = document.fonts.check('bold 96px Inter') ? 'Inter' : '-apple-system,BlinkMacSystemFont,sans-serif';
 
       // — Top branding
-      ctx.fillStyle = 'rgba(165,180,252,0.8)'; // indigo-300
-      ctx.font = `500 46px ${font}`;
-      ctx.textAlign = 'center';
-      ctx.letterSpacing = '2px';
+      ctx.fillStyle = 'rgba(165,180,252,0.8)';
+      ctx.font = `500 46px ${font}`; ctx.textAlign = 'center';
       ctx.fillText('CVin.Bio', W / 2, 180);
-      ctx.letterSpacing = '0px';
-
-      // — Divider
       ctx.strokeStyle = 'rgba(129,140,248,0.3)'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(240, 220); ctx.lineTo(840, 220); ctx.stroke();
 
-      // — Profile photo (circular with glow)
+      // — Photo via same-origin proxy (avoids canvas CORS taint)
       const hasPhoto = !!data.profile.avatarUrl && !data.profile.avatarUrl.includes('picsum.photos');
       const photoRadius = 170;
-      const photoCY = hasPhoto ? 640 : 0; // only used when photo exists
-      const nameCY = hasPhoto ? 900 : 780;
+      const photoCY = 620;
+      const nameCY = hasPhoto ? 880 : 760;
 
       if (hasPhoto) {
         await new Promise<void>((resolve) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
+          const img = new window.Image();
           img.onload = () => {
-            const cx = W / 2, cy = photoCY;
-            // Outer glow
+            const cx = W / 2;
             ctx.save();
-            ctx.shadowColor = 'rgba(129,140,248,0.7)';
-            ctx.shadowBlur = 50;
-            ctx.beginPath(); ctx.arc(cx, cy, photoRadius + 8, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(99,102,241,0.25)'; ctx.fill();
-            ctx.restore();
-            // Border ring
-            ctx.beginPath(); ctx.arc(cx, cy, photoRadius + 5, 0, Math.PI * 2);
+            ctx.shadowColor = 'rgba(129,140,248,0.7)'; ctx.shadowBlur = 50;
+            ctx.beginPath(); ctx.arc(cx, photoCY, photoRadius + 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(99,102,241,0.25)'; ctx.fill(); ctx.restore();
+            ctx.beginPath(); ctx.arc(cx, photoCY, photoRadius + 5, 0, Math.PI * 2);
             ctx.strokeStyle = 'rgba(165,180,252,0.7)'; ctx.lineWidth = 4; ctx.stroke();
-            // Clip and draw photo
             ctx.save();
-            ctx.beginPath(); ctx.arc(cx, cy, photoRadius, 0, Math.PI * 2); ctx.clip();
-            ctx.drawImage(img, cx - photoRadius, cy - photoRadius, photoRadius * 2, photoRadius * 2);
+            ctx.beginPath(); ctx.arc(cx, photoCY, photoRadius, 0, Math.PI * 2); ctx.clip();
+            ctx.drawImage(img, cx - photoRadius, photoCY - photoRadius, photoRadius * 2, photoRadius * 2);
             ctx.restore();
             resolve();
           };
           img.onerror = () => resolve();
-          img.src = data.profile.avatarUrl!;
+          // Use same-origin proxy — avoids CORS taint entirely
+          img.src = `/api/avatar/${slug}`;
         });
       }
 
-      // — Name (auto-size to fit)
+      // — Name
       const name = data.profile.fullName || '';
       ctx.fillStyle = 'rgba(255,255,255,0.97)';
       let nameFSize = 108;
       ctx.font = `bold ${nameFSize}px ${font}`;
-      while (ctx.measureText(name).width > 920 && nameFSize > 56) {
-        nameFSize -= 4; ctx.font = `bold ${nameFSize}px ${font}`;
-      }
+      while (ctx.measureText(name).width > 920 && nameFSize > 56) { nameFSize -= 4; ctx.font = `bold ${nameFSize}px ${font}`; }
       ctx.fillText(name, W / 2, nameCY);
 
-      // — Taglines
-      ctx.fillStyle = 'rgba(199,210,254,0.82)'; // indigo-200
-      ctx.font = `400 56px ${font}`;
-      const tagY = nameCY + 100;
-      ctx.fillText('pdf is dead.', W / 2, tagY);
-      ctx.font = `400 52px ${font}`;
-      ctx.fillText("here's my link ↓", W / 2, tagY + 80);
-
-      // — URL pill (glassmorphism)
-      const pillY = tagY + 190, pillH = 130;
-      ctx.fillStyle = 'rgba(99,102,241,0.18)';
-      ctx.strokeStyle = 'rgba(165,180,252,0.35)'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.roundRect(120, pillY, 840, pillH, 28); ctx.fill(); ctx.stroke();
-      const urlText = `cvin.bio/${slug}`;
-      let urlFSize = 76;
-      ctx.font = `bold ${urlFSize}px ${font}`;
-      while (ctx.measureText(urlText).width > 780 && urlFSize > 44) {
-        urlFSize -= 4; ctx.font = `bold ${urlFSize}px ${font}`;
+      // — Role (first job title if available, otherwise location)
+      const role = data.workExperience?.[0]
+        ? `${data.workExperience[0].title} · ${data.workExperience[0].company}`
+        : data.profile.location || '';
+      if (role) {
+        ctx.fillStyle = 'rgba(199,210,254,0.7)';
+        ctx.font = `400 48px ${font}`;
+        let roleFSize = 48;
+        while (ctx.measureText(role).width > 900 && roleFSize > 32) { roleFSize -= 2; ctx.font = `400 ${roleFSize}px ${font}`; }
+        ctx.fillText(role, W / 2, nameCY + 72);
       }
+
+      // — URL pill
+      const pillY = nameCY + (role ? 160 : 100);
+      ctx.fillStyle = 'rgba(99,102,241,0.2)';
+      ctx.strokeStyle = 'rgba(165,180,252,0.4)'; ctx.lineWidth = 2;
+      roundRect(120, pillY, 840, 130, 28); ctx.fill(); ctx.stroke();
+      const urlText = `cvin.bio/${slug}`;
+      let urlFSize = 76; ctx.font = `bold ${urlFSize}px ${font}`;
+      while (ctx.measureText(urlText).width > 780 && urlFSize > 44) { urlFSize -= 4; ctx.font = `bold ${urlFSize}px ${font}`; }
       ctx.fillStyle = 'white';
       ctx.fillText(urlText, W / 2, pillY + 82);
 
-      // — Bottom caption
-      ctx.fillStyle = 'rgba(148,163,184,0.5)'; // slate-400 muted
-      ctx.font = `400 38px ${font}`;
-      ctx.fillText('Scan · Click · Connect', W / 2, 1800);
-
-      setCardDataUrl(canvas.toDataURL('image/png'));
+      try { setCardDataUrl(canvas.toDataURL('image/png')); } catch (e) { console.error('Story card export error', e); }
     };
+
 
     const timer = setTimeout(() => generateCard().catch(e => console.error('Story card error', e)), 200);
     return () => clearTimeout(timer);

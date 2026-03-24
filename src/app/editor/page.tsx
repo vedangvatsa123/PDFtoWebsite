@@ -1249,7 +1249,12 @@ export default function EditorPage() {
                                                                 const W = 1080, H = 1920;
                                                                 const canvas = document.createElement('canvas');
                                                                 canvas.width = W; canvas.height = H;
-                                                                const ctx = canvas.getContext('2d')!;
+                                                                const ctx = canvas.getContext('2d');
+                                                                if (!ctx) return;
+                                                                // roundRect polyfill
+                                                                const rr = (x: number, y: number, w: number, h: number, r: number) => { ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); };
+                                                                // Solid background first
+                                                                ctx.fillStyle = '#0f0d2e'; ctx.fillRect(0, 0, W, H);
                                                                 const grad = ctx.createLinearGradient(0, 0, W, H);
                                                                 grad.addColorStop(0, '#0f0d2e'); grad.addColorStop(0.45, '#2d2b7a'); grad.addColorStop(1, '#3b1f6e');
                                                                 ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
@@ -1261,26 +1266,30 @@ export default function EditorPage() {
                                                                 ctx.fillText('CVin.Bio', W / 2, 180);
                                                                 ctx.strokeStyle = 'rgba(129,140,248,0.3)'; ctx.lineWidth = 1.5;
                                                                 ctx.beginPath(); ctx.moveTo(240, 220); ctx.lineTo(840, 220); ctx.stroke();
+                                                                // Load photo via same-origin proxy
+                                                                const hasPhoto = !!profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos');
+                                                                const photoRadius = 170; const photoCY = 620;
+                                                                const nameCY = hasPhoto ? 880 : 760;
+                                                                if (hasPhoto) {
+                                                                    await new Promise<void>(resolve => {
+                                                                        const img = new window.Image();
+                                                                        img.onload = () => { const cx = W/2; ctx.save(); ctx.shadowColor='rgba(129,140,248,0.7)'; ctx.shadowBlur=50; ctx.beginPath(); ctx.arc(cx,photoCY,photoRadius+8,0,Math.PI*2); ctx.fillStyle='rgba(99,102,241,0.25)'; ctx.fill(); ctx.restore(); ctx.beginPath(); ctx.arc(cx,photoCY,photoRadius+5,0,Math.PI*2); ctx.strokeStyle='rgba(165,180,252,0.7)'; ctx.lineWidth=4; ctx.stroke(); ctx.save(); ctx.beginPath(); ctx.arc(cx,photoCY,photoRadius,0,Math.PI*2); ctx.clip(); ctx.drawImage(img,cx-photoRadius,photoCY-photoRadius,photoRadius*2,photoRadius*2); ctx.restore(); resolve(); };
+                                                                        img.onerror = () => resolve();
+                                                                        img.src = `/api/avatar/${profile.slug}`;
+                                                                    });
+                                                                }
                                                                 const name = profile.fullName || '';
-                                                                ctx.fillStyle = 'rgba(255,255,255,0.97)';
-                                                                let fs = 108; ctx.font = `bold ${fs}px ${font}`;
+                                                                ctx.fillStyle = 'rgba(255,255,255,0.97)'; let fs = 108; ctx.font = `bold ${fs}px ${font}`;
                                                                 while (ctx.measureText(name).width > 920 && fs > 56) { fs -= 4; ctx.font = `bold ${fs}px ${font}`; }
-                                                                ctx.fillText(name, W / 2, 780);
-                                                                ctx.fillStyle = 'rgba(199,210,254,0.82)'; ctx.font = `400 56px ${font}`;
-                                                                ctx.fillText('pdf is dead.', W / 2, 880);
-                                                                ctx.font = `400 52px ${font}`; ctx.fillText("here's my link ↓", W / 2, 960);
+                                                                ctx.fillText(name, W / 2, nameCY);
                                                                 const urlText = `cvin.bio/${profile.slug}`;
-                                                                ctx.fillStyle = 'rgba(99,102,241,0.18)'; ctx.strokeStyle = 'rgba(165,180,252,0.35)'; ctx.lineWidth = 2;
-                                                                ctx.beginPath(); ctx.roundRect(120, 1080, 840, 130, 28); ctx.fill(); ctx.stroke();
+                                                                const pillY = nameCY + 110;
+                                                                ctx.fillStyle = 'rgba(99,102,241,0.2)'; ctx.strokeStyle = 'rgba(165,180,252,0.4)'; ctx.lineWidth = 2;
+                                                                rr(120, pillY, 840, 130, 28); ctx.fill(); ctx.stroke();
                                                                 let ufs = 76; ctx.font = `bold ${ufs}px ${font}`;
                                                                 while (ctx.measureText(urlText).width > 780 && ufs > 44) { ufs -= 4; ctx.font = `bold ${ufs}px ${font}`; }
-                                                                ctx.fillStyle = 'white'; ctx.fillText(urlText, W / 2, 1162);
-                                                                ctx.fillStyle = 'rgba(148,163,184,0.5)'; ctx.font = `400 38px ${font}`;
-                                                                ctx.fillText('Scan · Click · Connect', W / 2, 1800);
-                                                                const a = document.createElement('a');
-                                                                a.href = canvas.toDataURL('image/png');
-                                                                a.download = `cvin-${profile.slug}.png`;
-                                                                a.click();
+                                                                ctx.fillStyle = 'white'; ctx.fillText(urlText, W / 2, pillY + 82);
+                                                                try { const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = `cvin-${profile.slug}.png`; a.click(); } catch(e) { console.error('Story card export', e); }
                                                             };
                                                             return (
                                                                 <div className="flex flex-col gap-0.5">
@@ -1295,6 +1304,10 @@ export default function EditorPage() {
                                                                     <button onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank')} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
                                                                         <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#0A66C2] shrink-0" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                                                                         LinkedIn
+                                                                    </button>
+                                                                    <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank')} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
+                                                                        <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#1877F2] shrink-0" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                                                        Facebook
                                                                     </button>
                                                                     <div className="h-px bg-border my-1" />
                                                                     <button onClick={() => { navigator.clipboard.writeText(url); toast({ title: 'Link copied!' }); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">

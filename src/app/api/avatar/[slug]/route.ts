@@ -14,17 +14,28 @@ export async function GET(req: NextRequest, props: { params: Promise<{ slug: str
 
   const avatar = data.profile.avatarUrl;
   
-  // If it's a standard HTTP link, optimize and redirect
+  // If it's a standard HTTP link, fetch and pipe it from our origin
+  // This avoids canvas CORS taint when drawing user photos on canvas story cards
   if (avatar.startsWith('http')) {
-    // Normalize Google avatar URLs to 400px for a compact, fast preview size
     let optimizedUrl = avatar;
     if (avatar.includes('googleusercontent.com')) {
-      optimizedUrl = avatar.replace(/=s\d+-c/, '=s200-c').replace(/=s\d+$/, '=s200');
-      if (!optimizedUrl.includes('=s200')) optimizedUrl = avatar + '=s200-c';
+      optimizedUrl = avatar.replace(/=s\d+-c/, '=s400-c').replace(/=s\d+$/, '=s400');
+      if (!optimizedUrl.includes('=s400')) optimizedUrl = avatar + '=s400-c';
     }
-    return NextResponse.redirect(optimizedUrl, {
-      headers: { 'Cache-Control': 'public, max-age=900, stale-while-revalidate=3600' }
-    });
+    try {
+      const upstream = await fetch(optimizedUrl, { headers: { 'User-Agent': 'CVinBio/1.0' } });
+      if (!upstream.ok) return new NextResponse('Upstream error', { status: 502 });
+      const contentType = upstream.headers.get('content-type') || 'image/jpeg';
+      return new NextResponse(upstream.body, {
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=900, stale-while-revalidate=3600',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } catch {
+      return new NextResponse('Fetch failed', { status: 502 });
+    }
   }
 
   // If it's a Base64 string, parse and serve the binary image natively!
