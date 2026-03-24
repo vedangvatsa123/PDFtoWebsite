@@ -87,20 +87,14 @@ function getLinkIcon(type: string): { Icon: React.ComponentType<any>; color: str
   return { Icon: Globe, color: '#4285F4' };
 }
 
-function LinkifiedText({ text }: { text?: string }) {
-  if (!text) return null;
+function LinkifiedLine({ text }: { text: string }) {
   const urlRegex = /((?:https?:\/\/|www\.)[^\s<>()[\]{}]+)/gi;
-  
   const parts = text.split(urlRegex);
-  
   return (
     <>
       {parts.map((part, i) => {
         if (part.match(urlRegex)) {
-          let href = part;
-          if (!href.startsWith('http')) {
-            href = 'https://' + href;
-          }
+          const href = part.startsWith('http') ? part : 'https://' + part;
           return (
             <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-foreground underline decoration-muted-foreground/40 hover:decoration-foreground transition-colors">
               {part}
@@ -112,6 +106,63 @@ function LinkifiedText({ text }: { text?: string }) {
     </>
   );
 }
+
+// Detects if a line is a bullet point (•, -, *, or numbered like "1.")
+function isBulletLine(line: string): boolean {
+  return /^(\s*)(•|-|\*|\d+\.)\s+/.test(line);
+}
+
+function stripBulletPrefix(line: string): string {
+  return line.replace(/^(\s*)(•|-|\*|\d+\.)\s+/, '').trim();
+}
+
+function StructuredText({ text }: { text?: string }) {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+  const blocks: Array<{ type: 'bullet' | 'para'; lines: string[] }> = [];
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue; // skip blank lines between sections
+
+    if (isBulletLine(line)) {
+      // Append to existing bullet block or start a new one
+      if (blocks.length > 0 && blocks[blocks.length - 1].type === 'bullet') {
+        blocks[blocks.length - 1].lines.push(line);
+      } else {
+        blocks.push({ type: 'bullet', lines: [line] });
+      }
+    } else {
+      // Plain paragraph — always start its own block
+      blocks.push({ type: 'para', lines: [line] });
+    }
+  }
+
+  return (
+    <div className="space-y-1.5">
+      {blocks.map((block, bi) => {
+        if (block.type === 'bullet') {
+          return (
+            <ul key={bi} className="list-disc list-outside ml-4 space-y-0.5">
+              {block.lines.map((line, li) => (
+                <li key={li} className="text-xs text-muted-foreground leading-relaxed">
+                  <LinkifiedLine text={stripBulletPrefix(line)} />
+                </li>
+              ))}
+            </ul>
+          );
+        }
+        return (
+          <p key={bi} className="text-xs text-muted-foreground leading-relaxed">
+            <LinkifiedLine text={block.lines[0]} />
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 
 export default function TemplateModern(props: ProfileData) {
   const { profile, workExperience, education, customSections } = props;
@@ -361,9 +412,11 @@ export default function TemplateModern(props: ProfileData) {
                   <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2.5">
                     Experience
                   </h2>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {workExperience.map(job => (
-                      <div key={job.id} className="avoid-break">
+                      <div key={job.id} className="avoid-break relative pl-4 border-l-2 border-indigo-200/70 dark:border-indigo-700/50">
+                        {/* Timeline dot */}
+                        <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-indigo-400/80 dark:bg-indigo-500/80" />
                         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                           <div>
                             <h3 className="text-sm font-semibold text-foreground">{job.title}</h3>
@@ -374,9 +427,9 @@ export default function TemplateModern(props: ProfileData) {
                           </span>
                         </div>
                         {job.description && (
-                          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                            <LinkifiedText text={job.description} />
-                          </p>
+                          <div className="mt-1.5">
+                            <StructuredText text={job.description} />
+                          </div>
                         )}
                       </div>
                     ))}
@@ -406,9 +459,9 @@ export default function TemplateModern(props: ProfileData) {
                           </span>
                         </div>
                         {edu.description && (
-                          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                            <LinkifiedText text={edu.description} />
-                          </p>
+                          <div className="mt-1.5">
+                            <StructuredText text={edu.description} />
+                          </div>
                         )}
                       </div>
                     ))}
@@ -460,9 +513,9 @@ export default function TemplateModern(props: ProfileData) {
                           )}
                         </div>
                         {item.description && (
-                          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                            <LinkifiedText text={item.description} />
-                          </p>
+                          <div className="mt-1.5">
+                            <StructuredText text={item.description} />
+                          </div>
                         )}
                       </div>
                     ))}

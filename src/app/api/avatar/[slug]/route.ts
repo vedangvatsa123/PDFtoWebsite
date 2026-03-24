@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProfileBySlug } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
 
@@ -11,9 +14,17 @@ export async function GET(req: NextRequest, props: { params: Promise<{ slug: str
 
   const avatar = data.profile.avatarUrl;
   
-  // If it's a standard HTTP link, simply redirect to it so the crawler fetches it directly
+  // If it's a standard HTTP link, optimize and redirect
   if (avatar.startsWith('http')) {
-    return NextResponse.redirect(avatar);
+    // Normalize Google avatar URLs to 400px for a compact, fast preview size
+    let optimizedUrl = avatar;
+    if (avatar.includes('googleusercontent.com')) {
+      optimizedUrl = avatar.replace(/=s\d+-c/, '=s200-c').replace(/=s\d+$/, '=s200');
+      if (!optimizedUrl.includes('=s200')) optimizedUrl = avatar + '=s200-c';
+    }
+    return NextResponse.redirect(optimizedUrl, {
+      headers: { 'Cache-Control': 'public, max-age=900, stale-while-revalidate=3600' }
+    });
   }
 
   // If it's a Base64 string, parse and serve the binary image natively!
@@ -26,7 +37,9 @@ export async function GET(req: NextRequest, props: { params: Promise<{ slug: str
       return new NextResponse(buffer, {
         headers: {
           'Content-Type': `image/${type}`,
-          'Cache-Control': 'public, max-age=86400, immutable'
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         }
       });
     }
