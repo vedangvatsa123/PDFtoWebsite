@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     const usersWithLinks = profiles.filter(p => Array.isArray(p.links) && p.links.length > 0).length;
     const avgViews = totalUsers > 0 ? Math.round(totalViews / totalUsers) : 0;
 
-    // ── Signup trend (last 30 days) ──
+    // ── Signup trend (last 30 days) — use profiles.created_at (works without service key) ──
     const signupsByDay: Record<string, number> = {};
     const now = new Date();
     for (let i = 29; i >= 0; i--) {
@@ -65,8 +65,11 @@ export async function GET(request: NextRequest) {
       const key = d.toISOString().split('T')[0];
       signupsByDay[key] = 0;
     }
-    for (const u of authUsers) {
-      const day = new Date(u.created_at).toISOString().split('T')[0];
+    const signupSource = authUsers.length > 0 ? authUsers : profiles;
+    for (const u of signupSource) {
+      const createdAt = u.created_at;
+      if (!createdAt) continue;
+      const day = new Date(createdAt).toISOString().split('T')[0];
       if (day in signupsByDay) signupsByDay[day]++;
     }
     const signupTrend = Object.entries(signupsByDay).map(([date, count]) => ({ date, count }));
