@@ -48,6 +48,18 @@ function generateBaseSlug(name: string) {
   return base || 'user';
 }
 
+// Convert ALL CAPS names to Title Case (leaves mixed-case names untouched)
+function smartTitleCase(name: string): string {
+  if (!name) return name;
+  // Only convert if the name is ALL CAPS (or all lowercase)
+  const isAllCaps = name === name.toUpperCase() && /[A-Z]/.test(name);
+  const isAllLower = name === name.toLowerCase();
+  if (isAllCaps || isAllLower) {
+    return name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  }
+  return name;
+}
+
 const ResumeUploadPrompt = ({ onFileChange, isGenerating }: { onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void, isGenerating: boolean }) => (
     <label htmlFor="resume-upload" className={`flex w-full items-center justify-center rounded-lg border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 py-4 px-6 text-center transition-colors mb-4 ${isGenerating ? 'pointer-events-none opacity-60' : 'cursor-pointer'}`}>
         {isGenerating ? (
@@ -562,7 +574,7 @@ export default function EditorPage() {
             // --- SHARED UI UPDATE (Instant) ---
             setProfile(prev => ({
                 ...prev,
-                fullName: extractedData.personalInfo?.fullName || prev.fullName || '',
+                fullName: smartTitleCase(extractedData.personalInfo?.fullName || '') || prev.fullName || '',
                 email: extractedData.personalInfo?.email || prev.email || '',
                 phone: extractedData.personalInfo?.phone || prev.phone || '',
                 location: extractedData.personalInfo?.location || prev.location || '',
@@ -611,7 +623,7 @@ export default function EditorPage() {
                 const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
                 const updatedProfile = {
                     id: user.id,
-                    full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
+                    full_name: smartTitleCase(extractedData.personalInfo?.fullName || '') || currentProfile?.full_name || '',
                     username: currentProfile?.username || slug,
                     about: extractedData.summary || currentProfile?.about || '',
                     profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || '',
@@ -721,7 +733,7 @@ export default function EditorPage() {
 
                         const updatedProfile = {
                             id: user.id,
-                            full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
+                            full_name: smartTitleCase(extractedData.personalInfo?.fullName || '') || currentProfile?.full_name || user.user_metadata?.full_name || '',
                             username: finalSlug,
                             about: extractedData.summary || currentProfile?.about || '',
                             profile_picture_url: extractedData.personalInfo?.avatarUrl || currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || '',
