@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/auth';
+import { createClient } from '@/utils/supabase/client';
 import Header from '@/components/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -96,9 +97,14 @@ export default function AdminPage() {
   useEffect(() => {
     if (isUserLoading) return;
     if (!user || !ADMIN_EMAILS.includes(user.email || '')) { router.replace('/'); return; }
-    fetch('/api/admin/analytics')
-      .then(r => { if (!r.ok) throw new Error('Unauthorized'); return r.json(); })
-      .then(setData).catch(e => setError(e.message)).finally(() => setLoading(false));
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const token = session?.access_token;
+      if (!token) { setError('No session'); setLoading(false); return; }
+      fetch('/api/admin/analytics', { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => { if (!r.ok) throw new Error('Unauthorized'); return r.json(); })
+        .then(setData).catch(e => setError(e.message)).finally(() => setLoading(false));
+    });
   }, [user, isUserLoading, router]);
 
   if (isUserLoading || loading) return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;

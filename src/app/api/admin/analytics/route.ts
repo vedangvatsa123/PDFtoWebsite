@@ -1,26 +1,30 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
-import { createClient } from '@/utils/supabase/server';
 
 // Only these emails can access the admin dashboard
 const ADMIN_EMAILS = ['vatsvedang@gmail.com'];
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // 1. Auth check — must be logged in as admin
-    const supabaseUser = await createClient();
-    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
-
-    if (authError || !user || !ADMIN_EMAILS.includes(user.email || '')) {
-      console.error('Admin auth failed:', { authError: authError?.message, userEmail: user?.email, hasUser: !!user });
+    // 1. Auth check — verify token from Authorization header
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.replace('Bearer ', '');
+    if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // 2. Use service role for full DB access
     const supabase = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user || !ADMIN_EMAILS.includes(user.email || '')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // supabase is already the service-role client from above
 
     // ── Parallel queries for speed ──
     const [
