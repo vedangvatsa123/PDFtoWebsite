@@ -102,7 +102,7 @@ export default function AdminPage() {
       const token = session?.access_token;
       if (!token) { setError('No session'); setLoading(false); return; }
       fetch('/api/admin/analytics', { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => { if (!r.ok) throw new Error('Unauthorized'); return r.json(); })
+        .then(async r => { if (!r.ok) { const d = await r.json(); throw new Error(JSON.stringify(d)); } return r.json(); })
         .then(setData).catch(e => setError(e.message)).finally(() => setLoading(false));
     });
   }, [user, isUserLoading, router]);

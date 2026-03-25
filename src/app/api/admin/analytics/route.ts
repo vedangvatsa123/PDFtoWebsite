@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('Authorization');
     const token = authHeader?.replace('Bearer ', '');
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ error: 'No token provided', debug: 'Authorization header missing' }, { status: 403 });
     }
 
     const supabase = createAdminClient(
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user || !ADMIN_EMAILS.includes(user.email || '')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ error: 'Unauthorized', debug: { authError: authError?.message, email: user?.email, hasUser: !!user } }, { status: 403 });
     }
 
     // supabase is already the service-role client from above
