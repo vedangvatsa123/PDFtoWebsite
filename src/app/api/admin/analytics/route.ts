@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No token provided', debug: 'Authorization header missing' }, { status: 403 });
     }
 
-    const supabase = createAdminClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createAdminClient(supabaseUrl, serviceKey || anonKey);
 
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
@@ -24,21 +24,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized', debug: { authError: authError?.message, email: user?.email, hasUser: !!user } }, { status: 403 });
     }
 
-    // supabase is already the service-role client from above
-
-    // ── Parallel queries for speed ──
-    const [
-      profilesRes,
-      authUsersRes,
-      parseLogsRes,
-    ] = await Promise.all([
+    const [profilesRes] = await Promise.all([
       supabase.from('profiles').select('id, full_name, username, profile_picture_url, views, skills, experience, education, custom_sections, links, created_at, updated_at'),
-      supabase.auth.admin.listUsers({ perPage: 1000 }),
-      supabase.from('parse_logs').select('id, user_id, ip, created_at').order('created_at', { ascending: false }).limit(500),
     ]);
 
+    // parse_logs may not exist — gracefully handle
+    let parseLogsRes: any = { data: null };
+    try { parseLogsRes = await supabase.from('parse_logs').select('id, user_id, ip, created_at').order('created_at', { ascending: false }).limit(500); } catch { /* table may not exist */ }
+
+    // listUsers requires service role key — gracefully skip if unavailable
+    let authUsers: any[] = [];
+    if (serviceKey) {
+      try {
+        const authUsersRes = await supabase.auth.admin.listUsers({ perPage: 1000 });
+        authUsers = authUsersRes.data?.users || [];
+      } catch { /* service role key not available */ }
+    }
+
     const profiles = profilesRes.data || [];
-    const authUsers = authUsersRes.data?.users || [];
     const parseLogs = parseLogsRes.data || [];
 
     // ── KPIs ──
