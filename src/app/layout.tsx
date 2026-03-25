@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import { SupabaseClientProvider } from '@/auth';
+import { PostHogProvider } from '@/components/posthog-provider';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -89,17 +90,19 @@ export default function RootLayout({
         inter.variable
         )}>
         <SupabaseClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-            <Analytics />
-            <SpeedInsights />
-          </ThemeProvider>
+          <PostHogProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster />
+              <Analytics />
+              <SpeedInsights />
+            </ThemeProvider>
+          </PostHogProvider>
         </SupabaseClientProvider>
       </body>
     </html>
