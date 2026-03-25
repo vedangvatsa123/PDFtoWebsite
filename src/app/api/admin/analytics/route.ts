@@ -12,6 +12,7 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
 
     if (authError || !user || !ADMIN_EMAILS.includes(user.email || '')) {
+      console.error('Admin auth failed:', { authError: authError?.message, userEmail: user?.email, hasUser: !!user });
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
