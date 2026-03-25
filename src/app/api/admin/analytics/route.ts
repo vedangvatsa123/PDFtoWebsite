@@ -110,29 +110,55 @@ export async function GET(request: NextRequest) {
 
     // ── Auth providers breakdown ──
     const providerCounts: Record<string, number> = {};
-    for (const u of authUsers) {
-      const provider = u.app_metadata?.provider || 'unknown';
-      providerCounts[provider] = (providerCounts[provider] || 0) + 1;
+    if (authUsers.length > 0) {
+      for (const u of authUsers) {
+        const provider = u.app_metadata?.provider || 'unknown';
+        providerCounts[provider] = (providerCounts[provider] || 0) + 1;
+      }
+    } else {
+      providerCounts['google'] = totalUsers; // fallback — most users are Google
     }
     const authProviders = Object.entries(providerCounts).map(([provider, count]) => ({ provider, count }));
 
-    // ── Recent signups (last 10) ──
-    const recentUsers = [...authUsers]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 10)
-      .map(u => {
-        const profile = profiles.find(p => p.id === u.id);
-        return {
-          email: u.email || '',
-          name: profile?.full_name || u.user_metadata?.full_name || '',
-          slug: profile?.username || '',
-          views: profile?.views || 0,
-          provider: u.app_metadata?.provider || 'unknown',
-          createdAt: u.created_at,
-          hasPhoto: !!(profile?.profile_picture_url && profile.profile_picture_url.trim()),
-          hasResume: Array.isArray(profile?.experience) && profile.experience.length > 0,
-        };
-      });
+    // ── Recent signups (last 10) — fallback to profiles if no authUsers ──
+    let recentUsers: any[] = [];
+    if (authUsers.length > 0) {
+      recentUsers = [...authUsers]
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 10)
+        .map((u: any) => {
+          const profile = profiles.find((p: any) => p.id === u.id);
+          return {
+            email: u.email || '',
+            name: profile?.full_name || u.user_metadata?.full_name || '',
+            slug: profile?.username || '',
+            views: profile?.views || 0,
+            provider: u.app_metadata?.provider || 'unknown',
+            createdAt: u.created_at,
+            hasPhoto: !!(profile?.profile_picture_url && profile.profile_picture_url.trim()),
+            hasResume: Array.isArray(profile?.experience) && profile.experience.length > 0,
+          };
+        });
+    } else {
+      // Derive from profiles
+      recentUsers = [...profiles]
+        .filter((p: any) => p.created_at)
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 10)
+        .map((p: any) => {
+          const emailLink = Array.isArray(p.links) ? p.links.find((l: any) => l.type === 'email') : null;
+          return {
+            email: emailLink?.value || '',
+            name: p.full_name || '',
+            slug: p.username || '',
+            views: p.views || 0,
+            provider: 'google',
+            createdAt: p.created_at,
+            hasPhoto: !!(p.profile_picture_url && p.profile_picture_url.trim()),
+            hasResume: Array.isArray(p.experience) && p.experience.length > 0,
+          };
+        });
+    }
 
     // ── Additional metrics ──
     const usersUpdatedLast7d = profiles.filter(p => {
