@@ -7,13 +7,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/editor', '/api/'],
+        disallow: ['/editor', '/api/', '/admin'],
       },
       // Allow AI crawlers to index public profile pages
       {
         userAgent: ['GPTBot', 'ClaudeBot', 'PerplexityBot', 'Googlebot'],
         allow: '/',
-        disallow: ['/editor', '/api/'],
+        disallow: ['/editor', '/api/', '/admin'],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,

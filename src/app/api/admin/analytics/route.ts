@@ -123,16 +123,66 @@ export async function GET() {
         };
       });
 
+    // ── Additional metrics ──
+    const usersUpdatedLast7d = profiles.filter(p => {
+      if (!p.updated_at) return false;
+      const diff = Date.now() - new Date(p.updated_at).getTime();
+      return diff < 7 * 24 * 60 * 60 * 1000;
+    }).length;
+
+    const totalSkillsCount = profiles.reduce((sum, p) => sum + (Array.isArray(p.skills) ? p.skills.length : 0), 0);
+    const avgSkillsPerUser = totalUsers > 0 ? Math.round(totalSkillsCount / totalUsers * 10) / 10 : 0;
+
+    const totalLinksCount = profiles.reduce((sum, p) => sum + (Array.isArray(p.links) ? p.links.length : 0), 0);
+
+    const viewsSorted = profiles.map(p => p.views || 0).sort((a, b) => a - b);
+    const medianViews = viewsSorted.length > 0 ? viewsSorted[Math.floor(viewsSorted.length / 2)] : 0;
+    const zeroViewProfiles = profiles.filter(p => !p.views || p.views === 0).length;
+
+    const totalWorkEntries = profiles.reduce((sum, p) => sum + (Array.isArray(p.experience) ? p.experience.length : 0), 0);
+    const totalEduEntries = profiles.reduce((sum, p) => sum + (Array.isArray(p.education) ? p.education.length : 0), 0);
+
+    // ── Product Timeline (curated milestones) ──
+    const productTimeline = [
+      { date: '2026-03-25', tag: 'security', title: 'Admin Dashboard & Schema Hardening', desc: 'Admin analytics, server-side account deletion, Supabase-backed rate limiting, 8 schema fixes' },
+      { date: '2026-03-25', tag: 'legal', title: 'Contact Email & Legal Updates', desc: 'Added hi@cvin.bio to Privacy Policy and Terms of Service' },
+      { date: '2026-03-24', tag: 'feature', title: 'Celebration Modal & Social Sharing', desc: 'Confetti, share to LinkedIn/X/WhatsApp/Facebook, story card generator, 15 rotating copy options per platform' },
+      { date: '2026-03-24', tag: 'feature', title: 'Social Links Editor', desc: 'Add/remove Twitter, Instagram, Dribbble, or any custom platform link' },
+      { date: '2026-03-24', tag: 'design', title: 'OG Image Overhaul', desc: 'Symmetrical OG card with proportional type scale, smart caching, avatar proxy for social unfurling' },
+      { date: '2026-03-24', tag: 'feature', title: 'Complete 404 Page Redesign', desc: 'Beautiful CTA-driven 404 with feature showcase' },
+      { date: '2026-03-24', tag: 'fix', title: 'QA Audit — 18 Bug Fixes', desc: '5 rounds of QA: data loss prevention, race conditions, UX polish' },
+      { date: '2026-03-23', tag: 'feature', title: 'Real-Time Editor Preview', desc: 'Live preview tab synced via BroadcastChannel, avatar cropping' },
+      { date: '2026-03-23', tag: 'content', title: 'Blog Architecture Refactor', desc: '69 GEO-optimized FAQs, hydration fixes, article guidelines doc' },
+      { date: '2026-03-23', tag: 'fix', title: 'QA — 13 Edge Cases Fixed', desc: 'Critical data loss bugs, stale localStorage prevention, guest avatar handling' },
+      { date: '2026-03-23', tag: 'seo', title: 'SEO Pipeline Hardening', desc: 'Sitemap, llms.txt, AI crawler indexing, semantic metadata' },
+      { date: '2026-03-22', tag: 'security', title: 'XSS & CORS Vulnerability Patched', desc: 'Stored XSS in schema-ld, CORS poisoning in PDF exports sealed' },
+      { date: '2026-03-22', tag: 'feature', title: 'Multi-Format CV Upload', desc: 'PDF, DOC, DOCX, RTF, TXT, and image (photo of CV) support' },
+      { date: '2026-03-22', tag: 'feature', title: 'AI Resume Parser — Gemini 2.5 Flash', desc: 'Vision + text pipeline, retry logic, regex fallback, OCR cleaning' },
+      { date: '2026-03-22', tag: 'feature', title: 'One-Click PDF Download', desc: 'html2pdf.js export with Name-CVinBio.pdf naming' },
+      { date: '2026-03-22', tag: 'feature', title: 'Magic Link Authentication', desc: 'Passwordless sign-in via email magic links + Google OAuth' },
+      { date: '2026-03-22', tag: 'feature', title: 'Real-Time Slug Validation', desc: 'Live URL availability checking with uniqueness enforcement' },
+      { date: '2026-03-22', tag: 'design', title: 'Professional Favicon & PWA', desc: 'Sharp SVG favicon, PWA manifest, apple touch icons' },
+      { date: '2026-03-22', tag: 'content', title: 'Blog Launch — 8 Original Articles', desc: 'Human-written content with FAQs, internal linking, read-next sections' },
+      { date: '2026-03-22', tag: 'feature', title: 'Guest CV Upload', desc: 'Parse and preview your resume without creating an account' },
+    ];
+
     return NextResponse.json({
       kpis: {
         totalUsers,
         totalViews,
         totalParses,
         avgViews,
+        medianViews,
         usersWithPhoto,
         usersWithExperience,
         usersWithEducation,
         usersWithSkills,
+        usersUpdatedLast7d,
+        zeroViewProfiles,
+        avgSkillsPerUser,
+        totalLinksCount,
+        totalWorkEntries,
+        totalEduEntries,
       },
       signupTrend,
       topProfiles,
@@ -140,6 +190,7 @@ export async function GET() {
       completeness,
       authProviders,
       recentUsers,
+      productTimeline,
     });
   } catch (error) {
     console.error('Admin analytics error:', error);
