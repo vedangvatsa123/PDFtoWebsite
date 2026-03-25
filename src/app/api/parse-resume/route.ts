@@ -42,7 +42,7 @@ const ALLOWED_TYPES: Record<string, string> = {
   'image/heif': 'image',
 };
 
-// Rate Limiter: Max 10 parses per IP per hour
+// Rate Limiter: In-memory for guests (best-effort in serverless), Supabase-backed for auth users
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 60 * 60 * 1000;
@@ -59,9 +59,55 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+async function isUserRateLimited(userId: string): Promise<boolean> {
+  try {
+    const supabaseAdmin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const oneHourAgo = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
+    const { count } = await supabaseAdmin
+      .from('parse_logs')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .gte('created_at', oneHourAgo);
+    return (count || 0) >= RATE_LIMIT;
+  } catch {
+    return false; // Fail open — don't block if DB is unreachable
+  }
+}
+
+async function logParseEvent(userId: string | null, ip: string): Promise<void> {
+  if (!userId) return;
+  try {
+    const supabaseAdmin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabaseAdmin.from('parse_logs').insert({ user_id: userId, ip });
+  } catch {
+    // Non-fatal
+  }
+}
+
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  if (isRateLimited(ip)) {
+
+  // Auth-based rate limiting (persistent across cold starts)
+  let authUserId: string | null = null;
+  try {
+    const supabaseUser = await createClient();
+    const { data: { user } } = await supabaseUser.auth.getUser();
+    if (user) {
+      authUserId = user.id;
+      if (await isUserRateLimited(user.id)) {
+        return NextResponse.json({ error: 'Too many requests. Max 10 uploads per hour.' }, { status: 429 });
+      }
+    }
+  } catch { /* continue without auth rate limiting */ }
+
+  // Fallback IP-based rate limiting (best-effort for guests)
+  if (!authUserId && isRateLimited(ip)) {
     console.warn(`Rate limit hit: ${ip}`);
     return NextResponse.json({ error: 'Too many requests. Max 10 uploads per hour.' }, { status: 429 });
   }
@@ -389,6 +435,9 @@ export async function POST(request: NextRequest) {
         },
         ip,
       }));
+
+      // Log parse event for rate limiting (non-blocking)
+      logParseEvent(authUserId, ip);
 
       return NextResponse.json(aiStructuredData, { status: 200 });
 

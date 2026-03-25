@@ -48,11 +48,3 @@ export const useUser = (): UserHookResult => {
   return context;
 };
 
-// Dummy hook for compatibility with older code while we transition
-export const useAuth = () => {
-  return createClient().auth;
-};
-
-export const useFirestore = () => {
-  return null; // We are removing firestore, this will break if still used but we will remove it where needed.
-}

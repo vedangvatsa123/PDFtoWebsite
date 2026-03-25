@@ -1586,11 +1586,12 @@ export default function EditorPage() {
                             onClick={async () => {
                                 if (!confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) return;
                                 try {
-                                    if(user) {
-                                        const { error: deleteError } = await supabase.from('profiles').delete().eq('id', user.id);
-                                        if (deleteError) throw new Error(deleteError.message);
-                                        await supabase.auth.signOut();
+                                    const res = await fetch('/api/account', { method: 'DELETE' });
+                                    if (!res.ok) {
+                                        const data = await res.json();
+                                        throw new Error(data.error || 'Deletion failed');
                                     }
+                                    await supabase.auth.signOut();
                                     toast({ title: 'Account deleted', description: 'All your data has been removed.' });
                                     window.location.href = '/';
                                 } catch (err: any) {
