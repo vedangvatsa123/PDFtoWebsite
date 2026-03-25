@@ -11,6 +11,7 @@ import { useUser } from "@/auth";
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from "next/navigation";
 import posthog from 'posthog-js';
+import { GLOBAL_EVENTS } from '@/lib/posthog-events';
 import {
   Tooltip,
   TooltipContent,
@@ -28,7 +29,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         const supabase = createClient();
         try {
             await supabase.auth.signOut();
-            posthog.capture('user_logout');
+            posthog.capture(GLOBAL_EVENTS.USER_LOGOUT);
             posthog.reset();
             router.push('/blog');
         } catch (error: any) {

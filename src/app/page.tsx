@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import posthog from 'posthog-js';
+import { LANDING_EVENTS } from '@/lib/posthog-events';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { UploadCloud, Edit, Loader2 } from 'lucide-react';
@@ -45,7 +46,7 @@ export default function Home() {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        posthog.capture('cv_file_too_large', { file_size: file.size, file_type: file.type });
+        posthog.capture(LANDING_EVENTS.CV_FILE_TOO_LARGE, { file_size: file.size, file_type: file.type });
         toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select a file under 10MB.' });
         event.target.value = '';
         return;
@@ -53,14 +54,14 @@ export default function Home() {
       
       const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf', 'text/rtf', 'text/plain', 'image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
       if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|rtf|txt|jpg|jpeg|png|webp|heic|heif)$/i)) {
-         posthog.capture('cv_invalid_format', { file_type: file.type, file_name: file.name });
+         posthog.capture(LANDING_EVENTS.CV_INVALID_FORMAT, { file_type: file.type, file_name: file.name });
          toast({ variant: 'destructive', title: 'Invalid Format', description: 'Please select a PDF, Word, text, or image file.' });
          event.target.value = '';
          return;
       }
 
       setIsProcessingFile(true);
-      posthog.capture('cv_upload_started', { file_type: file.type, file_size: file.size });
+      posthog.capture(LANDING_EVENTS.CV_UPLOAD_STARTED, { file_type: file.type, file_size: file.size });
       toast({ title: 'Parsing CV...', description: 'Extracting your details, just a moment.' });
 
       try {
@@ -82,13 +83,13 @@ export default function Home() {
         }
         
         const parsed = await res.json();
-        posthog.capture('cv_upload_completed', { file_type: file.type });
+        posthog.capture(LANDING_EVENTS.CV_UPLOAD_COMPLETED, { file_type: file.type });
         sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
         try { localStorage.setItem('parsedResume', JSON.stringify(parsed)); localStorage.setItem('parsedResumeTimestamp', Date.now().toString()); } catch (e) { /* quota exceeded */ }
         router.push('/editor');
       } catch (err) {
          // Network Disconnect 
-         posthog.capture('cv_upload_failed', { error: 'network_error' });
+         posthog.capture(LANDING_EVENTS.CV_UPLOAD_FAILED, { error: 'network_error' });
          toast({ variant: 'destructive', title: 'Network Offline', description: 'Could not connect to the parsing server.' });
       } finally {
         event.target.value = '';

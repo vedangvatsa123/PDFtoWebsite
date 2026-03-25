@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import posthog from 'posthog-js';
+import { EDITOR_EVENTS } from '@/lib/posthog-events';
 
 import Link from 'next/link';
 
@@ -558,7 +559,7 @@ export default function EditorPage() {
         }
         
         setIsGenerating(true);
-        posthog.capture('editor_cv_parse_started', { file_type: resumeFile.type, file_size: resumeFile.size });
+        posthog.capture(EDITOR_EVENTS.CV_PARSE_STARTED, { file_type: resumeFile.type, file_size: resumeFile.size });
         toast({ title: 'Processing CV...', description: `Analyzing ${resumeFile.name}...` });
         
         try {
@@ -640,19 +641,19 @@ export default function EditorPage() {
                 if (upsertError) throw upsertError;
                 
                 toast({ title: 'Success!', description: 'Your profile has been saved.' });
-                posthog.capture('profile_saved', { slug: updatedProfile.username, source: 'cv_parse' });
+                posthog.capture(EDITOR_EVENTS.CV_PARSE_SAVED, { slug: updatedProfile.username, source: 'cv_parse' });
                 await fetchProfileData();
             } else {
                 // Keep session storage AND localStorage in sync for later login transition
                 sessionStorage.setItem('parsedResume', JSON.stringify(extractedData));
                 try { localStorage.setItem('parsedResume', JSON.stringify(extractedData)); localStorage.setItem('parsedResumeTimestamp', Date.now().toString()); } catch (e) { /* quota exceeded */ }
-                posthog.capture('editor_cv_parsed_anon');
+                posthog.capture(EDITOR_EVENTS.CV_PARSE_ANONYMOUS);
                 toast({ title: 'CV Parsed!', description: 'Sign up to publish this profile.' });
             }
         } catch (error) {
             console.error('Upload Process Error:', error);
             const msg = error instanceof Error ? error.message : 'Could not update fields.';
-            posthog.capture('editor_cv_parse_failed', { error: msg });
+            posthog.capture(EDITOR_EVENTS.CV_PARSE_FAILED, { error: msg });
             toast({ variant: 'destructive', title: 'Update Failed', description: msg });
         } finally {
             setIsGenerating(false);
@@ -921,7 +922,7 @@ export default function EditorPage() {
             setSlugSuccess(false);
             await autoSave('profile', user.id, { slug: value });
             setInitialSlug(value);
-            posthog.capture('editor_slug_changed', { new_slug: value });
+            posthog.capture(EDITOR_EVENTS.SLUG_CHANGED, { new_slug: value });
             toast({ title: 'URL Updated!', description: `Your new link is ready.` });
         } else {
             autoSave('profile', user.id, { [name]: value });
@@ -1320,20 +1321,20 @@ export default function EditorPage() {
                                                                         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-foreground shrink-0" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                                                                         X / Twitter
                                                                     </button>
-                                                                    <button onClick={() => { posthog.capture('editor_share_linkedin', { slug: profile.slug }); window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank'); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
+                                                                    <button onClick={() => { posthog.capture(EDITOR_EVENTS.SHARE_LINKEDIN, { slug: profile.slug }); window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank'); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
                                                                         <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#0A66C2] shrink-0" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                                                                         LinkedIn
                                                                     </button>
-                                                                    <button onClick={() => { posthog.capture('editor_share_facebook', { slug: profile.slug }); window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank'); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
+                                                                    <button onClick={() => { posthog.capture(EDITOR_EVENTS.SHARE_FACEBOOK, { slug: profile.slug }); window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank'); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
                                                                         <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#1877F2] shrink-0" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                                                                         Facebook
                                                                     </button>
                                                                     <div className="h-px bg-border my-1" />
-                                                                    <button onClick={() => { posthog.capture('editor_share_link_copied', { slug: profile.slug }); navigator.clipboard.writeText(url); toast({ title: 'Link copied!' }); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
+                                                                    <button onClick={() => { posthog.capture(EDITOR_EVENTS.SHARE_LINK_COPIED, { slug: profile.slug }); navigator.clipboard.writeText(url); toast({ title: 'Link copied!' }); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
                                                                         <Link2 className="h-4 w-4 shrink-0" />
                                                                         Copy link
                                                                     </button>
-                                                                    <button onClick={() => { posthog.capture('editor_share_message_copied', { slug: profile.slug }); navigator.clipboard.writeText(chatMsg); toast({ title: 'Message copied!', description: 'Paste it anywhere to share.' }); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
+                                                                    <button onClick={() => { posthog.capture(EDITOR_EVENTS.SHARE_MESSAGE_COPIED, { slug: profile.slug }); navigator.clipboard.writeText(chatMsg); toast({ title: 'Message copied!', description: 'Paste it anywhere to share.' }); }} className="flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-accent transition-colors text-left text-sm">
                                                                         <Copy className="h-4 w-4 shrink-0" />
                                                                         Copy with message
                                                                     </button>
@@ -1611,7 +1612,7 @@ export default function EditorPage() {
                                         throw new Error(data.error || 'Deletion failed');
                                     }
                                     await supabase.auth.signOut();
-                                    posthog.capture('editor_account_deleted');
+                                    posthog.capture(EDITOR_EVENTS.ACCOUNT_DELETED);
                                     posthog.reset();
                                     toast({ title: 'Account deleted', description: 'All your data has been removed.' });
                                     window.location.href = '/';
@@ -1636,7 +1637,7 @@ export default function EditorPage() {
                                             autoSave('profile', user.id, { avatarUrl: croppedImage });
                                         }
                                         setCropImageSrc(null);
-                                        posthog.capture('editor_photo_updated');
+                                        posthog.capture(EDITOR_EVENTS.PHOTO_UPDATED);
                                         toast({ title: 'Photo updated!' });
                                     }}
                                     onCancel={() => setCropImageSrc(null)}

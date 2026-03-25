@@ -13,6 +13,7 @@ import { useUser } from '@/auth';
 import { createClient } from '@/utils/supabase/client';
 import { Mail } from 'lucide-react';
 import posthog from 'posthog-js';
+import { AUTH_EVENTS } from '@/lib/posthog-events';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -51,10 +52,10 @@ export default function SignUpForm() {
       },
     });
     if (error) {
-      posthog.capture('auth_magic_link_failed', { error: error.message });
+      posthog.capture(AUTH_EVENTS.MAGIC_LINK_FAILED, { error: error.message });
       toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
     } else {
-      posthog.capture('auth_magic_link_sent', { from: fromParam || 'direct' });
+      posthog.capture(AUTH_EVENTS.MAGIC_LINK_SENT, { from: fromParam || 'direct' });
       setEmailSent(true);
     }
     setIsLoading(false);
@@ -62,11 +63,11 @@ export default function SignUpForm() {
 
   const handleGoogleAuth = async () => {
     setIsGoogleLoading(true);
-    posthog.capture('auth_google_clicked', { from: fromParam || 'direct' });
+    posthog.capture(AUTH_EVENTS.GOOGLE_CLICKED, { from: fromParam || 'direct' });
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?next=/editor` } });
     if (error) {
-        posthog.capture('auth_google_failed', { error: error.message });
+        posthog.capture(AUTH_EVENTS.GOOGLE_FAILED, { error: error.message });
         toast({ variant: 'destructive', title: 'Error', description: friendlyAuthError(error.message) });
         setIsGoogleLoading(false);
     }
