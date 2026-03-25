@@ -100,7 +100,8 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">10. Contact Us</h2>
             <p>
-              For any questions or concerns regarding these Terms of Service, please feel free to reach out to our team through our official support contact channels.
+              For any questions or concerns regarding these Terms of Service, please feel free to reach out to our team at{' '}
+              <a href="mailto:hi@cvin.bio" className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500 transition-colors">hi@cvin.bio</a>.
             </p>
           </section>
         </div>

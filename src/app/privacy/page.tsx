@@ -89,7 +89,8 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">8. Contact Us</h2>
             <p>
-              If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact us at our official support email.
+              If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact us at{' '}
+              <a href="mailto:hi@cvin.bio" className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500 transition-colors">hi@cvin.bio</a>.
             </p>
           </section>
         </div>

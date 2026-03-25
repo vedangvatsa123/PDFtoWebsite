@@ -64,7 +64,7 @@ export async function getProfileBySlug(slug: string): Promise<ServerProfileData 
             phone: getLink('phone'),
             location: getLink('location'),
             summary: profile.about || '',
-            themeId: profile.target_role || 'modern-creative',
+            themeId: profile.theme_id || 'modern-creative',
             avatarUrl: profile.profile_picture_url || '',
             avatarHint: 'person portrait',
             website: getLink('website'),

@@ -410,9 +410,9 @@ export default function EditorPage() {
                     linkedin: getLink('linkedin'),
                     summary: p.about || '',
                     slug: finalSlug,
-                    avatarUrl: p.profile_picture_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                    avatarUrl: p.profile_picture_url || '',
                     avatarHint: 'person portrait',
-                    themeId: p.target_role || 'modern-creative',
+                    themeId: p.theme_id || 'modern-creative',
                     viewCount: p.views || 0,
                     skills: p.skills || [],
                 };
@@ -439,7 +439,7 @@ export default function EditorPage() {
                         newSlug = `${baseSlug}${attempt}`;
                     }
                 }
-                const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`, experience: [], education: [], custom_sections: [], skills: [], links: [] };
+                const newProfile = { id: user.id, username: newSlug, full_name: user.user_metadata?.full_name || 'Your Name', profile_picture_url: user.user_metadata?.avatar_url || '', experience: [], education: [], custom_sections: [], skills: [], links: [] };
                 const { error: insertError } = await supabase.from('profiles').upsert(newProfile);
                 if (insertError) console.error('Profile creation error:', insertError);
                 profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: newProfile.profile_picture_url, avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
@@ -613,7 +613,7 @@ export default function EditorPage() {
                     full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || '',
                     username: currentProfile?.username || slug,
                     about: extractedData.summary || currentProfile?.about || '',
-                    profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
+                    profile_picture_url: currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || '',
                     skills: skillsArr,
                     experience: workItemsWithIds,
                     education: eduItemsWithIds,
@@ -723,8 +723,8 @@ export default function EditorPage() {
                             full_name: extractedData.personalInfo?.fullName || currentProfile?.full_name || user.user_metadata?.full_name || '',
                             username: finalSlug,
                             about: extractedData.summary || currentProfile?.about || '',
-                            profile_picture_url: extractedData.personalInfo?.avatarUrl || currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || `https://picsum.photos/seed/${user.id}/200/200`,
-                            target_role: extractedData.themeId || currentProfile?.target_role || 'modern-creative',
+                            profile_picture_url: extractedData.personalInfo?.avatarUrl || currentProfile?.profile_picture_url || user.user_metadata?.avatar_url || '',
+                            theme_id: extractedData.themeId || currentProfile?.theme_id || 'modern-creative',
                             skills: skillsArr,
                             experience: extractedData.workExperience ? workItemsWithIds : (currentProfile?.experience || []),
                             education: extractedData.education ? eduItemsWithIds : (currentProfile?.education || []),
