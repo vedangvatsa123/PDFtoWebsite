@@ -126,6 +126,8 @@ export async function GET(request: NextRequest) {
       phShareEvents,
       phPageviewsTotal,
       phActiveUsersToday,
+      phCvParsesTotal,
+      phCvParsesByDay,
     ] = await Promise.all([
       // 1. Pageviews by day (last 30 days)
       hogql(`
@@ -312,12 +314,29 @@ export async function GET(request: NextRequest) {
         WHERE timestamp >= today()
           AND event = '$pageview'
       `, 'admin_active_today'),
+
+      // 14. Total CV parses (PostHog)
+      hogql(`
+        SELECT count() AS total
+        FROM events
+        WHERE event = 'cv_parse_success'
+          AND timestamp >= now() - interval 30 day
+      `, 'admin_cv_parses_total'),
+
+      // 15. CV parses by day (for trend chart)
+      hogql(`
+        SELECT toDate(timestamp) AS day, count() AS cnt
+        FROM events
+        WHERE event = 'cv_parse_success'
+          AND timestamp >= now() - interval 14 day
+        GROUP BY day ORDER BY day
+      `, 'admin_cv_parses_by_day'),
     ]);
 
     // ── Supabase KPIs (existing) ─────────────────────────────────────────
     const totalUsers = profiles.length;
     const totalViews = profiles.reduce((sum: number, p: any) => sum + (p.views || 0), 0);
-    const totalParses = parseLogs.length;
+    const totalParses = phCvParsesTotal?.[0]?.total || parseLogs.length;
     const usersWithPhoto = profiles.filter((p: any) => p.profile_picture_url && p.profile_picture_url.trim() !== '').length;
     const usersWithExperience = profiles.filter((p: any) => Array.isArray(p.experience) && p.experience.length > 0).length;
     const usersWithEducation = profiles.filter((p: any) => Array.isArray(p.education) && p.education.length > 0).length;
@@ -356,19 +375,32 @@ export async function GET(request: NextRequest) {
       .slice(0, 15)
       .map((p: any) => ({ name: p.full_name || p.username || 'Unknown', slug: p.username, views: p.views || 0 }));
 
-    // ── Parse trend ──
-    const parsesByDay: Record<string, number> = {};
-    for (let i = daysSinceFirst; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const key = d.toISOString().split('T')[0];
-      parsesByDay[key] = 0;
+    // ── Parse trend (prefer PostHog, fallback to parse_logs) ──
+    let parseTrend: { date: string; count: number }[] = [];
+    if (phCvParsesByDay && phCvParsesByDay.length > 0) {
+      const parsesByDay: Record<string, number> = {};
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        parsesByDay[d.toISOString().split('T')[0]] = 0;
+      }
+      for (const row of phCvParsesByDay) {
+        if (row.day in parsesByDay) parsesByDay[row.day] = row.cnt;
+      }
+      parseTrend = Object.entries(parsesByDay).map(([date, count]) => ({ date, count }));
+    } else {
+      const parsesByDay: Record<string, number> = {};
+      for (let i = daysSinceFirst; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        parsesByDay[d.toISOString().split('T')[0]] = 0;
+      }
+      for (const log of parseLogs) {
+        const day = new Date(log.created_at).toISOString().split('T')[0];
+        if (day in parsesByDay) parsesByDay[day]++;
+      }
+      parseTrend = Object.entries(parsesByDay).map(([date, count]) => ({ date, count }));
     }
-    for (const log of parseLogs) {
-      const day = new Date(log.created_at).toISOString().split('T')[0];
-      if (day in parsesByDay) parsesByDay[day]++;
-    }
-    const parseTrend = Object.entries(parsesByDay).map(([date, count]) => ({ date, count }));
 
     // ── Profile completeness ──
     const completeness = {
