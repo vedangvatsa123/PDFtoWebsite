@@ -128,6 +128,12 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
 
 const VIEW_MILESTONES = [10, 50, 100, 500, 1000, 5000];
 
+/** Strip leading bullet chars (•, -, *, etc.) from skill names */
+const cleanSkill = (s: any): string => {
+    const raw = typeof s === 'string' ? s : s?.name || '';
+    return raw.replace(/^[•\-\*▪▸►‣○●]\s*/, '').trim();
+};
+
 type InsightsData = {
     views: number; uniques: number; sparkline: number[];
     sources: { name: string; count: number }[];
@@ -459,12 +465,12 @@ export default function EditorPage() {
                         slug,
                         avatarUrl: data.personalInfo?.avatarUrl,
                         themeId: 'modern-creative',
-                        skills: (data.skills || []).map((s: any) => s.name || s),
+                        skills: (data.skills || []).map(cleanSkill),
                     });
                     setActiveThemeId('modern-creative');
                     setWorkItems((data.workExperience || []).map((w: any, i: number) => ({ ...w, id: `guest-work-${i}`, userProfileId: '' })));
                     setEducationItems((data.education || []).map((e: any, i: number) => ({ ...e, id: `guest-edu-${i}`, userProfileId: '' })));
-                    setSkillItems((data.skills || []).map((s: any) => s.name || s));
+                    setSkillItems((data.skills || []).map(cleanSkill));
                     setCustomSections((data.customSections || []).map((cs: any, i: number) => ({ ...cs, id: cs.id || `guest-cs-${i}`, userProfileId: '' })));
                 } catch (e) {
                     console.error('Failed to restore guest session:', e);
@@ -522,14 +528,14 @@ export default function EditorPage() {
                     avatarHint: 'person portrait',
                     themeId: p.theme_id || 'modern-creative',
                     viewCount: p.views || 0,
-                    skills: p.skills || [],
+                    skills: (p.skills || []).map(cleanSkill),
                 };
                 setProfile(profileData);
                 setInitialSlug(profileData.slug);
                 setActiveThemeId(profileData.themeId);
                 setWorkItems(p.experience || []);
                 setEducationItems(p.education || []);
-                setSkillItems(profileData.skills || []);
+                setSkillItems((profileData.skills || []).map(cleanSkill));
                 setCustomSections(p.custom_sections || []);
             } else {
                 // New user — create a blank profile with a unique slug
@@ -669,7 +675,7 @@ export default function EditorPage() {
             const extractedData = await response.json();
             console.log('CV Parsed Successfully:', extractedData);
 
-            const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
+            const skillsArr = (extractedData.skills || []).map(cleanSkill);
             const slug = extractedData.personalInfo?.slug || generateBaseSlug(extractedData.personalInfo?.fullName || 'user');
 
             // --- SHARED UI UPDATE (Instant) ---
@@ -790,7 +796,7 @@ export default function EditorPage() {
                     // Safe manual update mimicking handleResumeUpload using parsed JSON
                     try {
                         const extractedData = JSON.parse(parsedData);
-                        const skillsArr = (extractedData.skills || []).map((s: any) => s.name || s);
+                        const skillsArr = (extractedData.skills || []).map(cleanSkill);
                         const { data: currentProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
                         
                         const workItemsWithIds = (extractedData.workExperience || []).map((w: any, i: number) => ({ ...w, id: w.id || `work-${Date.now()}-${i}`, userProfileId: user?.id || '' }));
