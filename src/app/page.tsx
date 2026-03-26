@@ -16,11 +16,12 @@ import { useRouter } from 'next/navigation';
 import { LoginDialog } from '@/components/login-dialog';
 import { useUser } from '@/auth';
 
-function StepIndicator({ num, label }: { num: number; label: string }) {
+function StepIndicator({ num, label, desc }: { num: number; label: string; desc: string }) {
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-1.5">
       <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">{num}</div>
       <span className="text-[11px] font-medium uppercase tracking-wider">{label}</span>
+      <span className="text-[10px] text-muted-foreground/60">{desc}</span>
     </div>
   );
 }
@@ -171,11 +172,11 @@ export default function Home() {
               </div>
 
               <div className="flex flex-row items-center justify-between w-full max-w-[600px] text-muted-foreground pt-4 px-2">
-                <StepIndicator num={1} label="Upload" />
+                <StepIndicator num={1} label="Drop your CV" desc="Any format" />
                 <StepDivider />
-                <StepIndicator num={2} label="Customize" />
+                <StepIndicator num={2} label="Get a webpage" desc="Ready to share" />
                 <StepDivider />
-                <StepIndicator num={3} label="Publish" />
+                <StepIndicator num={3} label="Share with recruiters" desc="Just a link" />
               </div>
             </>
           )}
