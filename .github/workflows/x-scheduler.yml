@@ -1,4 +1,4 @@
-name: X Post Scheduler
+name: Social Media Scheduler (X + Bluesky)
 
 on:
   schedule:
@@ -32,10 +32,15 @@ jobs:
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
         run: node .github/scripts/x-post.mjs
 
-      - name: Commit updated post index
+      - name: Post to Bluesky
+        env:
+          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+        run: node .github/scripts/bsky-post.mjs
+
+      - name: Commit updated state
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/scripts/x-state.json
-          git diff --staged --quiet || git commit -m "chore: advance X post index [skip ci]"
+          git add .github/scripts/x-state.json .github/scripts/bsky-state.json
+          git diff --staged --quiet || git commit -m "chore: advance post index [skip ci]"
           git push
