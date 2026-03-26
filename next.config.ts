@@ -1,8 +1,19 @@
 
 import type {NextConfig} from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+  // Use slim PostHog build (97K vs 413K) — strips replay, surveys, toolbar
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.alias['posthog-js'] = path.resolve(
+        process.cwd(), 'node_modules/posthog-js/dist/module.no-external.js'
+      );
+    }
+    return config;
+  },
   images: {
     remotePatterns: [
       {
