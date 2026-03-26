@@ -37,6 +37,7 @@ type Analytics = {
     provider: string; createdAt: string; hasPhoto: boolean; hasResume: boolean;
   }[];
   productTimeline: { date: string; tag: string; title: string; desc: string }[];
+  contactSubmissions: { id: string; email: string; purpose: string; message: string; is_read: boolean; created_at: string }[];
 };
 
 const chartConfig = { count: { label: 'Count', color: 'hsl(var(--foreground))' } } satisfies ChartConfig;
@@ -96,7 +97,7 @@ export default function AdminPage() {
   if (isUserLoading || loading) return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   if (error || !data) return <div className="min-h-screen bg-background flex items-center justify-center"><p className="text-sm text-muted-foreground font-mono max-w-md text-center px-4">{error || 'Failed to load'}</p></div>;
 
-  const { kpis, signupTrend, topProfiles, parseTrend, completeness, authProviders, recentUsers, productTimeline } = data;
+  const { kpis, signupTrend, topProfiles, parseTrend, completeness, authProviders, recentUsers, productTimeline, contactSubmissions } = data;
   const maxViews = topProfiles.length > 0 ? topProfiles[0].views : 1;
 
   return (
@@ -238,6 +239,37 @@ export default function AdminPage() {
             ))}
           </div>
         </Section>
+
+        {/* Contact Submissions */}
+        {contactSubmissions.length > 0 && (
+          <Section title={`Contact submissions (${contactSubmissions.length})`}>
+            <div className="space-y-4">
+              {contactSubmissions.map((s) => (
+                <div key={s.id} className="pb-4 border-b border-border/50 last:border-0 last:pb-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-medium">{s.email}</p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground leading-none">
+                          {s.purpose.replace('-', ' ')}
+                        </span>
+                        {!s.is_read && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" title="Unread" />
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed whitespace-pre-wrap">
+                        {s.message}
+                      </p>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {new Date(s.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
 
         <p className="text-[10px] text-muted-foreground/30 pt-6 pb-8 text-center">admin-only · not indexed</p>
       </main>

@@ -431,7 +431,7 @@ export default function TemplateModern(props: ProfileData) {
                             <p className="text-sm text-muted-foreground">{job.company}</p>
                           </div>
                           <span className="text-xs font-medium text-indigo-600/80 dark:text-indigo-400/80 whitespace-nowrap">
-                            {job.startDate} — {job.endDate || 'Present'}
+                            {job.startDate && job.endDate ? `${job.startDate} — ${job.endDate}` : job.startDate ? `${job.startDate} — Present` : job.endDate || ''}
                           </span>
                         </div>
                         {job.description && (
@@ -463,7 +463,7 @@ export default function TemplateModern(props: ProfileData) {
                             <p className="text-xs text-muted-foreground">{edu.degree}</p>
                           </div>
                           <span className="text-xs font-medium text-indigo-600/80 dark:text-indigo-400/80 whitespace-nowrap">
-                            {edu.startDate} — {edu.endDate || 'Present'}
+                            {edu.startDate && edu.endDate ? `${edu.startDate} — ${edu.endDate}` : edu.startDate || edu.endDate || ''}
                           </span>
                         </div>
                         {edu.description && (

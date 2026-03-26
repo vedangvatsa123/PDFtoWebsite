@@ -32,6 +32,10 @@ export async function GET(request: NextRequest) {
     let parseLogsRes: any = { data: null };
     try { parseLogsRes = await supabase.from('parse_logs').select('id, user_id, ip, created_at').order('created_at', { ascending: false }).limit(500); } catch { /* table may not exist */ }
 
+    // contact_submissions — gracefully handle
+    let contactRes: any = { data: null };
+    try { contactRes = await supabase.from('contact_submissions').select('id, email, purpose, message, is_read, created_at').order('created_at', { ascending: false }).limit(50); } catch { /* table may not exist */ }
+
     // listUsers requires service role key — gracefully skip if unavailable
     let authUsers: any[] = [];
     if (serviceKey) {
@@ -43,6 +47,7 @@ export async function GET(request: NextRequest) {
 
     const profiles = profilesRes.data || [];
     const parseLogs = parseLogsRes.data || [];
+    const contactSubmissions = contactRes.data || [];
 
     // ── KPIs ──
     const totalUsers = profiles.length;
@@ -234,6 +239,7 @@ export async function GET(request: NextRequest) {
       authProviders,
       recentUsers,
       productTimeline,
+      contactSubmissions,
     });
   } catch (error) {
     console.error('Admin analytics error:', error);

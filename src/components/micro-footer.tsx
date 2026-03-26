@@ -11,6 +11,8 @@ export default function MicroFooter() {
         <Link href="/terms" className="hover:text-muted-foreground transition-colors">Terms</Link>
         <span>&middot;</span>
         <Link href="/blog" className="hover:text-muted-foreground transition-colors">Insights</Link>
+        <span>&middot;</span>
+        <Link href="/contact" className="hover:text-muted-foreground transition-colors">Contact</Link>
       </div>
     </footer>
   );
