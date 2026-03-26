@@ -1,4 +1,4 @@
-name: Social Media Scheduler (X + Bluesky)
+name: Social Media Scheduler (X + Bluesky + Blogger)
 
 on:
   schedule:
@@ -37,10 +37,15 @@ jobs:
           BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
         run: node .github/scripts/bsky-post.mjs
 
+      - name: Post to Blogger
+        env:
+          BLOGGER_SERVICE_ACCOUNT: ${{ secrets.BLOGGER_SERVICE_ACCOUNT }}
+        run: node .github/scripts/blogger-post.mjs
+
       - name: Commit updated state
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/scripts/x-state.json .github/scripts/bsky-state.json
+          git add .github/scripts/x-state.json .github/scripts/bsky-state.json .github/scripts/blogger-state.json
           git diff --staged --quiet || git commit -m "chore: advance post index [skip ci]"
           git push
