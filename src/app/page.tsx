@@ -18,7 +18,7 @@ import { useUser } from '@/auth';
 
 function StepIndicator({ num, label, desc }: { num: number; label: string; desc: string }) {
   return (
-    <div className="flex flex-col items-center gap-1.5">
+    <div className="flex flex-col items-center gap-1.5 text-center">
       <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold text-xs">{num}</div>
       <span className="text-[11px] font-medium uppercase tracking-wider">{label}</span>
       <span className="text-[10px] text-muted-foreground/60">{desc}</span>
@@ -171,11 +171,11 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="flex flex-row items-center justify-between w-full max-w-[600px] text-muted-foreground pt-4 px-2">
+              <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-start w-full max-w-[600px] text-muted-foreground pt-4 px-2">
                 <StepIndicator num={1} label="Drop your CV" desc="Any format" />
-                <StepDivider />
+                <span className="text-muted-foreground/30 text-lg mt-1">→</span>
                 <StepIndicator num={2} label="Get a webpage" desc="Ready to share" />
-                <StepDivider />
+                <span className="text-muted-foreground/30 text-lg mt-1">→</span>
                 <StepIndicator num={3} label="Share with recruiters" desc="Just a link" />
               </div>
             </>
