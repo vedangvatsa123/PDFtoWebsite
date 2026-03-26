@@ -1,5 +1,4 @@
 import https from 'https';
-import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,11 +7,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ── Config ───────────────────────────────────────────────────────────────
 const BLOG_ID = '3228687016233406726';
-const SERVICE_ACCOUNT = JSON.parse(process.env.BLOGGER_SERVICE_ACCOUNT || '{}');
+const CLIENT_ID = '686967749966-3re7gdglg4u6u090vqjmhnsljb171ts6.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
+const REFRESH_TOKEN = process.env.BLOGGER_REFRESH_TOKEN;
 const STATE_FILE = path.join(__dirname, 'blogger-state.json');
 const SITE_URL = 'https://cvin.bio';
 
-// ── Blog articles to publish (one per day) ───────────────────────────────
+// ── Blog articles to publish ─────────────────────────────────────────────
 const ARTICLES = [
   { slug: 'cv-attachments', title: 'Why You Should Stop Sending PDF Resumes' },
   { slug: 'mobile-responsive-cv', title: 'The Silent Killer: How Non-Responsive Resumes Cost You Interviews' },
@@ -39,34 +40,10 @@ const ARTICLES = [
   { slug: 'two-page-resume-myth', title: 'The Two Page Resume Myth' },
 ];
 
-// ── JWT / Google OAuth2 ──────────────────────────────────────────────────
-function base64url(data) {
-  return Buffer.from(data).toString('base64')
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-function createJWT() {
-  const now = Math.floor(Date.now() / 1000);
-  const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-  const payload = base64url(JSON.stringify({
-    iss: SERVICE_ACCOUNT.client_email,
-    scope: 'https://www.googleapis.com/auth/blogger',
-    aud: 'https://oauth2.googleapis.com/token',
-    iat: now,
-    exp: now + 3600,
-  }));
-  const unsigned = `${header}.${payload}`;
-  const sign = crypto.createSign('RSA-SHA256');
-  sign.update(unsigned);
-  const signature = sign.sign(SERVICE_ACCOUNT.private_key, 'base64')
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  return `${unsigned}.${signature}`;
-}
-
+// ── Get access token from refresh token ──────────────────────────────────
 function getAccessToken() {
   return new Promise((resolve, reject) => {
-    const jwt = createJWT();
-    const body = `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`;
+    const body = `client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token`;
     const req = https.request({
       hostname: 'oauth2.googleapis.com',
       path: '/token',
@@ -91,28 +68,8 @@ function getAccessToken() {
   });
 }
 
-// ── Fetch article content from cvin.bio ──────────────────────────────────
-function fetchArticle(slug) {
-  return new Promise((resolve, reject) => {
-    https.get(`${SITE_URL}/${slug}`, res => {
-      // Follow redirects
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        https.get(res.headers.location, r2 => {
-          let d = '';
-          r2.on('data', c => d += c);
-          r2.on('end', () => resolve(d));
-        }).on('error', reject);
-        return;
-      }
-      let d = '';
-      res.on('data', c => d += c);
-      res.on('end', () => resolve(d));
-    }).on('error', reject);
-  });
-}
-
 // ── Create Blogger post ──────────────────────────────────────────────────
-function createPost(token, title, htmlContent, slug) {
+function createPost(token, title, htmlContent) {
   return new Promise((resolve, reject) => {
     const postBody = JSON.stringify({
       kind: 'blogger#post',
@@ -153,11 +110,9 @@ async function main() {
   const article = ARTICLES[state.index];
   console.log(`Publishing #${state.index + 1}/${ARTICLES.length}: "${article.title}"`);
 
-  // Get access token
   const token = await getAccessToken();
   console.log('✅ Got access token');
 
-  // Build HTML content with canonical link back and CTA
   const canonicalUrl = `${SITE_URL}/${article.slug}`;
   const htmlContent = `
     <p><em>Originally published at <a href="${canonicalUrl}" rel="canonical">${canonicalUrl}</a></em></p>
@@ -170,7 +125,7 @@ async function main() {
     <p><a href="${SITE_URL}?utm_source=blogger&utm_medium=blog&utm_campaign=cta">Try CVin.Bio →</a></p>
   `;
 
-  const result = await createPost(token, article.title, htmlContent, article.slug);
+  const result = await createPost(token, article.title, htmlContent);
 
   if (result.status === 200 || result.status === 201) {
     console.log(`✅ Published "${article.title}" to Blogger`);

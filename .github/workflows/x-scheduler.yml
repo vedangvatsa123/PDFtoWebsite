@@ -39,7 +39,7 @@ jobs:
 
       - name: Post to Blogger
         env:
-          BLOGGER_SERVICE_ACCOUNT: ${{ secrets.BLOGGER_SERVICE_ACCOUNT }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
         run: node .github/scripts/blogger-post.mjs
 
       - name: Commit updated state
