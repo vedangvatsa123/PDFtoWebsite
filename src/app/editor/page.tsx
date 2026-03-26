@@ -460,6 +460,17 @@ export default function EditorPage() {
                 profileData = { userId: user.id, fullName: newProfile.full_name, email: user.email || '', summary: '', slug: newSlug, avatarUrl: newProfile.profile_picture_url, avatarHint: '', themeId: 'modern-creative', viewCount: 0, skills: [] };
                 setProfile(profileData);
                 setInitialSlug(newSlug);
+
+                // Fire welcome email (best-effort, non-blocking)
+                supabase.auth.getSession().then(({ data: { session } }) => {
+                    if (session?.access_token) {
+                        fetch('/api/welcome-email', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newProfile.full_name, slug: newSlug }),
+                        }).catch(() => {}); // silent fail
+                    }
+                });
             }
             return { profile: profileData };
         } catch (e) {

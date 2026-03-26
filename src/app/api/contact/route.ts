@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       try {
         const resend = new Resend(resendKey);
         await resend.emails.send({
-          from: 'onboarding@resend.dev',
+          from: 'CVin.Bio Contact <hi@cvin.bio>',
           to: 'hi@cvin.bio',
           subject: `[CVin.Bio Contact] ${purposeLabel} from ${cleanEmail}`,
           html: `
