@@ -142,24 +142,19 @@ type InsightsData = {
 };
 
 function Sparkline({ data }: { data: number[] }) {
-    const w = 72, h = 20;
+    // Only show if there's actual variation
+    const hasVariation = new Set(data).size > 1;
+    if (!hasVariation) return null;
+    const w = 48, h = 14;
     const max = Math.max(...data, 1);
     const pts = data.map((v, i) => ({
         x: (i / Math.max(data.length - 1, 1)) * w,
-        y: h - 2 - ((v / max) * (h - 4)),
+        y: h - 1 - ((v / max) * (h - 2)),
     }));
     const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-    const area = `${line} L${w},${h} L0,${h} Z`;
     return (
-        <svg viewBox={`0 0 ${w} ${h}`} className="w-[72px] h-5 shrink-0" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="sf" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgb(99,102,241)" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="rgb(99,102,241)" stopOpacity="0" />
-                </linearGradient>
-            </defs>
-            <path d={area} fill="url(#sf)" />
-            <path d={line} fill="none" stroke="rgb(99,102,241)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-12 h-3.5 shrink-0 opacity-60" preserveAspectRatio="none">
+            <path d={line} fill="none" stroke="rgb(99,102,241)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 }
@@ -178,33 +173,42 @@ function InsightsCard({ slug }: { slug: string }) {
             .finally(() => setLoading(false));
     }, [slug]);
 
-    if (loading || !data || !data.available || (data.views <= 0 && data.shares <= 0)) return null;
+    if (loading || !data || !data.available) return null;
+
+    const totalActivity = (data.views || 0) + (data.shares || 0);
+
+    // New users (< 5 views): show share nudge instead of analytics
+    if (totalActivity < 5) {
+        return (
+            <div className="flex items-center gap-2 py-1">
+                <span className="text-[11px] text-muted-foreground/50">📤</span>
+                <span className="text-[11px] text-muted-foreground/60">Share your profile to start getting views</span>
+            </div>
+        );
+    }
 
     return (
         <button onClick={() => setExpanded(!expanded)} className="w-full text-left focus:outline-none group">
-            <div className="flex items-center gap-3 py-1.5">
-                <span className="text-[11px] text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">
+            <div className="flex items-center gap-2 py-1">
+                <span className="text-[10px] text-muted-foreground/40 group-hover:text-muted-foreground/70 transition-colors">
                     {expanded ? '▾' : '▸'}
                 </span>
-                <span className="text-[11px] text-muted-foreground/70 font-medium">Insights</span>
-                <span className="text-[11px] text-muted-foreground/50">·</span>
-                <span className="text-[11px]"><span className="font-medium">{data.views}</span> <span className="text-muted-foreground/50">views</span></span>
-                {data.uniques > 0 && <span className="text-[11px]"><span className="font-medium">{data.uniques}</span> <span className="text-muted-foreground/50">unique</span></span>}
-                {data.shares > 0 && <span className="text-[11px]"><span className="font-medium">{data.shares}</span> <span className="text-muted-foreground/50">shares</span></span>}
+                <span className="text-[11px] text-muted-foreground/50">
+                    <span className="font-medium text-foreground/70">{data.views}</span> views
+                    {data.uniques > 0 && <> · <span className="font-medium text-foreground/70">{data.uniques}</span> unique</>}
+                    {data.shares > 0 && <> · <span className="font-medium text-foreground/70">{data.shares}</span> shares</>}
+                </span>
                 <Sparkline data={data.sparkline} />
-                <span className="text-[9px] text-muted-foreground/30">7d</span>
             </div>
             {expanded && (
-                <div className="pb-1.5 pl-5 flex flex-wrap gap-x-4 gap-y-0.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                    {data.sources.length > 0 && data.sources.map((s, i) => (
-                        <span key={`s${i}`} className="text-[11px] text-muted-foreground/60">{s.name} <span className="font-mono text-[10px]">{s.count}</span></span>
+                <div className="pb-1 pl-4 flex flex-wrap gap-x-3 gap-y-0.5 animate-in fade-in duration-150">
+                    {data.sources.map((s, i) => (
+                        <span key={`s${i}`} className="text-[10px] text-muted-foreground/50">{s.name} {s.count}</span>
                     ))}
-                    {data.countries.length > 0 && data.countries.map((c, i) => (
-                        <span key={`c${i}`} className="text-[11px] text-muted-foreground/60">{c.name} <span className="font-mono text-[10px]">{c.count}</span></span>
+                    {data.countries.map((c, i) => (
+                        <span key={`c${i}`} className="text-[10px] text-muted-foreground/50">{c.name} {c.count}</span>
                     ))}
-                    {data.avgTime > 0 && (
-                        <span className="text-[11px] text-muted-foreground/60">avg {data.avgTime}s</span>
-                    )}
+                    {data.avgTime > 0 && <span className="text-[10px] text-muted-foreground/50">avg {data.avgTime}s</span>}
                 </div>
             )}
         </button>
