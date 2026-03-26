@@ -73,7 +73,7 @@ const ResumeUploadPrompt = ({ onFileChange, isGenerating }: { onFileChange: (e: 
     </label>
 );
 
-const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: string[], onNavigate: (tab: string) => void }) => {
+const ProfileCompleteness = ({ profile, work, education, skills, onNavigate, onCompleteChange }: { profile: Partial<UserProfile>, work: WorkExperience[], education: Education[], skills: string[], onNavigate: (tab: string) => void, onCompleteChange?: (complete: boolean) => void }) => {
     const completeness = useMemo(() => {
         const checks = [
             { name: "Add a Profile Photo", complete: !!profile.avatarUrl, targetId: 'avatar-upload' },
@@ -91,6 +91,8 @@ const ProfileCompleteness = ({ profile, work, education, skills, onNavigate }: {
     }, [profile, work, education, skills]);
 
     const { score, checks, isComplete } = completeness;
+
+    useEffect(() => { onCompleteChange?.(isComplete); }, [isComplete, onCompleteChange]);
 
     return (
         <Card className="h-full shadow-sm flex flex-col justify-center">
@@ -311,15 +313,8 @@ export default function EditorPage() {
     const [newLinkValue, setNewLinkValue] = useState('');
 
     // Profile completeness gate — mirrors ProfileCompleteness widget checks
-    const isComplete = useMemo(() => {
-        const hasPhoto = !!profile.avatarUrl;
-        const hasSummary = !!profile.summary?.trim();
-        const hasLocation = !!profile.location?.trim();
-        const hasWork = workItems.some(w => (w.title && w.title.trim() !== '') || (w.company && w.company.trim() !== ''));
-        const hasEdu = educationItems.some(e => (e.institution && e.institution.trim() !== '') || (e.degree && e.degree.trim() !== ''));
-        const hasSkills = skillItems.some(s => { const val = typeof s === 'string' ? s : (s as any)?.name || ''; return typeof val === 'string' && val.trim().length > 0; });
-        return hasPhoto && hasSummary && hasLocation && hasWork && hasEdu && hasSkills;
-    }, [profile, workItems, educationItems, skillItems]);
+    // Profile completeness gate — use same ref as ProfileCompleteness widget
+    const [isComplete, setIsComplete] = useState(false);
 
 
     const fireCelebration = useCallback((slug: string) => {
@@ -1457,7 +1452,7 @@ export default function EditorPage() {
                                             ) : null}
                                         </CardContent>
                                     </Card>
-                                    <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} />
+                                    <ProfileCompleteness profile={profile} work={workItems} education={educationItems} skills={skillItems} onNavigate={() => {}} onCompleteChange={setIsComplete} />
                                 </div>
                                 <InsightsCard slug={profile.slug || ''} />
                             </div>
