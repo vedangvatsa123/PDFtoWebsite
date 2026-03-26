@@ -10,64 +10,38 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
       api_host: '/ingest',
-      ui_host: 'https://us.posthog.com',   // Keep toolbar/surveys pointing to PostHog
+      ui_host: 'https://us.posthog.com',
       person_profiles: 'identified_only',
 
       // ── Pageview & navigation ──
       capture_pageview: false,        // We handle manually for SPA accuracy
       capture_pageleave: true,
 
-      // ── Session replay ──
-      session_recording: {
-        maskAllInputs: false,         // Show typed content (no passwords)
-        maskInputOptions: { password: true, email: false },
-      },
+      // ── Session replay — DISABLED for performance ──
+      disable_session_recording: true,
 
-      // ── Autocapture ──
-      autocapture: {
-        dom_event_allowlist: ['click', 'submit', 'change'],
-        element_allowlist: ['a', 'button', 'form', 'input', 'select', 'textarea'],
-        css_selector_allowlist: ['[data-ph-capture]'],
-      },
+      // ── Autocapture — MINIMAL for performance ──
+      autocapture: false,             // We track everything explicitly
 
-      // ── Performance ──
-      capture_performance: true,      // Web vitals (LCP, FID, CLS)
+      // ── Performance — DISABLED to reduce INP ──
+      capture_performance: false,
 
       // ── Privacy ──
-      respect_dnt: false,              // Track everyone (small product)
+      respect_dnt: false,
       before_send: (event) => {
         if (!event) return event;
-        // Redact email from URLs if present
         if (event.properties?.['$current_url']) {
           event.properties['$current_url'] = event.properties['$current_url'].replace(/email=[^&]+/g, 'email=REDACTED');
         }
         return event;
       },
 
-      loaded: (posthog) => {
-        if (process.env.NODE_ENV === 'development') posthog.debug()
-      }
+      // ── Loading optimization ──
+      bootstrap: {},                  // Skip initial decide request
+      advanced_disable_decide: true,  // Don't call /decide endpoint
+      advanced_disable_feature_flags: true,  // Not using feature flags
+      advanced_disable_toolbar_metrics: true,
     })
-
-    // ── Global error tracking ──
-    if (typeof window !== 'undefined') {
-      window.addEventListener('error', (event) => {
-        posthog.capture('$exception', {
-          $exception_message: event.message,
-          $exception_source: event.filename,
-          $exception_lineno: event.lineno,
-          $exception_colno: event.colno,
-          $exception_type: 'Error',
-        })
-      })
-
-      window.addEventListener('unhandledrejection', (event) => {
-        posthog.capture('$exception', {
-          $exception_message: event.reason?.message || String(event.reason),
-          $exception_type: 'UnhandledPromiseRejection',
-        })
-      })
-    }
   }, [])
 
   return (
@@ -96,7 +70,6 @@ function PostHogIdentify() {
         created_at: user.created_at,
       })
 
-      // Set super properties that attach to every event
       ph.register({
         user_provider: user.app_metadata?.provider || 'unknown',
         user_email_domain: user.email?.split('@')[1] || 'unknown',
@@ -119,7 +92,6 @@ function PostHogPageview() {
       const search = searchParams?.toString()
       if (search) url += '?' + search
 
-      // Capture UTM params explicitly so they're never lost
       const utmSource = searchParams?.get('utm_source')
       const utmMedium = searchParams?.get('utm_medium')
       const utmCampaign = searchParams?.get('utm_campaign')
@@ -135,7 +107,6 @@ function PostHogPageview() {
 
       ph.capture('$pageview', pageviewProps)
 
-      // Persist initial traffic source as a user property (set_once = never overwritten)
       if (utmSource || document.referrer) {
         ph.setPersonPropertiesForFlags({
           initial_referrer: document.referrer || 'direct',
