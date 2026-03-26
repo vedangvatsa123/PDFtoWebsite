@@ -177,18 +177,21 @@ function InsightsCard({ slug }: { slug: string }) {
             .finally(() => setLoading(false));
     }, [slug]);
 
-    if (loading) return (
-        <Card className="shadow-sm h-full flex items-center justify-center">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        </Card>
-    );
+    if (loading) return null;
 
-    if (!data || !data.available) return (
-        <Card className="shadow-sm h-full flex flex-col justify-center">
-            <CardContent className="pt-4 pb-3">
-                <p className="text-xs text-muted-foreground">Analytics will appear once your profile gets views.</p>
-            </CardContent>
-        </Card>
+    const hasData = data && data.available && (data.views > 0 || data.shares > 0);
+
+    if (!hasData) return (
+        <button onClick={() => setExpanded(!expanded)} className="w-full text-left focus:outline-none group flex items-center gap-1.5 py-1">
+            <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">
+                {expanded ? '▾' : '▸'} Profile insights
+            </span>
+            {expanded && (
+                <span className="text-[11px] text-muted-foreground/40 ml-1 animate-in fade-in duration-200">
+                    — will appear once your profile gets views
+                </span>
+            )}
+        </button>
     );
 
     return (
