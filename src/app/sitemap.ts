@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { blogPosts } from '@/lib/blog-data';
+import { createClient } from '@supabase/supabase-js';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 
   const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
@@ -48,7 +49,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.2,
     },
+    {
+      url: `${siteUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.4,
+    },
   ];
 
-  return [...staticEntries, ...blogEntries];
+  // Dynamic user profile URLs
+  let profileEntries: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('username, updated_at')
+      .not('username', 'is', null)
+      .order('updated_at', { ascending: false })
+      .limit(1000);
+
+    if (profiles) {
+      profileEntries = profiles
+        .filter(p => p.username && p.username.length >= 3)
+        .map(p => ({
+          url: `${siteUrl}/${p.username}`,
+          lastModified: p.updated_at ? new Date(p.updated_at) : new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        }));
+    }
+  } catch (e) {
+    console.error('Sitemap: failed to fetch profiles', e);
+  }
+
+  return [...staticEntries, ...blogEntries, ...profileEntries];
 }
