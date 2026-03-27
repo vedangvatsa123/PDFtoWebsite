@@ -1,6 +1,6 @@
 {
-  "index": 2,
-  "lastPostedAt": "2026-03-26T20:15:15.089Z",
+  "index": 3,
+  "lastPostedAt": "2026-03-27T05:22:55.626Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -9,6 +9,10 @@
     {
       "slug": "mobile-responsive-cv",
       "publishedAt": "2026-03-26T20:15:15.089Z"
+    },
+    {
+      "slug": "cv-web-link",
+      "publishedAt": "2026-03-27T05:22:55.626Z"
     }
   ]
 }
