@@ -986,7 +986,7 @@ export default function EditorPage() {
             await autoSave('profile', user.id, { slug: value });
             setInitialSlug(value);
             posthog.capture(EDITOR_EVENTS.SLUG_CHANGED, { new_slug: value });
-            toast({ title: 'URL Updated!', description: `Your new link is ready.` });
+            toast({ title: 'URL Updated!', description: isComplete ? 'Your new link is ready.' : 'Complete your profile to 100% to go live.' });
         } else {
             autoSave('profile', user.id, { [name]: value });
         }
