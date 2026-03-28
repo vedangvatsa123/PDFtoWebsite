@@ -1,6 +1,6 @@
 {
-  "index": 5,
-  "lastPostedAt": "2026-03-27T19:56:41.777Z",
+  "index": 6,
+  "lastPostedAt": "2026-03-28T05:10:35.106Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -21,6 +21,10 @@
     {
       "slug": "stand-out-inbox",
       "publishedAt": "2026-03-27T19:56:41.777Z"
+    },
+    {
+      "slug": "pdf-breaks-ats",
+      "publishedAt": "2026-03-28T05:10:35.106Z"
     }
   ]
 }
