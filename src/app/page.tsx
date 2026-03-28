@@ -120,9 +120,7 @@ export default function Home() {
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your CV into a Website
             </h1>
-            <p className="mx-auto max-w-[600px] text-zinc-500 dark:text-zinc-400 md:text-lg text-base mt-4">
-              Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.
-            </p>
+
           </div>
           
           {(isUserLoading) ? null : user ? (

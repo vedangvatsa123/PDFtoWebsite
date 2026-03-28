@@ -1,0 +1,62 @@
+name: Daily Email Marketing Campaign
+
+on:
+  schedule:
+    - cron: '30 3 * * *' # 09:00 IST (approx 03:30 UTC)
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write # To commit updated logs/sent list
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Send Batch of 400 (Quad-Account)
+        run: node .github/scripts/bulk-send.mjs
+        env:
+          AGENTMAIL_API_KEY: ${{ secrets.AGENTMAIL_API_KEY }}
+          AGENTMAIL_API_KEY_2: ${{ secrets.AGENTMAIL_API_KEY_2 }}
+          AGENTMAIL_API_KEY_3: ${{ secrets.AGENTMAIL_API_KEY_3 }}
+          AGENTMAIL_API_KEY_4: ${{ secrets.AGENTMAIL_API_KEY_4 }}
+
+      - name: Refresh Analytics Register
+        run: node .github/scripts/refresh-stats.mjs
+        env:
+          AGENTMAIL_API_KEY: ${{ secrets.AGENTMAIL_API_KEY }}
+          AGENTMAIL_API_KEY_2: ${{ secrets.AGENTMAIL_API_KEY_2 }}
+          AGENTMAIL_API_KEY_3: ${{ secrets.AGENTMAIL_API_KEY_3 }}
+          AGENTMAIL_API_KEY_4: ${{ secrets.AGENTMAIL_API_KEY_4 }}
+
+      - name: Generate ROI Summary
+        run: |
+          echo "### 📧 Email Outreach ROI Report" >> $GITHUB_STEP_SUMMARY
+          node -e "
+            const logs = JSON.parse(require('fs').readFileSync('.github/scripts/email-logs.json','utf8'));
+            const sent = logs.length;
+            const opens = logs.filter(l => l.opened).length;
+            const clicks = logs.filter(l => l.clicked).length;
+            const openRate = ((opens/sent)*100 || 0).toFixed(1);
+            const clickRate = ((clicks/sent)*100 || 0).toFixed(1);
+            console.log('| Metric | Count | Rate |');
+            console.log('|---|---|---|');
+            console.log('| Total Sent | ' + sent + ' | - |');
+            console.log('| Total Opens | ' + opens + ' | ' + openRate + '% |');
+            console.log('| Total Clicks | ' + clicks + ' | ' + clickRate + '% |');
+          " >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit Updated State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/scripts/email-list-clean.json .github/scripts/sent-emails.json .github/scripts/email-logs.json
+          git commit -m "Update email campaign state [skip ci]" || echo "No changes to commit"
+          git push
