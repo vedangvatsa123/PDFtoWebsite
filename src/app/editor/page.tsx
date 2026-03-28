@@ -1451,7 +1451,12 @@ export default function EditorPage() {
 
                                                 </div>
                                             ) : profile.slug && !isComplete ? (
-                                                <p className="text-[10px] text-muted-foreground mt-2">Complete your profile to 100% to go live.</p>
+                                                <div className="mt-2.5 space-y-2">
+                                                    <p className="text-[10px] text-red-500 flex items-center gap-1">
+                                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
+                                                        Not live yet · complete your profile to go live
+                                                    </p>
+                                                </div>
                                             ) : null}
                                         </CardContent>
                                     </Card>
