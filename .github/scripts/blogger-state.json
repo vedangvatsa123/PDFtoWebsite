@@ -1,6 +1,6 @@
 {
-  "index": 7,
-  "lastPostedAt": "2026-03-28T11:48:28.281Z",
+  "index": 8,
+  "lastPostedAt": "2026-03-28T19:50:53.585Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -29,6 +29,10 @@
     {
       "slug": "tech-resume-keywords",
       "publishedAt": "2026-03-28T11:48:28.281Z"
+    },
+    {
+      "slug": "update-cv-anytime",
+      "publishedAt": "2026-03-28T19:50:53.585Z"
     }
   ]
 }
