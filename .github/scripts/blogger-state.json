@@ -1,6 +1,6 @@
 {
-  "index": 9,
-  "lastPostedAt": "2026-03-29T05:23:47.206Z",
+  "index": 10,
+  "lastPostedAt": "2026-03-29T11:49:18.124Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -37,6 +37,10 @@
     {
       "slug": "objective-statement-death",
       "publishedAt": "2026-03-29T05:23:47.206Z"
+    },
+    {
+      "slug": "overstuffing-bullets",
+      "publishedAt": "2026-03-29T11:49:18.124Z"
     }
   ]
 }
