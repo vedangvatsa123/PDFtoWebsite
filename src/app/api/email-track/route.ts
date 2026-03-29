@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     campaign: cid,
     email: decodedEmail,
     created_at: new Date().toISOString(),
-  }).then(() => {}).catch(() => {});
+  }).then(null, () => {});
 
   if (action === 'click' && url) {
     return NextResponse.redirect(url, 302);
