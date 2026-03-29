@@ -61,7 +61,7 @@ Selected applicants are eligible to receive a free 1-week stay when accepted int
 
 What you get: serviced room, healthy meals, 24/7 coworking, gym, world-class speakers, content studio, workshops, fitness classes, and a makerspace.
 
-Apply: https://cvin.bio/api/email-track?action=click&cid=${variant.campaign}&email=${encodeURIComponent(email)}&url=${encodeURIComponent('https://ns.com/hashtagweb3/apply?utm_source=hashtagweb3&utm_medium=email&utm_campaign=' + variant.campaign + '&utm_content=apply_cta')}
+Apply: https://cvin.bio/api/email-track?action=click&cid=${variant.campaign}&email=${encodeURIComponent(email)}&url=${encodeURIComponent('https://ns.com/hashtagweb3/apply?utm_source=hashtagweb3&utm_medium=email')}
 
 ---
 
@@ -105,7 +105,7 @@ function personalizeHtml(variant, email) {
   // Wrap Apply CTA with click tracker
   html = html.replace(
     /(href=")([^"]*ns\.com\/hashtagweb3\/apply[^"]*)(")/,
-    `$1${trackBase}?action=click&cid=${variant.campaign}&email=${encodedEmail}&url=${encodeURIComponent('https://ns.com/hashtagweb3/apply?utm_source=hashtagweb3&utm_medium=email&utm_campaign=' + variant.campaign + '&utm_content=apply_cta')}$3`
+    `$1${trackBase}?action=click&cid=${variant.campaign}&email=${encodedEmail}&url=${encodeURIComponent('https://ns.com/hashtagweb3/apply?utm_source=hashtagweb3&utm_medium=email')}$3`
   );
 
   // Wrap cvin.bio CTA with click tracker
