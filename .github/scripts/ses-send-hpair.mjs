@@ -39,8 +39,13 @@ let logs = [];
 try { sent = JSON.parse(readFileSync(SENT_PATH, 'utf8')); } catch {}
 try { logs = JSON.parse(readFileSync(LOGS_PATH, 'utf8')); } catch {}
 
+// ── Load global blacklist ───────────────────────────────────────────
+let doNotSend = new Set();
+try { doNotSend = new Set(JSON.parse(readFileSync(join(__dirname, 'global-do-not-send.json'), 'utf8'))); } catch {}
+if (doNotSend.size > 0) console.log(`🚫 Loaded ${doNotSend.size} blacklisted emails from global-do-not-send.json`);
+
 const sentSet = new Set(sent);
-const queue   = allEmails.filter(e => !sentSet.has(e));
+const queue   = allEmails.filter(e => !sentSet.has(e) && !doNotSend.has(e));
 const batch   = queue.slice(0, BATCH_SIZE);
 
 if (batch.length === 0) {

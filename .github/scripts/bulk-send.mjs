@@ -34,9 +34,14 @@ const queue = JSON.parse(readFileSync(CLEAN_LIST_PATH, 'utf8'));
 const sentList = JSON.parse(readFileSync(SENT_PATH, 'utf8'));
 const logs = JSON.parse(readFileSync(LOGS_PATH, 'utf8'));
 
-// 2. Filter & Batch
+// 2. Filter & Batch (with blacklist)
+let doNotSend = new Set();
+try { doNotSend = new Set(JSON.parse(readFileSync(join(__dirname, 'global-do-not-send.json'), 'utf8'))); } catch {}
+if (doNotSend.size > 0) console.log(`🚫 Loaded ${doNotSend.size} blacklisted emails`);
+
+const cleanQueue = queue.filter(e => !doNotSend.has(e));
 const totalToSendCount = ACCOUNTS.length * MAX_PER_ACCOUNT;
-const toSend = queue.slice(0, totalToSendCount);
+const toSend = cleanQueue.slice(0, totalToSendCount);
 
 if (toSend.length === 0) {
   console.log('No unsent emails in queue.');
