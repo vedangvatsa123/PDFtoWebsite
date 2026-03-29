@@ -1,0 +1,53 @@
+name: HPAIR SES A/B Campaign
+
+on:
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Send A/B Batch via SES
+        run: node .github/scripts/ses-send-hpair.mjs
+        env:
+          AWS_SES_ACCESS_KEY_ID: ${{ secrets.AWS_SES_ACCESS_KEY_ID }}
+          AWS_SES_SECRET_ACCESS_KEY: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
+          AWS_SES_REGION: us-west-1
+
+      - name: Generate A/B Summary
+        run: |
+          echo "### 📧 HPAIR A/B Campaign Report" >> $GITHUB_STEP_SUMMARY
+          node -e "
+            const logs = JSON.parse(require('fs').readFileSync('.github/scripts/hpair-logs.json','utf8'));
+            const sent = logs.filter(l => l.status === 'sent');
+            const variants = ['A','B','C'];
+            console.log('| Variant | Subject | Sent | Failed |');
+            console.log('|---|---|---|---|');
+            for (const v of variants) {
+              const vSent = sent.filter(l => l.variant === v).length;
+              const vFail = logs.filter(l => l.variant === v && l.status === 'failed').length;
+              const subj = logs.find(l => l.variant === v)?.subject || '-';
+              console.log('| ' + v + ' | ' + subj + ' | ' + vSent + ' | ' + vFail + ' |');
+            }
+            console.log('');
+            console.log('**Total Sent:** ' + sent.length);
+          " >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit Updated State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/scripts/hpair-sent.json .github/scripts/hpair-logs.json
+          git commit -m "Update HPAIR campaign state [skip ci]" || echo "No changes to commit"
+          git push
