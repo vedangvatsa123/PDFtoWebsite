@@ -41,6 +41,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       advanced_disable_decide: true,  // Don't call /decide endpoint
       advanced_disable_feature_flags: true,  // Not using feature flags
       advanced_disable_toolbar_metrics: true,
+      disable_surveys: true,                // Not using surveys
     })
   }, [])
 
