@@ -93,11 +93,13 @@ function computeMatchScore(
   // ── 1. Skills overlap (40 pts) ──
   const userSkillsLower = user.skills.map(s => s.toLowerCase());
   const jobTagsLower = (job.tags || []).map(t => t.toLowerCase());
-  const matchedSkills = user.skills.filter(s =>
-    jobTagsLower.includes(s.toLowerCase())
-  );
+  const jobTitleLower = job.title.toLowerCase();
+  // Match against both tags AND job title
+  const matchedSkills = user.skills.filter(s => {
+    const sl = s.toLowerCase();
+    return jobTagsLower.includes(sl) || jobTitleLower.includes(sl);
+  });
   if (matchedSkills.length > 0) {
-    // Score scales: 1 match = 10pts, 2 = 20pts, 3+ = 30pts, 5+ = 40pts
     const skillScore = Math.min(40, matchedSkills.length * 10);
     score += skillScore;
     signals.push(`${matchedSkills.length} skill${matchedSkills.length > 1 ? 's' : ''}`);
@@ -243,10 +245,12 @@ export async function GET(request: NextRequest) {
     query = query.or(`title.ilike.%${q}%,company.ilike.%${q}%`);
   }
 
-  // If user has complete profile AND match=true, filter to jobs that overlap with their skills
+  // If user has complete profile AND match=true, filter to jobs that match their skills
   const matchOnly = searchParams.get('match') === 'true';
   if (profileComplete && userProfile && userProfile.skills.length > 0 && matchOnly && !q) {
-    query = query.overlaps('tags', userProfile.skills);
+    // Build OR filter: match tags overlap OR any skill appears in the title
+    const titleFilters = userProfile.skills.map(s => `title.ilike.%${s}%`).join(',');
+    query = query.or(`tags.ov.{${userProfile.skills.join(',')}},${titleFilters}`);
   }
 
   // Paginate
