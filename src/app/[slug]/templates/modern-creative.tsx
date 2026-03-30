@@ -109,17 +109,19 @@ function LinkifiedLine({ text }: { text: string }) {
 
 // Detects if a line is a bullet point (•, -, *, or numbered like "1.")
 function isBulletLine(line: string): boolean {
-  return /^(\s*)(•|-|\*|\d+\.)\s+/.test(line);
+  return /^(\s*)(●|•|-|\*|\d+\.)\s+/.test(line);
 }
 
 function stripBulletPrefix(line: string): string {
-  return line.replace(/^(\s*)(•|-|\*|\d+\.)\s+/, '').trim();
+  return line.replace(/^(\s*)(●|•|-|\*|\d+\.)\s+/, '').trim();
 }
 
 function StructuredText({ text }: { text?: string }) {
   if (!text) return null;
 
-  const lines = text.split('\n');
+  // Split inline ● bullets into separate lines
+  const normalized = text.replace(/\s*●\s*/g, '\n● ');
+  const lines = normalized.split('\n');
   const blocks: Array<{ type: 'bullet' | 'para'; lines: string[] }> = [];
 
   for (const raw of lines) {
@@ -407,10 +409,8 @@ export default function TemplateModern(props: ProfileData) {
               </div>
 
               {profile.summary && (
-                <div className="mt-8 text-left w-full">
-                  <p className="text-sm font-medium text-foreground/80 leading-relaxed">
-                    {profile.summary}
-                  </p>
+                <div className="mt-8 text-left w-full text-sm font-medium text-foreground/80">
+                  <StructuredText text={profile.summary} />
                 </div>
               )}
             </header>
