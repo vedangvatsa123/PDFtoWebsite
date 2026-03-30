@@ -354,9 +354,17 @@ export default function JobsPage() {
                 <img
                   src={job.company_logo || `https://www.google.com/s2/favicons?domain=${job.company.toLowerCase().replace(/[^a-z0-9]/g, '')}.com&sz=32`}
                   alt=""
-                  className="h-5 w-5 rounded shrink-0"
+                  className="h-5 w-5 rounded shrink-0 bg-zinc-100 dark:bg-zinc-800"
                   loading="lazy"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  onError={(e) => {
+                    const el = e.target as HTMLImageElement;
+                    const parent = el.parentElement;
+                    if (!parent) return;
+                    const span = document.createElement('span');
+                    span.className = 'h-5 w-5 rounded shrink-0 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400';
+                    span.textContent = job.company.charAt(0).toUpperCase();
+                    parent.replaceChild(span, el);
+                  }}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
