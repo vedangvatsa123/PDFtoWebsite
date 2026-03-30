@@ -352,7 +352,7 @@ export default function JobsPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={job.company_logo || `https://www.google.com/s2/favicons?domain=${(() => { try { return new URL(job.apply_url).hostname; } catch { return job.company.toLowerCase().replace(/\s+/g, '') + '.com'; } })()}&sz=32`}
+                  src={job.company_logo || `https://www.google.com/s2/favicons?domain=${job.company.toLowerCase().replace(/[^a-z0-9]/g, '')}.com&sz=32`}
                   alt=""
                   className="h-5 w-5 rounded shrink-0"
                   loading="lazy"
