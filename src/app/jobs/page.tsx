@@ -389,12 +389,12 @@ export default function JobsPage() {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                    <span className="font-medium truncate max-w-[120px]">{job.company}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400 min-w-0">
+                    <span className="font-medium truncate shrink-0 max-w-[40%]">{job.company}</span>
                     {job.location && (
                       <>
-                        <span className="text-zinc-300 dark:text-zinc-700">·</span>
-                        <span className="truncate max-w-[120px]">{job.location}</span>
+                        <span className="text-zinc-300 dark:text-zinc-700 shrink-0">·</span>
+                        <span className="truncate">{job.location}</span>
                       </>
                     )}
                     {job.published_at && (
