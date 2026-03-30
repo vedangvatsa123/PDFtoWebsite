@@ -55,6 +55,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.4,
     },
+    {
+      url: `${siteUrl}/jobs`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
   ];
 
   // Dynamic user profile URLs
