@@ -136,9 +136,16 @@ function StructuredText({ text }: { text?: string }) {
         blocks.push({ type: 'bullet', lines: [line] });
       }
     } else {
-      // Plain paragraph — merge with previous para block if exists
-      if (blocks.length > 0 && blocks[blocks.length - 1].type === 'para') {
-        blocks[blocks.length - 1].lines.push(line);
+      // Continuation line — append to whatever block came before
+      if (blocks.length > 0) {
+        const last = blocks[blocks.length - 1];
+        if (last.type === 'bullet') {
+          // Continuation of last bullet item — join with space
+          last.lines[last.lines.length - 1] += ' ' + line;
+        } else {
+          // Continuation of paragraph
+          last.lines.push(line);
+        }
       } else {
         blocks.push({ type: 'para', lines: [line] });
       }
