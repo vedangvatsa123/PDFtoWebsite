@@ -7,6 +7,7 @@ import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import { Briefcase, ExternalLink, Search, Target, Clock, ChevronDown, Sparkles, UploadCloud, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import posthog from 'posthog-js';
 
 interface Job {
   id: string;
@@ -305,6 +306,7 @@ export default function JobsPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
+                onClick={() => posthog.capture('job_clicked', { job_id: job.id, title: job.title, company: job.company, source: job.source, match_count: job.match_count })}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
