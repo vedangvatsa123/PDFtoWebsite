@@ -1,6 +1,6 @@
 {
-  "index": 13,
-  "lastPostedAt": "2026-03-30T12:08:14.917Z",
+  "index": 14,
+  "lastPostedAt": "2026-03-30T20:04:54.658Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -53,6 +53,10 @@
     {
       "slug": "keyword-trust",
       "publishedAt": "2026-03-30T12:08:14.917Z"
+    },
+    {
+      "slug": "soft-skills-evidence",
+      "publishedAt": "2026-03-30T20:04:54.658Z"
     }
   ]
 }
