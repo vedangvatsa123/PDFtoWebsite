@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   apply_url TEXT NOT NULL,
   category TEXT,
 
+  -- Analytics
+  views INTEGER DEFAULT 0,
+  clicks INTEGER DEFAULT 0,
+
   -- Timestamps
   published_at TIMESTAMPTZ,
   synced_at TIMESTAMPTZ DEFAULT now(),
@@ -48,3 +52,21 @@ CREATE POLICY "Anyone can read jobs"
 CREATE POLICY "Service role can manage jobs"
   ON jobs FOR ALL
   USING (auth.role() = 'service_role');
+
+-- Allow anonymous counter increments (views/clicks only)
+CREATE POLICY "Anyone can update job counters"
+  ON jobs FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
+-- Atomic batch increment function for views/clicks
+CREATE OR REPLACE FUNCTION batch_increment_jobs(job_ids UUID[], col_name TEXT)
+RETURNS void AS $$
+BEGIN
+  IF col_name = 'views' THEN
+    UPDATE jobs SET views = COALESCE(views, 0) + 1 WHERE id = ANY(job_ids);
+  ELSIF col_name = 'clicks' THEN
+    UPDATE jobs SET clicks = COALESCE(clicks, 0) + 1 WHERE id = ANY(job_ids);
+  END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

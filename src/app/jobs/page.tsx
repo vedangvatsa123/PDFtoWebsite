@@ -155,6 +155,47 @@ export default function JobsPage() {
     return () => observer.disconnect();
   });
 
+  // ── View tracking: batch visible job IDs and flush every 3s ──
+  const viewedIds = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const flush = () => {
+      if (viewedIds.current.size === 0) return;
+      const ids = Array.from(viewedIds.current);
+      viewedIds.current.clear();
+      fetch('/api/jobs/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, action: 'view' }),
+      }).catch(() => {});
+    };
+    const timer = setInterval(flush, 3000);
+    return () => { flush(); clearInterval(timer); };
+  }, []);
+
+  useEffect(() => {
+    const cards = document.querySelectorAll('[data-job-id]');
+    if (cards.length === 0) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = (e.target as HTMLElement).dataset.jobId;
+          if (id) viewedIds.current.add(id);
+        }
+      });
+    }, { threshold: 0.5 });
+    cards.forEach(c => obs.observe(c));
+    return () => obs.disconnect();
+  }, [jobs]);
+
+  const trackClick = (jobId: string, job: Job) => {
+    posthog.capture('job_clicked', { job_id: job.id, title: job.title, company: job.company, source: job.source, match_count: job.match_count });
+    fetch('/api/jobs/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: [jobId], action: 'click' }),
+    }).catch(() => {});
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearch(searchInput);
@@ -305,8 +346,9 @@ export default function JobsPage() {
                 href={job.apply_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-job-id={job.id}
                 className="group flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
-                onClick={() => posthog.capture('job_clicked', { job_id: job.id, title: job.title, company: job.company, source: job.source, match_count: job.match_count })}
+                onClick={() => trackClick(job.id, job)}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
