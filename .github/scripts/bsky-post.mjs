@@ -71,6 +71,16 @@ const POSTS = [
   `A software engineer applied to his own company's job posting. As an experiment.\n\nSame resume that got him hired 2 years ago. Same skills. Same title.\n\nThe ATS rejected him in 4 minutes.\n\nThe filter isn't finding the best people. It's losing them. cvin.bio`,
   `She raised two kids for 10 years.\n\nManaged a household budget tighter than most startups. Coordinated schedules across 4 people.\n\nEvery ATS saw one thing: a gap.\n\n10 years of invisible work doesn't fit in a keyword filter. cvin.bio`,
   `He trained 3 new hires. Covered for his manager. Ran the team for 6 months.\n\nWhen the manager role opened, they hired someone external.\n\nThe new manager asked him to help with onboarding.\n\nLoyalty without leverage is just free labor. cvin.bio`,
+  `47 thank you emails. 0 replies.\n\nShe followed every rule. Researched the company. Personalized every note.\n\nThey didn't even open them.\n\nThe system doesn't care about effort anymore. cvin.bio`,
+  `She asked for market rate. Budget was "fixed."\n\nTwo weeks later, same role listed. 25% higher.\n\nThe budget wasn't fixed. They just didn't want to pay her. cvin.bio`,
+  `4 rounds of interviews. Perfect technical scores.\n\nRejection: "Not a culture fit."\n\nThe culture was 12-hour days and mandatory weekend Slack.\n\nShe was rejected for having boundaries. cvin.bio`,
+  `3-day unpaid trial. She redesigned their homepage. Fixed 14 bugs.\n\nDay 4: ghosted.\n\nTwo weeks later, her design went live. Someone else's name in the credits.\n\nFree labor disguised as an interview. cvin.bio`,
+  `Applied Monday. Auto-rejected Tuesday.\n\nWednesday, same company liked his LinkedIn post.\n\nThursday, recruiter commented: "Great insights!"\n\nThe algorithm rejected his resume. The humans liked his ideas. cvin.bio`,
+  `Gave two weeks notice. They walked him out that afternoon.\n\nNo severance. No goodbye.\n\nThree days later: "What's the password to the analytics dashboard?"\n\nLoyalty is a one-way street. cvin.bio`,
+  `PhD. 15 years. Applied for mid-level. Genuinely wanted it.\n\n"We're concerned you'd get bored."\n\nToo junior for senior. Too senior for mid. Too experienced to start over.\n\nThere's no correct answer when the question is designed to reject you. cvin.bio`,
+  `Job listing said "Remote."\n\nOffer letter said "Remote during onboarding."\n\nWeek 3: mandatory office. 5 days. 90-minute commute.\n\nNobody mentioned it during 4 interviews. cvin.bio`,
+  `Changed one word on his resume. Interview requests tripled.\n\n"Managed" became "Led."\n\nSame resume. Same experience. Same person. Different keyword.\n\nYour career shouldn't depend on vocabulary. cvin.bio`,
+  `He resigned. Suddenly they found the budget.\n\nThe raise they denied for 2 years appeared in 24 hours.\n\nHe stayed. Laid off 3 months later.\n\nA counter offer isn't a compliment. It's a stalling tactic. cvin.bio`,
 ];
 
 // ── AT Protocol helpers ───────────────────────────────────────────────────

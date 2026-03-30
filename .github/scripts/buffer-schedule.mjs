@@ -75,6 +75,16 @@ const POSTS = [
   `A software engineer applied to his own company's job posting. As an experiment.\n\nSame resume that got him hired 2 years ago. Same skills. Same title.\n\nThe ATS rejected him in 4 minutes.\n\nThe filter isn't finding the best people. It's losing them.\n\ncvin.bio`,
   `She raised two kids for 10 years.\n\nManaged a household budget tighter than most startups. Coordinated schedules across 4 people.\n\nEvery ATS saw one thing: a gap.\n\n10 years of invisible work doesn't fit in a keyword filter.\n\ncvin.bio`,
   `He trained 3 new hires. Covered for his manager. Ran the team for 6 months.\n\nWhen the manager role opened, they hired someone external.\n\nThe new manager asked him to help with onboarding.\n\nLoyalty without leverage is just free labor.\n\ncvin.bio`,
+  `47 thank you emails. 0 replies.\n\nShe followed every rule. Researched the company. Personalized every note.\n\nThey didn't even open them.\n\nThe system doesn't care about effort anymore.\n\ncvin.bio`,
+  `She asked for market rate. They said the budget was fixed.\n\nTwo weeks later the same role was listed again. 25% higher than what she asked for.\n\nThe budget wasn't fixed. They just didn't want to pay her.\n\ncvin.bio`,
+  `4 rounds of interviews. Perfect technical scores.\n\nRejection: "Not a culture fit."\n\nThe culture was 12-hour days, mandatory weekend Slack, and a ping pong table nobody used.\n\nShe was rejected for having boundaries.\n\ncvin.bio`,
+  `3-day unpaid trial. She redesigned their entire homepage. Fixed 14 bugs.\n\nDay 4: ghosted.\n\nTwo weeks later, her design went live. Someone else's name in the credits.\n\nFree labor disguised as an interview.\n\ncvin.bio`,
+  `He applied Monday. Auto-rejected Tuesday.\n\nWednesday, the same company liked his LinkedIn post.\n\nThursday, their recruiter commented: "Great insights!"\n\nThe algorithm rejected his resume. The humans engaged with his ideas.\n\ncvin.bio`,
+  `He gave two weeks notice. They walked him out that afternoon.\n\nNo severance. No goodbye.\n\nThree days later: "What's the password to the analytics dashboard?"\n\nLoyalty is a one-way street.\n\ncvin.bio`,
+  `PhD. 15 years. Applied for mid-level because she genuinely wanted it.\n\n"We're concerned you'd get bored."\n\nToo junior for senior. Too senior for mid-level. Too experienced to start over.\n\nNo correct answer when the question is designed to reject you.\n\ncvin.bio`,
+  `Job listing said "Remote." She applied because office was 90 minutes away.\n\nOffer letter: "Remote during onboarding."\n\nWeek 3: mandatory office. 5 days. No exceptions.\n\nNobody mentioned it during 4 interviews.\n\ncvin.bio`,
+  `He changed one word on his resume. Interview requests tripled.\n\n"Managed" became "Led."\n\nSame resume. Same experience. Same person. Different keyword.\n\nYour career shouldn't depend on vocabulary.\n\ncvin.bio`,
+  `He resigned. Suddenly they found the budget.\n\nThe raise they denied for 2 years appeared in 24 hours.\n\nHe stayed. Laid off 3 months later.\n\nA counter offer isn't a compliment. It's a stalling tactic.\n\ncvin.bio`,
 ];
 
 // Instagram-optimized captions: punchy hook, emojis, shorter body, hashtags
@@ -135,6 +145,16 @@ const IG_POSTS = [
   `🤖 Engineer applied to his OWN company's job posting.\n\nSame resume. Same skills. Same title.\n\nATS rejected him in 4 minutes.\n\nThe filter isn't finding people. It's losing them.\n\n📌 Link in bio → cvin.bio\n\n#ats #resume #jobsearch #hiring #careeradvice`,
   `👩 She raised 2 kids for 10 years.\n\nManaged budgets. Coordinated 4 schedules.\n\nEvery ATS saw one thing: a gap.\n\n10 years of invisible work.\n\n📌 Link in bio → cvin.bio\n\n#careergap #women #hiring #careeradvice #returntowork`,
   `🏢 Trained 3 new hires. Ran the team 6 months.\n\nManager role opened. They hired externally.\n\nNew manager asked him to "help with onboarding."\n\nLoyalty without leverage = free labor.\n\n📌 Link in bio → cvin.bio\n\n#loyalty #promotion #careeradvice #workplace #hiring`,
+  `📧 47 thank you emails. 0 replies.\n\nShe followed every rule. Personalized every note.\n\nThey didn't even open them.\n\n📌 Link in bio → cvin.bio\n\n#jobsearch #thankyou #ghosting #hiring #careeradvice`,
+  `💰 She asked for market rate. "Budget is fixed."\n\n2 weeks later: same role listed. 25% higher.\n\nThe budget wasn't fixed.\n\n📌 Link in bio → cvin.bio\n\n#salary #negotiation #knowyourworth #hiring #payequity`,
+  `🎭 Rejected for "culture fit."\n\n4 rounds. Perfect scores.\n\nThe culture was 12-hour days and weekend Slack.\n\nShe had boundaries.\n\n📌 Link in bio → cvin.bio\n\n#culturefit #interview #hiring #boundaries #careeradvice`,
+  `⚠️ 3-day unpaid trial. She redesigned their homepage.\n\nDay 4: ghosted.\n\nHer design went live. Someone else's name.\n\nFree labor.\n\n📌 Link in bio → cvin.bio\n\n#freelabor #interview #design #ghosting #careeradvice`,
+  `🤖 Applied Monday. Auto-rejected Tuesday.\n\nSame company liked his LinkedIn post Wednesday.\n\nThe algorithm rejected him. The humans didn't.\n\n📌 Link in bio → cvin.bio\n\n#ats #linkedin #jobsearch #irony #careeradvice`,
+  `🚪 Gave two weeks. Walked out that day.\n\nNo severance. Then they called asking for passwords.\n\nLoyalty is a one-way street.\n\n📌 Link in bio → cvin.bio\n\n#twoweeks #loyalty #quitting #careeradvice #workplace`,
+  `🎓 PhD. 15 years. "We're worried you'd get bored."\n\nToo junior for senior. Too senior for mid-level.\n\nNo correct answer.\n\n📌 Link in bio → cvin.bio\n\n#overqualified #phd #hiring #ageism #careeradvice`,
+  `🏠 Job said "Remote."\n\nWeek 3: mandatory office. 5 days. 90-min commute.\n\nNobody mentioned it in 4 interviews.\n\n📌 Link in bio → cvin.bio\n\n#remote #wfh #rto #hiring #baitandswitch`,
+  `⌨️ Changed one word. Interviews tripled.\n\n"Managed" → "Led."\n\nSame everything. Different keyword.\n\n📌 Link in bio → cvin.bio\n\n#resume #keywords #ats #jobsearch #careeradvice`,
+  `💸 He resigned. They suddenly found the budget.\n\nThe raise denied for 2 years: appeared in 24 hours.\n\nHe stayed. Laid off 3 months later.\n\nNever accept a counter offer.\n\n📌 Link in bio → cvin.bio\n\n#counteroffer #resign #salary #careeradvice #layoff`,
 ];
 
 // Facebook-optimized: conversational, longer, questions to drive comments
@@ -600,6 +620,112 @@ They hired someone external. No interview. No explanation.
 The new manager's first request? "Can you help me with onboarding?"
 
 He was asked to train his own boss. Again. Loyalty without leverage is just free labor.
+
+cvin.bio`,
+  `47 thank you emails. 0 replies.
+
+She followed every interview rule. Researched the company. Personalized every follow-up.
+
+"Dear hiring team, I really enjoyed our conversation about..."
+
+They didn't even open them.
+
+The effort was real. The system just doesn't care about effort anymore. Sometimes the best thing you can do is stop playing by rules nobody follows.
+
+Has anyone ever gotten a job because of a thank you email?
+
+cvin.bio`,
+  `She asked for market rate. They said the budget was fixed. Non-negotiable.
+
+Two weeks later the exact same role was listed again. 25% higher than what she asked for.
+
+The budget wasn't fixed. They just didn't want to pay her.
+
+This happens more than people talk about. Has it happened to you?
+
+cvin.bio`,
+  `4 rounds of interviews. 6 hours of her time. Perfect technical scores across the board.
+
+Rejection email: "Not a culture fit."
+
+She looked up the company on Glassdoor. The culture was 12-hour days, mandatory weekend Slack, and a ping pong table nobody was allowed to use during work hours.
+
+She wasn't rejected for not fitting in. She was rejected for having boundaries.
+
+When they say "culture fit" what do they actually mean?
+
+cvin.bio`,
+  `3-day unpaid trial. "Just to see if you're a fit."
+
+She redesigned their entire homepage in those 3 days. Rebuilt the navigation. Fixed 14 bugs.
+
+Day 4: ghosted. No call. No email. Nothing.
+
+Two weeks later her design went live on their site. With someone else's name in the credits.
+
+Free labor disguised as an interview process. Has this happened to anyone else?
+
+cvin.bio`,
+  `He applied to a company on Monday. Auto-rejected by Tuesday morning.
+
+Wednesday the same company liked his LinkedIn post. Thursday their recruiter commented: "Great insights!"
+
+The algorithm that rejected his resume couldn't connect him with the humans who liked his ideas.
+
+The system is broken when the robot and the human work for the same company but reach opposite conclusions.
+
+cvin.bio`,
+  `He gave two weeks notice. Professional. Respectful. By the book.
+
+They walked him out that afternoon. Disabled his badge before lunch. No severance. No goodbye.
+
+Three days later he got a call: "Hey, what's the password to the analytics dashboard?"
+
+Companies expect you to give notice. But loyalty is a one-way street.
+
+cvin.bio`,
+  `PhD. 15 years of experience. Applied for a mid-level role because she genuinely wanted it.
+
+Rejection: "We're concerned you'd get bored."
+
+Too junior for senior roles. Too senior for mid-level. Too experienced to start over. Too old to retrain.
+
+At what point is there no door left to knock on? Has anyone been told they're "overqualified"?
+
+cvin.bio`,
+  `Job listing said "Remote." She applied because the office was 90 minutes away with two kids at home.
+
+Offer letter said "Remote during onboarding."
+
+Week 3: mandatory office attendance. 5 days a week. No exceptions.
+
+Nobody mentioned it once during the 4 rounds of interviews.
+
+Companies are still pulling bait-and-switch with remote listings. Read every offer letter carefully.
+
+cvin.bio`,
+  `He changed one word on his resume. Interview requests tripled overnight.
+
+"Managed" became "Led."
+
+Same projects. Same outcomes. Same person. Same decade of experience. Different keyword.
+
+Your entire career shouldn't depend on whether an algorithm likes your vocabulary. But right now, it does.
+
+Has anyone else cracked the ATS keyword game?
+
+cvin.bio`,
+  `He resigned on Tuesday. By Wednesday morning, they found the budget.
+
+The raise they'd denied for 2 years appeared in 24 hours. Suddenly there was room in the comp band.
+
+He made the mistake of staying.
+
+Laid off 3 months later. First round of cuts.
+
+A counter offer isn't a compliment. It's a stalling tactic until they find your replacement.
+
+Never accept a counter offer.
 
 cvin.bio`,
 ];

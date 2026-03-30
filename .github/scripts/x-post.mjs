@@ -683,6 +683,131 @@ He was asked to train his own boss. Again.
 Loyalty without leverage is just free labor.
 
 cvin.bio`,
+  // Post 58 -> post_58.png (the thank you email)
+  `47 thank you emails. 0 replies.
+
+She followed every rule. Researched the company. Personalized every note.
+
+"Dear hiring team, I really enjoyed our conversation about..."
+
+They didn't even open them.
+
+The effort was real. The system just doesn't care about effort anymore.
+
+cvin.bio`,
+
+  // Post 59 -> post_59.png (the salary lie)
+  `She asked for market rate. They said the budget was fixed.
+
+Two weeks later the same role was listed again.
+
+25% higher than what she asked for.
+
+The budget wasn't fixed. They just didn't want to pay her.
+
+cvin.bio`,
+
+  // Post 60 -> post_60.png (culture fit)
+  `4 rounds of interviews. 6 hours total. Perfect technical scores.
+
+Rejection reason: "Not a culture fit."
+
+The culture was 12-hour days, mandatory weekend Slack, and a ping pong table nobody used.
+
+She wasn't rejected for not fitting in. She was rejected for having boundaries.
+
+cvin.bio`,
+
+  // Post 61 -> post_61.png (the unpaid trial)
+  `3-day unpaid trial. "Just to see if you're a fit."
+
+She redesigned their entire homepage. Rebuilt navigation. Fixed 14 bugs.
+
+Day 4: ghosted.
+
+Two weeks later, her design went live. With someone else's name in the credits.
+
+Free labor disguised as an interview.
+
+cvin.bio`,
+
+  // Post 62 -> post_62.png (the linkedin irony)
+  `He applied to a company on Monday. Auto-rejected by Tuesday morning.
+
+Wednesday, the same company liked his LinkedIn post.
+
+Thursday, their recruiter commented: "Great insights!"
+
+The algorithm rejected his resume. The humans engaged with his ideas.
+
+The system doesn't connect the two.
+
+cvin.bio`,
+
+  // Post 63 -> post_63.png (the two week notice)
+  `He gave two weeks notice. Professional. Respectful. By the book.
+
+They walked him out that afternoon. Disabled his badge before lunch.
+
+No severance. No goodbye. No handover.
+
+Three days later: a call. "Hey, what's the password to the analytics dashboard?"
+
+Loyalty is a one-way street.
+
+cvin.bio`,
+
+  // Post 64 -> post_64.png (the overqualified)
+  `PhD. 15 years of experience. Applied for a mid-level role because she genuinely wanted it.
+
+Rejection: "We're concerned you'd get bored."
+
+Too junior for senior roles. Too senior for mid-level. Too experienced to start over. Too old to retrain.
+
+There's no correct answer when the question is designed to reject you.
+
+cvin.bio`,
+
+  // Post 65 -> post_65.png (the remote lie)
+  `Job listing said "Remote." She applied because the office was 90 minutes away.
+
+Offer letter said "Remote during onboarding."
+
+Week 3: mandatory office. 5 days a week. No exceptions.
+
+Nobody mentioned it during the 4 interviews.
+
+They got her in the door. Then closed it behind her.
+
+cvin.bio`,
+
+  // Post 66 -> post_66.png (the keyword)
+  `He changed one word on his resume. Interview requests tripled.
+
+"Managed" became "Led."
+
+Same resume. Same experience. Same projects. Same outcomes.
+
+Different keyword.
+
+Your career shouldn't depend on whether an algorithm likes your vocabulary.
+
+cvin.bio`,
+
+  // Post 67 -> post_67.png (the counter offer)
+  `He resigned. Suddenly they found the budget.
+
+The raise they denied for 2 years appeared in 24 hours.
+
+He stayed.
+
+Laid off 3 months later. First round of cuts.
+
+A counter offer isn't a compliment. It's a stalling tactic.
+
+Never accept a counter offer.
+
+cvin.bio`,
 ];
 
 // ── OAuth 1.0a ────────────────────────────────────────────────────────────
