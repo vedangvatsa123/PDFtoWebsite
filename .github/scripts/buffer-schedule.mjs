@@ -70,6 +70,11 @@ const POSTS = [
   `Job search on LinkedIn:\n\nApply → No response.\nApply → Auto-rejection in 3 minutes.\nApply → "We've decided to move forward with other candidates."\nApply → Ghosted.\n\n12,000 upvotes. Because it's everyone's feed.\n\nLinkedIn isn't broken. The process behind it is. cvin.bio`,
   `He asked for $58k. They offered $65k.\n\nSaid he was a great fit and wanted to move fast.\n\nAfter 3 months of unemployment. 150+ applications.\n\nGood employers do exist. And when they value you, they show it.\n\nDon't sell yourself short. Keep applying. cvin.bio`,
   `If Sunday evenings fill you with dread, that's not laziness.\n\nIt's your body telling you the deal isn't right.\n\nThe commute you hate. The manager you avoid. The Slack you mute.\n\nLife is too short to spend 50 weeks dreading Monday.\n\nYour career isn't a life sentence. It's a choice. cvin.bio`,
+  `200 applications last month. 3 responses. All automated.\n\nNobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.\n\nThey saw a PDF. Parsed by a bot. Scored by keywords.\n\nUpload your CV once. Get a live profile. See jobs matched to your skills.\n\ncvin.bio`,
+  `Recruiter on LinkedIn. Monday: "We loved your profile."\n\nFriday: ghosted.\n\nTwo weeks later. Same job reposted. Same recruiter. Different candidate.\n\nStop waiting for them. Upload your CV, get matched to 6,000+ jobs.\n\ncvin.bio`,
+  `Your resume is a file on someone's laptop.\n\nNo one opens it twice. No one shares it. No one finds it on Google.\n\nNow imagine it was a link. Shareable. Searchable. Always live. With jobs matched to your skills.\n\ncvin.bio`,
+  `HR spent 6 seconds on your resume.\n\n6 seconds to judge 10 years of work.\n\nYou can't control how long they look. You can control what they see first.\n\nUpload your CV. Get a live profile. See jobs matched to your skills.\n\ncvin.bio`,
+  `Company career page: "We value people."\n\nApplication: 47 fields. Retype your resume. Upload the same resume. Cover letter required.\n\nStatus: under review for 3 months.\n\nOr. Upload your CV once. Live profile. Matched jobs. Done.\n\ncvin.bio`,
 ];
 
 // Instagram-optimized captions: punchy hook, emojis, shorter body, hashtags
@@ -125,6 +130,11 @@ const IG_POSTS = [
   `💀 LinkedIn job search:\n\nApply → No response\nApply → Auto-reject in 3 min\nApply → Ghosted\n\n12,000 upvotes.\n\nLinkedIn isn't broken. The process is.\n\n📌 Link in bio → cvin.bio\n\n#linkedin #jobsearch #ghosting #hiring #careeradvice`,
   `🎉 Asked for $58k. Offered $65k.\n\n"Great fit. Moving fast."\n\nAfter 3 months unemployed. 150+ apps.\n\nGood employers exist.\n\nDon't sell yourself short.\n\n📌 Link in bio → cvin.bio\n\n#salary #joboffer #motivation #careeradvice #keepgoing`,
   `😰 Sunday scaries hitting different?\n\nThe commute you hate. The manager you avoid.\n\nLife's too short to dread Monday 50 weeks a year.\n\nYour career isn't a life sentence.\n\n📌 Link in bio → cvin.bio\n\n#sundayscaries #burnout #careerchange #motivation #mentalhealth`,
+  `📄 200 applications. 3 responses. All automated.\n\nNobody read the resume. Nobody saw the portfolio.\n\nUpload your CV. Get a live profile. See matched jobs.\n\n📌 Link in bio → cvin.bio\n\n#jobsearch #ats #resume #careeradvice #jobmatching`,
+  `👻 Recruiter: "We loved your profile."\n\nGhosted by Friday.\n\n2 weeks later: same job reposted.\n\nStop waiting. Get matched to 6,000+ jobs.\n\n📌 Link in bio → cvin.bio\n\n#recruiter #ghosting #jobsearch #hiring #careeradvice`,
+  `📁 Your resume is a file on someone's laptop.\n\nNo one opens it twice. No one shares it.\n\nMake it a live link. With matched jobs.\n\n📌 Link in bio → cvin.bio\n\n#resume #cv #portfolio #jobmatching #careeradvice`,
+  `⏱️ HR spent 6 seconds on your resume.\n\n6 seconds for 10 years of work.\n\nControl what they see first.\n\n📌 Link in bio → cvin.bio\n\n#resume #hiring #careeradvice #jobsearch #firstimpression`,
+  `🏢 Career page: "We value people."\n\nApplication: 47 fields. Retype your resume.\n\nStatus: under review for 3 months.\n\nOr just upload your CV once. Done.\n\n📌 Link in bio → cvin.bio\n\n#jobsearch #applications #hiring #careeradvice #resume`,
 ];
 
 // Facebook-optimized: conversational, longer, questions to drive comments
@@ -539,6 +549,45 @@ cvin.bio`,
 The commute you hate. The manager you avoid. The Slack you mute at 6pm.
 
 Life is too short to spend 50 weeks a year dreading Monday. Your career isn't a life sentence. It's a choice.
+
+cvin.bio`,
+  `200 applications. 3 responses. All automated.
+
+Nobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.
+
+They saw a PDF. Parsed by a bot. Scored by keywords.
+
+Your work deserves to be seen by a human. Upload your CV once, get a live profile and jobs matched to your skills.
+
+cvin.bio`,
+  `Recruiter on LinkedIn. Monday: "We loved your profile."
+
+Friday: complete silence. Two weeks later, same job reposted. Same recruiter.
+
+Stop waiting for them. Upload your CV, get a live link, and see 6,000+ jobs matched to your skills.
+
+cvin.bio`,
+  `Your resume is a file sitting on someone's laptop.
+
+Nobody opens it twice. Nobody shares it. Nobody finds it through Google.
+
+Now imagine your resume was a link. Shareable. Searchable. Always live. With jobs automatically matched to your skills.
+
+cvin.bio`,
+  `HR spent 6 seconds on your resume.
+
+6 seconds to judge 10 years of work. You can't control how long they look, but you can control what they see first.
+
+Upload your CV. Get a live profile. See jobs matched to your skills.
+
+cvin.bio`,
+  `Company career page says: "We value people."
+
+Application: 47 fields. Retype your resume. Upload the same resume. Cover letter required.
+
+Status: "Under review" for 3 months.
+
+Or upload your CV once. Get a live profile. Matched jobs. Done.
 
 cvin.bio`,
 ];

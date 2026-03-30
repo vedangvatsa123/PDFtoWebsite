@@ -610,6 +610,59 @@ Life is too short to spend 50 weeks dreading Monday.
 Your career isn't a life sentence. It's a choice.
 
 Make a different one. cvin.bio`,
+
+  // Post 53 → post_27.png (200 applications, job matching)
+  `200 applications last month. 3 responses. All automated.
+
+Nobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.
+
+They saw a PDF. Parsed by a bot. Scored by keywords.
+
+Upload your CV once. Get a live profile. See jobs matched to your skills.
+
+cvin.bio`,
+
+  // Post 54 → post_28.png (recruiter ghosted, job matching)
+  `Recruiter on LinkedIn. Monday: "We loved your profile."
+
+Friday: ghosted.
+
+Two weeks later. Same job reposted. Same recruiter. Different candidate.
+
+Stop waiting for them. Upload your CV, get matched to 6,000+ jobs.
+
+cvin.bio`,
+
+  // Post 55 → post_29.png (resume is a file, job matching)
+  `Your resume is a file on someone's laptop.
+
+No one opens it twice. No one shares it. No one finds it on Google.
+
+Now imagine it was a link. Shareable. Searchable. Always live. With jobs matched to your skills.
+
+cvin.bio`,
+
+  // Post 56 → post_30.png (6 seconds, job matching)
+  `HR spent 6 seconds on your resume.
+
+6 seconds to judge 10 years of work.
+
+You can't control how long they look. You can control what they see first.
+
+Upload your CV. Get a live profile. See jobs matched to your skills.
+
+cvin.bio`,
+
+  // Post 57 → post_31.png (47 fields, job matching)
+  `Company career page: "We value people."
+
+Application: 47 fields. Retype your resume. Upload the same resume. Cover letter required.
+
+Status: under review for 3 months.
+
+Or. Upload your CV once. Live profile. Matched jobs. Done.
+
+cvin.bio`,
 ];
 
 // ── OAuth 1.0a ────────────────────────────────────────────────────────────
