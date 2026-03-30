@@ -70,11 +70,11 @@ const POSTS = [
   `Job search on LinkedIn:\n\nApply → No response.\nApply → Auto-rejection in 3 minutes.\nApply → "We've decided to move forward with other candidates."\nApply → Ghosted.\n\n12,000 upvotes. Because it's everyone's feed.\n\nLinkedIn isn't broken. The process behind it is. cvin.bio`,
   `He asked for $58k. They offered $65k.\n\nSaid he was a great fit and wanted to move fast.\n\nAfter 3 months of unemployment. 150+ applications.\n\nGood employers do exist. And when they value you, they show it.\n\nDon't sell yourself short. Keep applying. cvin.bio`,
   `If Sunday evenings fill you with dread, that's not laziness.\n\nIt's your body telling you the deal isn't right.\n\nThe commute you hate. The manager you avoid. The Slack you mute.\n\nLife is too short to spend 50 weeks dreading Monday.\n\nYour career isn't a life sentence. It's a choice. cvin.bio`,
-  `200 applications last month. 3 responses. All automated.\n\nNobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.\n\nThey saw a PDF. Parsed by a bot. Scored by keywords.\n\nUpload your CV once. Get a live profile. See jobs matched to your skills.\n\ncvin.bio`,
-  `Recruiter on LinkedIn. Monday: "We loved your profile."\n\nFriday: ghosted.\n\nTwo weeks later. Same job reposted. Same recruiter. Different candidate.\n\nStop waiting for them. Upload your CV, get matched to 6,000+ jobs.\n\ncvin.bio`,
-  `Your resume is a file on someone's laptop.\n\nNo one opens it twice. No one shares it. No one finds it on Google.\n\nNow imagine it was a link. Shareable. Searchable. Always live. With jobs matched to your skills.\n\ncvin.bio`,
-  `HR spent 6 seconds on your resume.\n\n6 seconds to judge 10 years of work.\n\nYou can't control how long they look. You can control what they see first.\n\nUpload your CV. Get a live profile. See jobs matched to your skills.\n\ncvin.bio`,
-  `Company career page: "We value people."\n\nApplication: 47 fields. Retype your resume. Upload the same resume. Cover letter required.\n\nStatus: under review for 3 months.\n\nOr. Upload your CV once. Live profile. Matched jobs. Done.\n\ncvin.bio`,
+  `He kept a spreadsheet. Row 1: Applied. Row 2: Applied. Row 3: Applied.\n\nBy row 200, the Status column was all the same word: Nothing.\n\n200 applications. Not 200 conversations. 200 silences.\n\nHe didn't need to apply harder. He needed to be found.\n\ncvin.bio`,
+  `Recruiter asked for 3 references. She sent them within the hour.\n\nAll three cleared their schedules. Waited by the phone.\n\nNo one called. Not that week. Not ever.\n\nThe system wastes more than your time. It wastes the time of people who believe in you.\n\ncvin.bio`,
+  `A software engineer applied to his own company's job posting. As an experiment.\n\nSame resume that got him hired 2 years ago. Same skills. Same title.\n\nThe ATS rejected him in 4 minutes.\n\nThe filter isn't finding the best people. It's losing them.\n\ncvin.bio`,
+  `She raised two kids for 10 years.\n\nManaged a household budget tighter than most startups. Coordinated schedules across 4 people.\n\nEvery ATS saw one thing: a gap.\n\n10 years of invisible work doesn't fit in a keyword filter.\n\ncvin.bio`,
+  `He trained 3 new hires. Covered for his manager. Ran the team for 6 months.\n\nWhen the manager role opened, they hired someone external.\n\nThe new manager asked him to help with onboarding.\n\nLoyalty without leverage is just free labor.\n\ncvin.bio`,
 ];
 
 // Instagram-optimized captions: punchy hook, emojis, shorter body, hashtags
@@ -130,11 +130,11 @@ const IG_POSTS = [
   `💀 LinkedIn job search:\n\nApply → No response\nApply → Auto-reject in 3 min\nApply → Ghosted\n\n12,000 upvotes.\n\nLinkedIn isn't broken. The process is.\n\n📌 Link in bio → cvin.bio\n\n#linkedin #jobsearch #ghosting #hiring #careeradvice`,
   `🎉 Asked for $58k. Offered $65k.\n\n"Great fit. Moving fast."\n\nAfter 3 months unemployed. 150+ apps.\n\nGood employers exist.\n\nDon't sell yourself short.\n\n📌 Link in bio → cvin.bio\n\n#salary #joboffer #motivation #careeradvice #keepgoing`,
   `😰 Sunday scaries hitting different?\n\nThe commute you hate. The manager you avoid.\n\nLife's too short to dread Monday 50 weeks a year.\n\nYour career isn't a life sentence.\n\n📌 Link in bio → cvin.bio\n\n#sundayscaries #burnout #careerchange #motivation #mentalhealth`,
-  `📄 200 applications. 3 responses. All automated.\n\nNobody read the resume. Nobody saw the portfolio.\n\nUpload your CV. Get a live profile. See matched jobs.\n\n📌 Link in bio → cvin.bio\n\n#jobsearch #ats #resume #careeradvice #jobmatching`,
-  `👻 Recruiter: "We loved your profile."\n\nGhosted by Friday.\n\n2 weeks later: same job reposted.\n\nStop waiting. Get matched to 6,000+ jobs.\n\n📌 Link in bio → cvin.bio\n\n#recruiter #ghosting #jobsearch #hiring #careeradvice`,
-  `📁 Your resume is a file on someone's laptop.\n\nNo one opens it twice. No one shares it.\n\nMake it a live link. With matched jobs.\n\n📌 Link in bio → cvin.bio\n\n#resume #cv #portfolio #jobmatching #careeradvice`,
-  `⏱️ HR spent 6 seconds on your resume.\n\n6 seconds for 10 years of work.\n\nControl what they see first.\n\n📌 Link in bio → cvin.bio\n\n#resume #hiring #careeradvice #jobsearch #firstimpression`,
-  `🏢 Career page: "We value people."\n\nApplication: 47 fields. Retype your resume.\n\nStatus: under review for 3 months.\n\nOr just upload your CV once. Done.\n\n📌 Link in bio → cvin.bio\n\n#jobsearch #applications #hiring #careeradvice #resume`,
+  `📊 He kept a spreadsheet of applications.\n\nRow 1: Applied. Row 200: Nothing.\n\n200 silences. Not conversations.\n\nHe didn't need to apply harder. He needed to be found.\n\n📌 Link in bio → cvin.bio\n\n#jobsearch #applications #silence #careeradvice #hiring`,
+  `📞 Recruiter asked for 3 references.\n\nAll 3 cleared their schedules. Waited by the phone.\n\nNo one called. Not ever.\n\nThe system wastes more than your time.\n\n📌 Link in bio → cvin.bio\n\n#recruiter #ghosting #references #jobsearch #hiring`,
+  `🤖 Engineer applied to his OWN company's job posting.\n\nSame resume. Same skills. Same title.\n\nATS rejected him in 4 minutes.\n\nThe filter isn't finding people. It's losing them.\n\n📌 Link in bio → cvin.bio\n\n#ats #resume #jobsearch #hiring #careeradvice`,
+  `👩 She raised 2 kids for 10 years.\n\nManaged budgets. Coordinated 4 schedules.\n\nEvery ATS saw one thing: a gap.\n\n10 years of invisible work.\n\n📌 Link in bio → cvin.bio\n\n#careergap #women #hiring #careeradvice #returntowork`,
+  `🏢 Trained 3 new hires. Ran the team 6 months.\n\nManager role opened. They hired externally.\n\nNew manager asked him to "help with onboarding."\n\nLoyalty without leverage = free labor.\n\n📌 Link in bio → cvin.bio\n\n#loyalty #promotion #careeradvice #workplace #hiring`,
 ];
 
 // Facebook-optimized: conversational, longer, questions to drive comments
@@ -551,43 +551,55 @@ The commute you hate. The manager you avoid. The Slack you mute at 6pm.
 Life is too short to spend 50 weeks a year dreading Monday. Your career isn't a life sentence. It's a choice.
 
 cvin.bio`,
-  `200 applications. 3 responses. All automated.
+  `He kept a spreadsheet of every job application.
 
-Nobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.
+Row 1: Applied. Row 2: Applied. All the way to Row 200.
 
-They saw a PDF. Parsed by a bot. Scored by keywords.
+The Status column was always the same word: Nothing.
 
-Your work deserves to be seen by a human. Upload your CV once, get a live profile and jobs matched to your skills.
+200 silences. Not conversations. He didn't need to apply harder. He needed to be found.
 
-cvin.bio`,
-  `Recruiter on LinkedIn. Monday: "We loved your profile."
-
-Friday: complete silence. Two weeks later, same job reposted. Same recruiter.
-
-Stop waiting for them. Upload your CV, get a live link, and see 6,000+ jobs matched to your skills.
+Has anyone else tracked their applications like this?
 
 cvin.bio`,
-  `Your resume is a file sitting on someone's laptop.
+  `A recruiter asked for 3 references. She sent them within the hour.
 
-Nobody opens it twice. Nobody shares it. Nobody finds it through Google.
+Told her old manager, her mentor, and her former CTO. "They'll call this week."
 
-Now imagine your resume was a link. Shareable. Searchable. Always live. With jobs automatically matched to your skills.
+All three cleared their schedules. Waited by the phone.
 
-cvin.bio`,
-  `HR spent 6 seconds on your resume.
+No one called. Not that week. Not ever. The recruiter moved on and never told her.
 
-6 seconds to judge 10 years of work. You can't control how long they look, but you can control what they see first.
-
-Upload your CV. Get a live profile. See jobs matched to your skills.
+The system doesn't just waste your time. It wastes the time of people who believe in you.
 
 cvin.bio`,
-  `Company career page says: "We value people."
+  `A software engineer applied to his own company's job posting. As an experiment.
 
-Application: 47 fields. Retype your resume. Upload the same resume. Cover letter required.
+Same resume that got him hired 2 years ago. Same skills. Same job title.
 
-Status: "Under review" for 3 months.
+The ATS rejected him in 4 minutes.
 
-Or upload your CV once. Get a live profile. Matched jobs. Done.
+He was literally doing the job. The algorithm said he wasn't qualified for it. How many people are being filtered out right now?
+
+cvin.bio`,
+  `She raised two kids for 10 years.
+
+Managed a household budget tighter than most startups. Coordinated schedules across 4 daily. Negotiated with schools, doctors, contractors.
+
+Every ATS saw one thing: a gap.
+
+Not the decade of management. Not the problem-solving. Just a gap. 10 years of invisible work doesn't fit in a keyword filter.
+
+cvin.bio`,
+  `He trained 3 new hires. Covered for his manager during leave. Ran the entire team for 6 months.
+
+When the manager role finally opened up, he applied.
+
+They hired someone external. No interview. No explanation.
+
+The new manager's first request? "Can you help me with onboarding?"
+
+He was asked to train his own boss. Again. Loyalty without leverage is just free labor.
 
 cvin.bio`,
 ];

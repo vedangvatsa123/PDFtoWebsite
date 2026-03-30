@@ -611,56 +611,76 @@ Your career isn't a life sentence. It's a choice.
 
 Make a different one. cvin.bio`,
 
-  // Post 53 → post_27.png (200 applications, job matching)
-  `200 applications last month. 3 responses. All automated.
+  // Post 53 → post_53.png (the spreadsheet)
+  `He kept a spreadsheet.
 
-Nobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.
+Row 1: Applied. Row 2: Applied. Row 3: Applied.
 
-They saw a PDF. Parsed by a bot. Scored by keywords.
+By row 200, the "Status" column was all the same word: Nothing.
 
-Upload your CV once. Get a live profile. See jobs matched to your skills.
+200 applications. Not 200 conversations. 200 silences.
 
-cvin.bio`,
-
-  // Post 54 → post_28.png (recruiter ghosted, job matching)
-  `Recruiter on LinkedIn. Monday: "We loved your profile."
-
-Friday: ghosted.
-
-Two weeks later. Same job reposted. Same recruiter. Different candidate.
-
-Stop waiting for them. Upload your CV, get matched to 6,000+ jobs.
+He didn't need to apply harder. He needed to be found.
 
 cvin.bio`,
 
-  // Post 55 → post_29.png (resume is a file, job matching)
-  `Your resume is a file on someone's laptop.
+  // Post 54 → post_54.png (the reference check)
+  `Recruiter asked for 3 references. She sent them within the hour.
 
-No one opens it twice. No one shares it. No one finds it on Google.
+Told her old manager, her mentor, her former CTO. "They'll call this week."
 
-Now imagine it was a link. Shareable. Searchable. Always live. With jobs matched to your skills.
+All three cleared their schedules. Waited by the phone.
 
-cvin.bio`,
+No one called. Not that week. Not ever.
 
-  // Post 56 → post_30.png (6 seconds, job matching)
-  `HR spent 6 seconds on your resume.
+The recruiter moved on. Never told her.
 
-6 seconds to judge 10 years of work.
+Three people waited for a call that was never coming.
 
-You can't control how long they look. You can control what they see first.
-
-Upload your CV. Get a live profile. See jobs matched to your skills.
+The system wastes more than your time. It wastes the time of people who believe in you.
 
 cvin.bio`,
 
-  // Post 57 → post_31.png (47 fields, job matching)
-  `Company career page: "We value people."
+  // Post 55 → post_55.png (applied to own company)
+  `A software engineer applied to his own company's job posting. As an experiment.
 
-Application: 47 fields. Retype your resume. Upload the same resume. Cover letter required.
+Same resume that got him hired 2 years ago. Same skills. Same title.
 
-Status: under review for 3 months.
+The ATS rejected him in 4 minutes.
 
-Or. Upload your CV once. Live profile. Matched jobs. Done.
+He was literally doing the job. The algorithm said he wasn't qualified for it.
+
+The filter isn't finding the best people. It's losing them.
+
+cvin.bio`,
+
+  // Post 56 → post_56.png (the 10 year gap)
+  `She raised two kids for 10 years.
+
+Managed a household budget tighter than most startups. Coordinated schedules across 4 people. Negotiated with schools, doctors, contractors.
+
+Every ATS saw one thing: a gap.
+
+Not the 10 years of unpaid management. Not the problem-solving. Not the discipline.
+
+Just a gap.
+
+10 years of invisible work doesn't fit in a keyword filter.
+
+cvin.bio`,
+
+  // Post 57 → post_57.png (the internal candidate)
+  `He trained 3 new hires. Covered for his manager during leave. Ran the team for 6 months.
+
+When the manager role opened, he applied.
+
+They hired someone external. No interview. No explanation.
+
+The new manager asked him to "help with onboarding."
+
+He was asked to train his own boss. Again.
+
+Loyalty without leverage is just free labor.
 
 cvin.bio`,
 ];

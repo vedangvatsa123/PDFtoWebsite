@@ -66,11 +66,11 @@ const POSTS = [
   `Job search on LinkedIn:\n\nApply → No response.\nApply → Auto-rejection in 3 minutes.\nApply → "We've decided to move forward with other candidates."\nApply → Ghosted.\n\n12,000 upvotes. Because it's everyone's feed.\n\nLinkedIn isn't broken. The process behind it is. cvin.bio`,
   `He asked for $58k. They offered $65k.\n\nSaid he was a great fit and wanted to move fast.\n\nAfter 3 months of unemployment. 150+ applications.\n\nGood employers do exist. And when they value you, they show it.\n\nDon't sell yourself short. Keep applying. cvin.bio`,
   `If Sunday evenings fill you with dread, that's not laziness.\n\nIt's your body telling you the deal isn't right.\n\nThe commute you hate. The manager you avoid. The Slack you mute.\n\nLife is too short to spend 50 weeks dreading Monday.\n\nYour career isn't a life sentence. It's a choice. cvin.bio`,
-  `200 applications last month. 3 responses. All automated.\n\nNobody read the resume. Nobody saw the portfolio. Nobody clicked the GitHub.\n\nUpload your CV once. Get a live profile. See jobs matched to your skills.\n\ncvin.bio`,
-  `Recruiter on LinkedIn. Monday: "We loved your profile."\n\nFriday: ghosted.\n\nTwo weeks later. Same job reposted. Same recruiter.\n\nStop waiting for them. Upload your CV, get matched to 6,000+ jobs.\n\ncvin.bio`,
-  `Your resume is a file on someone's laptop.\n\nNo one opens it twice. No one shares it. No one finds it on Google.\n\nNow imagine it was a link. Shareable. Searchable. Always live. With jobs matched to your skills.\n\ncvin.bio`,
-  `HR spent 6 seconds on your resume.\n\n6 seconds to judge 10 years of work.\n\nYou can't control how long they look. You can control what they see first.\n\ncvin.bio`,
-  `Career page says "we value people."\n\nApplication: 47 fields. Retype your resume. Cover letter required.\n\nStatus: under review for 3 months.\n\nOr. Upload your CV once. Live profile. Matched jobs. Done.\n\ncvin.bio`,
+  `He kept a spreadsheet. Row 1: Applied. Row 2: Applied. Row 3: Applied.\n\nBy row 200, the Status column was all the same word: Nothing.\n\n200 applications. Not 200 conversations. 200 silences.\n\nHe didn't need to apply harder. He needed to be found. cvin.bio`,
+  `Recruiter asked for 3 references. She sent them within the hour.\n\nAll three cleared their schedules. Waited by the phone.\n\nNo one called. Not that week. Not ever.\n\nThe system wastes more than your time. It wastes the time of people who believe in you. cvin.bio`,
+  `A software engineer applied to his own company's job posting. As an experiment.\n\nSame resume that got him hired 2 years ago. Same skills. Same title.\n\nThe ATS rejected him in 4 minutes.\n\nThe filter isn't finding the best people. It's losing them. cvin.bio`,
+  `She raised two kids for 10 years.\n\nManaged a household budget tighter than most startups. Coordinated schedules across 4 people.\n\nEvery ATS saw one thing: a gap.\n\n10 years of invisible work doesn't fit in a keyword filter. cvin.bio`,
+  `He trained 3 new hires. Covered for his manager. Ran the team for 6 months.\n\nWhen the manager role opened, they hired someone external.\n\nThe new manager asked him to help with onboarding.\n\nLoyalty without leverage is just free labor. cvin.bio`,
 ];
 
 // ── AT Protocol helpers ───────────────────────────────────────────────────
