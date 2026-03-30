@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 
 export const metadata: Metadata = {
-  title: 'Job Board | CVin.Bio',
+  title: 'Job Board',
   description: 'Browse 6,000+ tech jobs from Stripe, Airbnb, Coinbase, Discord, and 60+ companies. Filter by role, location, and job type. Upload your CV for personalized skill matching.',
   keywords: [
     'tech jobs', 'job board', 'remote jobs', 'software engineer jobs',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: `${siteUrl}/jobs`,
   },
   openGraph: {
-    title: 'Job Board — 6,000+ Tech Jobs | CVin.Bio',
+    title: 'Job Board — 6,000+ Tech Jobs',
     description: 'Browse jobs from Stripe, Airbnb, Coinbase, Discord, and 60+ companies. Upload your CV for personalized skill matching.',
     url: `${siteUrl}/jobs`,
     siteName: 'CVin.Bio',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Job Board — 6,000+ Tech Jobs | CVin.Bio',
+    title: 'Job Board — 6,000+ Tech Jobs',
     description: 'Browse jobs from Stripe, Airbnb, Coinbase & more. Upload your CV for personalized matches.',
     images: [`${siteUrl}/images/jobs-og.png`],
     creator: '@cvinbio',

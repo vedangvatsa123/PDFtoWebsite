@@ -5,7 +5,7 @@ import { blogPosts } from '@/lib/blog-data';
 import { blogMetadata } from '@/lib/blog-metadata';
 
 export const metadata = {
-  title: 'Insights & Advice | CVin.Bio',
+  title: 'Insights & Advice',
   description: 'Practical career guides, resume strategies, and actionable insights for modern professionals.',
 };
 

@@ -3,7 +3,7 @@ import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 
 export const metadata: Metadata = {
-  title: 'Terms & Privacy - CVin.Bio',
+  title: 'Terms & Privacy',
   description: 'Terms of Service and Privacy Policy for the CVin.Bio platform.',
 };
 
