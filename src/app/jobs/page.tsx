@@ -350,6 +350,14 @@ export default function JobsPage() {
                 className="group flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
                 onClick={() => trackClick(job.id, job)}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={job.company_logo || `https://www.google.com/s2/favicons?domain=${(() => { try { return new URL(job.apply_url).hostname; } catch { return job.company.toLowerCase().replace(/\s+/g, '') + '.com'; } })()}&sz=32`}
+                  alt=""
+                  className="h-5 w-5 rounded shrink-0"
+                  loading="lazy"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors truncate">
