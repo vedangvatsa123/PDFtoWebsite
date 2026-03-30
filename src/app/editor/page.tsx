@@ -1099,30 +1099,24 @@ export default function EditorPage() {
         <div className="flex min-h-screen flex-col">
             <Header />
             {!user && (
-                <div className="border-b bg-background shadow-sm">
-                    <div className="container mx-auto max-w-4xl px-4 md:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-4">
-                        <p className="text-sm text-muted-foreground leading-relaxed max-w-md sm:max-w-none">
-                            <span className="font-semibold text-foreground block sm:inline mb-1 sm:mb-0">Almost done!</span>{' '}
-                            <span className="block sm:inline">Check your details below, then sign up to get your link.</span>
-                        </p>
-                        <div className="flex items-center justify-center shrink-0">
-                            <LoginDialog trigger={
-                                <Button size="sm" className="px-6 font-semibold" onClick={() => {
-                                    const snapshot = {
-                                        personalInfo: { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website, github: profile.github, linkedin: profile.linkedin, slug: profile.slug, avatarUrl: profile.avatarUrl },
-                                        summary: profile.summary,
-                                        themeId: activeThemeId,
-                                        workExperience: workItems,
-                                        education: educationItems,
-                                        skills: skillItems,
-                                        customSections: customSections
-                                    };
-                                    sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
-                                    try { localStorage.setItem('parsedResume', JSON.stringify(snapshot)); localStorage.setItem('parsedResumeTimestamp', Date.now().toString()); } catch (e) { /* quota exceeded */ }
-                                }}>Sign up & share</Button>
-                            } />
-                        </div>
-                    </div>
+                <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 px-4 py-2.5 flex items-center justify-center gap-3 text-amber-800 dark:text-amber-200 text-xs md:text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                    <span><strong>Guest mode.</strong> Check your details below, then sign up to save.</span>
+                    <LoginDialog trigger={
+                        <Button size="sm" variant="outline" className="px-4 text-xs font-semibold border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/50 shrink-0" onClick={() => {
+                            const snapshot = {
+                                personalInfo: { fullName: profile.fullName, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website, github: profile.github, linkedin: profile.linkedin, slug: profile.slug, avatarUrl: profile.avatarUrl },
+                                summary: profile.summary,
+                                themeId: activeThemeId,
+                                workExperience: workItems,
+                                education: educationItems,
+                                skills: skillItems,
+                                customSections: customSections
+                            };
+                            sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
+                            try { localStorage.setItem('parsedResume', JSON.stringify(snapshot)); localStorage.setItem('parsedResumeTimestamp', Date.now().toString()); } catch (e) { /* quota exceeded */ }
+                        }}>Sign up & save</Button>
+                    } />
                 </div>
             )}
 
