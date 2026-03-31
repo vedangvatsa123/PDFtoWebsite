@@ -1,6 +1,6 @@
 {
-  "index": 15,
-  "lastPostedAt": "2026-03-31T05:25:16.901Z",
+  "index": 16,
+  "lastPostedAt": "2026-03-31T12:04:42.128Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -61,6 +61,10 @@
     {
       "slug": "the-30-second-scan",
       "publishedAt": "2026-03-31T05:25:16.901Z"
+    },
+    {
+      "slug": "gap-explanation",
+      "publishedAt": "2026-03-31T12:04:42.128Z"
     }
   ]
 }
