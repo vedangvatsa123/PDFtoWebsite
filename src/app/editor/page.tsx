@@ -187,7 +187,7 @@ function InsightsCard({ slug }: { slug: string }) {
             <div className="flex items-center justify-center gap-2 py-1">
                 <span className="text-[10px] text-muted-foreground/40">▸</span>
                 <span className="text-[11px] text-muted-foreground/40">
-                    Your profile has been viewed <span className="text-foreground/50 font-medium">{data.views}</span> time{data.views !== 1 ? 's' : ''} · insights unlock after 10 views
+                    Your profile has been viewed <span className="text-foreground/50 font-medium">{data.views}</span> time{data.views !== 1 ? 's' : ''} · Insights unlock after 10 views
                 </span>
             </div>
         );
