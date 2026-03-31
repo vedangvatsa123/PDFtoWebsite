@@ -257,7 +257,7 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Explicit crawler access</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                Most platforms block AI crawlers. We do the opposite. Over 100 crawlers are explicitly allowed in <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">robots.txt</span> across AI, search, social, SEO, academic, and content categories. No rate limiting. No authentication required for public profiles. Full <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">max-snippet:-1</span> meta directives allow unlimited content indexing.
+                Most platforms restrict AI crawlers. We implement an open-access policy. Over 100 user agents are recognized in <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">robots.txt</span> across AI, search, social, SEO, academic, and content categories. Full <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">max-snippet:-1</span> meta directives enable unrestricted content indexing for compliant agents.
               </p>
             </div>
           </div>
@@ -374,7 +374,7 @@ Cache-Control: public, s-maxage=3600`}</pre>
 
             <div className="lg:col-span-2">
               <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 sticky top-8">
-                <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">100+ crawlers allowed</p>
+                <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Recognized user agents</p>
                 {[
                   { category: 'AI Agents', agents: ['GPTBot', 'ChatGPT-User', 'OAI-SearchBot', 'ClaudeBot', 'Claude-Web', 'Claude-SearchBot', 'PerplexityBot', 'Perplexity-User', 'cohere-ai', 'AI2Bot', 'Diffbot', 'YouBot', 'Bytespider', 'CCBot', 'Neevabot', 'iaskspider', 'PanguBot', 'Timpibot'] },
                   { category: 'Search Engines', agents: ['Googlebot', 'GoogleOther', 'Google-Extended', 'Bingbot', 'DuckDuckBot', 'YandexBot', 'Baiduspider', 'Slurp', 'Sogou', 'PetalBot', 'Qwantify', 'NaverBot', 'SeznamBot', 'Mojeek'] },
@@ -396,7 +396,7 @@ Cache-Control: public, s-maxage=3600`}</pre>
                     </div>
                   </div>
                 ))}
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-3">Full access to public profile pages. No rate limiting. No authentication.</p>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-3">Standards-compliant access to public profile endpoints. Respects robots.txt directives.</p>
               </div>
             </div>
           </div>
