@@ -21,55 +21,30 @@ const reports: Record<string, { title: string; path: string; fullPath: string; t
 
 function buildUserEmail(reportKey: string, recipientEmail: string) {
   const r = reports[reportKey] || reports['remote-talent'];
-  const reportUrl = `${siteUrl}${r.path}`;
   const fullReportUrl = `${siteUrl}${r.fullPath}`;
 
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#fafafa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#fafafa;padding:40px 20px;">
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
-        <!-- Header -->
         <tr>
-          <td style="background:#18181b;padding:32px 40px;">
-            <p style="margin:0;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#a1a1aa;">CVin.Bio Research</p>
-            <h1 style="margin:12px 0 0;font-size:24px;font-weight:700;color:#ffffff;line-height:1.3;">${r.title}</h1>
-          </td>
-        </tr>
-        <!-- Body -->
-        <tr>
-          <td style="padding:36px 40px 24px;">
-             <p style="margin:0 0 16px;font-size:15px;color:#3f3f46;line-height:1.7;">
-               Please confirm your email to unlock the full report.
-             </p>
-             <p style="margin:0 0 28px;font-size:14px;color:#71717a;line-height:1.7;">
-               ${r.tagline}
-             </p>
-             <!-- CTA Button -->
-             <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
-               <tr>
-                 <td style="background:#18181b;border-radius:8px;padding:14px 32px;">
-                   <a href="${fullReportUrl}" target="_blank" style="font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;display:inline-block;">
-                     Confirm &amp; read the full report &rarr;
-                   </a>
-                 </td>
-               </tr>
-             </table>
-
-          </td>
-        </tr>
-        <!-- Divider -->
-        <tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #f4f4f5;margin:0;"></td></tr>
-        <!-- Footer -->
-        <tr>
-          <td style="padding:24px 40px 32px;">
-            <p style="margin:0 0 8px;font-size:13px;color:#71717a;line-height:1.6;">
-              While you are here, check out <a href="${siteUrl}/jobs" style="color:#18181b;font-weight:600;text-decoration:underline;">6,000+ open roles</a> on our job board.
+          <td style="padding:36px 40px;">
+            <p style="margin:0 0 20px;font-size:15px;color:#3f3f46;line-height:1.7;">
+              Hi, thanks for your interest in ${r.title}. Click the button below to access the full report.
             </p>
-            <p style="margin:0;font-size:11px;color:#a1a1aa;">
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+              <tr>
+                <td style="background:#18181b;border-radius:8px;padding:14px 32px;">
+                  <a href="${fullReportUrl}" target="_blank" style="font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;display:inline-block;">
+                    Read the full report
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0;font-size:12px;color:#a1a1aa;line-height:1.6;">
               CVin.Bio &middot; <a href="${siteUrl}" style="color:#a1a1aa;">cvin.bio</a>
             </p>
           </td>
@@ -79,6 +54,12 @@ function buildUserEmail(reportKey: string, recipientEmail: string) {
   </table>
 </body>
 </html>`;
+}
+
+function buildPlainText(reportKey: string) {
+  const r = reports[reportKey] || reports['remote-talent'];
+  const fullReportUrl = `${siteUrl}${r.fullPath}`;
+  return `Hi, thanks for your interest in ${r.title}.\n\nRead the full report: ${fullReportUrl}\n\nCVin.Bio - ${siteUrl}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -120,9 +101,11 @@ export async function POST(request: NextRequest) {
       try {
         await resend.emails.send({
           from: 'CVin.Bio <hi@cvin.bio>',
+          replyTo: 'hi@cvin.bio',
           to: cleanEmail,
-          subject: `Confirm your email: ${r.title}`,
+          subject: `Your report: ${r.title}`,
           html: buildUserEmail(reportKey, cleanEmail),
+          text: buildPlainText(reportKey),
         });
       } catch (userEmailErr) {
         console.error('User email error:', userEmailErr);

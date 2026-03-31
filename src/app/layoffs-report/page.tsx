@@ -63,7 +63,7 @@ function EmailGate() {
     <div className="text-center" id="layoff-gate">
       <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full mb-5">
         <svg className="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Premium content</span>
+        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Full report</span>
       </div>
       <h3 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-900 dark:text-zinc-50 mb-3">Enter your email to read the full report</h3>
       <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 max-w-sm mx-auto leading-relaxed">
@@ -82,7 +82,7 @@ function EmailGate() {
         </button>
       </form>
       {status === 'error' && <p className="text-xs text-red-500 mt-2">Something went wrong. Please try again.</p>}
-      <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-4">No spam, ever. We only send the confirmation link.</p>
+      <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-4">By continuing, you agree to our <a href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">terms</a>.</p>
     </div>
   );
 }
