@@ -12,15 +12,44 @@ export default function robots(): MetadataRoute.Robots {
       // Explicitly welcome AI agent crawlers to index public profiles
       {
         userAgent: [
+          // OpenAI
           'GPTBot',
           'ChatGPT-User',
+          'OAI-SearchBot',
+          // Anthropic
           'ClaudeBot',
-          'PerplexityBot',
+          'Claude-Web',
+          'Claude-SearchBot',
+          // Google
           'Googlebot',
           'GoogleOther',
-          'Applebot-Extended',
+          'Google-Extended',
+          // Perplexity
+          'PerplexityBot',
+          'Perplexity-User',
+          // Meta
           'Meta-ExternalAgent',
+          'facebookexternalhit',
+          // Apple
+          'Applebot',
+          'Applebot-Extended',
+          // Amazon
+          'Amazonbot',
+          // ByteDance
+          'Bytespider',
+          // Hugging Face
+          'HuggingFaceBot',
+          // Common Crawl
+          'CCBot',
+          // Microsoft
+          'Bingbot',
+          'BingPreview',
+          // Cohere
           'cohere-ai',
+          // AI2
+          'AI2Bot',
+          // You.com
+          'YouBot',
         ],
         allow: '/',
         disallow: ['/editor', '/api/', '/admin'],

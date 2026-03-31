@@ -174,7 +174,7 @@ export default function AIDiscoveryPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-28">
           {[
             { value: '4', label: 'Discovery layers\n(Schema, MCP, llms.txt, crawlers)' },
-            { value: '9', label: 'AI crawlers\nexplicitly allowed' },
+            { value: '27', label: 'AI crawlers\nexplicitly allowed' },
             { value: '24/7', label: 'Your profile\nworks passively' },
             { value: '0', label: 'Login walls\nfor AI agents' },
           ].map((d, i) => (
@@ -257,7 +257,7 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Explicit crawler access</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                Most platforms block AI crawlers. We do the opposite. GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, GoogleOther, Applebot-Extended, Meta-ExternalAgent, and cohere-ai are explicitly allowed in <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">robots.txt</span>. No rate limiting. No authentication required for public profiles. Full <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">max-snippet:-1</span> meta directives allow unlimited content indexing.
+                Most platforms block AI crawlers. We do the opposite. GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, GoogleOther, Google-Extended, Applebot, Meta-ExternalAgent, Amazonbot, Bytespider, CCBot, Bingbot, cohere-ai, and more are explicitly allowed in <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">robots.txt</span>. 27 AI crawlers total. No rate limiting. No authentication required for public profiles. Full <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">max-snippet:-1</span> meta directives allow unlimited content indexing.
               </p>
             </div>
           </div>
@@ -336,13 +336,28 @@ export default function AIDiscoveryPage() {
                   {[
                     'GPTBot',
                     'ChatGPT-User',
+                    'OAI-SearchBot',
                     'ClaudeBot',
-                    'PerplexityBot',
+                    'Claude-Web',
+                    'Claude-SearchBot',
                     'Googlebot',
                     'GoogleOther',
-                    'Applebot-Extended',
+                    'Google-Extended',
+                    'PerplexityBot',
+                    'Perplexity-User',
                     'Meta-ExternalAgent',
+                    'facebookexternalhit',
+                    'Applebot',
+                    'Applebot-Extended',
+                    'Amazonbot',
+                    'Bytespider',
+                    'HuggingFaceBot',
+                    'CCBot',
+                    'Bingbot',
+                    'BingPreview',
                     'cohere-ai',
+                    'AI2Bot',
+                    'YouBot',
                   ].map((agent) => (
                     <div key={agent} className="flex items-center gap-3 py-2 border-b border-zinc-100 dark:border-zinc-800/30 last:border-0">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
@@ -350,7 +365,7 @@ export default function AIDiscoveryPage() {
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-4">All agents have full access to public profile pages. No rate limiting.</p>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-4">27 agents have full access to public profile pages. No rate limiting.</p>
               </div>
             </div>
           </div>
