@@ -1,6 +1,6 @@
 {
-  "index": 16,
-  "lastPostedAt": "2026-03-31T12:04:42.128Z",
+  "index": 17,
+  "lastPostedAt": "2026-03-31T20:03:49.063Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -65,6 +65,10 @@
     {
       "slug": "gap-explanation",
       "publishedAt": "2026-03-31T12:04:42.128Z"
+    },
+    {
+      "slug": "academic-to-commercial",
+      "publishedAt": "2026-03-31T20:03:49.063Z"
     }
   ]
 }
