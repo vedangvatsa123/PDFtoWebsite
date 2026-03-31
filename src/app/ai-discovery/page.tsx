@@ -309,22 +309,65 @@ export default function AIDiscoveryPage() {
 
               <div className="space-y-6">
                 <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
-                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">Profile index</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">Profile index for LLMs</p>
                   <pre className="text-sm font-mono">GET https://cvin.bio/llms.txt</pre>
-                  <p className="text-[11px] text-zinc-500 mt-2">Returns all public profiles with name, skills, and summary. Updated hourly.</p>
+                  <p className="text-[11px] text-zinc-500 mt-2">Returns all public profiles with name, skills, and summary. Plain text. Updated hourly. Cache: 1h with stale-while-revalidate.</p>
                 </div>
 
                 <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
-                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">Structured profile data</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">Structured profile data (JSON-LD)</p>
                   <pre className="text-sm font-mono">GET https://cvin.bio/&#123;username&#125;</pre>
-                  <p className="text-[11px] text-zinc-500 mt-2">Every profile page contains a JSON-LD script tag with the full schema.org/Person object. Parse it from the HTML.</p>
+                  <p className="text-[11px] text-zinc-500 mt-3 mb-3">Every profile page contains a JSON-LD script tag. Extract the schema.org/Person object from the HTML.</p>
+                  <pre className="text-xs font-mono leading-relaxed text-zinc-400">{`<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Jane Smith",
+  "url": "https://cvin.bio/jane",
+  "jobTitle": "Senior Engineer",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Stripe"
+  },
+  "knowsAbout": ["React", "TypeScript", "Node.js"],
+  "hasOccupation": [...],
+  "hasCredential": [...],
+  "alumniOf": [...],
+  "sameAs": [...]
+}
+</script>`}</pre>
                 </div>
 
                 <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
-                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">MCP tools (for AI assistants)</p>
-                  <pre className="text-sm font-mono">search_candidates(query, limit)</pre>
-                  <pre className="text-sm font-mono">get_profile(username)</pre>
-                  <p className="text-[11px] text-zinc-500 mt-2">Available via the Model Context Protocol. Contact us for MCP server access.</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">MCP tools (Model Context Protocol)</p>
+                  <pre className="text-sm font-mono text-emerald-400">search_candidates(query, limit)</pre>
+                  <p className="text-[11px] text-zinc-500 mt-1 mb-3">Search by skill, location, job title, or keyword. Returns up to 20 matching profiles with full work history and education.</p>
+                  <pre className="text-sm font-mono text-emerald-400">get_profile(username)</pre>
+                  <p className="text-[11px] text-zinc-500 mt-1 mb-3">Fetch a complete profile by slug. Returns structured data including custom sections and credentials.</p>
+                  <p className="text-[11px] text-zinc-500 border-t border-zinc-800 pt-3">Available via stdio transport. Contact <span className="text-zinc-300">hi@cvin.bio</span> for MCP server access and configuration.</p>
+                </div>
+
+                <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">XML Sitemap</p>
+                  <pre className="text-sm font-mono">GET https://cvin.bio/sitemap.xml</pre>
+                  <p className="text-[11px] text-zinc-500 mt-2">All profile URLs with lastmod timestamps. Includes static pages, blog posts, and dynamic user profiles. Updated on every build.</p>
+                </div>
+
+                <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">Robots.txt</p>
+                  <pre className="text-sm font-mono">GET https://cvin.bio/robots.txt</pre>
+                  <p className="text-[11px] text-zinc-500 mt-2">100+ user agents explicitly allowed. Public profiles, blog, and reports are fully crawlable. Editor, API, and admin routes are disallowed.</p>
+                </div>
+
+                <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">Response headers</p>
+                  <pre className="text-xs font-mono leading-relaxed text-zinc-400">{`Content-Type: text/html; charset=utf-8
+X-Robots-Tag: index, follow,
+  max-snippet:-1,
+  max-image-preview:large,
+  max-video-preview:-1
+Cache-Control: public, s-maxage=3600`}</pre>
+                  <p className="text-[11px] text-zinc-500 mt-2">No content restrictions. AI systems can use unlimited text snippets and full-size image previews.</p>
                 </div>
               </div>
             </div>
