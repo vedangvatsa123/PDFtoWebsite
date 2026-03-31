@@ -120,7 +120,7 @@ export default function Home() {
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your CV into a Website
             </h1>
-            <Link href="/ai-discovery" className="text-sm text-muted-foreground hover:text-foreground transition-colors">The only CV format built for AI agents.</Link>
+            <Link href="/ai-discovery" className="text-sm text-muted-foreground hover:text-foreground transition-colors">The CV format that AI agents can also read.</Link>
           </div>
 
           {(isUserLoading) ? null : user ? (
