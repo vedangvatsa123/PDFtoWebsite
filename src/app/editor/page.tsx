@@ -1245,6 +1245,12 @@ export default function EditorPage() {
                                     <Input type="file" className="hidden" accept=".pdf,.doc,.docx,.rtf,.txt,.jpg,.jpeg,.png,.webp,.heic" onChange={handleFileChange} disabled={isGenerating} />
                                 </label>
                            )}
+                           {user && (
+                                <Link href="/jobs" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                                    <Briefcase className="h-4 w-4 mr-1.5" />
+                                    <span className="text-xs md:text-sm">Jobs</span>
+                                </Link>
+                           )}
 
                             {!user && (
                                 <Button variant="outline" onClick={() => {
@@ -1437,14 +1443,6 @@ export default function EditorPage() {
                                                             {`${(process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio').replace(/^https?:\/\//, '')}/${profile.slug}`}
                                                         </a>
                                                     </p>
-
-                                                    <Link
-                                                        href="/jobs"
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primary hover:underline"
-                                                    >
-                                                        <Briefcase className="h-3 w-3" />
-                                                        View matching jobs →
-                                                    </Link>
                                                 </div>
                                             ) : profile.slug && !isComplete ? (
                                                 <div className="mt-2.5 space-y-2">
