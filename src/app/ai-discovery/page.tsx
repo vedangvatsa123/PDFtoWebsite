@@ -159,7 +159,7 @@ export default function AIDiscoveryPage() {
               Built for<br />AI agents
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              Every CVin.Bio profile is engineered to be discovered, read, and matched by AI systems. Not just indexed by search engines. Natively consumable by AI assistants, recruiter bots, and automated hiring tools.
+              Every CVin.Bio profile is engineered for machine-readability. Structured metadata, standardized schemas, and protocol-level integrations make your professional data natively consumable by AI assistants, search agents, and automated hiring infrastructure.
             </p>
           </div>
           <div className="hidden lg:block">
@@ -174,9 +174,9 @@ export default function AIDiscoveryPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-28">
           {[
             { value: '4', label: 'Discovery layers\n(Schema, MCP, llms.txt, crawlers)' },
-            { value: '100+', label: 'Crawlers\nexplicitly allowed' },
+            { value: '100+', label: 'User agents\nrecognized' },
             { value: '24/7', label: 'Your profile\nworks passively' },
-            { value: '0', label: 'Login walls\nfor AI agents' },
+            { value: '0', label: 'Authentication\nbarriers for agents' },
           ].map((d, i) => (
             <div key={i} className="bg-[#fafafa] dark:bg-black p-8 sm:p-10">
               <BigNum {...d} />
@@ -190,13 +190,13 @@ export default function AIDiscoveryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                A PDF is a print format trapped in a digital world. When an AI agent encounters a PDF, it has to run OCR, guess at formatting, parse tables, and hope the layout engine cooperated. Most agents skip them entirely.
+                PDF is a print-era format operating in a machine-learning era. When an AI agent encounters a PDF, it must run OCR, infer document structure, resolve formatting ambiguities, and handle layout engine inconsistencies. Most systems deprioritize or skip them entirely.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 A CVin.Bio profile is a structured webpage with machine-readable metadata baked into the HTML. An AI agent reads it the same way it reads any web page, except every data point is explicitly labeled and categorized.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                Skills, job titles, companies, dates, degrees, credentials. All structured as JSON-LD. No parsing required. No guessing. No lossy extraction.
+                Skills, job titles, companies, dates, degrees, credentials. All structured as JSON-LD with explicit type annotations. Zero parsing overhead. Zero extraction loss.
               </p>
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
@@ -212,7 +212,7 @@ export default function AIDiscoveryPage() {
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Four layers of AI discoverability</h2>
           <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-8 max-w-2xl">
-            We do not rely on a single mechanism. Every CVin.Bio profile is discoverable through four independent systems, each designed for a different type of AI consumer.
+            CVin.Bio implements a multi-layer discovery architecture. Every profile is accessible through four independent systems, each optimized for a different class of AI consumer.
           </p>
 
           <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 mb-8">
@@ -237,7 +237,7 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">llms.txt</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                A dynamically generated index at <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">/llms.txt</span> lists every public profile with name, skills, and summary. Updated hourly. Functions like <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">sitemap.xml</span> but optimized for LLM consumption. Any AI system can fetch this single file and discover the entire candidate database.
+                A dynamically generated index at <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">/llms.txt</span> catalogs every public profile with name, skills, and summary. Regenerated hourly. Functions as a <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">sitemap.xml</span> equivalent optimized for LLM consumption. A single HTTP request returns the complete profile directory.
               </p>
             </div>
 
@@ -247,7 +247,7 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Model Context Protocol</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                Our MCP server exposes two tools for AI agents. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> searches the database by skill, location, or job title. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> fetches a full structured profile by username. Any MCP-compatible AI assistant can query CVin.Bio directly.
+                The CVin.Bio MCP server implements two callable tools. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> queries the profile database by skill, location, or job title. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> retrieves a complete structured profile by username. Compatible with any MCP-enabled AI assistant.
               </p>
             </div>
 
@@ -269,33 +269,23 @@ export default function AIDiscoveryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20 text-center">
               <div className="text-4xl font-serif font-bold text-zinc-900 dark:text-zinc-50 mb-3">Passive</div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">Your profile gets discovered by AI agents even when you are not actively job searching. No applications needed.</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">AI agents surface your profile autonomously. Your professional data is continuously indexed and matchable without manual applications.</p>
             </div>
             <div className="p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20 text-center">
               <div className="text-4xl font-serif font-bold text-zinc-900 dark:text-zinc-50 mb-3">Instant</div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">AI agents parse your profile in milliseconds. No OCR. No regex. No keyword guessing. Structured data goes straight to the match engine.</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">AI agents parse structured JSON-LD in milliseconds. No OCR pipeline. No regex extraction. No keyword heuristics. Direct schema-to-model data transfer.</p>
             </div>
             <div className="p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20 text-center">
               <div className="text-4xl font-serif font-bold text-zinc-900 dark:text-zinc-50 mb-3">Current</div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">Update your profile once. Every AI agent sees the latest version immediately. No re-uploading. No version control nightmares.</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">Update your profile once. Every connected AI system receives the latest version on its next query. Single source of truth. Always synchronized.</p>
             </div>
           </div>
 
           <Callout>Your profile is not a static file sitting in a folder. It is a live endpoint that AI systems query in real time.</Callout>
         </section>
 
-        {/* ─── SECTION 4: TRANSPARENCY ─── */}
-        <section className="mb-28 bg-zinc-50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 sm:p-10">
-          <h2 className="text-lg font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">Full transparency</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              Whatever you add to your profile is accessible to AI systems. This is by design. The entire point of CVin.Bio is to make you discoverable. If you do not want something indexed by an AI agent, do not add it to your profile.
-            </p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              You can delete your account and all associated data at any time. Private account data (email address, authentication credentials) is never exposed to external systems. Read our <Link href="/terms" className="underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">full terms</Link> for details.
-            </p>
-          </div>
-        </section>
+
+
 
         {/* ─── DEVELOPER INTEGRATION ─── */}
         <section className="mb-28" id="developers">
@@ -304,7 +294,7 @@ export default function AIDiscoveryPage() {
               <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">For developers and AI agents</p>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Integration endpoints</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                If you are building a hiring tool, recruiter platform, or AI agent that needs access to professional candidate data, CVin.Bio provides three public integration points. No API key required for read-only access to public profiles.
+                CVin.Bio exposes structured professional data through standardized integration points. Read-only access to public profile endpoints follows web standards. MCP-level integration is available for qualified partners.
               </p>
 
               <div className="space-y-6">
