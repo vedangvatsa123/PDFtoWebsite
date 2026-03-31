@@ -50,9 +50,11 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         {children}
 
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" asChild className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground">
-            <Link href="/jobs">Jobs</Link>
-          </Button>
+          {pathname !== '/jobs' && (
+            <Button variant="ghost" size="sm" asChild className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground">
+              <Link href="/jobs">Jobs</Link>
+            </Button>
+          )}
           {!isUserLoading && user && (
               <>
                 {pathname !== '/editor' && (
