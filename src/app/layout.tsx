@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title: 'Your CV, converted into a website using AI.',
     description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
   },
-  robots: { index: true, follow: true },
+  robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' as const, 'max-video-preview': -1 },
   alternates: { canonical: siteUrl },
 };
 

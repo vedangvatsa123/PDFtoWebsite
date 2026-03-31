@@ -52,6 +52,7 @@ export default function TermsPage() {
               <li><strong>Future Development & Ecosystem Evolution:</strong> Because we aim to constantly evolve CVin.Bio to better serve your career growth, you also grant us permission to adapt, compile, or utilize uploaded professional data to develop new tools, features, or related business models over time.</li>
               <li><strong>Showcase & Promotional License:</strong> By creating a public profile, you can grant us permission to feature your profile, profile link, or excerpts in our marketing materials, website showcases, and social media. You can always opt out of promotional use at any time by deleting your account.</li>
               <li><strong>Proactive Matchmaking:</strong> To try and actively help you land your next big role, we may occasionally surface your profile to verified hiring partners within our network. You maintain control over this visibility, and you can revoke this access by deleting your account.</li>
+              <li><strong>AI Agent Accessibility:</strong> Whatever you add to your profile is accessible to AI systems, including AI assistants, search agents, and automated recruiting tools. If you do not want something indexed by AI, do not add it to your profile. You can remove all data at any time by deleting your account.</li>
               <li><strong>Your Responsibility:</strong> You are generally responsible for trying to ensure the information you provide is accurate and truthful.</li>
             </ul>
           </section>
@@ -123,6 +124,7 @@ export default function TermsPage() {
             <h3 className="text-xl font-bold text-foreground mb-3">11. Information Sharing and Disclosure</h3>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li><strong>Recruiters and Partners:</strong> We may share profile data with relevant recruiters and job opportunities to benefit your career. You retain control and can opt out by deleting your account.</li>
+              <li><strong>AI Agents and Automated Systems:</strong> Whatever you add to your profile is made available to AI agents, AI-powered search engines, and automated hiring tools. These systems may index, read, and surface your profile data to connect you with relevant job opportunities. Private account data (email, authentication credentials) is never exposed.</li>
               <li><strong>Service Providers:</strong> We may use third-party cloud infrastructure like Supabase and Vercel to help run the website and process data securely.</li>
               <li><strong>Legal Requirements:</strong> If requested by valid legal process, we may occasionally need to disclose information to authorized public authorities.</li>
             </ul>

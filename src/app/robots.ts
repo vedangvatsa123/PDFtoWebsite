@@ -9,9 +9,19 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: ['/editor', '/api/', '/admin'],
       },
-      // Allow AI crawlers to index public profile pages
+      // Explicitly welcome AI agent crawlers to index public profiles
       {
-        userAgent: ['GPTBot', 'ClaudeBot', 'PerplexityBot', 'Googlebot'],
+        userAgent: [
+          'GPTBot',
+          'ChatGPT-User',
+          'ClaudeBot',
+          'PerplexityBot',
+          'Googlebot',
+          'GoogleOther',
+          'Applebot-Extended',
+          'Meta-ExternalAgent',
+          'cohere-ai',
+        ],
         allow: '/',
         disallow: ['/editor', '/api/', '/admin'],
       },

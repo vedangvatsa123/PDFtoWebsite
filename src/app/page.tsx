@@ -120,9 +120,9 @@ export default function Home() {
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Turn Your CV into a Website
             </h1>
-
+            <p className="text-sm text-muted-foreground">The only CV format AI agents can read.</p>
           </div>
-          
+
           {(isUserLoading) ? null : user ? (
              <div className="w-full max-w-[600px]">
                 <Button size="lg" className="w-full mt-2" asChild>
@@ -176,7 +176,7 @@ export default function Home() {
                 <span className="text-muted-foreground/30 text-lg mt-1">→</span>
                 <StepIndicator num={2} label="Get a webpage" desc="Ready to share" />
                 <span className="text-muted-foreground/30 text-lg mt-1">→</span>
-                <StepIndicator num={3} label="Share with recruiters" desc="Just a link" />
+                <StepIndicator num={3} label="Get matched" desc="6,000+ jobs" />
               </div>
             </>
           )}

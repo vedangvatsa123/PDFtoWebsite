@@ -75,9 +75,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 function buildPersonSchema(data: ServerProfileData) {
-  const { profile, workExperience, education } = data;
+  const { profile, workExperience, education, customSections } = data;
   const skills = profile.skills || [];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
+
+  // Collect all sameAs links
+  const sameAsLinks: string[] = [];
+  if (profile.website) sameAsLinks.push(profile.website.startsWith('http') ? profile.website : `https://${profile.website}`);
+  if (profile.linkedin) sameAsLinks.push(profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`);
+  if (profile.github) sameAsLinks.push(profile.github.startsWith('http') ? profile.github : `https://${profile.github}`);
+  if (profile.links && Array.isArray(profile.links)) {
+    profile.links.forEach((link: any) => {
+      const val = link.value || link.url || (typeof link === 'string' ? link : '');
+      if (val && !sameAsLinks.includes(val)) sameAsLinks.push(val);
+    });
+  }
 
   return {
     '@context': 'https://schema.org',
@@ -86,16 +98,12 @@ function buildPersonSchema(data: ServerProfileData) {
     url: `${siteUrl}/${profile.slug}`,
     ...(profile.phone ? { telephone: profile.phone } : {}),
     ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
-    ...(profile.website ? { sameAs: [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] } : {}),
     ...(profile.avatarUrl && !profile.avatarUrl.includes('picsum.photos') ? { image: profile.avatarUrl } : {}),
     ...(profile.summary ? { description: profile.summary } : {}),
     ...(skills.length > 0 ? { knowsAbout: skills } : {}),
-    ...(profile.links && Array.isArray(profile.links) && profile.links.length > 0 ? {
-      sameAs: [
-        ...(profile.website ? [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] : []),
-        ...profile.links.map((link: any) => link.value || link.url || (typeof link === 'string' ? link : '')).filter(Boolean)
-      ]
-    } : (profile.website ? { sameAs: [profile.website.startsWith('http') ? profile.website : `https://${profile.website}`] } : {})),
+    ...(sameAsLinks.length > 0 ? { sameAs: sameAsLinks } : {}),
+
+    // Rich work experience with employer details and date ranges
     ...(workExperience.length > 0 ? {
       jobTitle: workExperience[0].title,
       worksFor: { '@type': 'Organization', name: workExperience[0].company },
@@ -104,14 +112,40 @@ function buildPersonSchema(data: ServerProfileData) {
         name: job.title,
         ...(job.description ? { description: job.description.slice(0, 500) } : {}),
         ...(job.location ? { occupationLocation: { '@type': 'City', name: job.location } } : {}),
-        estimatedSalary: [],
+        employerOverview: { '@type': 'Organization', name: job.company },
+        ...(job.startDate ? { startDate: job.startDate } : {}),
+        ...(job.endDate ? { endDate: job.endDate } : {}),
       })),
     } : {}),
+
+    // Education with degree credentials
     ...(education.length > 0 ? {
       alumniOf: education.map(edu => ({
         '@type': 'EducationalOrganization',
         name: edu.institution,
       })),
+      hasCredential: education
+        .filter(edu => edu.degree)
+        .map(edu => ({
+          '@type': 'EducationalOccupationalCredential',
+          credentialCategory: 'degree',
+          name: edu.degree,
+          recognizedBy: { '@type': 'EducationalOrganization', name: edu.institution },
+          ...(edu.endDate ? { dateCreated: edu.endDate } : {}),
+        })),
+    } : {}),
+
+    // Custom sections as additional structured data
+    ...(customSections && customSections.length > 0 ? {
+      additionalProperty: customSections.flatMap(section =>
+        section.items.map(item => ({
+          '@type': 'PropertyValue',
+          propertyID: section.sectionTitle,
+          name: item.title,
+          ...(item.subtitle ? { description: item.subtitle } : {}),
+          ...(item.date ? { value: item.date } : {}),
+        }))
+      ),
     } : {}),
   };
 }
