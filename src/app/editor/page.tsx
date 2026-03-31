@@ -1274,7 +1274,6 @@ export default function EditorPage() {
                                     sessionStorage.setItem('parsedResume', JSON.stringify(snapshot));
                                     window.open(`/preview?channel=${channelId.current}`, '_blank');
                                 }}>
-                                    <Eye className="mr-2 h-4 w-4" />
                                     See how it looks
                                 </Button>
                             )}
