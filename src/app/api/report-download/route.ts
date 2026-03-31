@@ -111,24 +111,7 @@ export async function POST(request: NextRequest) {
         console.error('User email error:', userEmailErr);
       }
 
-      // 2. Notify admin
-      try {
-        await resend.emails.send({
-          from: 'CVin.Bio <hi@cvin.bio>',
-          to: 'hi@cvin.bio',
-          subject: `[Report Download] ${cleanEmail} — ${r.title}`,
-          html: `
-            <div style="font-family:-apple-system,sans-serif;padding:24px;">
-              <h2 style="font-size:16px;margin:0 0 12px;">New Report Download</h2>
-              <p style="color:#666;font-size:14px;">${r.title}</p>
-              <p style="font-size:14px;"><a href="mailto:${cleanEmail}" style="color:#18181b;">${cleanEmail}</a></p>
-            </div>
-          `,
-        });
-      } catch (adminEmailErr) {
-        console.error('Admin email error:', adminEmailErr);
       }
-    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
