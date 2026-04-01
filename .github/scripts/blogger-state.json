@@ -1,6 +1,6 @@
 {
-  "index": 18,
-  "lastPostedAt": "2026-04-01T05:35:08.943Z",
+  "index": 19,
+  "lastPostedAt": "2026-04-01T12:06:15.029Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -73,6 +73,10 @@
     {
       "slug": "generic-skill-bars",
       "publishedAt": "2026-04-01T05:35:08.943Z"
+    },
+    {
+      "slug": "beat-smart-ai-bots",
+      "publishedAt": "2026-04-01T12:06:15.029Z"
     }
   ]
 }
