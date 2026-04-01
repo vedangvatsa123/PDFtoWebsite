@@ -29,11 +29,13 @@ export const metadata: Metadata = {
     siteName: 'CVin.Bio',
     title: 'Build a personal website from your CV.',
     description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
+    images: [{ url: `${siteUrl}/opengraph-image`, width: 1200, height: 630, alt: 'CVin.Bio — Turn Your CV into a Website' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Your CV, converted into a website using AI.',
     description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
+    images: [`${siteUrl}/opengraph-image`],
   },
   robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' as const, 'max-video-preview': -1 },
   alternates: { canonical: siteUrl },

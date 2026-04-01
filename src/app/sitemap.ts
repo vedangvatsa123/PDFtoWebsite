@@ -90,14 +90,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('username, updated_at')
+      .select('username, updated_at, full_name, about, skills, experience, education')
       .not('username', 'is', null)
       .order('updated_at', { ascending: false })
       .limit(1000);
 
     if (profiles) {
       profileEntries = profiles
-        .filter(p => p.username && p.username.length >= 3)
+        .filter(p => {
+          if (!p.username || p.username.length < 3) return false;
+          // Exclude empty/default profiles from sitemap
+          const hasRealName = p.full_name && p.full_name !== 'Your Name' && p.full_name.length > 1;
+          const hasContent = (p.about && p.about.length > 10)
+            || (Array.isArray(p.skills) && p.skills.length > 0)
+            || (Array.isArray(p.experience) && p.experience.length > 0)
+            || (Array.isArray(p.education) && p.education.length > 0);
+          return hasRealName && hasContent;
+        })
         .map(p => ({
           url: `${siteUrl}/${p.username}`,
           lastModified: p.updated_at ? new Date(p.updated_at) : new Date(),

@@ -13,12 +13,14 @@ export const metadata: Metadata = {
     url: `${siteUrl}/remote-talent-report`,
     siteName: 'CVin.Bio',
     type: 'article',
+    images: [{ url: `${siteUrl}/remote-talent-report/opengraph-image`, width: 1200, height: 630, alt: 'The Remote Talent Report 2026' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'The Remote Talent Report 2026',
     description: '27% of knowledge workers are fully remote. What does this mean for hiring?',
     creator: '@cvinbio',
+    images: [`${siteUrl}/remote-talent-report/opengraph-image`],
   },
 };
 

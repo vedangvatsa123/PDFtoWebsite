@@ -3,9 +3,27 @@ import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import Link from 'next/link';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
+
 export const metadata: Metadata = {
   title: 'AI Discovery',
   description: 'CVin.Bio profiles are built for AI agent discovery. Structured data, schema.org markup, MCP integration, and explicit crawler access make your profile readable by every major AI system.',
+  alternates: { canonical: `${siteUrl}/ai-discovery` },
+  openGraph: {
+    title: 'AI Discovery Infrastructure',
+    description: 'Schema.org markup, MCP integration, and explicit crawler access make your profile readable by every major AI system.',
+    url: `${siteUrl}/ai-discovery`,
+    siteName: 'CVin.Bio',
+    type: 'article',
+    images: [{ url: `${siteUrl}/opengraph-image`, width: 1200, height: 630, alt: 'CVin.Bio AI Discovery' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Discovery Infrastructure',
+    description: 'Schema.org markup, MCP integration, and explicit crawler access make your profile readable by every major AI system.',
+    images: [`${siteUrl}/opengraph-image`],
+    creator: '@cvinbio',
+  },
 };
 
 /* ─── BESPOKE SVG: FLOW DIAGRAM ─── */

@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const canonicalUrl = `${siteUrl}/${slug}`;
 
   if (post) {
+    const ogImageUrl = `${siteUrl}/${slug}/opengraph-image`;
     return {
       title: post.title,
       description: post.excerpt,
@@ -32,9 +33,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         url: canonicalUrl,
         title: post.title,
         description: post.excerpt,
-        images: [{ url: `${siteUrl}/${slug}/opengraph-image` }],
+        images: [{ url: ogImageUrl, width: 1200, height: 630, alt: post.title }],
       },
-      twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt },
+      twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt, images: [ogImageUrl] },
       robots: { index: true, follow: true },
     };
   }
@@ -51,6 +52,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? profile.summary.slice(0, 160)
     : `View ${name}'s professional profile${roleText}.`;
 
+  // Detect empty/default profiles — don't let search engines index them
+  const isEmptyProfile = (!name || name === 'Professional Profile' || name === 'Your Name')
+    || (!profile.summary && data.workExperience.length === 0 && data.education.length === 0 && (!profile.skills || profile.skills.length === 0));
+
   return {
     title,
     description,
@@ -62,15 +67,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       firstName: name.split(' ')[0],
       lastName: name.split(' ').slice(1).join(' ') || undefined,
-      // og:image is auto-set by Next.js from opengraph-image.tsx (the branded Satori card)
+      images: [{ url: `${siteUrl}/${slug}/opengraph-image`, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      // twitter:image auto-set from opengraph-image.tsx
+      images: [`${siteUrl}/${slug}/opengraph-image`],
     },
-    robots: { index: true, follow: true },
+    robots: isEmptyProfile ? { index: false, follow: false } : { index: true, follow: true },
   };
 }
 

@@ -33,7 +33,7 @@ export async function GET() {
 
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('username, full_name, about, skills')
+      .select('username, full_name, about, skills, experience, education')
       .not('username', 'is', null)
       .order('updated_at', { ascending: false })
       .limit(1000);
@@ -41,6 +41,13 @@ export async function GET() {
     if (profiles) {
       for (const p of profiles) {
         if (!p.username || p.username.length < 3) continue;
+        // Skip empty/default profiles
+        const hasRealName = p.full_name && p.full_name !== 'Your Name' && p.full_name.length > 1;
+        const hasContent = (p.about && p.about.length > 10)
+          || (Array.isArray(p.skills) && p.skills.length > 0)
+          || (Array.isArray(p.experience) && p.experience.length > 0)
+          || (Array.isArray(p.education) && p.education.length > 0);
+        if (!hasRealName || !hasContent) continue;
 
         const name = p.full_name || 'Professional';
         const skills = Array.isArray(p.skills) && p.skills.length > 0

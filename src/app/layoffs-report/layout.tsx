@@ -13,12 +13,14 @@ export const metadata: Metadata = {
     url: `${siteUrl}/layoffs-report`,
     siteName: 'CVin.Bio',
     type: 'article',
+    images: [{ url: `${siteUrl}/layoffs-report/opengraph-image`, width: 1200, height: 630, alt: 'The Tech Layoffs Report 2026' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'The Tech Layoffs Report 2026',
     description: '750K+ tech workers laid off since 2020. What does the data actually show?',
     creator: '@cvinbio',
+    images: [`${siteUrl}/layoffs-report/opengraph-image`],
   },
 };
 
