@@ -1,6 +1,6 @@
 {
-  "index": 17,
-  "lastPostedAt": "2026-03-31T20:03:49.063Z",
+  "index": 18,
+  "lastPostedAt": "2026-04-01T05:35:08.943Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -69,6 +69,10 @@
     {
       "slug": "academic-to-commercial",
       "publishedAt": "2026-03-31T20:03:49.063Z"
+    },
+    {
+      "slug": "generic-skill-bars",
+      "publishedAt": "2026-04-01T05:35:08.943Z"
     }
   ]
 }
