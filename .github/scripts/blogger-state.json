@@ -1,6 +1,6 @@
 {
-  "index": 19,
-  "lastPostedAt": "2026-04-01T12:06:15.029Z",
+  "index": 20,
+  "lastPostedAt": "2026-04-01T20:06:29.129Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -77,6 +77,10 @@
     {
       "slug": "beat-smart-ai-bots",
       "publishedAt": "2026-04-01T12:06:15.029Z"
+    },
+    {
+      "slug": "where-to-put-ai-skills",
+      "publishedAt": "2026-04-01T20:06:29.129Z"
     }
   ]
 }
