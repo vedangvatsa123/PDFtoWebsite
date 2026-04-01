@@ -204,7 +204,7 @@ export async function GET(request: NextRequest) {
         .eq('id', user.id)
         .single();
       if (profile) {
-        const skills = profile.skills || [];
+        const skills = (profile.skills || []).map((s: string) => s.trim()).filter(Boolean);
         const links = profile.links || [];
         const location = links.find((l: any) => l.type === 'location')?.value || '';
         userProfile = {
@@ -312,7 +312,7 @@ export async function GET(request: NextRequest) {
     page,
     limit,
     hasMore: offset + limit < (count || 0),
-    userSkills: userProfile?.skills || [],
+    userSkills: (userProfile?.skills || []).map(s => s.trim()).filter(Boolean),
     profileComplete,
   });
 }

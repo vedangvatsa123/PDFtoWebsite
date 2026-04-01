@@ -109,17 +109,18 @@ export default function JobsPage() {
       if (matchOnly) params.set('match', 'true');
 
       const res = await fetch(`/api/jobs?${params}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: JobsResponse = await res.json();
 
       if (append) {
-        setJobs(prev => [...prev, ...data.jobs]);
+        setJobs(prev => [...prev, ...(data.jobs || [])]);
       } else {
-        setJobs(data.jobs);
+        setJobs(data.jobs || []);
       }
-      setTotal(data.total);
-      setHasMore(data.hasMore);
-      setUserSkills(data.userSkills);
-      setProfileComplete(data.profileComplete);
+      setTotal(data.total || 0);
+      setHasMore(data.hasMore ?? false);
+      setUserSkills(data.userSkills || []);
+      setProfileComplete(data.profileComplete ?? false);
     } catch (e) {
       console.error('Failed to fetch jobs:', e);
     } finally {
@@ -244,7 +245,7 @@ export default function JobsPage() {
               }`}
             >
               <Target className="h-3 w-3" />
-              {matchOnly ? `Showing matched (${userSkills.slice(0, 4).join(', ')}${userSkills.length > 4 ? '…' : ''})` : 'Show matched only'}
+              {matchOnly ? (() => { const clean = userSkills.map(s => s.trim()).filter(Boolean); return `Showing matched (${clean.slice(0, 4).join(', ')}${clean.length > 4 ? '…' : ''})`; })() : 'Show matched only'}
             </button>
           )}
           {userSkills.length > 0 && !profileComplete && (
@@ -377,17 +378,17 @@ export default function JobsPage() {
                       {job.title}
                     </h3>
                     {job.match_score >= 50 && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 shrink-0 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-full" title={job.match_signals.join(' · ')}>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 shrink-0 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-full" title={(job.match_signals || []).join(' · ')}>
                         <Sparkles className="h-2.5 w-2.5" />Great match
                       </span>
                     )}
                     {job.match_score >= 25 && job.match_score < 50 && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 shrink-0 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded-full" title={job.match_signals.join(' · ')}>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 shrink-0 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded-full" title={(job.match_signals || []).join(' · ')}>
                         <Target className="h-2.5 w-2.5" />Good match
                       </span>
                     )}
                     {job.match_score > 0 && job.match_score < 25 && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-400 dark:text-zinc-500 shrink-0" title={job.match_signals.join(' · ')}>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-400 dark:text-zinc-500 shrink-0" title={(job.match_signals || []).join(' · ')}>
                         <Target className="h-2.5 w-2.5" />Partial
                       </span>
                     )}
