@@ -85,6 +85,13 @@ const POSTS = [
   `Job listing said "Remote." She applied because office was 90 minutes away.\n\nOffer letter: "Remote during onboarding."\n\nWeek 3: mandatory office. 5 days. No exceptions.\n\nNobody mentioned it during 4 interviews.\n\ncvin.bio`,
   `He changed one word on his resume. Interview requests tripled.\n\n"Managed" became "Led."\n\nSame resume. Same experience. Same person. Different keyword.\n\nYour career shouldn't depend on vocabulary.\n\ncvin.bio`,
   `He resigned. Suddenly they found the budget.\n\nThe raise they denied for 2 years appeared in 24 hours.\n\nHe stayed. Laid off 3 months later.\n\nA counter offer isn't a compliment. It's a stalling tactic.\n\ncvin.bio`,
+  `We analyzed 6,000+ job postings on our board. Backend dev is the most posted role but almost every listing now casually asks for AI experience. Not AI jobs. Regular backend jobs.\n\nFull breakdown: cvin.bio/jobs`,
+  `Two years ago every company was hiring engineers to build. Now they need people to keep it running. DevOps and infrastructure roles grew 40% on our board compared to last quarter.\n\nFull data: cvin.bio/jobs`,
+  `We looked at what skills show up most across 6,000+ job listings. Python and TypeScript run everything. Go is quietly climbing. Java is fading from most startups and mid-size companies posting on our board.\n\ncvin.bio/college-degrees-matter-less`,
+  `The thing that keeps jumping out: barely any junior roles. Most postings are senior or above. If you are early career the normal path of apply and hope barely exists anymore.\n\nWe dug into this more here: cvin.bio/layoffs-report`,
+  `Way more companies listing salary now than even a year ago. The holdouts are mostly big legacy companies still posting "competitive." Everyone else figured out that hiding the number just costs them applicants.\n\ncvin.bio/jobs`,
+  `One thing we didn't expect: how many hiring managers just google candidates before looking at the resume. If nothing comes up, you get skipped.\n\nA PDF sitting in your downloads folder doesn't show up on Google. A live link does.\n\ncvin.bio/pdf-breaks-ats`,
+  `Most jobs say "remote" but then you read the description and it says "must overlap 4 hours with US EST" or "async-first team." Remote in 2026 basically means "we don't have an office for you but we still need you online."\n\nWe dug into this more here: cvin.bio/remote-talent-report`,
 ];
 
 // Instagram-optimized captions: punchy hook, emojis, shorter body, hashtags
@@ -155,6 +162,13 @@ const IG_POSTS = [
   `🏠 Job said "Remote."\n\nWeek 3: mandatory office. 5 days. 90-min commute.\n\nNobody mentioned it in 4 interviews.\n\n📌 Link in bio → cvin.bio\n\n#remote #wfh #rto #hiring #baitandswitch`,
   `⌨️ Changed one word. Interviews tripled.\n\n"Managed" → "Led."\n\nSame everything. Different keyword.\n\n📌 Link in bio → cvin.bio\n\n#resume #keywords #ats #jobsearch #careeradvice`,
   `💸 He resigned. They suddenly found the budget.\n\nThe raise denied for 2 years: appeared in 24 hours.\n\nHe stayed. Laid off 3 months later.\n\nNever accept a counter offer.\n\n📌 Link in bio → cvin.bio\n\n#counteroffer #resign #salary #careeradvice #layoff`,
+  `📊 6,000+ job postings analyzed.\n\nBackend dev = most posted role.\nBut now every listing asks for AI.\n\nNot AI jobs. Regular backend jobs.\n\n📌 Full data → cvin.bio/jobs\n\n#hiring #backend #ai #jobmarket #careeradvice`,
+  `🔧 2 years ago: hire builders.\nNow: hire people to keep it running.\n\nDevOps grew 40% on our board.\n\nInfrastructure is the quiet winner of 2026.\n\n📌 Link in bio → cvin.bio/jobs\n\n#devops #infrastructure #hiring #techjobs #careeradvice`,
+  `⌨️ Top skills in 6,000+ job listings:\n\n1. Python\n2. TypeScript\n3. React\n4. AWS\n5. Go ↑\n\nJava and PHP? Fading fast.\n\n📌 Link in bio → cvin.bio\n\n#python #typescript #programming #techskills #jobmarket`,
+  `🚨 Where did the junior roles go?\n\nMost postings: senior or above.\nEntry-level: barely exists.\n\nBased on 6,000+ listings.\n\n📌 Link in bio → cvin.bio/layoffs-report\n\n#juniordev #entrylevel #hiring #jobmarket #careeradvice`,
+  `💰 Way more companies listing salary now.\n\nHoldouts? Big legacy companies still posting "competitive."\n\nHiding the number just costs you applicants.\n\n📌 Link in bio → cvin.bio/jobs\n\n#salary #transparency #hiring #jobmarket #compensation`,
+  `🔍 They Google you before they open your resume.\n\nNo results = skipped.\n\nPDFs don't show up on Google. Live links do.\n\n📌 Link in bio → cvin.bio\n\n#resume #google #hiring #careeradvice #portfolio`,
+  `🏠 "Remote" in 2026:\n\n= must overlap US EST 4 hours\n= async-first team\n= no office, but still need you online\n\nNot what you thought, right?\n\n📌 Link in bio → cvin.bio/remote-talent-report\n\n#remotework #wfh #hiring #jobmarket #careeradvice`,
 ];
 
 // Facebook-optimized: conversational, longer, questions to drive comments
@@ -728,6 +742,51 @@ A counter offer isn't a compliment. It's a stalling tactic until they find your 
 Never accept a counter offer.
 
 cvin.bio`,
+  `We run a job board. 6,000+ listings went through it this month.
+
+Backend dev is still the most posted role, but here's the thing nobody is talking about: almost every backend listing now casually asks for AI experience. Not AI-specific jobs. Regular backend roles.
+
+The job market shifted and most people haven't noticed yet.
+
+cvin.bio/jobs`,
+  `Two years ago every company was hiring engineers to build new things. Now they need people to keep it all running.
+
+DevOps and infrastructure roles grew 40% on our board compared to last quarter. The builders got hired. Now the maintainers are in demand.
+
+cvin.bio/jobs`,
+  `We looked at what skills show up most across 6,000+ job listings on our board.
+
+Python and TypeScript dominate everything. Go is quietly climbing. Java and PHP are fading from most of the startups and mid-size companies posting.
+
+Degrees keep mattering less too.
+
+cvin.bio/college-degrees-matter-less`,
+  `The thing that keeps jumping out from our job board data: barely any junior roles.
+
+Most of what gets posted is senior level or above. If you're early in your career, the normal path of applying and hoping barely exists anymore.
+
+We wrote more about this here:
+
+cvin.bio/layoffs-report`,
+  `Way more companies are listing salary now than even a year ago.
+
+The holdouts are mostly big legacy companies still posting "competitive." Everyone else figured out that hiding the number just costs them applicants.
+
+Browse 6,000+ jobs with salary data:
+
+cvin.bio/jobs`,
+  `One thing we didn't expect from our job board data: how many hiring managers just google candidates before looking at the resume.
+
+If nothing comes up, you get skipped. A PDF sitting in your downloads folder doesn't show up on Google. A live link does.
+
+cvin.bio/pdf-breaks-ats`,
+  `Most jobs on our board say "remote" but then you read the description.
+
+"Must overlap 4 hours with US EST." Or "async-first team." Remote in 2026 basically means "we don't have an office for you but we still need you online."
+
+We researched this in detail:
+
+cvin.bio/remote-talent-report`,
 ];
 
 // Pick the right content per platform
