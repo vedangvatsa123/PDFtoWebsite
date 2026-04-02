@@ -27,11 +27,6 @@ jobs:
           BUFFER_TOKEN: ${{ secrets.BUFFER_TOKEN }}
         run: node .github/scripts/buffer-schedule.mjs
 
-      - name: Sync remote jobs
-        env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node .github/scripts/jobs-sync.mjs
 
       - name: Commit updated state
         run: |

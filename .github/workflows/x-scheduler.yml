@@ -46,6 +46,12 @@ jobs:
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
         run: node .github/scripts/blogger-post.mjs
 
+      - name: Sync remote jobs
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node .github/scripts/jobs-sync.mjs
+
       - name: Commit updated state
         run: |
           git config user.name  "github-actions[bot]"

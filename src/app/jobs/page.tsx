@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
-import { Briefcase, ExternalLink, Search, Target, Clock, ChevronDown, Sparkles, UploadCloud, Loader2 } from 'lucide-react';
+import { Briefcase, ExternalLink, Search, Target, Clock, ChevronDown, Sparkles, UploadCloud, Loader2, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import posthog from 'posthog-js';
 
@@ -95,6 +95,7 @@ export default function JobsPage() {
   const [matchOnly, setMatchOnly] = useState(false);
   const [profileComplete, setProfileComplete] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [pendingJobApply, setPendingJobApply] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -197,6 +198,14 @@ export default function JobsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids: [jobId], action: 'click' }),
     }).catch(() => {});
+  };
+
+  const handleJobClick = (e: React.MouseEvent<HTMLAnchorElement>, job: Job) => {
+    trackClick(job.id, job);
+    if (userSkills.length === 0) {
+      e.preventDefault();
+      setPendingJobApply(job.apply_url);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -354,7 +363,7 @@ export default function JobsPage() {
                 rel="noopener noreferrer"
                 data-job-id={job.id}
                 className="group flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
-                onClick={() => trackClick(job.id, job)}
+                onClick={(e) => handleJobClick(e, job)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -421,6 +430,86 @@ export default function JobsPage() {
             {loadingMore && (
               <div className="h-5 w-5 border-2 border-zinc-300 dark:border-zinc-700 border-t-primary rounded-full animate-spin" />
             )}
+          </div>
+        )}
+
+        {/* Interstitial Modal */}
+        {pendingJobApply && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in zoom-in-95 duration-200">
+              <button 
+                onClick={() => setPendingJobApply(null)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              
+              <div className="flex justify-center mb-5">
+                <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-bold text-center text-zinc-900 dark:text-zinc-50 mb-2">
+                Wait, before you apply...
+              </h3>
+              
+              <p className="text-sm text-center text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
+                Did you know you can upload your CV here to automatically get an AI-native profile? Make yourself discoverable to recruiters and AI agents searching for talent.
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <label 
+                  htmlFor="modal-cv-upload" 
+                  className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                >
+                  {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
+                  {isUploading ? 'Parsing CV...' : 'Upload CV & Get AI Profile'}
+                  <input
+                    id="modal-cv-upload"
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.rtf,.txt,.jpg,.jpeg,.png,.webp,.heic"
+                    disabled={isUploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 10 * 1024 * 1024) {
+                        toast({ variant: 'destructive', title: 'Too Large', description: 'Max 10MB.' });
+                        e.target.value = ''; return;
+                      }
+                      setIsUploading(true);
+                      toast({ title: 'Parsing CV...', description: 'Extracting your details.' });
+                      try {
+                        const fd = new FormData(); fd.append('resume', file);
+                        const res = await fetch('/api/parse-resume', { method: 'POST', body: fd });
+                        if (!res.ok) { toast({ variant: 'destructive', title: 'Failed', description: 'Could not parse your CV.' }); return; }
+                        const parsed = await res.json();
+                        sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
+                        try { localStorage.setItem('parsedResume', JSON.stringify(parsed)); } catch {}
+                        router.push('/editor');
+                      } catch {
+                        toast({ variant: 'destructive', title: 'Error', description: 'Network error.' });
+                      } finally {
+                        e.target.value = '';
+                        setIsUploading(false);
+                      }
+                    }}
+                  />
+                </label>
+                
+                <a 
+                  href={pendingJobApply}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setPendingJobApply(null)}
+                  className="flex items-center justify-center w-full px-4 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 font-medium text-sm hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  Skip and continue to application
+                </a>
+              </div>
+            </div>
           </div>
         )}
       </main>
