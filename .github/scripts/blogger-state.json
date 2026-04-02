@@ -1,6 +1,6 @@
 {
-  "index": 20,
-  "lastPostedAt": "2026-04-01T20:06:29.129Z",
+  "index": 21,
+  "lastPostedAt": "2026-04-02T05:19:59.127Z",
   "published": [
     {
       "slug": "cv-attachments",
@@ -81,6 +81,10 @@
     {
       "slug": "where-to-put-ai-skills",
       "publishedAt": "2026-04-01T20:06:29.129Z"
+    },
+    {
+      "slug": "show-your-code",
+      "publishedAt": "2026-04-02T05:19:59.127Z"
     }
   ]
 }
