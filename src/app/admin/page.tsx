@@ -157,7 +157,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="max-w-2xl mx-auto px-5 sm:px-8 py-10 space-y-16">
+      <main className="max-w-[1400px] mx-auto px-5 sm:px-8 py-10 space-y-16">
 
         <div>
           <h1 className="text-xl font-bold tracking-tight">Dashboard</h1>
@@ -169,7 +169,7 @@ export default function AdminPage() {
 
         {/* ═══ REAL-TIME KPIs (PostHog + Supabase) ═══ */}
         <Section title="Overview">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-x-8 gap-y-6">
             <Stat v={kpis.totalUsers} label="Users" />
             {ph.available && ph.pageviewsWoW ? (
               <WoWStat v={ph.pageviewsWoW.this_week} label="Pageviews (7d)" thisWeek={ph.pageviewsWoW.this_week} lastWeek={ph.pageviewsWoW.last_week} />
@@ -236,7 +236,7 @@ export default function AdminPage() {
         {/* ═══ TRAFFIC SOURCES (PostHog) ═══ */}
         {ph.available && ph.topReferrers && ph.topReferrers.length > 0 && (
           <Section title="Traffic sources (7 days)" badge="PostHog">
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
               {ph.topReferrers.map((r, i) => {
                 const maxR = ph.topReferrers![0].visits;
                 return (
@@ -261,7 +261,7 @@ export default function AdminPage() {
         {/* ═══ TOP PAGES (PostHog) ═══ */}
         {ph.available && ph.topPages && ph.topPages.length > 0 && (
           <Section title="Top pages (7 days)" badge="PostHog">
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
               {ph.topPages.slice(0, 15).map((p, i) => {
                 const maxP = ph.topPages![0].views;
                 return (
@@ -341,7 +341,7 @@ export default function AdminPage() {
         {/* ═══ CONVERSION FUNNEL (PostHog) ═══ */}
         {ph.available && ph.funnelEvents && ph.funnelEvents.length > 0 && (
           <Section title="Event funnel (30 days)" badge="PostHog">
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               {ph.funnelEvents.map((e, i) => {
                 const maxE = ph.funnelEvents![0].cnt;
                 return (
@@ -365,7 +365,7 @@ export default function AdminPage() {
         {/* ═══ SHARE ANALYTICS (PostHog) ═══ */}
         {ph.available && ph.shareEvents && ph.shareEvents.length > 0 && (
           <Section title="Sharing (30 days)" badge="PostHog">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-8 gap-y-4">
               {ph.shareEvents.map((e, i) => (
                 <div key={i} className="py-1">
                   <p className="text-xl font-bold">{e.cnt}</p>
@@ -378,7 +378,7 @@ export default function AdminPage() {
 
         {/* ═══ PROFILE COMPLETENESS (Supabase) ═══ */}
         <Section title="Profile completeness">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-8 gap-y-6">
             <Pct has={completeness.hasPhoto} total={kpis.totalUsers} label="Photo" />
             <Pct has={completeness.hasExperience} total={kpis.totalUsers} label="Experience" />
             <Pct has={completeness.hasEducation} total={kpis.totalUsers} label="Education" />
@@ -410,7 +410,7 @@ export default function AdminPage() {
 
         {/* ═══ TOP PROFILES (Supabase) ═══ */}
         <Section title="Top profiles by views">
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
             {topProfiles.map((p, i) => (
               <div key={i} className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground w-5 shrink-0 text-right">{i + 1}</span>
@@ -457,7 +457,7 @@ export default function AdminPage() {
 
         {/* ═══ RECENT SIGNUPS (Supabase) ═══ */}
         <Section title="Recent signups">
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
             {recentUsers.map((u, i) => (
               <div key={i} className="flex items-start justify-between gap-4 pb-4 border-b border-border/50 last:border-0 last:pb-0">
                 <div className="min-w-0">
