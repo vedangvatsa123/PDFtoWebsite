@@ -445,27 +445,21 @@ export default function JobsPage() {
                 <X className="h-5 w-5" />
               </button>
               
-              <div className="flex justify-center mb-5">
-                <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-              
-              <h3 className="text-xl font-bold text-center text-zinc-900 dark:text-zinc-50 mb-2">
-                Wait, before you apply...
+              <h3 className="text-2xl font-bold text-center text-zinc-900 dark:text-zinc-50 mb-2 tracking-tight">
+                Let jobs find you.
               </h3>
               
-              <p className="text-sm text-center text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
-                Did you know you can upload your CV here to automatically get an AI-native profile? Make yourself discoverable to recruiters and AI agents searching for talent.
+              <p className="text-sm text-center text-zinc-500 dark:text-zinc-400 mb-8 max-w-xs mx-auto">
+                Drop your CV to see instant matches and make yourself discoverable to AI agents.
               </p>
               
               <div className="flex flex-col gap-3">
                 <label 
                   htmlFor="modal-cv-upload" 
-                  className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                  className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-black text-white dark:bg-white dark:text-black font-semibold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-md ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
                   {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
-                  {isUploading ? 'Parsing CV...' : 'Upload CV & Get AI Profile'}
+                  {isUploading ? 'Parsing...' : 'Upload CV'}
                   <input
                     id="modal-cv-upload"
                     type="file"
@@ -504,9 +498,9 @@ export default function JobsPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setPendingJobApply(null)}
-                  className="flex items-center justify-center w-full px-4 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 font-medium text-sm hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                  className="flex items-center justify-center w-full px-4 py-3 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 font-medium text-sm transition-colors"
                 >
-                  Skip and continue to application
+                  Skip and apply
                 </a>
               </div>
             </div>
