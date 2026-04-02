@@ -271,7 +271,11 @@ export async function GET(request: NextRequest) {
           'profile_viewed',
           'profile_celebration_shown',
           'editor_account_deleted',
-          'user_logout'
+          'user_logout',
+          'jobs_interstitial_modal_shown',
+          'jobs_interstitial_upload_cv_started',
+          'jobs_interstitial_upload_cv_completed',
+          'jobs_interstitial_skip_apply_clicked'
         )
           AND timestamp >= now() - interval 30 day
         GROUP BY event

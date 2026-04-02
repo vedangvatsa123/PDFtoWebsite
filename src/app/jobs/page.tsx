@@ -204,6 +204,7 @@ export default function JobsPage() {
     trackClick(job.id, job);
     if (userSkills.length === 0) {
       e.preventDefault();
+      posthog.capture('jobs_interstitial_modal_shown', { job_id: job.id, company: job.company });
       setPendingJobApply(job.apply_url);
     }
   };
@@ -473,6 +474,7 @@ export default function JobsPage() {
                         toast({ variant: 'destructive', title: 'Too Large', description: 'Max 10MB.' });
                         e.target.value = ''; return;
                       }
+                      posthog.capture('jobs_interstitial_upload_cv_started');
                       setIsUploading(true);
                       toast({ title: 'Parsing CV...', description: 'Extracting your details.' });
                       try {
@@ -480,6 +482,7 @@ export default function JobsPage() {
                         const res = await fetch('/api/parse-resume', { method: 'POST', body: fd });
                         if (!res.ok) { toast({ variant: 'destructive', title: 'Failed', description: 'Could not parse your CV.' }); return; }
                         const parsed = await res.json();
+                        posthog.capture('jobs_interstitial_upload_cv_completed');
                         sessionStorage.setItem('parsedResume', JSON.stringify(parsed));
                         try { localStorage.setItem('parsedResume', JSON.stringify(parsed)); } catch {}
                         router.push('/editor');
@@ -497,7 +500,10 @@ export default function JobsPage() {
                   href={pendingJobApply}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => setPendingJobApply(null)}
+                  onClick={() => {
+                    posthog.capture('jobs_interstitial_skip_apply_clicked');
+                    setPendingJobApply(null);
+                  }}
                   className="flex items-center justify-center w-full px-4 py-3 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 font-medium text-sm transition-colors"
                 >
                   Skip and apply
