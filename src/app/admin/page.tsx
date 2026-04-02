@@ -172,7 +172,7 @@ export default function AdminPage() {
 
         {/* ═══ REAL-TIME KPIs (PostHog + Supabase) ═══ */}
         <Section title="Overview">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-x-8 gap-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-x-8 gap-y-6">
             <Stat v={kpis.totalUsers} label="Users" />
             {ph.available && ph.pageviewsWoW ? (
               <WoWStat v={ph.pageviewsWoW.this_week} label="Pageviews (7d)" thisWeek={ph.pageviewsWoW.this_week} lastWeek={ph.pageviewsWoW.last_week} />
@@ -187,9 +187,7 @@ export default function AdminPage() {
             <Stat v={ph.available ? ph.activeToday : kpis.usersUpdatedLast7d} label={ph.available ? 'Active today' : 'Active (7d)'} />
             <Stat v={kpis.totalParses} label="CV parses" />
             <Stat v={kpis.totalJobs} label="Active jobs" sub="Supabase" />
-            {ph.available && ph.jobClicksTotal !== undefined && (
-              <Stat v={ph.jobClicksTotal} label="Job apply clicks" sub="Last 30 days" />
-            )}
+            <Stat v={ph.available && ph.jobClicksTotal !== undefined ? ph.jobClicksTotal : 0} label="Job apply clicks" sub="Last 30 days" />
             <Stat v={kpis.zeroViewProfiles} label="Zero-view profiles" sub={`${kpis.totalUsers > 0 ? Math.round((kpis.zeroViewProfiles / kpis.totalUsers) * 100) : 0}% of total`} />
           </div>
         </Section>

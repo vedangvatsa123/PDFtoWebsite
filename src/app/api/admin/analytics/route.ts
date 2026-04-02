@@ -33,6 +33,11 @@ function friendlySource(raw: string): string {
   const lower = raw.toLowerCase().trim();
   if (SOURCE_MAP[lower]) return SOURCE_MAP[lower];
   const clean = lower.replace(/^www\./, '').replace(/\.(com|org|net|io|co|app|me)$/, '');
+  if (clean.includes('google')) return 'Google';
+  if (clean.includes('linkedin')) return 'LinkedIn';
+  if (clean.includes('facebook')) return 'Facebook';
+  if (clean.includes('instagram')) return 'Instagram';
+  if (clean.includes('whatsapp')) return 'WhatsApp';
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
@@ -171,19 +176,21 @@ export async function GET(request: NextRequest) {
         LIMIT 20
       `, 'admin_top_pages'),
 
-      // 4. Top referrers (last 7 days)
+      // 4. Top referrers (last 7 days), prioritizing utm_source
       hogql(`
         SELECT
-          properties.$referring_domain AS referrer,
+          multiIf(
+            properties.utm_source != '', properties.utm_source,
+            properties.$referring_domain != '', properties.$referring_domain,
+            'Direct'
+          ) AS referrer,
           count() AS visits
         FROM events
         WHERE event = '$pageview'
           AND timestamp >= now() - interval 7 day
-          AND properties.$referring_domain != ''
-          AND properties.$referring_domain != 'cvin.bio'
         GROUP BY referrer
         ORDER BY visits DESC
-        LIMIT 15
+        LIMIT 25
       `, 'admin_top_referrers'),
 
       // 5. Device type breakdown (last 7 days)
@@ -320,7 +327,7 @@ export async function GET(request: NextRequest) {
       hogql(`
         SELECT countDistinct(distinct_id) AS active_today
         FROM events
-        WHERE timestamp >= today()
+        WHERE timestamp >= now() - interval 24 hour
           AND event = '$pageview'
       `, 'admin_active_today'),
 
@@ -328,7 +335,7 @@ export async function GET(request: NextRequest) {
       hogql(`
         SELECT count() AS total
         FROM events
-        WHERE event = 'cv_parse_success'
+        WHERE event = 'editor_cv_parse_started'
           AND timestamp >= now() - interval 30 day
       `, 'admin_cv_parses_total'),
 
@@ -336,7 +343,7 @@ export async function GET(request: NextRequest) {
       hogql(`
         SELECT toDate(timestamp) AS day, count() AS cnt
         FROM events
-        WHERE event = 'cv_parse_success'
+        WHERE event = 'editor_cv_parse_started'
           AND timestamp >= now() - interval 14 day
         GROUP BY day ORDER BY day
       `, 'admin_cv_parses_by_day'),
@@ -576,7 +583,13 @@ export async function GET(request: NextRequest) {
         pageviewsByDay: phPageviewsByDay,
         uniqueVisitors: phUniqueVisitors?.[0] || null,
         topPages: phTopPages,
-        topReferrers: (phTopReferrers || []).map((r: any) => ({ ...r, referrer: friendlySource(r.referrer) })),
+        topReferrers: Object.values((phTopReferrers || []).reduce((acc: any, curr: any) => {
+          const friendly = friendlySource(curr.referrer);
+          if (friendly.toLowerCase() === 'cvin.bio') return acc;
+          if (!acc[friendly]) acc[friendly] = { referrer: friendly, visits: 0 };
+          acc[friendly].visits += curr.visits;
+          return acc;
+        }, {})).sort((a: any, b: any) => b.visits - a.visits).slice(0, 15),
         deviceTypes: phDeviceTypes,
         osTypes: phOsTypes,
         topCountries: phTopCountries,
