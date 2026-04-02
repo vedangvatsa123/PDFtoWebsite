@@ -32,13 +32,8 @@ function friendlySource(raw: string): string {
   if (!raw) return 'Direct';
   const lower = raw.toLowerCase().trim();
   if (SOURCE_MAP[lower]) return SOURCE_MAP[lower];
-  const clean = lower.replace(/^www\./, '').replace(/\.(com|org|net|io|co|app|me)$/, '');
-  if (clean.includes('google')) return 'Google';
-  if (clean.includes('linkedin')) return 'LinkedIn';
-  if (clean.includes('facebook')) return 'Facebook';
-  if (clean.includes('instagram')) return 'Instagram';
-  if (clean.includes('whatsapp')) return 'WhatsApp';
-  return clean.charAt(0).toUpperCase() + clean.slice(1);
+  // Give back the exact raw source if we don't know it, ensuring we don't hide granularity
+  return raw;
 }
 
 async function hogql(query: string, name?: string): Promise<any[] | null> {
@@ -154,8 +149,8 @@ export async function GET(request: NextRequest) {
       // 2. Unique visitors last 7 days vs previous 7 days
       hogql(`
         SELECT
-          countDistinct(if(timestamp >= now() - interval 7 day, distinct_id, NULL)) AS this_week,
-          countDistinct(if(timestamp >= now() - interval 14 day AND timestamp < now() - interval 7 day, distinct_id, NULL)) AS last_week
+          uniqIf(distinct_id, timestamp >= now() - interval 7 day) AS this_week,
+          uniqIf(distinct_id, timestamp >= now() - interval 14 day AND timestamp < now() - interval 7 day) AS last_week
         FROM events
         WHERE event = '$pageview'
           AND timestamp >= now() - interval 14 day
@@ -583,13 +578,7 @@ export async function GET(request: NextRequest) {
         pageviewsByDay: phPageviewsByDay,
         uniqueVisitors: phUniqueVisitors?.[0] || null,
         topPages: phTopPages,
-        topReferrers: Object.values((phTopReferrers || []).reduce((acc: any, curr: any) => {
-          const friendly = friendlySource(curr.referrer);
-          if (friendly.toLowerCase() === 'cvin.bio') return acc;
-          if (!acc[friendly]) acc[friendly] = { referrer: friendly, visits: 0 };
-          acc[friendly].visits += curr.visits;
-          return acc;
-        }, {})).sort((a: any, b: any) => b.visits - a.visits).slice(0, 15),
+        topReferrers: (phTopReferrers || []).map((r: any) => ({ ...r, referrer: friendlySource(r.referrer) })),
         deviceTypes: phDeviceTypes,
         osTypes: phOsTypes,
         topCountries: phTopCountries,

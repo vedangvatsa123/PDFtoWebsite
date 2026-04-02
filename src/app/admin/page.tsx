@@ -179,10 +179,8 @@ export default function AdminPage() {
             ) : (
               <Stat v={kpis.totalViews} label="Total views" sub={`avg ${kpis.avgViews} · median ${kpis.medianViews}`} />
             )}
-            {ph.available && ph.uniqueVisitors ? (
+            {ph.available && ph.uniqueVisitors && (
               <WoWStat v={ph.uniqueVisitors.this_week} label="Unique visitors (7d)" thisWeek={ph.uniqueVisitors.this_week} lastWeek={ph.uniqueVisitors.last_week} />
-            ) : (
-              <Stat v={kpis.totalParses} label="CV parses" />
             )}
             <Stat v={ph.available ? ph.activeToday : kpis.usersUpdatedLast7d} label={ph.available ? 'Active today' : 'Active (7d)'} />
             <Stat v={kpis.totalParses} label="CV parses" />
@@ -192,21 +190,37 @@ export default function AdminPage() {
           </div>
         </Section>
 
-        {/* ═══ PAGEVIEWS CHART (PostHog) ═══ */}
-        {ph.available && ph.pageviewsByDay && ph.pageviewsByDay.length > 0 && (
-          <Section title="Pageviews (30 days)" badge="PostHog">
-            <ChartContainer config={viewsConfig} className="h-[180px] w-full">
-              <AreaChart data={ph.pageviewsByDay}>
-                <defs><linearGradient id="pvg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="hsl(var(--foreground))" stopOpacity={0.12}/><stop offset="100%" stopColor="hsl(var(--foreground))" stopOpacity={0}/></linearGradient></defs>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* ═══ PAGEVIEWS CHART (PostHog) ═══ */}
+          {ph.available && ph.pageviewsByDay && ph.pageviewsByDay.length > 0 && (
+            <Section title="Pageviews (30 days)" badge="PostHog">
+              <ChartContainer config={viewsConfig} className="h-[180px] w-full">
+                <AreaChart data={ph.pageviewsByDay}>
+                  <defs><linearGradient id="pvg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="hsl(var(--foreground))" stopOpacity={0.12}/><stop offset="100%" stopColor="hsl(var(--foreground))" stopOpacity={0}/></linearGradient></defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" tickFormatter={(v: string) => `${new Date(v).getDate()}/${new Date(v).getMonth()+1}`} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" allowDecimals={false} width={30} />
+                  <Area type="monotone" dataKey="views" stroke="hsl(var(--foreground))" fill="url(#pvg)" strokeWidth={1.5} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </AreaChart>
+              </ChartContainer>
+            </Section>
+          )}
+
+          {/* ═══ SIGNUPS CHART (Supabase) ═══ */}
+          <Section title="Signups">
+            <ChartContainer config={chartConfig} className="h-[180px] w-full">
+              <AreaChart data={signupTrend}>
+                <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="hsl(var(--foreground))" stopOpacity={0.1}/><stop offset="100%" stopColor="hsl(var(--foreground))" stopOpacity={0}/></linearGradient></defs>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" tickFormatter={(v: string) => `${new Date(v).getDate()}/${new Date(v).getMonth()+1}`} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" allowDecimals={false} width={30} />
-                <Area type="monotone" dataKey="views" stroke="hsl(var(--foreground))" fill="url(#pvg)" strokeWidth={1.5} />
+                <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" tickFormatter={(v: string) => `${new Date(v).getDate()}/${new Date(v).getMonth()+1}`} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" allowDecimals={false} width={24} />
+                <Area type="monotone" dataKey="count" stroke="hsl(var(--foreground))" fill="url(#sg)" strokeWidth={1.5} />
                 <ChartTooltip content={<ChartTooltipContent />} />
               </AreaChart>
             </ChartContainer>
           </Section>
-        )}
+        </div>
 
         {/* ═══ PROFILE ENGAGEMENT (PostHog) ═══ */}
         {ph.available && ph.profileViewsTrend && ph.profileViewsTrend.length > 0 && (
@@ -418,19 +432,6 @@ export default function AdminPage() {
           </div>
         </Section>
 
-        {/* ═══ SIGNUPS CHART (Supabase) ═══ */}
-        <Section title="Signups">
-          <ChartContainer config={chartConfig} className="h-[180px] w-full">
-            <AreaChart data={signupTrend}>
-              <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="hsl(var(--foreground))" stopOpacity={0.1}/><stop offset="100%" stopColor="hsl(var(--foreground))" stopOpacity={0}/></linearGradient></defs>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border" />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" tickFormatter={(v: string) => `${new Date(v).getDate()}/${new Date(v).getMonth()+1}`} />
-              <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} className="fill-muted-foreground" allowDecimals={false} width={24} />
-              <Area type="monotone" dataKey="count" stroke="hsl(var(--foreground))" fill="url(#sg)" strokeWidth={1.5} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-            </AreaChart>
-          </ChartContainer>
-        </Section>
 
         {/* ═══ TOP PROFILES (Supabase) ═══ */}
         <Section title="Top profiles by views">
