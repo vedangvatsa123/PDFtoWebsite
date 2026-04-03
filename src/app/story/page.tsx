@@ -232,7 +232,7 @@ export default function StoryPage() {
               Talent infrastructure<br />for the agentic era
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              CVin.Bio turns any CV into a live website — and every profile feeds into a growing talent graph that gets smarter with each upload. Candidates come for the free tool and the 6,000+ matched jobs. Employers get a queryable talent database that no amount of LinkedIn boolean searches can replicate. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, the platforms that own the structured identity data will own the hiring layer. We are building that data asset.
+              CVin.Bio turns any CV into a live website. Every profile is structured so that both humans and AI systems can read it. Candidates get a free professional URL and skill-matched jobs from 60+ companies. Employers get a searchable talent database filtered by verified skills, not keywords. <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026. The hiring infrastructure needs to be ready for that.
             </p>
           </div>
           <div className="hidden lg:block">
@@ -364,7 +364,7 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-10">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              Anyone can build a profile page. The moat is the flywheel: free CV-to-website tool drives candidate supply, job matching drives retention, and the growing talent graph creates a data asset that compounds with every upload.
+              The free CV-to-website tool brings candidates in. Job matching keeps them engaged. Every profile adds to a structured talent database that employers can query by skill, role, and experience.
             </p>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 text-center">Platform architecture</p>
@@ -374,10 +374,10 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {[
-              { n: '1', title: 'Candidate acquisition engine', points: ['Free CV-to-website tool — zero-friction onboarding', '6,000+ skill-matched jobs from 60+ companies as retention hook', 'Candidates come for the tool, stay for the matches'] },
-              { n: '2', title: 'Compounding talent graph', points: ['Every upload normalizes skills, work history, and credentials into structured data', 'Graph quality improves with scale — better matching, better signal', 'This is the data asset: a clean, queryable professional identity database nobody else has'] },
-              { n: '3', title: 'Employer query layer', points: ['Companies and their AI systems search talent by verified capability, not keywords', 'Switching cost: once integrated, employer workflows depend on the data', 'Usage-based pricing gives employers a fraction of recruiter costs'] },
-              { n: '4', title: 'Agent Hiring Module (planned)', points: ['Embeddable API — companies integrate once, their AI sources talent continuously', 'Every integration feeds data back into the graph, reinforcing the flywheel', 'The more employers query, the more valuable the graph, the more candidates join'] },
+              { n: '1', title: 'Candidate acquisition', points: ['Free CV-to-website tool with no sign-up friction', '6,000+ skill-matched jobs from 60+ companies', 'Candidates upload once, get matched to relevant roles automatically'] },
+              { n: '2', title: 'Structured talent database', points: ['Every upload extracts and normalizes skills, work history, and credentials', 'Matching quality improves as the database grows', 'Employers search by verified skill and experience, not keyword guessing'] },
+              { n: '3', title: 'Employer query layer', points: ['Companies search talent by actual capability, not self-reported keywords', 'Integrated into existing hiring workflows via API', 'Priced at a fraction of recruiter fees'] },
+              { n: '4', title: 'Agent Hiring Module (planned)', points: ['Embeddable API for companies to query the talent database programmatically', 'AI hiring agents search, filter, and retrieve candidates on demand', 'Usage-based pricing per query and per seat'] },
             ].map((card) => (
               <div key={card.n} className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
                 <div className="flex items-center gap-3 mb-4">
@@ -408,9 +408,9 @@ export default function StoryPage() {
               </p>
               <div className="space-y-2">
                 {[
-                  { bold: 'LinkedIn, Indeed, ZipRecruiter', rest: '— serve every industry, no AI-depth filtering' },
-                  { bold: 'Wellfound, Otta, Hired', rest: '— generalist tech, no structured data layer' },
-                  { bold: 'CVin.Bio', rest: '— domain-specific, technology-native (MCP, schema.org, llms.txt), structured by default' },
+                  { bold: 'LinkedIn, Indeed, ZipRecruiter', rest: ': serve every industry, no depth filtering by verified skill' },
+                  { bold: 'Wellfound, Otta, Hired', rest: ': generalist tech, no structured data layer' },
+                  { bold: 'CVin.Bio', rest: ': structured profiles, skill-based search, AI-queryable from day one' },
                 ].map((item, i) => (
                   <p key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
                     <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
@@ -537,13 +537,13 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                The recruiter workflow — search, scroll, email — was designed for humans. When AI assistants can query a structured talent endpoint, filter by verified skills, and initiate outreach autonomously, that workflow becomes an API call. We are building the protocol layer.
+                The recruiter workflow (search, scroll, email) was designed for humans. When AI assistants can query a structured talent endpoint, filter by verified skills, and initiate outreach autonomously, that workflow becomes an API call. We are building the protocol layer.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: 'Today', desc: 'MCP server, structured profiles, machine-readable job data' },
                   { label: 'Next', desc: 'Companies\' AI agents source talent via our SDK' },
-                  { label: 'Endgame', desc: 'Agent-to-agent hiring protocol — the talent API layer' },
+                  { label: 'Endgame', desc: 'Agent-to-agent hiring protocol. The talent API layer.' },
                 ].map((step, i) => (
                   <div key={i} className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
                     <div className="text-[11px] font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider mb-1">{step.label}</div>
@@ -557,7 +557,7 @@ export default function StoryPage() {
                 {[
                   { phase: 'Now', items: ['Job aggregation from 60+ companies', 'Structured profile generation from CVs', 'MCP server and AI discovery infrastructure', 'Research-driven content distribution'] },
                   { phase: 'Next phase', items: ['Agent Hiring Module for enterprise integration', 'Employer sourcing dashboard and subscriptions', 'Verified skill assessments'] },
-                  { phase: 'Long-term', items: ['Open talent protocol — any AI system can query verified professional identities', 'Agent-to-agent hiring: company agents publish requirements, candidate agents respond', 'The identity layer underneath all AI-mediated professional commerce'] },
+                  { phase: 'Long-term', items: ['Open talent protocol so any AI system can query verified professional identities', 'Agent-to-agent hiring: company agents publish requirements, candidate agents respond', 'The identity layer for AI-mediated professional commerce'] },
                 ].map((phase, i) => (
                   <div key={i} className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
                     <div className="flex items-center gap-3 mb-3">
@@ -617,7 +617,7 @@ export default function StoryPage() {
             {/* Right: Highlights */}
             <div className="lg:col-span-3">
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Previously built <Cite href="https://hashtagweb3.com">HashtagWeb3.com</Cite> — 120K+ community, 55M post views in year one, supported by Microsoft for Startups. Former consultant at KPMG managing programs for India&apos;s Ministry of IT. Fellow of the Royal Society of Arts. 22 peer-reviewed publications in IEEE and SSRN.
+                Previously built <Cite href="https://hashtagweb3.com">HashtagWeb3.com</Cite>: 120K+ community, 55M post views in year one, supported by Microsoft for Startups. Former consultant at KPMG managing programs for India&apos;s Ministry of IT. Fellow of the Royal Society of Arts. 22 peer-reviewed publications in IEEE and SSRN.
               </p>
               <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-xl overflow-hidden mb-6">
                 {[
