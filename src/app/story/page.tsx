@@ -232,7 +232,7 @@ export default function StoryPage() {
               Talent infrastructure<br />for the agentic era
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              CVin.Bio turns any CV into a structured, AI-readable web profile and matches candidates to 6,000+ live job listings. The profile format is built for both humans and AI agents — schema.org markup, MCP integration, and machine-readable skill data. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, recruitment infrastructure needs to be machine-queryable from day one. We are building that layer.
+              CVin.Bio turns any CV into a live website — in a format that AI agents can access. Every profile is structured with schema.org markup, JSON-LD metadata, and MCP integration so that both humans and AI systems can read, query, and act on it. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, the profiles that aren&apos;t machine-readable will become invisible. We make sure yours isn&apos;t.
             </p>
           </div>
           <div className="hidden lg:block">
