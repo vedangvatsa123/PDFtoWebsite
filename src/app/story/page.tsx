@@ -569,36 +569,84 @@ export default function StoryPage() {
         {/* ═══════ TEAM / FOUNDER ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Founder</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Built by someone who has done this before</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            <div>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                CVin.Bio is founded by <Cite href="https://veda.ng/profile">Vedang Vatsa</Cite>, a computer engineer and MBA who previously built <Cite href="https://hashtagweb3.com">HashtagWeb3.com</Cite>, one of the largest Web3 job boards and community platforms. HashtagWeb3 grew to a community of 120,000+ members across Telegram, Discord, and LinkedIn, generated 55 million post views in its first year, and was featured as a top 3 Web3 product of the week. It was supported by Microsoft for Startups.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Before that, Vedang served as a consultant at KPMG where he managed programs for India&apos;s Ministry of Electronics and IT, conducted commercial due diligence on companies valued at $2B+, and led technical due diligence on products with 220 million+ downloads. He is a Fellow of the Royal Society of Arts, a Young Researcher Awardee, and has 22 peer-reviewed publications in IEEE, SSRN, and other journals, including recent work on <Cite href="https://dx.doi.org/10.2139/ssrn.5660270">AI agent transaction economics</Cite>.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                The same playbook that built HashtagWeb3 from zero to 120K community members is now being applied to CVin.Bio. The difference is that this time, the infrastructure is designed for AI agents from day one, not retrofitted.
-              </p>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Built by someone who has done this before</h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 mb-12">
+            {/* Left: Photo + bio card */}
+            <div className="lg:col-span-2">
+              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 text-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://veda.ng/images/icon.png" alt="Vedang Vatsa" className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-zinc-200 dark:border-zinc-700" />
+                <h3 className="text-lg font-serif font-bold text-zinc-900 dark:text-zinc-50">Vedang Vatsa</h3>
+                <p className="text-[13px] text-zinc-500 dark:text-zinc-400 mt-1 mb-4">Founder &amp; CEO, CVin.Bio</p>
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <a href="https://www.linkedin.com/in/vedangvatsa" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    LinkedIn
+                  </a>
+                  <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                  <a href="https://veda.ng/profile" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    Profile
+                  </a>
+                </div>
+                <div className="border-t border-zinc-100 dark:border-zinc-800 pt-5">
+                  <p className="text-[10px] text-zinc-400 uppercase tracking-widest mb-3">Previous venture</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <a href="https://hashtagweb3.com" target="_blank" rel="noopener noreferrer">
+                    <img src="https://hashtagweb3.com/logo/HashtagWeb3.png" alt="HashtagWeb3" className="h-7 mx-auto opacity-70 hover:opacity-100 transition-opacity dark:invert" />
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
-              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Track record</p>
-              <div className="space-y-5">
+
+            {/* Right: Highlights */}
+            <div className="lg:col-span-3">
+              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
+                Previously built <Cite href="https://hashtagweb3.com">HashtagWeb3.com</Cite> — 120K+ community, 55M post views in year one, supported by Microsoft for Startups. Former consultant at KPMG managing programs for India&apos;s Ministry of IT. Fellow of the Royal Society of Arts. 22 peer-reviewed publications in IEEE and SSRN.
+              </p>
+              <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-xl overflow-hidden mb-6">
                 {[
-                  { metric: '120K+', desc: 'Community members at HashtagWeb3' },
-                  { metric: '55M', desc: 'Post views in first year at HashtagWeb3' },
-                  { metric: '80M', desc: 'Yearly LinkedIn post views on AI/Web3 research' },
-                  { metric: '22', desc: 'Peer-reviewed publications (IEEE, SSRN)' },
-                  { metric: 'FRSA', desc: 'Fellow of the Royal Society of Arts' },
-                  { metric: 'KPMG', desc: 'Former consultant, Ministry of IT programs' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-baseline gap-4">
-                    <span className="text-xl font-serif font-bold text-zinc-900 dark:text-zinc-50 shrink-0 w-16 text-right">{item.metric}</span>
-                    <span className="text-[13px] text-zinc-500 dark:text-zinc-400">{item.desc}</span>
+                  { value: '120K+', label: 'Community built' },
+                  { value: '55M', label: 'Views, year one' },
+                  { value: '22', label: 'Publications' },
+                ].map((d, i) => (
+                  <div key={i} className="bg-[#fafafa] dark:bg-black p-5 text-center">
+                    <div className="text-2xl font-serif font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{d.value}</div>
+                    <div className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1">{d.label}</div>
                   </div>
                 ))}
               </div>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  'KPMG Consultant',
+                  'Fellow, Royal Society of Arts',
+                  'IIT Alumnus',
+                  'IEEE Published',
+                  'Microsoft for Startups',
+                ].map((tag) => (
+                  <span key={tag} className="px-3 py-1.5 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/60 rounded-full">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Media coverage strip */}
+          <div className="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] text-center mb-6">Featured &amp; cited in</p>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-50">
+              {[
+                { src: 'https://veda.ng/images/press/IEEE_Computer.png', alt: 'IEEE', h: 'h-5' },
+                { src: 'https://veda.ng/images/press/Business_Insider_2023_logo.svg.png', alt: 'Business Insider', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/et-logo4px.png', alt: 'Economic Times', h: 'h-5' },
+                { src: 'https://veda.ng/images/press/68296-business-media-company-inc42-startup-marketing.png', alt: 'Inc42', h: 'h-5' },
+                { src: 'https://veda.ng/images/press/yourstory_vedang.png', alt: 'YourStory', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/business-standard-logo-2.png', alt: 'Business Standard', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/beincrypto_Vedang.png', alt: 'BeInCrypto', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/Decrypt_logo.svg', alt: 'Decrypt', h: 'h-4' },
+              ].map((logo) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={logo.alt} src={logo.src} alt={logo.alt} className={`${logo.h} w-auto object-contain dark:invert`} />
+              ))}
             </div>
           </div>
         </section>
