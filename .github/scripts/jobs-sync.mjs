@@ -140,6 +140,14 @@ const ASHBY_SLUGS = [
   // Productivity
   'clickup','n8n',
   'kraken.com',
+  // Security/Compliance
+  'vanta','drata','semgrep',
+  // AI
+  'writer','character','runway','gamma',
+  // Fintech/Identity
+  'socure','persona','sardine','pleo','column','unit',
+  // Infrastructure
+  'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch',
 ];
 
 // ─── Workable company slugs ───
