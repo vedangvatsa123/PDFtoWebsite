@@ -232,7 +232,7 @@ export default function StoryPage() {
               Talent infrastructure<br />for the agentic era
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              CVin.Bio turns any CV into a live website — and every profile becomes part of a structured talent graph that AI agents can query, verify, and act on. We are not adding markup to resumes. We are building the professional identity layer that the agent economy will run on. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, the question is not whether hiring gets automated — it is who controls the identity layer underneath.
+              CVin.Bio turns any CV into a live website — and every profile feeds into a growing talent graph that gets smarter with each upload. Candidates come for the free tool and the 6,000+ matched jobs. Employers get a queryable talent database that no amount of LinkedIn boolean searches can replicate. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, the platforms that own the structured identity data will own the hiring layer. We are building that data asset.
             </p>
           </div>
           <div className="hidden lg:block">
@@ -364,7 +364,7 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-10">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              The CV-to-website is the wedge. The real product is the structured talent graph underneath — a growing, queryable database of verified professional identities that any AI agent can consume.
+              Anyone can build a profile page. The moat is the flywheel: free CV-to-website tool drives candidate supply, job matching drives retention, and the growing talent graph creates a data asset that compounds with every upload.
             </p>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 text-center">Platform architecture</p>
@@ -374,10 +374,10 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {[
-              { n: '1', title: 'Job aggregation engine', points: ['6,000+ listings from 60+ companies', 'Stripe, Anthropic, Airbnb, Coinbase, Cloudflare, Reddit', 'Deduplicated, normalized, tagged with structured skill metadata'] },
-              { n: '2', title: 'Structured talent graph', points: ['Every CV upload adds to a queryable professional identity database', 'Skills auto-extracted, normalized, and matched against live listings', 'The graph becomes more valuable with every profile — classic network effect'] },
-              { n: '3', title: 'Agent query protocol', points: ['MCP server, llms.txt index, and structured APIs', 'AI agents can search, filter, and retrieve talent programmatically', 'The protocol layer that AI hiring systems standardize around'] },
-              { n: '4', title: 'Agent Hiring Module (planned)', points: ['Embeddable API — companies integrate once, their AI sources talent 24/7', 'Usage-based pricing: per-query and per-seat, like Stripe for hiring', 'Every integration feeds data back into the central talent graph'] },
+              { n: '1', title: 'Candidate acquisition engine', points: ['Free CV-to-website tool — zero-friction onboarding', '6,000+ skill-matched jobs from 60+ companies as retention hook', 'Candidates come for the tool, stay for the matches'] },
+              { n: '2', title: 'Compounding talent graph', points: ['Every upload normalizes skills, work history, and credentials into structured data', 'Graph quality improves with scale — better matching, better signal', 'This is the data asset: a clean, queryable professional identity database nobody else has'] },
+              { n: '3', title: 'Employer query layer', points: ['Companies and their AI systems search talent by verified capability, not keywords', 'Switching cost: once integrated, employer workflows depend on the data', 'Usage-based pricing gives employers a fraction of recruiter costs'] },
+              { n: '4', title: 'Agent Hiring Module (planned)', points: ['Embeddable API — companies integrate once, their AI sources talent continuously', 'Every integration feeds data back into the graph, reinforcing the flywheel', 'The more employers query, the more valuable the graph, the more candidates join'] },
             ].map((card) => (
               <div key={card.n} className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
                 <div className="flex items-center gap-3 mb-4">
