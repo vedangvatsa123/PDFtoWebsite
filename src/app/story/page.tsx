@@ -532,48 +532,31 @@ export default function StoryPage() {
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Vision</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">The infrastructure layer for agent-mediated hiring</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            <div>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                The recruiter workflow (search, scroll, email) was designed for humans. When AI assistants can query a structured talent endpoint, filter by verified skills, and initiate outreach autonomously, that workflow becomes an API call. We are building the protocol layer.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  { label: 'Today', desc: 'MCP server, structured profiles, machine-readable job data' },
-                  { label: 'Next', desc: 'Companies\' AI agents source talent via our SDK' },
-                  { label: 'Endgame', desc: 'Agent-to-agent hiring protocol. The talent API layer.' },
-                ].map((step, i) => (
-                  <div key={i} className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-                    <div className="text-[11px] font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider mb-1">{step.label}</div>
-                    <div className="text-[12px] text-zinc-500 dark:text-zinc-400 leading-[1.7]">{step.desc}</div>
-                  </div>
-                ))}
+          <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-10 max-w-3xl">
+            The recruiter workflow (search, scroll, email) was designed for humans. When AI assistants can query a structured talent endpoint, filter by verified skills, and initiate outreach autonomously, that workflow becomes an API call. We are building the protocol layer.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden">
+            {[
+              { phase: 'Now', items: ['Job aggregation from 60+ companies', 'Structured profile generation from CVs', 'MCP server and AI discovery infrastructure', 'Research-driven content distribution'] },
+              { phase: 'Next', items: ['Agent Hiring Module for enterprise integration', 'Employer sourcing dashboard and subscriptions', 'Verified skill assessments', 'Companies\' AI agents source talent via our API'] },
+              { phase: 'Long-term', items: ['Open talent protocol for any AI system', 'Agent-to-agent hiring: company agents publish requirements, candidate agents respond', 'The identity layer for AI-mediated professional commerce'] },
+            ].map((phase, i) => (
+              <div key={i} className="bg-[#fafafa] dark:bg-black p-6 sm:p-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">{i + 1}</div>
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">{phase.phase}</h3>
+                </div>
+                <ul className="space-y-2.5">
+                  {phase.items.map((item, j) => (
+                    <li key={j} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                      <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-            <div>
-              <div className="space-y-4">
-                {[
-                  { phase: 'Now', items: ['Job aggregation from 60+ companies', 'Structured profile generation from CVs', 'MCP server and AI discovery infrastructure', 'Research-driven content distribution'] },
-                  { phase: 'Next phase', items: ['Agent Hiring Module for enterprise integration', 'Employer sourcing dashboard and subscriptions', 'Verified skill assessments'] },
-                  { phase: 'Long-term', items: ['Open talent protocol so any AI system can query verified professional identities', 'Agent-to-agent hiring: company agents publish requirements, candidate agents respond', 'The identity layer for AI-mediated professional commerce'] },
-                ].map((phase, i) => (
-                  <div key={i} className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">{i + 1}</div>
-                      <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">{phase.phase}</h3>
-                    </div>
-                    <ul className="space-y-1.5">
-                      {phase.items.map((item, j) => (
-                        <li key={j} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
-                          <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
 
           <Callout>We are not building a job board that happens to have an API. We are building the API layer for agent-mediated hiring that happens to have a job board.</Callout>
@@ -645,7 +628,7 @@ export default function StoryPage() {
 
           {/* Media coverage strip */}
           <div className="border-t border-zinc-100 dark:border-zinc-800 pt-8">
-            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] text-center mb-6">Featured &amp; cited in</p>
+            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] text-center mb-6">As seen in</p>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-50">
               {[
                 { src: 'https://veda.ng/images/press/Yahoo_Finance_logo.png', alt: 'Yahoo Finance', h: 'h-5' },
