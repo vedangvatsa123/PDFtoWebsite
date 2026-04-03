@@ -613,17 +613,22 @@ export default function StoryPage() {
                 ))}
               </div>
               <div className="space-y-2 mb-6">
-                {[
-                  'Speaker at IIT Delhi, IIT Kanpur, TUM Munich, ISB Hyderabad, ETH Enugu, India Blockchain Month',
-                  'Favikon Top 50 Fintech & Crypto Creators. Thinkers360 Top 50 Metaverse Thought Leaders',
-                  'Invited to the Parliament of India to discuss Virtual Digital Assets',
-                  'Recommendation by Jack Allison (Screenwriter, Oscars 2017). Medal by former Director of Indian PM\u2019s office',
-                ].map((item, i) => (
-                  <p key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
-                    <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
-                    {item}
-                  </p>
-                ))}
+                <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                  <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                  <span><Cite href="https://veda.ng/media">Speaker</Cite> at IIT Delhi, IIT Kanpur, TUM Munich, ISB Hyderabad, ETH Enugu, India Blockchain Month</span>
+                </p>
+                <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                  <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                  Favikon Top 50 Fintech &amp; Crypto Creators. Thinkers360 Top 50 Metaverse Thought Leaders
+                </p>
+                <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                  <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                  <span><Cite href="https://x.com/LokSabhaSectt/status/1996239975906676795">Invited to the Parliament of India</Cite> to discuss Virtual Digital Assets</span>
+                </p>
+                <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                  <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                  <span>Recommendation by <Cite href="https://www.youtube.com/watch?v=94aOD3yc2LM">Jack Allison</Cite> (Screenwriter, Oscars 2017). Medal by former Director of Indian PM&apos;s office</span>
+                </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 {[
