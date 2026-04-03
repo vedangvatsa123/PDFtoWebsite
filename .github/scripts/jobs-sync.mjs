@@ -147,7 +147,7 @@ const ASHBY_SLUGS = [
   // Fintech/Identity
   'socure','persona','sardine','pleo','column','unit',
   // Infrastructure
-  'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch',
+  'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch','posthog',
 ];
 
 // ─── Workable company slugs ───
