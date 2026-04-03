@@ -650,14 +650,16 @@ export default function StoryPage() {
             <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] text-center mb-6">Featured &amp; cited in</p>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-50">
               {[
-                { src: 'https://veda.ng/images/press/IEEE_Computer.png', alt: 'IEEE', h: 'h-5' },
+                { src: 'https://veda.ng/images/press/Yahoo_Finance_logo.png', alt: 'Yahoo Finance', h: 'h-5' },
                 { src: 'https://veda.ng/images/press/Business_Insider_2023_logo.svg.png', alt: 'Business Insider', h: 'h-4' },
                 { src: 'https://veda.ng/images/press/et-logo4px.png', alt: 'Economic Times', h: 'h-5' },
-                { src: 'https://veda.ng/images/press/68296-business-media-company-inc42-startup-marketing.png', alt: 'Inc42', h: 'h-5' },
-                { src: 'https://veda.ng/images/press/yourstory_vedang.png', alt: 'YourStory', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/IEEE_Computer.png', alt: 'IEEE', h: 'h-5' },
                 { src: 'https://veda.ng/images/press/business-standard-logo-2.png', alt: 'Business Standard', h: 'h-4' },
-                { src: 'https://veda.ng/images/press/beincrypto_Vedang.png', alt: 'BeInCrypto', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/bt_business_today_vedang_vatsa.png', alt: 'Business Today', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/68296-business-media-company-inc42-startup-marketing.png', alt: 'Inc42', h: 'h-5' },
                 { src: 'https://veda.ng/images/press/Decrypt_logo.svg', alt: 'Decrypt', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/yourstory_vedang.png', alt: 'YourStory', h: 'h-4' },
+                { src: 'https://veda.ng/images/press/Ani-logo-black.png', alt: 'ANI', h: 'h-4' },
               ].map((logo) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img key={logo.alt} src={logo.src} alt={logo.alt} className={`${logo.h} w-auto object-contain dark:invert`} />
