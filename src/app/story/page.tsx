@@ -598,18 +598,31 @@ export default function StoryPage() {
             {/* Right: Highlights */}
             <div className="lg:col-span-3">
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Previously built <Cite href="https://hashtagweb3.com">HashtagWeb3.com</Cite>: 120K+ community, 55M post views in year one, supported by Microsoft for Startups. Former consultant at KPMG managing programs for India&apos;s Ministry of IT. Fellow of the Royal Society of Arts. 22 peer-reviewed publications in IEEE and SSRN.
+                Previously built <Cite href="https://hashtagweb3.com">HashtagWeb3.com</Cite>: 120K+ community, 55M post views, supported by Microsoft for Startups. Former consultant at KPMG. Fellow of the Royal Society of Arts. 25 research publications in IEEE, SSRN, and others.
               </p>
               <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-xl overflow-hidden mb-6">
                 {[
                   { value: '120K+', label: 'Community built' },
                   { value: '55M', label: 'Views, year one' },
-                  { value: '22', label: 'Publications' },
+                  { value: '25', label: 'Publications' },
                 ].map((d, i) => (
                   <div key={i} className="bg-[#fafafa] dark:bg-black p-5 text-center">
                     <div className="text-2xl font-serif font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{d.value}</div>
                     <div className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1">{d.label}</div>
                   </div>
+                ))}
+              </div>
+              <div className="space-y-2 mb-6">
+                {[
+                  'Speaker at IIT Delhi, IIT Kanpur, TUM Munich, ISB Hyderabad, ETH Enugu, India Blockchain Month',
+                  'Favikon Top 50 Fintech & Crypto Creators. Thinkers360 Top 50 Metaverse Thought Leaders',
+                  'Invited to the Parliament of India to discuss Virtual Digital Assets',
+                  'Recommendation by Jack Allison (Screenwriter, Oscars 2017). Medal by former Director of Indian PM\u2019s office',
+                ].map((item, i) => (
+                  <p key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                    {item}
+                  </p>
                 ))}
               </div>
               <div className="flex flex-wrap gap-3">
@@ -619,6 +632,7 @@ export default function StoryPage() {
                   'IIT Alumnus',
                   'IEEE Published',
                   'Microsoft for Startups',
+                  'Parliament of India',
                 ].map((tag) => (
                   <span key={tag} className="px-3 py-1.5 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/60 rounded-full">{tag}</span>
                 ))}
