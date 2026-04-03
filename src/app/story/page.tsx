@@ -404,11 +404,20 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                LinkedIn, Indeed, and ZipRecruiter are horizontal. They serve every industry and role. Wellfound, Otta, and Hired are narrower but still generalist within tech. None offer structured skill verification, machine-readable profiles, or agent-queryable infrastructure.
+                All incumbents are horizontal. None offer structured skill verification, machine-readable profiles, or agent-queryable infrastructure.
               </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                CVin.Bio sits in the gap. Domain-specific (AI/agentic), technology-native (MCP, schema.org, llms.txt), structured by default. No other platform combines aggregation, profile generation, and AI-native discovery in one vertically integrated product.
-              </p>
+              <div className="space-y-2">
+                {[
+                  { bold: 'LinkedIn, Indeed, ZipRecruiter', rest: '— serve every industry, no AI-depth filtering' },
+                  { bold: 'Wellfound, Otta, Hired', rest: '— generalist tech, no structured data layer' },
+                  { bold: 'CVin.Bio', rest: '— domain-specific, technology-native (MCP, schema.org, llms.txt), structured by default' },
+                ].map((item, i) => (
+                  <p key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                    <span><span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.bold}</span> {item.rest}</span>
+                  </p>
+                ))}
+              </div>
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6 text-center">Where we sit</p>
@@ -528,14 +537,20 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Today, when a company wants to hire an AI engineer, a human recruiter opens LinkedIn, types keywords, scrolls through hundreds of profiles, and manually emails candidates. This workflow was designed for humans and it will be replaced by agents. When a company&apos;s AI assistant can query a structured talent endpoint, filter by verified capabilities, and initiate outreach autonomously, the recruiter workflow becomes an API call.
+                The recruiter workflow — search, scroll, email — was designed for humans. When AI assistants can query a structured talent endpoint, filter by verified skills, and initiate outreach autonomously, that workflow becomes an API call. We are building the protocol layer.
               </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                CVin.Bio is building the infrastructure that makes this possible. Our MCP server, structured profiles, and machine-readable job data are the primitives that AI hiring agents need. We are not building another job board. We are building the talent protocol that agents consume.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                The endgame is an agent-to-agent hiring protocol where a company&apos;s agent publishes a structured capability requirement, candidate agents respond with verified credentials, and the platform brokers the match. The companies that control this protocol layer will own the most valuable real estate in the labor market.
-              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { label: 'Today', desc: 'MCP server, structured profiles, machine-readable job data' },
+                  { label: 'Next', desc: 'Companies\' AI agents source talent via our SDK' },
+                  { label: 'Endgame', desc: 'Agent-to-agent hiring protocol — the talent API layer' },
+                ].map((step, i) => (
+                  <div key={i} className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
+                    <div className="text-[11px] font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider mb-1">{step.label}</div>
+                    <div className="text-[12px] text-zinc-500 dark:text-zinc-400 leading-[1.7]">{step.desc}</div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <div className="space-y-4">
@@ -658,7 +673,7 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                The product is live. The aggregation engine is running. The MCP infrastructure is operational. We are raising a pre-seed round to go from working product to first revenue. The capital will fund the engineering depth to build the Agent Hiring Module, the sales capacity to convert companies building agentic products into paying customers, and the operational foundation to scale.
+                Product is live. Aggregation engine running. MCP infrastructure operational. Raising a pre-seed to go from working product to first revenue.
               </p>
               <div className="space-y-6">
                 {[
