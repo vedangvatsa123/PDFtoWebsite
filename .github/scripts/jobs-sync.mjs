@@ -119,6 +119,8 @@ const GREENHOUSE_SLUGS = [
   'braze','iterable','customer-io','sendgrid',
   // Tier 7 — APAC
   'xendit','bybit','okx','phonepe','agoda','flexport','trivago','mercari',
+  // Tier 8 — Unicorns
+  'databricks','adyen','toast','intercom','jfrog','block','marqeta','sendbird',
 ];
 
 // ─── Ashby company slugs ───
@@ -148,6 +150,7 @@ const ASHBY_SLUGS = [
   'socure','persona','sardine','pleo','column','unit',
   // Infrastructure
   'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch','posthog',
+  'zapier','benchling','fullstory','airbyte','prefect',
 ];
 
 // ─── Workable company slugs ───
@@ -164,7 +167,7 @@ const WORKABLE_SLUGS = [
 // ─── Lever company slugs ───
 const LEVER_SLUGS = [
   // APAC
-  'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral','paytm',
+  'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral','paytm','gopuff',
 ];
 
 // ─── Helpers ───
@@ -580,7 +583,7 @@ async function fetchSmartRecruiters() {
             salary: null,
             description: null,
             tags: extractTags(j.name || ''),
-            apply_url: j.ref || `https://careers.smartrecruiters.com/${slug}/${j.id}`,
+            apply_url: j.applyUrl || `https://jobs.smartrecruiters.com/${slug}/${j.id}`,
             category: j.department?.label || j.function?.label || null,
             published_at: j.releasedDate || null,
           });
