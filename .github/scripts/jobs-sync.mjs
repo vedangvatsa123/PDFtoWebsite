@@ -1,4 +1,4 @@
-// Remote Jobs Sync Script — fetches from 7 sources, deduplicates, upserts to Supabase
+// Remote Jobs Sync Script — fetches from 8 sources, deduplicates, upserts to Supabase
 // Run via: node .github/scripts/jobs-sync.mjs
 // Env: SUPABASE_URL, SUPABASE_KEY (service role)
 
@@ -129,6 +129,8 @@ const ASHBY_SLUGS = [
   'cal-com','twenty','loop-returns','attio','plain',
   'langchain','mistral','together-ai','anyscale','modal',
   'retool','airplane','internal','tooljet','appsmith',
+  // APAC
+  'airwallex','mindvalley',
 ];
 
 // ─── Workable company slugs ───
@@ -145,7 +147,7 @@ const WORKABLE_SLUGS = [
 // ─── Lever company slugs ───
 const LEVER_SLUGS = [
   // APAC
-  'ninjavan','lalamove','patsnap','immutable','cred',
+  'ninjavan','lalamove','patsnap','immutable','cred','nium',
 ];
 
 // ─── Helpers ───
@@ -509,6 +511,59 @@ async function fetchLever() {
   return jobs;
 }
 
+// ─── Source: Workday (per-company, POST API) ───
+const WORKDAY_BOARDS = [
+  { slug: 'propertyguru', host: 'propertyguru.wd105.myworkdayjobs.com', path: 'PropertyGuru', company: 'PropertyGuru' },
+];
+
+async function fetchWorkday() {
+  console.log('\n── Workday ──');
+  const jobs = [];
+
+  for (const board of WORKDAY_BOARDS) {
+    try {
+      let offset = 0;
+      let total = 0;
+      do {
+        const res = await fetch(`https://${board.host}/wday/cxs/${board.slug}/${board.path}/jobs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appliedFacets: {}, limit: 20, offset, searchText: '' }),
+        });
+        if (!res.ok) { console.log(`  ⚠ ${board.slug}: ${res.status}`); break; }
+        const data = await res.json();
+        total = data.total || 0;
+        for (const j of (data.jobPostings || [])) {
+          jobs.push({
+            source: 'workday',
+            external_id: `wd_${board.slug}_${j.bulletFields?.[0] || offset}`,
+            dedup_hash: dedupHash(board.company, j.title || ''),
+            title: (j.title || '').trim(),
+            company: board.company,
+            company_logo: null,
+            location: j.locationsText || 'Remote',
+            job_type: null,
+            salary: null,
+            description: null,
+            tags: extractTags(j.title || ''),
+            apply_url: `https://${board.host}/en-US/${board.path}/job${j.externalPath || ''}`,
+            category: null,
+            published_at: j.postedOn || null,
+          });
+        }
+        offset += 20;
+        await sleep(300);
+      } while (offset < total);
+      console.log(`  ✅ ${board.slug}: ${Math.min(total, jobs.length)} jobs`);
+    } catch (e) {
+      console.log(`  ⚠ ${board.slug}: ${e.message}`);
+    }
+  }
+
+  console.log(`  Total: ${jobs.length} jobs from Workday`);
+  return jobs;
+}
+
 // ─── Source: Foorilla (HTML scraping via HTMX) ───
 // Uses ?remote=true filter + pagination + parallel worker pool
 
@@ -708,10 +763,11 @@ async function main() {
   const ashby = await fetchAshby();
   const workable = await fetchWorkable();
   const lever = await fetchLever();
+  const workday = await fetchWorkday();
   const foorilla = await fetchFoorilla();
 
   // Merge all jobs — priority order (first seen wins dedup via DB constraint)
-  const allJobs = [...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...foorilla];
+  const allJobs = [...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...workday, ...foorilla];
   console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
 
   // Filter out invalid entries
