@@ -127,7 +127,7 @@ const ASHBY_SLUGS = [
   'clerk','resend','neon',
   'causal','stytch','axiom','tinybird','inngest','trigger-dev',
   'cal-com','twenty','loop-returns','attio','plain',
-  'langchain','mistral','together-ai','anyscale','modal',
+  'langchain','together-ai','anyscale','modal',
   'retool','airplane','internal','tooljet','appsmith',
   // APAC
   'airwallex','mindvalley',
@@ -139,6 +139,7 @@ const ASHBY_SLUGS = [
   'plaid','deel','lemonade',
   // Productivity
   'clickup','n8n',
+  'kraken.com',
 ];
 
 // ─── Workable company slugs ───
@@ -155,7 +156,7 @@ const WORKABLE_SLUGS = [
 // ─── Lever company slugs ───
 const LEVER_SLUGS = [
   // APAC
-  'ninjavan','lalamove','patsnap','immutable','cred','nium','binance',
+  'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral',
 ];
 
 // ─── Helpers ───
@@ -195,16 +196,18 @@ async function supabaseUpsert(jobs) {
   const unique = [...seen.values()];
   console.log(`   After in-memory dedup: ${unique.length} unique jobs`);
 
-  // Batch upsert in chunks of 50
-  const batchSize = 50;
+  // Batch upsert in chunks of 100, 5 concurrent requests
+  const batchSize = 100;
+  const concurrency = 5;
   let inserted = 0, skipped = 0;
+  const batches = [];
 
   for (let i = 0; i < unique.length; i += batchSize) {
-    const batch = unique.slice(i, i + batchSize);
-    const batchNum = Math.floor(i / batchSize) + 1;
-    const totalBatches = Math.ceil(unique.length / batchSize);
-    console.log(`   📤 Batch ${batchNum}/${totalBatches} (${batch.length} jobs)...`);
-    
+    batches.push(unique.slice(i, i + batchSize));
+  }
+  console.log(`   📤 Upserting ${batches.length} batches of ~${batchSize} (${concurrency} parallel)...`);
+
+  async function upsertBatch(batch) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
@@ -223,11 +226,11 @@ async function supabaseUpsert(jobs) {
 
       if (res.ok) {
         const result = await res.json();
-        inserted += result.length;
+        return { inserted: result.length, skipped: 0 };
       } else {
         const err = await res.text();
-        // If batch fails due to dedup_hash conflict, try one-by-one
         if (err.includes('duplicate') || err.includes('unique') || err.includes('dedup_hash')) {
+          let ins = 0, skip = 0;
           for (const job of batch) {
             try {
               const singleRes = await fetch(`${SUPABASE_URL}/rest/v1/jobs`, {
@@ -240,20 +243,32 @@ async function supabaseUpsert(jobs) {
                 },
                 body: JSON.stringify(job),
               });
-              if (singleRes.ok) inserted++;
-              else skipped++;
-            } catch { skipped++; }
+              if (singleRes.ok) ins++; else skip++;
+            } catch { skip++; }
           }
+          return { inserted: ins, skipped: skip };
         } else {
           console.error(`  ❌ Supabase error: ${err}`);
-          skipped += batch.length;
+          return { inserted: 0, skipped: batch.length };
         }
       }
     } catch (e) {
-      console.error(`  ❌ Batch ${batchNum} failed: ${e.message}`);
-      skipped += batch.length;
+      console.error(`  ❌ Batch failed: ${e.message}`);
+      return { inserted: 0, skipped: batch.length };
     }
   }
+
+  // Run batches in parallel groups
+  for (let g = 0; g < batches.length; g += concurrency) {
+    const group = batches.slice(g, g + concurrency);
+    const results = await Promise.all(group.map(b => upsertBatch(b)));
+    for (const r of results) {
+      inserted += r.inserted;
+      skipped += r.skipped;
+    }
+    console.log(`   ✅ Group ${Math.floor(g / concurrency) + 1}/${Math.ceil(batches.length / concurrency)} done (${inserted} inserted so far)`);
+  }
+
   skipped = unique.length - inserted + (jobs.length - unique.length);
   return { inserted, skipped };
 }
