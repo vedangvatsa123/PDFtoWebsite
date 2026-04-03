@@ -499,34 +499,32 @@ export default function StoryPage() {
         {/* ═══════ SECTION 8: TRACTION ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Traction</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">What we have shipped</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            <div>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                CVin.Bio is live. Job board aggregates 6,000+ listings from 60+ companies. Profile engine parses CVs into structured, schema-annotated pages. MCP server is operational. The <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">llms.txt</span> index regenerates hourly.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                Two published research reports (<Cite href="https://cvin.bio/layoffs-report">Layoffs 2026</Cite>, <Cite href="https://cvin.bio/remote-talent-report">Remote Talent 2026</Cite>) gated behind email capture. Active distribution on LinkedIn and X. Entire platform self-built end to end.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
-              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">What is live today</p>
-              <div className="space-y-5">
-                {[
-                  { metric: '6,000+', desc: 'Live job listings aggregated in real time' },
-                  { metric: '60+', desc: 'Companies tracked (Stripe, Anthropic, Airbnb, Coinbase, etc.)' },
-                  { metric: '100+', desc: 'AI user agents with explicit crawler access' },
-                  { metric: '2', desc: 'Published research reports with email capture' },
-                  { metric: '4', desc: 'AI discovery layers (Schema.org, MCP, llms.txt, robots.txt)' },
-                  { metric: '3-day', desc: 'Job listing refresh cycle' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-baseline gap-4">
-                    <span className="text-xl font-serif font-bold text-zinc-900 dark:text-zinc-50 shrink-0 w-16 text-right">{item.metric}</span>
-                    <span className="text-[13px] text-zinc-500 dark:text-zinc-400">{item.desc}</span>
-                  </div>
-                ))}
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-3">What we have shipped</h2>
+          <p className="text-[14px] text-zinc-400 dark:text-zinc-500 mb-8">Formally launched April 1, 2026. Entire platform self-built end to end.</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-8">
+            {[
+              { metric: '6,000+', desc: 'Live job listings aggregated' },
+              { metric: '60+', desc: 'Companies tracked' },
+              { metric: '100+', desc: 'AI user agents with crawler access' },
+              { metric: '2', desc: 'Research reports with email capture' },
+              { metric: '4', desc: 'AI discovery layers deployed' },
+              { metric: '3-day', desc: 'Job listing refresh cycle' },
+            ].map((item, i) => (
+              <div key={i} className="bg-[#fafafa] dark:bg-black p-6 sm:p-8 text-center">
+                <div className="text-2xl sm:text-3xl font-serif font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{item.metric}</div>
+                <div className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-2">{item.desc}</div>
               </div>
-            </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+            <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
+              Job board aggregates listings from Stripe, Anthropic, Airbnb, Coinbase, Cloudflare, Reddit, and 50+ others. Profile engine parses CVs into structured, schema-annotated pages. MCP server is operational.
+            </p>
+            <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
+              Two published research reports (<Cite href="https://cvin.bio/layoffs-report">Layoffs 2026</Cite>, <Cite href="https://cvin.bio/remote-talent-report">Remote Talent 2026</Cite>) gated behind email capture. Active distribution on LinkedIn and X.
+            </p>
           </div>
         </section>
 
