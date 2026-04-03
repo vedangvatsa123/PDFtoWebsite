@@ -260,7 +260,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 1: THE OPPORTUNITY ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">The opportunity</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The labor market is restructuring around AI agents and nobody is serving the new demand</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">The labor market is restructuring around AI agents and nobody is serving the new demand</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -307,7 +307,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 2: THE PROBLEM ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">The problem</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Hiring talent costs too much, takes too long, and produces poor signal</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Hiring talent costs too much, takes too long, and produces poor signal</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -335,7 +335,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 3: MARKET SIZE ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Market size</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Large market with no dominant vertical player</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Large market with no dominant vertical player</h2>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
             <div className="lg:col-span-3">
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -360,7 +360,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 4: OUR SOLUTION ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Our solution</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Four integrated layers, each feeding the others</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Four integrated layers, each feeding the others</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-10">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
@@ -400,7 +400,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 5: COMPETITIVE LANDSCAPE ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Competitive landscape</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Horizontal incumbents leave the vertical wide open</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Horizontal incumbents leave the vertical wide open</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -429,7 +429,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 6: BUSINESS MODEL ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Business model</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Three revenue streams aligned with the hiring funnel</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Three revenue streams aligned with the hiring funnel</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             <div className="space-y-8">
               {[
@@ -475,7 +475,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 7: WHY NOW ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Why now</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-10">Four converging forces creating a timing window</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Four converging forces creating a timing window</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-10">
             {[
               { n: '01', title: 'Agent frameworks are going to production', body: 'LangChain, CrewAI, AutoGen, Semantic Kernel all graduated to enterprise in 2025. Every adopter needs engineers who understand tool calling, memory architectures, and agent behavior.' },
@@ -499,7 +499,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 8: TRACTION ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Traction</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">What we have shipped</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">What we have shipped</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -533,7 +533,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 9: VISION ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Vision</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The infrastructure layer for agent-mediated hiring</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">The infrastructure layer for agent-mediated hiring</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -669,7 +669,7 @@ export default function StoryPage() {
         {/* ═══════ USE OF FUNDS / THE ASK ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">The ask</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Pre-seed round to reach first revenue</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Pre-seed round to reach first revenue</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
