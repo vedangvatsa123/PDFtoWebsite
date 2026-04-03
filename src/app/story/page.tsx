@@ -232,7 +232,7 @@ export default function StoryPage() {
               Talent infrastructure<br />for the agentic era
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              CVin.Bio turns any CV into a live website — in a format that AI agents can access. Every profile is structured with schema.org markup, JSON-LD metadata, and MCP integration so that both humans and AI systems can read, query, and act on it. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, the profiles that aren&apos;t machine-readable will become invisible. We make sure yours isn&apos;t.
+              CVin.Bio turns any CV into a live website — and every profile becomes part of a structured talent graph that AI agents can query, verify, and act on. We are not adding markup to resumes. We are building the professional identity layer that the agent economy will run on. As <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026, the question is not whether hiring gets automated — it is who controls the identity layer underneath.
             </p>
           </div>
           <div className="hidden lg:block">
@@ -364,7 +364,7 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-10">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              CVin.Bio is a vertically integrated talent platform. We control the entire pipeline from job aggregation through candidate matching to AI-native discovery.
+              The CV-to-website is the wedge. The real product is the structured talent graph underneath — a growing, queryable database of verified professional identities that any AI agent can consume.
             </p>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 text-center">Platform architecture</p>
@@ -375,8 +375,8 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {[
               { n: '1', title: 'Job aggregation engine', points: ['6,000+ listings from 60+ companies', 'Stripe, Anthropic, Airbnb, Coinbase, Cloudflare, Reddit', 'Deduplicated, normalized, tagged with structured skill metadata'] },
-              { n: '2', title: 'AI-native candidate profiles', points: ['Resume to structured web profile in seconds', 'schema.org/Person markup and JSON-LD metadata', 'Skills auto-extracted and matched against live listings'] },
-              { n: '3', title: 'Reverse discovery', points: ['llms.txt profile index, regenerated hourly', 'MCP server with search_candidates and get_profile tools', '100+ AI user agents with explicit crawler access'] },
+              { n: '2', title: 'Structured talent graph', points: ['Every CV upload adds to a queryable professional identity database', 'Skills auto-extracted, normalized, and matched against live listings', 'The graph becomes more valuable with every profile — classic network effect'] },
+              { n: '3', title: 'Agent query protocol', points: ['MCP server, llms.txt index, and structured APIs', 'AI agents can search, filter, and retrieve talent programmatically', 'The protocol layer that AI hiring systems standardize around'] },
               { n: '4', title: 'Agent Hiring Module (planned)', points: ['Embeddable SDK for companies to deploy AI hiring agents', 'Queries our MCP talent endpoint, filters by verified skills', 'Companies integrate once, their AI sources talent 24/7'] },
             ].map((card) => (
               <div key={card.n} className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
