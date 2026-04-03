@@ -264,13 +264,10 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                U.S. job postings for AI engineers grew by <Cite href="https://www.kore1.com/">143% year over year in 2025</Cite>. The software engineering segment focused on AI agent development is projected to grow at a <Cite href="https://www.azumo.com/">52.4% compound annual growth rate through 2030</Cite>. By December 2025, <Cite href="https://www.high5test.com/">4.2% of all U.S. job postings</Cite> specifically mentioned AI skills as a core requirement, not a nice-to-have.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Simultaneously, entry-level software engineering roles are contracting. Companies are eliminating routine programming positions and redirecting headcount budgets toward engineers who can architect agent orchestration systems, build RAG pipelines, and deploy autonomous workflows. Workers with these skills command <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">salary premiums of 20% to 56%</Cite> over comparable non-AI roles.
+                U.S. job postings for AI engineers grew by <Cite href="https://www.kore1.com/">143% year over year in 2025</Cite>. The AI agent development segment is projected to grow at a <Cite href="https://www.azumo.com/">52.4% CAGR through 2030</Cite>. By December 2025, <Cite href="https://www.high5test.com/">4.2% of all U.S. job postings</Cite> required AI skills as a core requirement.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                The result is a bifurcated market. Intense competition for a small pool of specialized engineers. A surplus of generalists whose skills are increasingly automated. And no recruitment platform built specifically for the intersection.
+                Entry-level engineering roles contract while companies redirect budgets toward agent orchestration, RAG pipelines, and autonomous workflows. These specialists command <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">20-56% salary premiums</Cite>. No recruitment platform exists for this intersection.
               </p>
             </div>
             <div>
@@ -314,13 +311,10 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                The average cost per hire in the United States is <Cite href="https://www.shrm.org/topics-tools/news/talent-acquisition">$4,800</Cite>. For specialized AI engineering roles, where recruiters charge <Cite href="https://www.techneeds.com/">15% to 30% of first-year salary</Cite>, that number often exceeds $40,000 to $60,000 per placement. A single senior AI engineer hire at $200K base salary through a third-party recruiter costs the company $40K to $60K in fees alone.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                The time cost is equally severe. AI/ML engineering roles take <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">89+ days to fill</Cite> on average. During that vacancy, product development stalls, competitors ship, and the opportunity cost compounds.
+                Average U.S. cost per hire is <Cite href="https://www.shrm.org/topics-tools/news/talent-acquisition">$4,800</Cite>. For AI roles, recruiters charge <Cite href="https://www.techneeds.com/">15-30% of first-year salary</Cite>, pushing a single senior hire to $40-60K in fees. AI/ML roles take <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">89+ days to fill</Cite>.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                The fundamental issue is signal. A keyword search for &quot;AI engineer&quot; on LinkedIn or Indeed returns everything from prompt engineering interns to principal architects who have designed multi-agent orchestration systems. The hiring manager wastes weeks screening the wrong candidates. Existing platforms match on words. They cannot evaluate depth.
+                The core issue is signal. A search for &quot;AI engineer&quot; on LinkedIn returns interns and principal architects alike. Existing platforms match on keywords, not capability depth.
               </p>
             </div>
             <div>
@@ -345,13 +339,10 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
             <div className="lg:col-span-3">
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                The global recruitment and staffing market exceeds <Cite href="https://www.staffingindustry.com/">$640 billion</Cite>. LinkedIn alone generates <Cite href="https://www.businessofapps.com/data/linkedin-statistics/">$17.1 billion in annual revenue</Cite>. ZipRecruiter generated <Cite href="https://investors.ziprecruiter.com">$449 million in 2025</Cite>. The narrower AI recruitment technology segment is valued at approximately <Cite href="https://www.einpresswire.com/">$700 million</Cite>, growing at 7% annually.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                But every one of these platforms is horizontal. They serve every industry, every role, every seniority level. None of them are built for the specific problem of sourcing, evaluating, and placing engineers who build autonomous systems. The closest competitors in the startup space, Wellfound, Otta, Hired, are generalist tech hiring platforms. They offer no structured skill verification, no machine-readable profile standards, and no agent-queryable infrastructure.
+                Global recruitment exceeds <Cite href="https://www.staffingindustry.com/">$640 billion</Cite>. LinkedIn generates <Cite href="https://www.businessofapps.com/data/linkedin-statistics/">$17.1B annually</Cite>. ZipRecruiter brings in <Cite href="https://investors.ziprecruiter.com">$449M</Cite>. The AI recruitment segment alone is valued at <Cite href="https://www.einpresswire.com/">$700M+</Cite>, growing 7% yearly.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                The opportunity is to build the vertical talent layer specifically for the agentic economy, capturing both supply (candidate profiles) and demand (job listings from companies building AI products) in a single platform.
+                All incumbents are horizontal. No platform is built for sourcing builders of autonomous systems. Wellfound, Otta, and Hired are generalist tech platforms with no structured skill verification, no machine-readable profiles, and no agent-queryable infrastructure.
               </p>
             </div>
             <div className="lg:col-span-2 flex items-center">
@@ -369,53 +360,40 @@ export default function StoryPage() {
         {/* ═══════ SECTION 4: OUR SOLUTION ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Our solution</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Three integrated layers, each feeding the others</h2>
-          <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-8 max-w-2xl">
-            CVin.Bio is a vertically integrated talent platform. We control the entire pipeline from job aggregation through candidate matching to AI-native discovery.
-          </p>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Four integrated layers, each feeding the others</h2>
 
-          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 mb-8">
-            <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6 text-center">Platform architecture</p>
-            <PlatformStack />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-10">
+            <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
+              CVin.Bio is a vertically integrated talent platform. We control the entire pipeline from job aggregation through candidate matching to AI-native discovery.
+            </p>
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 text-center">Platform architecture</p>
+              <PlatformStack />
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">1</div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Job aggregation engine</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[
+              { n: '1', title: 'Job aggregation engine', points: ['6,000+ listings from 60+ companies', 'Stripe, Anthropic, Airbnb, Coinbase, Cloudflare, Reddit', 'Deduplicated, normalized, tagged with structured skill metadata'] },
+              { n: '2', title: 'AI-native candidate profiles', points: ['Resume to structured web profile in seconds', 'schema.org/Person markup and JSON-LD metadata', 'Skills auto-extracted and matched against live listings'] },
+              { n: '3', title: 'Reverse discovery', points: ['llms.txt profile index, regenerated hourly', 'MCP server with search_candidates and get_profile tools', '100+ AI user agents with explicit crawler access'] },
+              { n: '4', title: 'Agent Hiring Module (planned)', points: ['Embeddable SDK for companies to deploy AI hiring agents', 'Queries our MCP talent endpoint, filters by verified skills', 'Companies integrate once, their AI sources talent 24/7'] },
+            ].map((card) => (
+              <div key={card.n} className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">{card.n}</div>
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">{card.title}</h3>
+                </div>
+                <ul className="space-y-2">
+                  {card.points.map((pt, i) => (
+                    <li key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                      <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                We pull from multiple enterprise ATS platforms and job aggregators in real time. Over 6,000 live listings from 60+ companies including Stripe, Anthropic, Airbnb, Coinbase, Cloudflare, Discord, and Reddit. Every listing is deduplicated, normalized, and tagged with structured skill metadata.
-              </p>
-            </div>
-            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">2</div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">AI-native candidate profiles</h3>
-              </div>
-              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                Candidates upload a resume and receive a structured web profile with <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">schema.org/Person</span> markup and JSON-LD metadata. Skills are extracted automatically and matched against live listings. Every profile is machine-readable by default.
-              </p>
-            </div>
-            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">3</div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Reverse discovery</h3>
-              </div>
-              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                We expose an <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">llms.txt</span> profile index, an MCP server with <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> and <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> tools, and explicit crawler access for 100+ AI user agents. Employers and their AI tools can query our talent pool programmatically.
-              </p>
-            </div>
-            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">4</div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Agent Hiring Module (planned)</h3>
-              </div>
-              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                An embeddable SDK and API that lets companies deploy AI hiring agents inside their own workflows. The agent queries our MCP talent endpoint, filters by verified skills, and surfaces ranked candidates. Companies integrate once and their AI assistants can source talent autonomously, 24/7.
-              </p>
-            </div>
+            ))}
           </div>
         </section>
 
@@ -426,13 +404,10 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                LinkedIn, Indeed, and ZipRecruiter are horizontal platforms. They serve every industry and role type. They compete on volume and breadth. Their business model depends on being everything to everyone.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Startup-focused platforms like Wellfound, Otta, and Hired are narrower but still generalist within tech. None offer structured skill verification. None provide machine-readable profiles. None have infrastructure for AI agent-to-platform queries.
+                LinkedIn, Indeed, and ZipRecruiter are horizontal. They serve every industry and role. Wellfound, Otta, and Hired are narrower but still generalist within tech. None offer structured skill verification, machine-readable profiles, or agent-queryable infrastructure.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                CVin.Bio occupies the gap between general-purpose job boards and vertical talent platforms. We are domain-specific (AI/agentic), technology-native (MCP, schema.org, llms.txt), and structured by default. No other platform combines job aggregation, profile generation, and AI-native discovery in a single vertically integrated product.
+                CVin.Bio sits in the gap. Domain-specific (AI/agentic), technology-native (MCP, schema.org, llms.txt), structured by default. No other platform combines aggregation, profile generation, and AI-native discovery in one vertically integrated product.
               </p>
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
@@ -449,10 +424,10 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             <div className="space-y-8">
               {[
-                { n: '01', title: 'Featured placement fees', body: 'Companies pay to boost specific roles across the network and receive priority placement to skill-matched candidates. High-intent audience, low waste. Similar to LinkedIn Recruiter Lite pricing but with significantly higher signal per impression.' },
-                { n: '02', title: 'Candidate sourcing subscriptions', body: 'Employers subscribe to query the candidate database via MCP or the web interface. Per-seat pricing. They filter by verified, structured skills rather than keyword matching. This replaces or supplements the LinkedIn Recruiter seat ($8,999/year).' },
-                { n: '03', title: 'Placement success fees', body: 'Performance-based fee on successful hires sourced through CVin.Bio. Aligned incentives. The company only pays when the hire happens. At a fraction of the 20-30% that recruiters charge.' },
-                { n: '04', title: 'Agent Hiring Module (SaaS)', body: 'Enterprise companies pay a monthly subscription for our embeddable hiring agent SDK. Their internal AI assistants use our MCP endpoint to autonomously source, rank, and shortlist candidates. Per-query and per-seat pricing tiers.' },
+                { n: '01', title: 'Featured placement fees', body: 'Companies pay to boost roles and receive priority placement to skill-matched candidates. High-intent audience, low waste.' },
+                { n: '02', title: 'Candidate sourcing subscriptions', body: 'Per-seat pricing to query the candidate database via MCP or web. Structured skill filtering replaces LinkedIn Recruiter ($8,999/year).' },
+                { n: '03', title: 'Placement success fees', body: 'Performance-based fee on successful hires. The company pays only when the hire happens, at a fraction of the 20-30% recruiters charge.' },
+                { n: '04', title: 'Agent Hiring Module (SaaS)', body: 'Monthly subscription for the embeddable hiring agent SDK. Per-query and per-seat pricing. Their AI sources talent autonomously.' },
               ].map((item) => (
                 <div key={item.n} className="flex gap-5">
                   <span className="text-4xl font-serif font-bold text-zinc-200 dark:text-zinc-800 shrink-0 leading-none pt-0.5">{item.n}</span>
@@ -494,10 +469,10 @@ export default function StoryPage() {
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-10">Four converging forces creating a timing window</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-10">
             {[
-              { n: '01', title: 'Agent frameworks are going to production', body: 'LangChain, CrewAI, AutoGen, and Semantic Kernel graduated from experiments to enterprise deployments in 2025. Every company adopting these frameworks needs engineers who understand tool calling, memory architectures, and deterministic agent behavior. This demand did not exist two years ago.' },
-              { n: '02', title: 'AI is now the first reader of every resume', body: 'Recruiter bots, ATS pre-screening agents, and AI search assistants increasingly encounter candidate profiles before any human does. Profiles that are not machine-readable are filtered out. We provide the format and infrastructure that these systems actually consume.' },
-              { n: '03', title: 'The MCP protocol enables a new category', body: 'Anthropic\'s Model Context Protocol created a standardized way for AI assistants to query external tools. We are one of the first platforms to expose a live MCP server for talent search. This means any MCP-enabled AI assistant can programmatically query our candidate database.' },
-              { n: '04', title: 'The recruiter model is economically fragile', body: 'Third-party recruiters charge 20-30% of first-year salary and still rely on LinkedIn boolean searches. For a $200K hire, that is $40K to $60K per placement. Structured, programmatic candidate discovery at a fraction of the cost replaces this model entirely.' },
+              { n: '01', title: 'Agent frameworks are going to production', body: 'LangChain, CrewAI, AutoGen, Semantic Kernel all graduated to enterprise in 2025. Every adopter needs engineers who understand tool calling, memory architectures, and agent behavior.' },
+              { n: '02', title: 'AI reads every resume first', body: 'Recruiter bots and ATS agents now encounter profiles before humans do. Profiles that are not machine-readable get filtered out. We provide the format these systems consume.' },
+              { n: '03', title: 'MCP enables a new category', body: 'Anthropic\'s Model Context Protocol standardized how AI assistants query external tools. We are among the first to expose a live MCP server for talent search.' },
+              { n: '04', title: 'The recruiter model is fragile', body: 'Recruiters charge 20-30% of salary and rely on LinkedIn boolean searches. For a $200K hire, that is $40-60K. Structured discovery replaces this entirely.' },
             ].map((item) => (
               <div key={item.n} className="flex gap-5">
                 <span className="text-4xl font-serif font-bold text-zinc-200 dark:text-zinc-800 shrink-0 leading-none pt-0.5">{item.n}</span>
@@ -519,13 +494,10 @@ export default function StoryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                CVin.Bio is live. The job board aggregates 6,000+ listings from 60+ companies. The profile engine parses uploaded CVs into structured, schema-annotated pages. The MCP server is operational and queryable by any compatible AI assistant. The <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">llms.txt</span> index is regenerated hourly.
-              </p>
-              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                We have published two original research reports. The <Cite href="https://cvin.bio/layoffs-report">Tech Layoffs Report 2026</Cite> and the <Cite href="https://cvin.bio/remote-talent-report">Remote Talent Report 2026</Cite>, both data-driven and gated behind email capture to build distribution. We maintain active content distribution across LinkedIn and X with automated, data-backed posting.
+                CVin.Bio is live. Job board aggregates 6,000+ listings from 60+ companies. Profile engine parses CVs into structured, schema-annotated pages. MCP server is operational. The <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">llms.txt</span> index regenerates hourly.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                The entire platform is self-built. We control the aggregation pipeline, matching logic, profile schema, and discovery infrastructure end to end. No white-label feeds. No third-party recruitment SaaS.
+                Two published research reports (<Cite href="https://cvin.bio/layoffs-report">Layoffs 2026</Cite>, <Cite href="https://cvin.bio/remote-talent-report">Remote Talent 2026</Cite>) gated behind email capture. Active distribution on LinkedIn and X. Entire platform self-built end to end.
               </p>
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
