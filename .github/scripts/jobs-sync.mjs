@@ -121,6 +121,8 @@ const GREENHOUSE_SLUGS = [
   'xendit','bybit','okx','phonepe','agoda','flexport','trivago','mercari',
   // Tier 8 — Unicorns
   'databricks','adyen','toast','intercom','jfrog','block','marqeta','sendbird',
+  // Tier 9 — SG/MY
+  'govtech','motional',
 ];
 
 // ─── Ashby company slugs ───
@@ -151,6 +153,7 @@ const ASHBY_SLUGS = [
   // Infrastructure
   'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch','posthog',
   'zapier','benchling','fullstory','airbyte','prefect',
+  'coinhako',
 ];
 
 // ─── Workable company slugs ───
@@ -167,7 +170,7 @@ const WORKABLE_SLUGS = [
 // ─── Lever company slugs ───
 const LEVER_SLUGS = [
   // APAC
-  'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral','paytm','gopuff',
+  'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral','paytm','gopuff','shopback-2',
 ];
 
 // ─── Helpers ───
