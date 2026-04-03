@@ -1,4 +1,4 @@
-// Remote Jobs Sync Script — fetches from 6 sources, deduplicates, upserts to Supabase
+// Remote Jobs Sync Script — fetches from 7 sources, deduplicates, upserts to Supabase
 // Run via: node .github/scripts/jobs-sync.mjs
 // Env: SUPABASE_URL, SUPABASE_KEY (service role)
 
@@ -117,6 +117,8 @@ const GREENHOUSE_SLUGS = [
   // Tier 6 — E-commerce & SaaS
   'shopify','bigcommerce','bolt','faire','klaviyo','attentive',
   'braze','iterable','customer-io','sendgrid',
+  // Tier 7 — APAC
+  'xendit','bybit','okx','phonepe',
 ];
 
 // ─── Ashby company slugs ───
@@ -138,6 +140,12 @@ const WORKABLE_SLUGS = [
   'perplexity','sourcegraph','datarobot','weights-and-biases',
   'prefect','dagster','pulumi','kraken','opensea',
   'phantom-wallet','chainlink-labs','segment-1',
+];
+
+// ─── Lever company slugs ───
+const LEVER_SLUGS = [
+  // APAC
+  'ninjavan','lalamove','patsnap','immutable','cred',
 ];
 
 // ─── Helpers ───
@@ -462,6 +470,45 @@ async function fetchWorkable() {
   return allJobs;
 }
 
+// ─── Source: Lever (per-company) ───
+async function fetchLever() {
+  console.log('\n── Lever ──');
+  const jobs = [];
+
+  for (const slug of LEVER_SLUGS) {
+    try {
+      const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`);
+      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); continue; }
+      const data = await res.json();
+      const companyJobs = (Array.isArray(data) ? data : [])
+        .map(j => ({
+          source: 'lever',
+          external_id: `lever_${slug}_${j.id}`,
+          dedup_hash: dedupHash(j.text ? slug : slug, j.text || ''),
+          title: (j.text || '').trim(),
+          company: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          company_logo: null,
+          location: j.categories?.location || 'Remote',
+          job_type: j.categories?.commitment || null,
+          salary: null,
+          description: (j.descriptionPlain || '').substring(0, 5000),
+          tags: extractTags(`${j.text || ''} ${j.descriptionPlain || ''}`),
+          apply_url: j.hostedUrl || j.applyUrl || `https://jobs.lever.co/${slug}/${j.id}`,
+          category: j.categories?.department || j.categories?.team || null,
+          published_at: j.createdAt ? new Date(j.createdAt).toISOString() : null,
+        }));
+      if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs`);
+      jobs.push(...companyJobs);
+    } catch (e) {
+      console.log(`  ⚠ ${slug}: ${e.message}`);
+    }
+    await sleep(500);
+  }
+
+  console.log(`  Total: ${jobs.length} jobs from Lever`);
+  return jobs;
+}
+
 // ─── Source: Foorilla (HTML scraping via HTMX) ───
 // Uses ?remote=true filter + pagination + parallel worker pool
 
@@ -660,10 +707,11 @@ async function main() {
   const greenhouse = await fetchGreenhouse();
   const ashby = await fetchAshby();
   const workable = await fetchWorkable();
+  const lever = await fetchLever();
   const foorilla = await fetchFoorilla();
 
   // Merge all jobs — priority order (first seen wins dedup via DB constraint)
-  const allJobs = [...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...foorilla];
+  const allJobs = [...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...foorilla];
   console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
 
   // Filter out invalid entries
