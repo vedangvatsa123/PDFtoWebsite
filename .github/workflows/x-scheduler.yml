@@ -58,4 +58,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .github/scripts/x-state.json .github/scripts/bsky-state.json .github/scripts/blogger-state.json
           git diff --staged --quiet || git commit -m "chore: advance post index [skip ci]"
-          git push
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && break || sleep 5
+          done
