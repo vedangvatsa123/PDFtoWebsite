@@ -118,9 +118,9 @@ function TechStackDiagram() {
       <text x="230" y="112" textAnchor="middle" className="fill-white/60 dark:fill-zinc-900/50 text-[9px]" fontFamily="inherit">cvin.bio/you</text>
 
       {/* Top: Schema.org */}
-      <rect x="165" y="2" width="130" height="40" rx="6" className="fill-zinc-100 dark:fill-zinc-800/60" stroke="#71717A" strokeWidth="0.5" />
+      <rect x="150" y="2" width="160" height="40" rx="6" className="fill-zinc-100 dark:fill-zinc-800/60" stroke="#71717A" strokeWidth="0.5" />
       <text x="230" y="18" textAnchor="middle" className="fill-zinc-700 dark:fill-zinc-300 text-[9px] font-bold" fontFamily="inherit">schema.org/Person</text>
-      <text x="230" y="32" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">JSON-LD embedded in every page</text>
+      <text x="230" y="32" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">JSON-LD in every page</text>
       <line x1="230" y1="42" x2="230" y2="70" className="stroke-zinc-300 dark:stroke-zinc-700" strokeWidth="1" strokeDasharray="4 3" />
 
       {/* Left: llms.txt */}
@@ -132,13 +132,13 @@ function TechStackDiagram() {
       {/* Right: MCP */}
       <rect x="332" y="75" width="120" height="50" rx="6" className="fill-zinc-100 dark:fill-zinc-800/60" stroke="#71717A" strokeWidth="0.5" />
       <text x="392" y="96" textAnchor="middle" className="fill-zinc-700 dark:fill-zinc-300 text-[9px] font-bold" fontFamily="inherit">MCP Server</text>
-      <text x="392" y="110" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">Agent query interface</text>
+      <text x="392" y="110" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">npm + official registry</text>
       <line x1="285" y1="100" x2="332" y2="100" className="stroke-zinc-300 dark:stroke-zinc-700" strokeWidth="1" strokeDasharray="4 3" />
 
       {/* Bottom: robots.txt */}
-      <rect x="165" y="158" width="130" height="40" rx="6" className="fill-zinc-100 dark:fill-zinc-800/60" stroke="#71717A" strokeWidth="0.5" />
+      <rect x="150" y="158" width="160" height="40" rx="6" className="fill-zinc-100 dark:fill-zinc-800/60" stroke="#71717A" strokeWidth="0.5" />
       <text x="230" y="175" textAnchor="middle" className="fill-zinc-700 dark:fill-zinc-300 text-[9px] font-bold" fontFamily="inherit">robots.txt</text>
-      <text x="230" y="189" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">9 AI crawlers explicitly allowed</text>
+      <text x="230" y="189" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">100+ AI crawlers allowed</text>
       <line x1="230" y1="130" x2="230" y2="158" className="stroke-zinc-300 dark:stroke-zinc-700" strokeWidth="1" strokeDasharray="4 3" />
     </svg>
   );
@@ -191,7 +191,7 @@ export default function AIDiscoveryPage() {
         {/* ─── BIG NUMBERS ─── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-28">
           {[
-            { value: '5', label: 'Discovery layers\n(Schema, MCP, Registry, llms.txt, crawlers)' },
+            { value: '4', label: 'Discovery layers\n(Schema, MCP, llms.txt, crawlers)' },
             { value: '100+', label: 'User agents\nrecognized' },
             { value: '24/7', label: 'Your profile\nworks passively' },
             { value: '0', label: 'Authentication\nbarriers for agents' },
@@ -265,23 +265,13 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Model Context Protocol</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                The CVin.Bio MCP server is published as <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">@cvinbio/mcp-server</span> on npm and listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a>. Two tools are exposed. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> queries the database by skill, location, or job title. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> retrieves a complete structured profile by username.
+                The CVin.Bio MCP server is published as <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">@cvinbio/mcp-server</span> on npm and listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a>. Any MCP-compatible client like Claude Desktop, ChatGPT, or Cursor can discover and connect to the CVin.Bio talent database directly. Two tools are exposed. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> queries by skill, location, or job title. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> retrieves a complete structured profile by username.
               </p>
             </div>
 
             <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">4</div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Official MCP Registry</h3>
-              </div>
-              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                CVin.Bio is listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a>. Any MCP-compatible client like Claude Desktop, ChatGPT, or Cursor can discover and connect to the CVin.Bio talent database directly from the registry without manual configuration.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">5</div>
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Explicit crawler access</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
