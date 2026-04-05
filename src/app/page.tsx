@@ -35,6 +35,9 @@ export default function Home() {
   const { toast } = useToast();
   const router = useRouter();
   const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // If user lands here after OAuth with pending resume data, redirect to editor
   useEffect(() => {
@@ -103,15 +106,15 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="flex flex-col items-center space-y-6 text-center">
-          <div className="rounded-2xl p-4 transition-colors dark:bg-white dark:shadow-md">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 py-2 sm:py-4">
+        <div className="flex flex-col items-center space-y-4 sm:space-y-6 text-center">
+          <div className="rounded-2xl p-2 sm:p-4">
             <Image
               src="/images/cvtopdf.png"
               alt="CVin.Bio | Turn your CV into a website"
               width={300}
               height={300}
-              className="mb-0"
+              className="mb-0 w-[180px] h-[180px] sm:w-[280px] sm:h-[280px]"
               priority
             />
           </div>
@@ -123,7 +126,9 @@ export default function Home() {
             <Link href="/ai-discovery" className="text-sm text-muted-foreground hover:text-foreground transition-colors">The CV format readable by humans and AI agents.</Link>
           </div>
 
-          {(isUserLoading) ? null : user ? (
+          {(!mounted || isUserLoading) ? (
+             <div className="w-full max-w-[600px] min-h-[180px]" />
+          ) : user ? (
              <div className="w-full max-w-[600px]">
                 <Button size="lg" className="w-full mt-2" asChild>
                     <Link href="/editor">Go to Your Editor</Link>
