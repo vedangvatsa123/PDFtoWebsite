@@ -191,7 +191,7 @@ export default function AIDiscoveryPage() {
         {/* ─── BIG NUMBERS ─── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-28">
           {[
-            { value: '4', label: 'Discovery layers\n(Schema, MCP, llms.txt, crawlers)' },
+            { value: '5', label: 'Discovery layers\n(Schema, MCP, Registry, llms.txt, crawlers)' },
             { value: '100+', label: 'User agents\nrecognized' },
             { value: '24/7', label: 'Your profile\nworks passively' },
             { value: '0', label: 'Authentication\nbarriers for agents' },
@@ -265,13 +265,23 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Model Context Protocol</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                The CVin.Bio MCP server implements two callable tools. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> queries the profile database by skill, location, or job title. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> retrieves a complete structured profile by username. Compatible with any MCP-enabled AI assistant.
+                The CVin.Bio MCP server is published as <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">@cvinbio/mcp-server</span> on npm and listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a>. Two tools are exposed. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">search_candidates</span> queries the database by skill, location, or job title. <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">get_profile</span> retrieves a complete structured profile by username.
               </p>
             </div>
 
             <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">4</div>
+                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Official MCP Registry</h3>
+              </div>
+              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
+                CVin.Bio is listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a> as <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">io.github.vedangvatsa123/cvinbio</span>. Any MCP-compatible client like Claude Desktop, ChatGPT, or Cursor can discover and connect to the CVin.Bio talent database directly from the registry without manual configuration.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs">5</div>
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Explicit crawler access</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
@@ -347,12 +357,27 @@ export default function AIDiscoveryPage() {
                 </div>
 
                 <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
-                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">MCP tools (Model Context Protocol)</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider">MCP Server (npm package)</p>
+                  <pre className="text-sm font-mono text-emerald-400">npx @cvinbio/mcp-server</pre>
+                  <p className="text-[11px] text-zinc-500 mt-2 mb-3">Published on <a href="https://www.npmjs.com/package/@cvinbio/mcp-server" className="text-zinc-300 underline">npm</a> and discoverable on the <a href="https://registry.modelcontextprotocol.io" className="text-zinc-300 underline">official MCP Registry</a>.</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider border-t border-zinc-800 pt-3">Tools</p>
                   <pre className="text-sm font-mono text-emerald-400">search_candidates(query, limit)</pre>
                   <p className="text-[11px] text-zinc-500 mt-1 mb-3">Search by skill, location, job title, or keyword. Returns up to 20 matching profiles with full work history and education.</p>
                   <pre className="text-sm font-mono text-emerald-400">get_profile(username)</pre>
                   <p className="text-[11px] text-zinc-500 mt-1 mb-3">Fetch a complete profile by slug. Returns structured data including custom sections and credentials.</p>
-                  <p className="text-[11px] text-zinc-500 border-t border-zinc-800 pt-3">Available via stdio transport. Contact <span className="text-zinc-300">hi@cvin.bio</span> for MCP server access and configuration.</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 font-mono uppercase tracking-wider border-t border-zinc-800 pt-3">Claude Desktop config</p>
+                  <pre className="text-xs font-mono leading-relaxed text-zinc-400">{`{
+  "mcpServers": {
+    "cvinbio": {
+      "command": "npx",
+      "args": ["@cvinbio/mcp-server"],
+      "env": {
+        "SUPABASE_URL": "your_url",
+        "SUPABASE_KEY": "your_key"
+      }
+    }
+  }
+}`}</pre>
                 </div>
 
                 <div className="rounded-lg border bg-zinc-950 text-zinc-300 p-5 overflow-x-auto">
