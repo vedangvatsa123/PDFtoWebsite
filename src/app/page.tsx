@@ -129,7 +129,7 @@ export default function Home() {
           {(!mounted || isUserLoading) ? (
              <div className="w-full max-w-[600px] min-h-[180px]" />
           ) : user ? (
-             <div className="w-full max-w-[600px]">
+             <div className="w-full max-w-[600px] min-h-[180px] flex flex-col items-center justify-center">
                 <Button size="lg" className="w-full mt-2" asChild>
                     <Link href="/editor">Go to Your Editor</Link>
                 </Button>
