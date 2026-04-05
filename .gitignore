@@ -42,3 +42,5 @@ next-env.d.ts
 # studio
 .studio
 mcp-package/node_modules
+.mcpregistry_github_token
+.mcpregistry_registry_token
