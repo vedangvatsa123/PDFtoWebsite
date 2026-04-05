@@ -275,7 +275,7 @@ export default function AIDiscoveryPage() {
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Official MCP Registry</h3>
               </div>
               <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-                CVin.Bio is listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a> as <span className="font-mono text-[12px] bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">io.github.vedangvatsa123/cvinbio</span>. Any MCP-compatible client like Claude Desktop, ChatGPT, or Cursor can discover and connect to the CVin.Bio talent database directly from the registry without manual configuration.
+                CVin.Bio is listed on the <a href="https://registry.modelcontextprotocol.io" className="underline hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">official MCP Registry</a>. Any MCP-compatible client like Claude Desktop, ChatGPT, or Cursor can discover and connect to the CVin.Bio talent database directly from the registry without manual configuration.
               </p>
             </div>
 
