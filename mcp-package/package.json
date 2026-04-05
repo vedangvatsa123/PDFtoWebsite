@@ -1,0 +1,28 @@
+{
+  "name": "@cvinbio/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for searching professional profiles from the CVin.Bio talent database",
+  "mcpName": "io.github.vedangvatsa123/cvinbio",
+  "main": "index.js",
+  "bin": {
+    "cvinbio-mcp": "./index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node index.js"
+  },
+  "keywords": ["mcp", "recruiting", "resume", "cv", "talent", "ai-agents", "professional-profiles"],
+  "author": "Vedang Vatsa",
+  "license": "MIT",
+  "homepage": "https://cvin.bio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vedangvatsa123/PDFtoWebsite"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@supabase/supabase-js": "^2.49.4",
+    "zod": "^3.24.3"
+  }
+}
