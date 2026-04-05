@@ -1,4 +1,5 @@
 export const blogMetadata = [
+  { slug: 'ai-agents-browsing-resume', title: 'AI Agents Are Already Browsing Your Resume', imageText: 'The Agents Are Already Here', featuredImage: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80' },
   { slug: 'cv-attachments', title: 'Why Recruiters Skip Unreadable CV Attachments', imageText: 'The Death of the PDF Attachment', featuredImage: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=1200&q=80' },
   { slug: 'mobile-responsive-cv', title: 'Why Your Resume Must Be Mobile Responsive', imageText: 'Optimized for the 6-Inch Screen', featuredImage: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&q=80' },
   { slug: 'cv-web-link', title: 'Sending Your CV as a Web Link Instead of a PDF File', imageText: 'Zero Friction Hiring', featuredImage: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&q=80' },
