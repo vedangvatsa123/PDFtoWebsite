@@ -287,6 +287,90 @@ async function supabaseUpsert(jobs) {
 
 async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// ─── Source: RemoteOK ───
+async function fetchRemoteOK() {
+  console.log('\n── RemoteOK ──');
+  try {
+    const res = await fetch('https://remoteok.com/api', {
+      headers: { 'User-Agent': 'Mozilla/5.0 (CVin.Bio job aggregator)' }
+    });
+    const data = await res.json();
+    // First element is metadata, rest are jobs
+    const raw = Array.isArray(data) ? data.slice(1) : [];
+    const jobs = raw.map(j => ({
+      source: 'remoteok',
+      external_id: `remoteok_${j.id}`,
+      dedup_hash: dedupHash(j.company || '', j.position || ''),
+      title: (j.position || '').trim(),
+      company: j.company || 'Unknown',
+      company_logo: j.company_logo || j.logo || null,
+      location: j.location || 'Remote',
+      job_type: normalizeJobType(j.type) || 'full_time',
+      salary: j.salary_min && j.salary_max ? `$${j.salary_min}-$${j.salary_max}` : (j.salary || null),
+      description: (j.description || '').substring(0, 5000),
+      tags: j.tags?.length ? j.tags.map(t => t.charAt(0).toUpperCase() + t.slice(1)) : extractTags(`${j.position || ''} ${j.description || ''}`),
+      apply_url: j.apply_url || j.url || `https://remoteok.com/remote-jobs/${j.slug || j.id}`,
+      category: j.tags?.[0] || null,
+      published_at: j.date || null,
+    })).filter(j => j.title && j.company);
+    console.log(`  Found ${jobs.length} jobs`);
+    return jobs;
+  } catch (e) {
+    console.error(`  ❌ RemoteOK error: ${e.message}`);
+    return [];
+  }
+}
+
+// ─── Source: BambooHR (per-company) ───
+const BAMBOOHR_SLUGS = [
+  'zendesk',
+];
+
+async function fetchBambooHR() {
+  console.log('\n── BambooHR ──');
+  const jobs = [];
+
+  for (const slug of BAMBOOHR_SLUGS) {
+    try {
+      const res = await fetch(`https://${slug}.bamboohr.com/careers/list`, {
+        headers: { 'Accept': 'application/json' },
+        redirect: 'manual',
+      });
+      if (res.status !== 200) { console.log(`  ⚠ ${slug}: ${res.status}`); continue; }
+      const data = await res.json();
+      const openings = data.result || (Array.isArray(data) ? data : []);
+      const companyJobs = openings.map(j => {
+        const loc = j.location || {};
+        const location = [loc.city, loc.state, loc.country].filter(Boolean).join(', ') || 'Unknown';
+        return {
+          source: 'bamboohr',
+          external_id: `bhr_${slug}_${j.id}`,
+          dedup_hash: dedupHash(slug, j.jobOpeningName || ''),
+          title: (j.jobOpeningName || '').trim(),
+          company: slug.charAt(0).toUpperCase() + slug.slice(1),
+          company_logo: null,
+          location: j.isRemote === '1' ? `Remote - ${location}` : location,
+          job_type: j.employmentStatusLabel ? normalizeJobType(j.employmentStatusLabel) : null,
+          salary: null,
+          description: null,
+          tags: extractTags(j.jobOpeningName || ''),
+          apply_url: `https://${slug}.bamboohr.com/careers/${j.id}`,
+          category: j.departmentLabel || null,
+          published_at: null,
+        };
+      }).filter(j => j.title);
+      if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs`);
+      jobs.push(...companyJobs);
+    } catch (e) {
+      console.log(`  ⚠ ${slug}: ${e.message}`);
+    }
+    await sleep(300);
+  }
+
+  console.log(`  Total: ${jobs.length} jobs from BambooHR`);
+  return jobs;
+}
+
 // ─── Source: Remotive ───
 async function fetchRemotive() {
   console.log('\n── Remotive ──');
@@ -870,6 +954,7 @@ async function main() {
   const startTime = Date.now();
 
   // Fetch from all sources (aggregators first = richer data wins dedup)
+  const remoteok = await fetchRemoteOK();
   const remotive = await fetchRemotive();
   const himalayas = await fetchHimalayas();
   const jobicy = await fetchJobicy();
@@ -879,10 +964,11 @@ async function main() {
   const lever = await fetchLever();
   const smartrecruiters = await fetchSmartRecruiters();
   const workday = await fetchWorkday();
+  const bamboohr = await fetchBambooHR();
   const foorilla = await fetchFoorilla();
 
   // Merge all jobs — priority order (first seen wins dedup via DB constraint)
-  const allJobs = [...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...foorilla];
+  const allJobs = [...remoteok, ...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr, ...foorilla];
   console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
 
   // Filter out invalid entries
