@@ -199,8 +199,27 @@ function normalizeJobType(raw) {
   return raw;
 }
 
+async function fetchExistingHashes() {
+  // Fetch all existing dedup_hashes from DB to skip duplicates client-side
+  const allHashes = new Set();
+  let offset = 0;
+  const pageSize = 1000;
+  while (true) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/jobs?select=dedup_hash&offset=${offset}&limit=${pageSize}`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (!res.ok) break;
+    const rows = await res.json();
+    if (rows.length === 0) break;
+    for (const r of rows) allHashes.add(r.dedup_hash);
+    offset += pageSize;
+  }
+  return allHashes;
+}
+
 async function supabaseUpsert(jobs) {
-  // Deduplicate by dedup_hash in-memory before sending to Supabase
+  // Deduplicate by dedup_hash in-memory
   const seen = new Map();
   for (const job of jobs) {
     if (!seen.has(job.dedup_hash)) {
@@ -210,18 +229,31 @@ async function supabaseUpsert(jobs) {
   const unique = [...seen.values()];
   console.log(`   After in-memory dedup: ${unique.length} unique jobs`);
 
-  // Batch upsert in chunks of 100, 5 concurrent requests
-  const batchSize = 100;
-  const concurrency = 5;
-  let inserted = 0, skipped = 0;
+  // Pre-fetch existing hashes to skip duplicates client-side
+  console.log(`   📥 Fetching existing hashes from DB...`);
+  const existingHashes = await fetchExistingHashes();
+  console.log(`   📥 Found ${existingHashes.size} existing jobs in DB`);
+
+  const newJobs = unique.filter(j => !existingHashes.has(j.dedup_hash));
+  const skippedCount = unique.length - newJobs.length;
+  console.log(`   🆕 ${newJobs.length} new jobs to insert (${skippedCount} already exist)`);
+
+  if (newJobs.length === 0) {
+    return { inserted: 0, skipped: skippedCount };
+  }
+
+  // Batch insert only new jobs — 200 per batch, 50 concurrent
+  const batchSize = 200;
+  const concurrency = 50;
+  let inserted = 0;
   const batches = [];
 
-  for (let i = 0; i < unique.length; i += batchSize) {
-    batches.push(unique.slice(i, i + batchSize));
+  for (let i = 0; i < newJobs.length; i += batchSize) {
+    batches.push(newJobs.slice(i, i + batchSize));
   }
-  console.log(`   📤 Upserting ${batches.length} batches of ~${batchSize} (${concurrency} parallel)...`);
+  console.log(`   📤 Inserting ${batches.length} batches of ~${batchSize} (${concurrency} parallel)...`);
 
-  async function upsertBatch(batch) {
+  async function insertBatch(batch) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
@@ -231,7 +263,7 @@ async function supabaseUpsert(jobs) {
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates,return=representation',
+          'Prefer': 'resolution=ignore-duplicates,return=representation',
         },
         body: JSON.stringify(batch),
         signal: controller.signal,
@@ -240,51 +272,27 @@ async function supabaseUpsert(jobs) {
 
       if (res.ok) {
         const result = await res.json();
-        return { inserted: result.length, skipped: 0 };
+        return result.length;
       } else {
         const err = await res.text();
-        if (err.includes('duplicate') || err.includes('unique') || err.includes('dedup_hash')) {
-          let ins = 0, skip = 0;
-          for (const job of batch) {
-            try {
-              const singleRes = await fetch(`${SUPABASE_URL}/rest/v1/jobs`, {
-                method: 'POST',
-                headers: {
-                  'apikey': SUPABASE_KEY,
-                  'Authorization': `Bearer ${SUPABASE_KEY}`,
-                  'Content-Type': 'application/json',
-                  'Prefer': 'resolution=ignore-duplicates',
-                },
-                body: JSON.stringify(job),
-              });
-              if (singleRes.ok) ins++; else skip++;
-            } catch { skip++; }
-          }
-          return { inserted: ins, skipped: skip };
-        } else {
-          console.error(`  ❌ Supabase error: ${err}`);
-          return { inserted: 0, skipped: batch.length };
-        }
+        console.error(`  ❌ Batch error: ${err.substring(0, 200)}`);
+        return 0;
       }
     } catch (e) {
       console.error(`  ❌ Batch failed: ${e.message}`);
-      return { inserted: 0, skipped: batch.length };
+      return 0;
     }
   }
 
-  // Run batches in parallel groups
+  // Fire all batches with concurrency limit
   for (let g = 0; g < batches.length; g += concurrency) {
     const group = batches.slice(g, g + concurrency);
-    const results = await Promise.all(group.map(b => upsertBatch(b)));
-    for (const r of results) {
-      inserted += r.inserted;
-      skipped += r.skipped;
-    }
+    const results = await Promise.all(group.map(b => insertBatch(b)));
+    for (const r of results) inserted += r;
     console.log(`   ✅ Group ${Math.floor(g / concurrency) + 1}/${Math.ceil(batches.length / concurrency)} done (${inserted} inserted so far)`);
   }
 
-  skipped = unique.length - inserted + (jobs.length - unique.length);
-  return { inserted, skipped };
+  return { inserted, skipped: skippedCount + (newJobs.length - inserted) };
 }
 
 async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
