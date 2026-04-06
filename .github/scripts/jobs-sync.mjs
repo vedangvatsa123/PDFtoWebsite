@@ -100,23 +100,18 @@ const GREENHOUSE_SLUGS = [
   'airtable','webflow','calendly','gusto','lattice',
   'instacart','discord','reddit','pinterest','anthropic',
   // Tier 2 — Scale-ups & unicorns
-  'squarespace','hubspot','netlify','notion','zapier','pagerduty',
-  'grafana','miro','canva','mixpanel','amplitude','segment',
-  'twitch','lyft','airbnb','uber','robinhood','chime','sofi',
-  'deel','remote','rippling','oysterhr','justworks',
+  'squarespace','hubspot','netlify','pagerduty',
+  'mixpanel','amplitude',
+  'twitch','lyft','airbnb','robinhood','chime','sofi',
+  'remote','justworks',
   // Tier 3 — AI/ML companies
-  'deepmind','cohere','huggingface','stability','midjourney',
-  'jasper','writesonic','copy-ai','perplexity-ai',
+  'deepmind',
   // Tier 4 — Dev tools & infra
-  'sourcegraph','snyk','postman','insomnia','circleci',
-  'datarobot','weights-and-biases','prefect','dagster','dbt-labs',
-  'pulumi','env0','spacelift','harness','launchdarkly',
+  'postman','circleci',
   // Tier 5 — Fintech & crypto
-  'blockfi','gemini','kraken','opensea','phantom','alchemy',
-  'chainlink','consensys','polygon-technology',
+  'gemini','alchemy','consensys',
   // Tier 6 — E-commerce & SaaS
-  'shopify','bigcommerce','bolt','faire','klaviyo','attentive',
-  'braze','iterable','customer-io','sendgrid',
+  'faire','klaviyo','attentive','braze','iterable',
   // Tier 7 — APAC
   'xendit','bybit','okx','phonepe','agoda','flexport','trivago','mercari',
   // Tier 8 — Unicorns
@@ -129,10 +124,9 @@ const GREENHOUSE_SLUGS = [
 const ASHBY_SLUGS = [
   'notion','ramp','linear','vercel','supabase','railway','render',
   'clerk','resend','neon',
-  'causal','stytch','axiom','tinybird','inngest','trigger-dev',
-  'cal-com','twenty','loop-returns','attio','plain',
-  'langchain','together-ai','anyscale','modal',
-  'retool','airplane','internal','tooljet','appsmith',
+  'causal','stytch','axiom','inngest',
+  'twenty','attio','plain',
+  'langchain','anyscale','modal',
   // APAC
   'airwallex','mindvalley',
   // AI/ML
@@ -154,17 +148,13 @@ const ASHBY_SLUGS = [
   'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch','posthog',
   'zapier','benchling','fullstory','airbyte','prefect',
   'coinhako',
+  // Migrated from Greenhouse
+  'opensea','phantom',
 ];
 
 // ─── Workable company slugs ───
 const WORKABLE_SLUGS = [
-  'huggingface','zapier','grafana','miro','canva','uber',
-  'deel','rippling','oysterhr','snyk','shopify','bigcommerce',
-  'dbt-labs','harness','deno','bun','planetscale',
-  'stability-ai','midjourney','jasper-ai','writesonic','copy-ai',
-  'perplexity','sourcegraph','datarobot','weights-and-biases',
-  'prefect','dagster','pulumi','kraken','opensea',
-  'phantom-wallet','chainlink-labs','segment-1',
+  'huggingface','writesonic','oysterhr',
 ];
 
 // ─── Lever company slugs ───
@@ -562,6 +552,8 @@ const SMARTRECRUITERS_SLUGS = [
   'Grab','DeliveryHero','Wise','Freshworks',
   // Global with APAC presence
   'Visa','Canva','ServiceNow',
+  // Migrated from Greenhouse
+  'Bigcommerce','Polygontechnology',
 ];
 
 async function fetchSmartRecruiters() {
