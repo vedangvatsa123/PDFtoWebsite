@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from('jobs')
     .select('*', { count: 'exact' })
-    .order('published_at', { ascending: false, nullsFirst: false });
+    .order('created_at', { ascending: false });
 
   // Filter by job type
   if (type && type !== 'all') {

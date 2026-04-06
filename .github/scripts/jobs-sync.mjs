@@ -975,7 +975,7 @@ async function main() {
   const validJobs = allJobs.filter(j => j.title && j.company && j.apply_url);
   console.log(`   Valid jobs: ${validJobs.length}`);
 
-  // Stamp synced_at on every record so upserts refresh the timestamp
+  // Stamp synced_at on every record
   const now = new Date().toISOString();
   for (const job of validJobs) {
     job.synced_at = now;
