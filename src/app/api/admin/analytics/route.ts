@@ -583,6 +583,9 @@ export async function GET(request: NextRequest) {
 
     // ── Product Timeline ──
     const productTimeline = [
+      { date: '2026-04-07', tag: 'jobs', title: 'Dynamic Job Interleaving Algorithm', desc: 'Rewrote the job grid clustering logic to guarantee visual diversity by preventing consecutive job cards from the same company in 2D layouts.' },
+      { date: '2026-04-07', tag: 'jobs', title: 'Crypto Native Job Sourcing', desc: 'Added expansive sourcing pipeline to automatically aggregate jobs from top blockchain and crypto targets via Greenhouse, Ashby, and Lever APIs (Binance, OpenSea, Chainlink, Uniswap, Solana, Avalon, Paradigm, etc).' },
+      { date: '2026-04-07', tag: 'safety', title: 'Quality Exclusions System', desc: 'Implemented persistent backend entity filter logic to permanently exclude noisy companies (e.g. Gopuff) from the central job board.' },
       { date: '2026-03-26', tag: 'analytics', title: 'PostHog Deep Analytics for Admin', desc: 'Pageviews, referrers, countries, devices, funnel events, share analytics, profile engagement — all from PostHog HogQL' },
       { date: '2026-03-25', tag: 'security', title: 'Admin Dashboard & Schema Hardening', desc: 'Admin analytics, server-side account deletion, Supabase-backed rate limiting, 8 schema fixes' },
       { date: '2026-03-25', tag: 'legal', title: 'Contact Email & Legal Updates', desc: 'Added hi@cvin.bio to Privacy Policy and Terms of Service' },
