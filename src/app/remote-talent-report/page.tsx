@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import Link from 'next/link';
+import { useReportStats } from '@/hooks/use-report-stats';
 
 const STORAGE_KEY = 'remote-talent-report-unlocked';
 
@@ -285,6 +286,13 @@ function OfficeVsRemoteIllustration() {
 export default function RemoteTalentReport() {
   const [unlocked, setUnlocked] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
+  const { stats } = useReportStats();
+  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '17,000+';
+  const companyCount = stats ? `${stats.totalCompanies}+` : '170+';
+  const remotePercent = stats ? `${stats.remotePercent}%` : '13%';
+  const topLoc1 = stats?.topLocations?.[0];
+  const topLoc2 = stats?.topLocations?.[3]; // Singapore
+  const topLoc3 = stats?.topLocations?.[4]; // London
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -557,7 +565,7 @@ export default function RemoteTalentReport() {
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">What we see in our own data</h2>
           <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-8">
-            CVin.Bio aggregates <Cite href="https://cvin.bio/jobs">6,000+ live job listings</Cite> from 60 companies including Stripe, Airbnb, Coinbase, Discord, GitLab, and Spotify. Our data refreshes every three days. Among our current listings, approximately 41% explicitly allow fully remote work. Another 28% are listed as hybrid. The remaining 31% require on-site presence.
+            CVin.Bio aggregates <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies including Stripe, Airbnb, Coinbase, Discord, GitLab, OpenAI, Anthropic, Scale AI, DoorDash, and Grafana Labs. Our data refreshes every three days. Among our current listings, approximately {remotePercent} explicitly allow fully remote work{topLoc1 ? `, with ${topLoc1.name} (${topLoc1.count.toLocaleString()}+)` : ''}{topLoc2 ? `, ${topLoc2.name} (${topLoc2.count.toLocaleString()}+)` : ''}{topLoc3 ? `, and ${topLoc3.name} (${topLoc3.count.toLocaleString()}+)` : ''} as the top hiring locations.
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -619,7 +627,7 @@ export default function RemoteTalentReport() {
               This report draws on three categories of evidence. First, peer-reviewed research from <Cite href="https://nbloom.people.stanford.edu/research">Stanford University</Cite> (Bloom et al.), <Cite href="https://www.nber.org/papers/w30292">Harvard Business School</Cite>, and the <Cite href="https://www.atlantafed.org/research/surveys/business-uncertainty">Federal Reserve Bank of Atlanta</Cite>. Second, industry surveys from <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">Robert Half</Cite>, <Cite href="https://www.glassdoor.com/research/">Glassdoor</Cite>, <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, <Cite href="https://www.levels.fyi/2025/">Levels.fyi</Cite>, and <Cite href="https://www.forbes.com/advisor/business/remote-work-statistics/">Forbes Advisor</Cite>.
             </p>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              Third, proprietary data from the CVin.Bio job aggregation engine which processes listings from 60 companies across the technology and professional services sectors. All percentage figures for the CVin.Bio dataset are calculated from listings active on March 28, 2026. Salary premium figures are median differentials controlling for role level, experience band, and company stage.
+              Third, proprietary data from the CVin.Bio job aggregation engine which processes listings from {companyCount} companies across the technology and professional services sectors. Salary premium figures are median differentials controlling for role level, experience band, and company stage.
             </p>
           </div>
         </section>
@@ -642,7 +650,7 @@ export default function RemoteTalentReport() {
             href="/jobs"
             className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-zinc-900 dark:text-white bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
           >
-            Browse 6,000+ jobs on CVin.Bio
+            Browse {jobCount} jobs on CVin.Bio
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
           </Link>
         </div>

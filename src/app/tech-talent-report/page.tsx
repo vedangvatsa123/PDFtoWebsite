@@ -3,6 +3,7 @@
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import Link from 'next/link';
+import { useReportStats } from '@/hooks/use-report-stats';
 
 function Cite({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -325,6 +326,14 @@ function SkillRadarChart() {
 }
 
 export default function TechTalentReport() {
+  const { stats } = useReportStats();
+  const totalJobs = stats ? stats.totalJobs.toLocaleString() : '17,836';
+  const totalCompanies = stats ? `${stats.totalCompanies}` : '171';
+  const aiPercent = stats ? `${stats.aiPercent}%` : '7%';
+  const aiCount = stats ? stats.aiJobs.toLocaleString() : '1,183';
+  const remotePercent = stats ? `${100 - stats.remotePercent}%` : '87%';
+  const remoteOnlyPercent = stats ? `${stats.remotePercent}%` : '13%';
+  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '17,000+';
   return (
     <div className="h-screen overflow-y-auto bg-[#fafafa] dark:bg-black selection:bg-zinc-200 dark:selection:bg-zinc-800 transition-colors duration-200 flex flex-col">
       <Header />
@@ -338,7 +347,7 @@ export default function TechTalentReport() {
               The Tech Talent<br />Report 2026
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              We track <Cite href="https://cvin.bio/jobs">15,458 active job listings</Cite> across 187 tech companies in 18 countries. This report breaks down what those listings reveal about roles, skills, seniority, remote work, and regional hiring patterns.
+              We track <Cite href="https://cvin.bio/jobs">{totalJobs} active job listings</Cite> across {totalCompanies} tech companies in 18 countries. This report breaks down what those listings reveal about roles, skills, seniority, remote work, and regional hiring patterns.
             </p>
           </div>
           <div className="hidden lg:block">
@@ -349,10 +358,10 @@ export default function TechTalentReport() {
         {/* BIG NUMBERS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-28">
           {[
-            { value: '15,458', label: 'Active job listings tracked', sub: 'April 2026' },
-            { value: '187', label: 'Companies across 18 countries', sub: 'From Stripe to Grab' },
-            { value: '86%', label: 'Require on-site presence', sub: 'Only 14% are fully remote' },
-            { value: '25%', label: 'Require AI or ML skills', sub: '3,884 of 15,458 listings' },
+            { value: totalJobs, label: 'Active job listings tracked', sub: 'April 2026' },
+            { value: totalCompanies, label: 'Companies across 18 countries', sub: 'From Stripe to Grab' },
+            { value: remotePercent, label: 'Require on-site presence', sub: `Only ${remoteOnlyPercent} are fully remote` },
+            { value: aiPercent, label: 'Require AI or ML skills', sub: `${aiCount} of ${totalJobs} listings` },
           ].map((d, i) => (
             <div key={i} className="bg-[#fafafa] dark:bg-black p-8 sm:p-10">
               <BigNum {...d} />
@@ -926,7 +935,7 @@ export default function TechTalentReport() {
           <h2 className="text-lg font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">Methodology</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              This report is based on 15,458 live job listings tracked by <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite> as of April 2026. Listings come from 187 companies across 18 countries. Our dataset skews toward well-funded tech companies, AI labs, and fintech. Where possible, we cross-reference patterns with external sources including the <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey</Cite>, <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, and the <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">Linux Foundation 2025 Tech Talent Report</Cite>.
+              This report is based on {totalJobs} live job listings tracked by <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>. Listings come from {totalCompanies} companies across 18 countries. Our dataset skews toward well-funded tech companies, AI labs, and fintech. Where possible, we cross-reference patterns with external sources including the <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey</Cite>, <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, and the <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">Linux Foundation 2025 Tech Talent Report</Cite>.
             </p>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
               Regional skill profiles are derived from tag-level analysis across all listings. Programming languages and engineering specializations are extracted via keyword matching against job titles. Role categories and seniority levels are inferred from title keywords. All data is from active listings as of April 3, 2026.
@@ -941,7 +950,7 @@ export default function TechTalentReport() {
             href="/jobs"
             className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-zinc-900 dark:text-white bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
           >
-            Browse 15,000+ jobs on CVin.Bio
+            Browse {jobCount} jobs on CVin.Bio
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
           </Link>
         </div>

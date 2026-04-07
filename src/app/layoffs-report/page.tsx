@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import Link from 'next/link';
+import { useReportStats } from '@/hooks/use-report-stats';
 
 const STORAGE_KEY = 'layoffs-report-unlocked';
 
@@ -294,6 +295,9 @@ function LayoffTimeline() {
 export default function LayoffsReport() {
   const [unlocked, setUnlocked] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
+  const { stats } = useReportStats();
+  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '17,000+';
+  const companyCount = stats ? `${stats.totalCompanies}+` : '170+';
 
   useEffect(() => {
     // Check URL params for access token (from email link)
@@ -587,7 +591,7 @@ export default function LayoffsReport() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
                 <div>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                    CVin.Bio tracks <Cite href="https://cvin.bio/jobs">6,000+ live job listings</Cite> from 60 companies in real time. Our data provides a useful lens on the relationship between layoffs and hiring, since we can observe both sides of the equation simultaneously.
+                    CVin.Bio tracks <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies in real time. Our data provides a useful lens on the relationship between layoffs and hiring, since we can observe both sides of the equation simultaneously.
                   </p>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                     Among our tracked companies, 23 executed layoffs in the past 12 months while simultaneously posting new roles. This may reflect the structural nature of the current labor market transition, where companies can be cutting in some areas while actively investing in others. The roles being reduced (customer support, QA, content operations) tend to be categorically different from the roles being created (AI engineering, infrastructure, product management for AI-native products).
@@ -628,7 +632,7 @@ export default function LayoffsReport() {
                   CVin.Bio is a professional presence platform that helps individuals build dynamic online profiles that replace static resumes. In a market where hiring managers see hundreds of applications per role, a visible online presence can be the difference between getting noticed and getting filtered out.
                 </p>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                  We also maintain a job board aggregating <Cite href="https://cvin.bio/jobs">6,000+ live listings</Cite> from 60 companies across the tech industry. Our research division produces data-driven reports on labor market trends, hiring patterns, and workforce dynamics to help job seekers and employers make more informed decisions.
+                  We also maintain a job board aggregating <Cite href="https://cvin.bio/jobs">{jobCount} live listings</Cite> from {companyCount} companies across the tech industry. Our research division produces data-driven reports on labor market trends, hiring patterns, and workforce dynamics to help job seekers and employers make more informed decisions.
                 </p>
               </div>
             </section>
@@ -650,7 +654,7 @@ export default function LayoffsReport() {
                     Fourth, the <Cite href="https://news.crunchbase.com/startups/tech-layoffs/">Crunchbase Tech Layoffs Tracker</Cite>, which cross-references company funding data with workforce reductions. Fifth, company investor communications and SEC filings, including quarterly earnings transcripts and annual reports.
                   </p>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                    Sixth, proprietary data from the CVin.Bio job aggregation engine, which tracks listings from 60 companies and cross-references hiring activity against known layoff events. All figures cited in this report are sourced from one or more of these datasets.
+                    Sixth, proprietary data from the CVin.Bio job aggregation engine, which tracks listings from {companyCount} companies and cross-references hiring activity against known layoff events. All figures cited in this report are sourced from one or more of these datasets.
                   </p>
                 </div>
               </div>
@@ -666,7 +670,7 @@ export default function LayoffsReport() {
             href="/jobs"
             className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-zinc-900 dark:text-white bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
           >
-            Browse 6,000+ jobs on CVin.Bio
+            Browse {jobCount} jobs on CVin.Bio
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
           </Link>
         </div>
