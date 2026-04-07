@@ -227,6 +227,7 @@ export async function GET(request: NextRequest) {
     .from('jobs')
     .select('*', { count: 'exact' })
     .not('company', 'ilike', '%Gopuff%')
+    .order('published_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false });
 
   // Filter by job type
