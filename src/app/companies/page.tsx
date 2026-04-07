@@ -142,7 +142,7 @@ export default async function CompaniesPage() {
                 <img
                   src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=64`}
                   alt={c.name}
-                  className={`h-5 w-5 sm:h-6 sm:w-6 rounded-md opacity-80 hover:opacity-100 transition-all shrink-0 ${i >= 7 ? 'hidden sm:block' : ''}`}
+                  className="h-5 w-5 sm:h-6 sm:w-6 rounded-md opacity-80 hover:opacity-100 transition-all shrink-0"
                   loading="lazy"
                 />
               </Link>
