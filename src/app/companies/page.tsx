@@ -78,9 +78,28 @@ export default async function CompaniesPage() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">Companies Hiring Now</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-5">
             {companies.length} companies · {totalJobs.toLocaleString()} open roles
           </p>
+
+          {/* Logo strip — top companies with logos */}
+          {(() => {
+            const withLogos = companies.filter(c => c.logo).slice(0, 20);
+            return withLogos.length > 0 ? (
+              <div className="flex items-center gap-5 overflow-x-auto pb-1 scrollbar-hide">
+                {withLogos.map(c => (
+                  <Link key={c.name} href={`/${toSlug(c.name)}`} className="shrink-0 group" title={c.name}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={c.logo!}
+                      alt={c.name}
+                      className="h-8 w-auto object-contain opacity-50 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-200"
+                    />
+                  </Link>
+                ))}
+              </div>
+            ) : null;
+          })()}
         </div>
 
         {/* Company Grid */}
