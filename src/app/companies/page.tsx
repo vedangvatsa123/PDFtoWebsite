@@ -1,7 +1,7 @@
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import Link from 'next/link';
-import { Building2, Briefcase, MapPin, ExternalLink } from 'lucide-react';
+import { Building2, Briefcase } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import type { Metadata } from 'next';
 
@@ -69,75 +69,79 @@ export default async function CompaniesPage() {
     .sort((a, b) => b.count - a.count);
 
   const totalJobs = companies.reduce((s, c) => s + c.count, 0);
+  const withLogos = companies.filter(c => c.logo).slice(0, 12);
+  const extraLogoCount = companies.filter(c => c.logo).length - withLogos.length;
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black flex flex-col">
+    <div className="h-screen overflow-y-auto bg-[#fafafa] dark:bg-black selection:bg-primary/10 transition-colors duration-200 flex flex-col">
       <Header />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-5 sm:px-8 py-10">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">Companies Hiring Now</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-5">
-            {companies.length} companies · {totalJobs.toLocaleString()} open roles
-          </p>
-
-          {/* Logo strip — top companies with logos */}
-          {(() => {
-            const withLogos = companies.filter(c => c.logo).slice(0, 20);
-            return withLogos.length > 0 ? (
-              <div className="flex items-center gap-5 overflow-x-auto pb-1 scrollbar-hide">
-                {withLogos.map(c => (
-                  <Link key={c.name} href={`/${toSlug(c.name)}`} className="shrink-0 group" title={c.name}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={c.logo!}
-                      alt={c.name}
-                      className="h-8 w-auto object-contain opacity-50 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-200"
-                    />
-                  </Link>
-                ))}
-              </div>
-            ) : null;
-          })()}
+      <main className="w-full max-w-5xl mx-auto px-6 py-12 md:py-20 lg:py-24 pb-32 flex-1">
+        {/* Hero */}
+        <div className="flex flex-col mb-10">
+          <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 mb-3 transition-colors">
+            Companies
+          </h1>
+          {/* Logo strip */}
+          <div className="flex items-center gap-3 mt-3">
+            {withLogos.map((c, i) => (
+              <Link key={c.name} href={`/${toSlug(c.name)}`} title={c.name} className="shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={c.logo!}
+                  alt={c.name}
+                  className={`h-5 w-5 sm:h-6 sm:w-6 rounded-md opacity-80 hover:opacity-100 transition-all shrink-0 ${i >= 8 ? 'hidden sm:block' : ''}`}
+                  loading="lazy"
+                />
+              </Link>
+            ))}
+            {extraLogoCount > 0 && (
+              <span className="text-xs text-zinc-400 shrink-0">+{extraLogoCount} more</span>
+            )}
+          </div>
+          <Link href="/jobs" className="inline-flex items-center gap-2 mt-3 text-sm font-medium text-primary hover:underline">
+            <Briefcase className="h-4 w-4 text-primary" />
+            Browse all {totalJobs.toLocaleString()} open roles →
+          </Link>
         </div>
 
-        {/* Company Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {/* Company count */}
+        <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-wider">
+          {companies.length} {companies.length === 1 ? 'company' : 'companies'} found
+        </p>
+
+        {/* Company Cards — 2-column grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {companies.map(company => {
             const slug = toSlug(company.name);
             const topLocs = [...company.locations].slice(0, 3);
-            const logo = company.logo || null;
+            const logo = company.logo;
             return (
               <Link
                 key={company.name}
                 href={`/${slug}`}
-                className="group flex gap-3.5 p-4 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-xl hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
+                className="group flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
               >
                 {logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={logo}
-                    alt={company.name}
-                    className="w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white shrink-0 object-contain"
-                  />
+                  <img src={logo} alt={company.name} className="h-5 w-5 rounded shrink-0" loading="lazy" />
                 ) : (
-                  <div className="w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center">
-                    <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">{company.name[0].toUpperCase()}</span>
-                  </div>
+                  <span className="h-5 w-5 rounded shrink-0 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                    {company.name[0].toUpperCase()}
+                  </span>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-[14px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors truncate">
-                      {company.name}
-                    </h2>
-                    <span className="text-[11px] font-semibold text-zinc-400 tabular-nums whitespace-nowrap shrink-0">{company.count} {company.count === 1 ? 'role' : 'roles'}</span>
+                  <h2 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors truncate">
+                    {company.name}
+                  </h2>
+                  <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400 min-w-0">
+                    <span className="font-medium shrink-0">{company.count} {company.count === 1 ? 'role' : 'roles'}</span>
+                    {topLocs.length > 0 && (
+                      <>
+                        <span className="shrink-0 text-zinc-300 dark:text-zinc-600">·</span>
+                        <span className="truncate">{topLocs.join(', ')}</span>
+                      </>
+                    )}
                   </div>
-                  {topLocs.length > 0 && (
-                    <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                      {topLocs.join(' · ')}
-                    </p>
-                  )}
                 </div>
               </Link>
             );
