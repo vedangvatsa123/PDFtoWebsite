@@ -15,7 +15,7 @@ const supabaseForCompany = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: rebuild every 5 minutes
 export type ProfileData = ServerProfileData;
 
 type PageProps = {
@@ -412,59 +412,80 @@ export default async function ProfileSlugPage({ params }: PageProps) {
                 <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> {totalJobs} Active Roles</span>
                 <span className="flex items-center gap-1.5"><Monitor className="w-4 h-4" /> {remotePercent}% Remote</span>
               </div>
-              {meta && (
-                <div className="flex items-center gap-1.5 mt-3">
-                  <a href={meta.website} target="_blank" rel="noopener noreferrer" title="Website" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    <Globe className="w-3.5 h-3.5" />
+              {/* Social links — show for all companies */}
+              <div className="flex items-center gap-1.5 mt-3">
+                <a href={meta?.website || `https://${companyName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`} target="_blank" rel="noopener noreferrer" title="Website" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                  <Globe className="w-3.5 h-3.5" />
+                </a>
+                {meta?.socials?.x && (
+                  <a href={meta.socials.x} target="_blank" rel="noopener noreferrer" title="X" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    <Twitter className="w-3.5 h-3.5" />
                   </a>
-                  {meta.socials?.x && (
-                    <a href={meta.socials.x} target="_blank" rel="noopener noreferrer" title="X" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                      <Twitter className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  {meta.socials?.linkedin && (
-                    <a href={meta.socials.linkedin} target="_blank" rel="noopener noreferrer" title="LinkedIn" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                      <Linkedin className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  {meta.socials?.github && (
-                    <a href={meta.socials.github} target="_blank" rel="noopener noreferrer" title="GitHub" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                      <Github className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-              )}
+                )}
+                {meta?.socials?.linkedin && (
+                  <a href={meta.socials.linkedin} target="_blank" rel="noopener noreferrer" title="LinkedIn" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    <Linkedin className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {meta?.socials?.github && (
+                  <a href={meta.socials.github} target="_blank" rel="noopener noreferrer" title="GitHub" className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    <Github className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Company About (only with verified data) */}
-          {meta && (
-            <div className="mb-8 p-5 rounded-xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50">
-              <p className="text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300 mb-5">{meta.description}</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Size</p>
-                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{meta.size}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Stage</p>
-                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{meta.stage}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Funding</p>
-                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{meta.funding}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">HQ</p>
-                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">{meta.hq}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Founded</p>
-                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{meta.founded}</p>
+          {/* Company About — verified data or auto-generated from jobs */}
+          {(() => {
+            const topLocations = [...new Set(jobs.map((j: any) => j.location?.split(',')[0]?.trim()).filter(Boolean))].slice(0, 5);
+            const description = meta?.description
+              || `${companyName} is actively hiring with ${totalJobs} open ${totalJobs === 1 ? 'position' : 'positions'}. ${remotePercent > 0 ? `${remotePercent}% of roles are remote. ` : ''}${topLocations.length > 0 ? `Key hiring locations include ${topLocations.join(', ')}.` : ''} ${topSkills.length > 0 ? `In-demand skills include ${topSkills.slice(0, 5).join(', ')}.` : ''}`;
+            return (
+              <div className="mb-8 p-5 rounded-xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50">
+                <p className="text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300 mb-5">{description}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Active Roles</p>
+                    <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{totalJobs}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Remote</p>
+                    <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{remotePercent}%</p>
+                  </div>
+                  {meta ? (
+                    <>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Size</p>
+                        <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{meta.size}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">HQ</p>
+                        <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">{meta.hq}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Founded</p>
+                        <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50">{meta.founded}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Locations</p>
+                        <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">{topLocations.slice(0, 2).join(', ') || '—'}</p>
+                      </div>
+                      {topSkills.length > 0 && (
+                        <div className="col-span-2">
+                          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Top Skills</p>
+                          <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">{topSkills.slice(0, 4).join(', ')}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Open Roles */}
           <div className="mb-6 flex items-center justify-between">

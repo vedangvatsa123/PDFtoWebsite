@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: rebuild every 5 minutes
 
 export const metadata: Metadata = {
   title: 'Companies Hiring Now | CVin.Bio',

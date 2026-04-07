@@ -1,6 +1,6 @@
 # CVin.Bio — Full Context for AI Systems
 
-> Convert your CV to a Website using AI. Browse 6,000+ tech jobs with personalized skill matching.
+> Convert your CV to a Website using AI. Browse 17,000+ tech jobs across 145+ companies with personalized skill matching.
 
 ## About CVin.Bio
 
@@ -10,7 +10,7 @@ CVin.Bio is a platform that converts CV/resume documents into hosted web profile
 Users upload a PDF CV, and the system uses AI to extract structured data (work experience, education, skills, summary, contact info) and generates a responsive personal website at a custom URL (e.g., cvin.bio/yourname). The profile is fully editable and shareable.
 
 ### Core Product: Job Board
-The job board at cvin.bio/jobs aggregates 6,000+ tech job listings from 60+ companies. Users who complete their profile get personalized job recommendations based on skill matching.
+The job board at cvin.bio/jobs aggregates 17,000+ tech job listings from 145+ companies. Users who complete their profile get personalized job recommendations based on skill matching.
 
 ---
 
@@ -31,8 +31,12 @@ Jobs are deduplicated using two methods:
 - `external_id`: Source-specific unique identifier (e.g., `greenhouse_12345`)
 - `dedup_hash`: MD5 of `lower(company) + '|' + lower(trim(title))`
 
-### Companies Actively Hiring (Partial List)
-Stripe, Airbnb, Cloudflare, Discord, Reddit, Coinbase, Figma, GitLab, Lyft, Pinterest, Spotify, Twilio, Elastic, Datadog, MongoDB, Airtable, Webflow, Notion, Canva, Anthropic, Scale AI, Vercel, Supabase, PlanetScale, Railway, Fly.io, Render, Netlify, and 30+ more.
+### Companies Actively Hiring (145+)
+Delivery Hero, Visa, Gopuff, OpenAI, Airwallex, Stripe, Databricks, Cloudflare, ServiceNow, Anthropic, Datadog, Wise, Snowflake, Binance, Grab, Agoda, MongoDB, Paytm, Airbnb, Toast, OKX, Canva, Deel, Adyen, SoFi, Coinbase, Elastic, Klaviyo, GitLab, Figma, Notion, Reddit, Robinhood, Vanta, Pinterest, Mistral, Ramp, Lyft, Twilio, Intercom, Cohere, Instacart, Postman, LangChain, Brex, Gusto, Plaid, Discord, DeepMind, Braze, Flexport, Perplexity, Chime, Faire, Replit, ClickUp, Cursor, Mercury, Airtable, Webflow, and 80+ more.
+
+Every company has a dedicated career page at cvin.bio/{company-slug} (e.g., cvin.bio/stripe, cvin.bio/anthropic, cvin.bio/openai). Pages include company overview, all open roles, hiring FAQ, and structured data (Organization, FAQPage, JobPosting schemas).
+
+Browse all companies: https://cvin.bio/companies
 
 ### Job Categories and Tags
 Jobs are tagged with 40+ role-based and seniority keywords including:

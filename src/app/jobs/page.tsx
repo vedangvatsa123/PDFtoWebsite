@@ -285,7 +285,7 @@ export default function JobsPage() {
                 className={`h-5 w-5 sm:h-6 sm:w-6 rounded-md opacity-80 hover:opacity-100 transition-all shrink-0 ${i >= 6 ? 'hidden sm:block' : ''}`}
                 loading="lazy" />
             ))}
-            <span className="text-xs text-zinc-400 shrink-0">+60 more</span>
+            <span className="text-xs text-zinc-400 shrink-0">+150 more</span>
           </div>
           {profileComplete && userSkills.length > 0 && (
             <button

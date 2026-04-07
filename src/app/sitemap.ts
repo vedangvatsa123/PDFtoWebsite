@@ -81,13 +81,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Add /companies listing page
+  staticEntries.push({
+    url: `${siteUrl}/companies`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  });
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
   // Dynamic user profile URLs
   let profileEntries: MetadataRoute.Sitemap = [];
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     const { data: profiles } = await supabase
       .from('profiles')
       .select('username, updated_at, full_name, about, skills, experience, education')
@@ -99,7 +108,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       profileEntries = profiles
         .filter(p => {
           if (!p.username || p.username.length < 3) return false;
-          // Exclude empty/default profiles from sitemap
           const hasRealName = p.full_name && p.full_name !== 'Your Name' && p.full_name.length > 1;
           const hasContent = (p.about && p.about.length > 10)
             || (Array.isArray(p.skills) && p.skills.length > 0)
@@ -118,5 +126,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: failed to fetch profiles', e);
   }
 
-  return [...staticEntries, ...blogEntries, ...profileEntries];
+  // Dynamic company page URLs
+  let companyEntries: MetadataRoute.Sitemap = [];
+  try {
+    let allJobs: any[] = [];
+    let page = 0;
+    while (true) {
+      const { data } = await supabase
+        .from('jobs')
+        .select('company')
+        .range(page * 1000, (page + 1) * 1000 - 1);
+      if (!data || data.length === 0) break;
+      allJobs.push(...data);
+      if (data.length < 1000) break;
+      page++;
+    }
+    const companyNames = new Set<string>();
+    allJobs.forEach(j => {
+      if (j.company && !j.company.includes('...')) companyNames.add(j.company);
+    });
+    const toSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '').replace(/^-+/, '');
+    const seenSlugs = new Set<string>();
+    companyNames.forEach(name => {
+      const slug = toSlug(name);
+      if (!seenSlugs.has(slug)) {
+        seenSlugs.add(slug);
+        companyEntries.push({
+          url: `${siteUrl}/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: 'daily' as const,
+          priority: 0.8,
+        });
+      }
+    });
+  } catch (e) {
+    console.error('Sitemap: failed to fetch companies', e);
+  }
+
+  return [...staticEntries, ...blogEntries, ...profileEntries, ...companyEntries];
 }
