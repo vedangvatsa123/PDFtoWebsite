@@ -66,17 +66,41 @@ function timeAgo(dateStr: string | null): string {
 
 function organizeJobs(existingJobs: Job[], newJobs: Job[]): Job[] {
   const result = [...existingJobs];
-  const remaining = [...newJobs];
+  
+  const buckets = new Map<string, Job[]>();
+  for (const job of newJobs) {
+    if (!buckets.has(job.company)) buckets.set(job.company, []);
+    buckets.get(job.company)!.push(job);
+  }
 
-  while (remaining.length > 0) {
-    const lastCompany = result.length > 0 ? result[result.length - 1].company : null;
-    const idx = remaining.findIndex(j => j.company !== lastCompany);
+  let totalJobs = newJobs.length;
+
+  while (totalJobs > 0) {
+    // Sort keys so we deplete the most abundant companies first
+    const sortedKeys = Array.from(buckets.keys()).sort((a, b) => buckets.get(b)!.length - buckets.get(a)!.length);
     
-    if (idx === -1) {
+    const i = result.length;
+    // In a 2-column grid, horizontal neighbors are pairs (0, 1), (2, 3), etc.
+    const horizontalNeighbor = (i % 2 !== 0) ? result[i - 1]?.company : null;
+    // Desktop vertical neighbor is directly above (i - 2)
+    const verticalNeighbor = (i >= 2) ? result[i - 2]?.company : null;
+
+    let picked = false;
+    for (const company of sortedKeys) {
+      const bucket = buckets.get(company)!;
+      if (bucket.length > 0 && company !== horizontalNeighbor && company !== verticalNeighbor) {
+        result.push(bucket.shift()!);
+        totalJobs--;
+        picked = true;
+        break;
+      }
+    }
+
+    if (!picked) {
+      // If we cannot find any job that avoids a visual clash (horizontal or vertical),
+      // we must break and drop the rest to strictly maintain the interleaving layout.
       break;
     }
-    
-    result.push(remaining.splice(idx, 1)[0]);
   }
 
   return result;
@@ -245,16 +269,16 @@ export default function JobsPage() {
           <div className="flex items-center gap-3 mt-3">
             {[
               { name: 'Stripe', domain: 'stripe.com' },
-              { name: 'Binance', domain: 'binance.com' },
-              { name: 'Kraken', domain: 'kraken.com' },
+              { name: 'Airbnb', domain: 'airbnb.com' },
+              { name: 'Cloudflare', domain: 'cloudflare.com' },
               { name: 'Discord', domain: 'discord.com' },
-              { name: 'Chainlink', domain: 'chain.link' },
+              { name: 'Reddit', domain: 'reddit.com' },
               { name: 'Coinbase', domain: 'coinbase.com' },
               { name: 'Figma', domain: 'figma.com' },
-              { name: 'Uniswap', domain: 'uniswap.org' },
-              { name: 'OpenSea', domain: 'opensea.io' },
-              { name: 'Consensys', domain: 'consensys.net' },
-              { name: 'Solana', domain: 'solana.com' },
+              { name: 'GitLab', domain: 'gitlab.com' },
+              { name: 'Lyft', domain: 'lyft.com' },
+              { name: 'Pinterest', domain: 'pinterest.com' },
+              { name: 'Spotify', domain: 'spotify.com' },
             ].map((c, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img key={c.name} src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=64`} alt={c.name} title={c.name}
