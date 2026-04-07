@@ -105,19 +105,23 @@ const GREENHOUSE_SLUGS = [
   'twitch','lyft','airbnb','robinhood','chime','sofi',
   'remote','justworks',
   // Tier 3 — AI/ML companies
-  'deepmind',
+  'deepmind','scaleai','stabilityai',
   // Tier 4 — Dev tools & infra
-  'postman','circleci',
+  'postman','circleci','grafanalabs','tailscale','planetscale',
   // Tier 5 — Fintech & crypto
   'gemini','alchemy','consensys','chainlink','uniswap','ethereumfoundation','moonpay','aptoslabs','optimism','arbitrum','dydx','solanafoundation','avalabs',
+  'monzo','nubank',
   // Tier 6 — E-commerce & SaaS
   'faire','klaviyo','attentive','braze','iterable',
+  'asana','dropbox',
   // Tier 7 — APAC
   'xendit','bybit','okx','phonepe','agoda','flexport','trivago','mercari',
   // Tier 8 — Unicorns
   'databricks','adyen','toast','intercom','jfrog','block','marqeta','sendbird',
   // Tier 9 — SG/MY
   'govtech','motional',
+  // Tier 10 — E-commerce/Marketplace
+  'doordashusa',
 ];
 
 // ─── Ashby company slugs ───
@@ -154,7 +158,7 @@ const ASHBY_SLUGS = [
 
 // ─── Workable company slugs ───
 const WORKABLE_SLUGS = [
-  'huggingface','writesonic','oysterhr',
+  'huggingface','writesonic','oysterhr','midjourney',
 ];
 
 // ─── Lever company slugs ───

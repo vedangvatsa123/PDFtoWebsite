@@ -903,16 +903,23 @@ function postTweet(text, mediaId) {
 
 // ── Main ──────────────────────────────────────────────────────────────────
 async function main() {
+  // Pull latest state from git first (prevents race conditions with manual pushes)
+  try {
+    const { execSync } = await import('child_process');
+    execSync('git pull --rebase origin main 2>/dev/null || true', { cwd: path.join(__dirname, '../..'), stdio: 'pipe' });
+    console.log('📥 Pulled latest state from git');
+  } catch { /* ignore in local dev */ }
+
   let state = { index: 0, lastPostedAt: null };
   if (fs.existsSync(STATE_FILE)) state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
 
-  // Cooldown: skip if last post was less than 4 hours ago (prevents duplicates from overlapping runs)
+  // Cooldown: only post once per day (20h gap prevents all 3 daily cron runs from posting)
   if (state.lastPostedAt) {
     const elapsed = Date.now() - new Date(state.lastPostedAt).getTime();
-    const COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
+    const COOLDOWN_MS = 20 * 60 * 60 * 1000; // 20 hours — ensures only 1 post per day
     if (elapsed < COOLDOWN_MS) {
-      const mins = Math.round(elapsed / 60000);
-      console.log(`⏳ Cooldown: last post was ${mins}m ago (need ${COOLDOWN_MS / 60000}m gap). Skipping.`);
+      const hrs = Math.round(elapsed / 3600000);
+      console.log(`⏳ Cooldown: last post was ${hrs}h ago (need 20h gap). Skipping.`);
       process.exit(0);
     }
   }
@@ -949,6 +956,12 @@ async function main() {
 
   if (result.status === 201) {
     console.log(`✅ Tweet #${postIndex + 1} posted at ${new Date().toISOString()}`);
+    state.index++;
+    state.lastPostedAt = new Date().toISOString();
+    fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+  } else if (result.status === 403 && JSON.stringify(result.body).includes('duplicate')) {
+    // Tweet was already posted (duplicate content) — advance index to prevent retrying
+    console.log(`⚠️ Duplicate detected — advancing index to prevent loop`);
     state.index++;
     state.lastPostedAt = new Date().toISOString();
     fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
