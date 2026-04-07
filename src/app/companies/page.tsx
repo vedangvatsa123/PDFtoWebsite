@@ -31,6 +31,38 @@ function toSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '').replace(/^-+/, '');
 }
 
+// Domain overrides for companies that don't use companyname.com
+const DOMAIN_MAP: Record<string, string> = {
+  'sanity': 'sanity.io', 'pleo': 'pleo.io', 'sardine': 'sardine.ai',
+  'causal': 'causal.app', 'persona': 'withpersona.com', 'render': 'render.com',
+  'linear': 'linear.app', 'livekit': 'livekit.io', 'replit': 'replit.com',
+  'posthog': 'posthog.com', 'attio': 'attio.com', 'modal': 'modal.com',
+  'n8n': 'n8n.io', 'sentry': 'sentry.io', 'cohere': 'cohere.com',
+  'cursor': 'cursor.com', 'perplexity': 'perplexity.ai', 'vanta': 'vanta.com',
+  'deel': 'deel.com', 'plaid': 'plaid.com', 'braze': 'braze.com',
+  'langchain': 'langchain.com', 'semgrep': 'semgrep.dev', 'drata': 'drata.com',
+  'infisical': 'infisical.com', 'twenty': 'twenty.com', 'plain': 'plain.com',
+  'column': 'column.com', 'writer': 'writer.com', 'oyster': 'oysterhr.com',
+  'kraken.com': 'kraken.com', 'squarespace': 'squarespace.com',
+  'confluent': 'confluent.io', 'cockroach labs': 'cockroachlabs.com',
+  'chime financial, inc': 'chime.com', 'gusto, inc.': 'gusto.com',
+  'amplitude ': 'amplitude.com', 'govtech ': 'tech.gov.sg',
+  'govtech singapore': 'tech.gov.sg', 'shopback 2': 'shopback.com',
+};
+
+function domainFor(name: string): string {
+  const key = name.toLowerCase().trim();
+  return DOMAIN_MAP[key] || key.replace(/[^a-z0-9]/g, '') + '.com';
+}
+
+// Normalize variant company names to canonical form
+const NAME_MAP: Record<string, string> = {
+  'govtech singapore': 'GovTech',
+  'govtech ': 'GovTech',
+  'shopback 2': 'ShopBack',
+  'amplitude ': 'Amplitude',
+};
+
 export default async function CompaniesPage() {
   // Fetch all jobs to compute per-company stats
   let allJobs: any[] = [];
@@ -50,15 +82,18 @@ export default async function CompaniesPage() {
   const companyMap: Record<string, { name: string; nameCounts: Record<string, number>; logo: string | null; count: number; locations: Set<string>; latest: string | null }> = {};
   allJobs.forEach(job => {
     if (!job.company || job.company.includes('...')) return;
-    const key = job.company.toLowerCase().trim();
+    // Normalize variant names
+    const normalized = NAME_MAP[job.company.toLowerCase().trim()] || job.company;
+    const key = normalized.toLowerCase().trim();
     if (!companyMap[key]) {
-      companyMap[key] = { name: job.company, nameCounts: {}, logo: job.company_logo, count: 0, locations: new Set(), latest: null };
+      companyMap[key] = { name: normalized, nameCounts: {}, logo: job.company_logo, count: 0, locations: new Set(), latest: null };
     }
-    companyMap[key].nameCounts[job.company] = (companyMap[key].nameCounts[job.company] || 0) + 1;
+    companyMap[key].nameCounts[normalized] = (companyMap[key].nameCounts[normalized] || 0) + 1;
     companyMap[key].count++;
     if (job.location) {
       const loc = job.location.split(',')[0].trim();
-      if (loc) companyMap[key].locations.add(loc);
+      // Filter out URL fragments and garbage location values
+      if (loc && loc.length < 40 && !loc.includes('/') && !loc.includes('http') && !/^[a-z]+-[a-z]+-[a-z]/.test(loc)) companyMap[key].locations.add(loc);
     }
     const d = job.published_at || job.created_at;
     if (d && (!companyMap[key].latest || d > companyMap[key].latest!)) {
@@ -139,7 +174,7 @@ export default async function CompaniesPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`https://www.google.com/s2/favicons?domain=${company.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com&sz=32`}
+                  src={`https://www.google.com/s2/favicons?domain=${domainFor(company.name)}&sz=32`}
                   alt={company.name}
                   className="h-5 w-5 rounded shrink-0"
                   loading="lazy"
