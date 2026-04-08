@@ -16,10 +16,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Convert your CV to a Website',
+    default: 'CVin.Bio — Convert Your CV to a Website',
     template: '%s | CVin.Bio',
   },
-  description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
+  description: 'Upload your PDF CV and get a professional website in seconds. AI-powered profiles with skill matching from 170+ top companies.',
   keywords: ['ai cv builder', 'cv to website', 'cv link', 'digital cv', 'online portfolio', 'professional bio', 'CVin.Bio'],
   authors: [{ name: 'CVin.Bio' }],
   creator: 'CVin.Bio',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
     images: [`${siteUrl}/opengraph-image`],
   },
-  robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' as const, 'max-video-preview': -1 },
+  robots: { index: true, follow: true, 'max-image-preview': 'large' as const, 'max-video-preview': -1 },
   alternates: { canonical: siteUrl },
 };
 
@@ -55,34 +55,58 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                '@context': 'https://schema.org',
-                '@type': 'WebSite',
-                name: 'CVin.Bio',
-                url: siteUrl,
-                description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
-                potentialAction: {
-                  '@type': 'SearchAction',
-                  target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/{search_term_string}` },
-                  'query-input': 'required name=search_term_string',
-                },
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'CVin.Bio',
+              url: siteUrl,
+              description: 'Upload your PDF CV and get a professional website in seconds. AI-powered profiles with skill matching from 170+ top companies.',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/{search_term_string}` },
+                'query-input': 'required name=search_term_string',
               },
-              {
-                '@context': 'https://schema.org',
-                '@type': 'SoftwareApplication',
-                name: 'CVin.Bio',
-                applicationCategory: 'BusinessApplication',
-                operatingSystem: 'All',
-                url: siteUrl,
-                description: 'Upload your PDF CV and let our AI generate a custom, mobile-ready personal website and portfolio link in seconds. Stop sending PDFs and start sharing your professional URL.',
-                offers: {
-                  '@type': 'Offer',
-                  price: '0',
-                  priceCurrency: 'USD',
-                },
-              }
-            ]),
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'CVin.Bio',
+              url: siteUrl,
+              logo: `${siteUrl}/opengraph-image`,
+              sameAs: [
+                'https://x.com/cvinbio',
+                'https://www.linkedin.com/company/cvinbio',
+              ],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'customer service',
+                url: `${siteUrl}/contact`,
+              },
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: 'CVin.Bio',
+              applicationCategory: 'BusinessApplication',
+              operatingSystem: 'All',
+              url: siteUrl,
+              description: 'Upload your PDF CV and get a professional website in seconds. AI-powered profiles with skill matching from 170+ top companies.',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            }),
           }}
         />
       </head>
