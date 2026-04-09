@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
@@ -7,6 +8,22 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default async function Image() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { count } = await supabase
+    .from('jobs')
+    .select('*', { count: 'exact', head: true })
+    .not('company', 'ilike', '%Gopuff%');
+
+  let jobsCountText = '17,000+';
+  if (count && count >= 1000) {
+    jobsCountText = `${Math.floor(count / 1000).toLocaleString()},000+`;
+  } else if (count) {
+    jobsCountText = `${count}`;
+  }
+
   return new ImageResponse(
     (
       <div 
@@ -30,7 +47,7 @@ export default async function Image() {
           </div>
           
           <div style={{ display: 'flex', fontSize: 36, fontWeight: 500, color: '#71717a', letterSpacing: '-0.01em', marginTop: 10 }}>
-            17,000+ remote tech jobs
+            {jobsCountText} remote tech jobs
           </div>
 
           <div style={{ display: 'flex', fontSize: 24, fontWeight: 700, color: '#a1a1aa', marginTop: 'auto', marginBottom: 0 }}>
