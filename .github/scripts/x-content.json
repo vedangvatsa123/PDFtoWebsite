@@ -13,11 +13,11 @@
           "img": ".github/images/threads/t01_02.png"
         },
         {
-          "text": "2/ fast.ai — Practical Deep Learning for Coders\n\nTop-down approach. You build first, understand theory later.\n\n7 lessons. Free. No prerequisites beyond basic Python.\n\nJeremy Howard teaches you to train models in the first 30 minutes.\n\ncourse.fast.ai",
+          "text": "2/ fast.ai - Practical Deep Learning for Coders\n\nTop-down approach. You build first, understand theory later.\n\n7 lessons. Free. No prerequisites beyond basic Python.\n\nJeremy Howard teaches you to train models in the first 30 minutes.\n\ncourse.fast.ai",
           "img": ".github/images/threads/t01_03.png"
         },
         {
-          "text": "3/ CS50 Introduction to AI with Python (Harvard/edX)\n\nSearch algorithms, knowledge, ML, neural networks, NLP.\n\n12 weeks. Free to audit.\n\nHarvard quality without Harvard debt.\n\nSearch \"CS50 AI\" on edX.",
+          "text": "3/ CS50 Introduction to AI with Python (Harvard/edX)\n\nSearch algorithms, knowledge, ML, neural networks, NLP.\n\n12 weeks. Free to audit.\n\n\nedx.org/learn/artificial-intelligence/harvard-university-cs50-s-introduction-to-artificial-intelligence-with-python",
           "img": ".github/images/threads/t01_04.png"
         },
         {
@@ -25,7 +25,7 @@
           "img": ".github/images/threads/t01_05.png"
         },
         {
-          "text": "5/ DeepLearning.AI — Generative AI for Everyone\n\nAndrew Ng again. But this one is for non-engineers.\n\nCovers how LLMs work, what they can/can't do, and how to evaluate AI projects.\n\n3 hours total. Free to audit.\n\ncoursera.org/learn/generative-ai-for-everyone",
+          "text": "5/ DeepLearning.AI - Generative AI for Everyone\n\nAndrew Ng again. But this one is for non-engineers.\n\nCovers how LLMs work, what they can/can't do, and how to evaluate AI projects.\n\n3 hours total. Free to audit.\n\ncoursera.org/learn/generative-ai-for-everyone",
           "img": ".github/images/threads/t01_06.png"
         },
         {
@@ -33,15 +33,15 @@
           "img": ".github/images/threads/t01_07.png"
         },
         {
-          "text": "7/ MIT 6.S191 — Introduction to Deep Learning\n\nMIT's official deep learning course. Full video lectures on YouTube.\n\nTensorFlow based. Covers CNNs, RNNs, GANs, reinforcement learning.\n\nFree forever.\n\nintrotodeeplearning.com",
+          "text": "7/ MIT 6.S191 - Introduction to Deep Learning\n\nMIT's official deep learning course. Full video lectures on YouTube.\n\nTensorFlow based. Covers CNNs, RNNs, GANs, reinforcement learning.\n\nFree forever.\n\nintrotodeeplearning.com",
           "img": ".github/images/threads/t01_08.png"
         },
         {
-          "text": "8/ Stanford CS229 — Machine Learning (Full Course on YouTube)\n\nThe Stanford ML course that started it all.\n\n20 lectures. Andrew Ng era.\n\nMore math-heavy than Coursera version. Great if you want the theory depth.\n\nFree on YouTube.",
+          "text": "8/ Stanford CS229 - Machine Learning (Full Course on YouTube)\n\nThe Stanford ML course that started it all.\n\n20 lectures. Andrew Ng era.\n\nMore math-heavy than Coursera version. Great if you want the theory depth.\n\n\nyoutube.com/playlist?list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU",
           "img": ".github/images/threads/t01_09.png"
         },
         {
-          "text": "9/ Kaggle Learn — Intro to ML, Deep Learning, NLP\n\nBite-sized interactive courses. Each takes 4 hours.\n\nYou write code directly in your browser. No setup.\n\nPerfect for weekend learning.\n\nkaggle.com/learn",
+          "text": "9/ Kaggle Learn - Intro to ML, Deep Learning, NLP\n\nBite-sized interactive courses. Each takes 4 hours.\n\nYou write code directly in your browser. No setup.\n\nPerfect for weekend learning.\n\nwww.kaggle.com/learn",
           "img": ".github/images/threads/t01_10.png"
         },
         {
@@ -63,11 +63,11 @@
           "img": ".github/images/threads/t02_01.png"
         },
         {
-          "text": "1/ Alchemy University — Ethereum Developer Bootcamp\n\nFull Solidity curriculum. Build smart contracts from scratch.\n\n6 weeks. Completely free. Certificate on completion.\n\nUsed by 100,000+ developers.\n\nuniversity.alchemy.com",
+          "text": "1/ Alchemy University - Ethereum Developer Bootcamp\n\nFull Solidity curriculum. Build smart contracts from scratch.\n\n6 weeks. Completely free. Certificate on completion.\n\nUsed by 100,000+ developers.\n\nuniversity.alchemy.com",
           "img": ".github/images/threads/t02_02.png"
         },
         {
-          "text": "2/ Chainlink Developer Bootcamp\n\nLearn to build hybrid smart contracts with oracles.\n\nCovers Chainlink VRF, Price Feeds, Automation.\n\nFree. Live cohorts with mentorship.\n\nchain.link/bootcamp",
+          "text": "2/ Chainlink Developer Bootcamp\n\nLearn to build hybrid smart contracts with oracles.\n\nCovers Chainlink VRF, Price Feeds, Automation.\n\nFree. Live cohorts with mentorship.\n\nchain.link/bootcamp\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t02_03.png"
         },
         {
@@ -75,7 +75,7 @@
           "img": ".github/images/threads/t02_04.png"
         },
         {
-          "text": "4/ Consensys Academy — Blockchain Developer Program\n\nEthereum fundamentals, Solidity, Truffle, smart contract security.\n\nSelf-paced. Free tier available.\n\nFrom the team that built MetaMask.\n\nconsensys.io/academy",
+          "text": "4/ Consensys Academy - Blockchain Developer Program\n\nEthereum fundamentals, Solidity, Truffle, smart contract security.\n\nSelf-paced. Free tier available.\n\nFrom the team that built MetaMask.\n\nconsensys.io/academy",
           "img": ".github/images/threads/t02_05.png"
         },
         {
@@ -87,7 +87,7 @@
           "img": ".github/images/threads/t02_07.png"
         },
         {
-          "text": "7/ Polkadot Blockchain Academy\n\nFree online materials covering Substrate, Rust, parachain development.\n\nMore advanced. Great if you want multi-chain expertise.\n\npolkadot.network/development/blockchain-academy",
+          "text": "7/ Polkadot Blockchain Academy\n\nFree online materials covering Substrate, Rust, parachain development.\n\nMore advanced. Great if you want multi-chain expertise.\n\npolkadot.network/development/blockchain-academy\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t02_08.png"
         },
         {
@@ -105,23 +105,23 @@
           "img": ".github/images/threads/t03_01.png"
         },
         {
-          "text": "Week 1: Fundamentals\n\n→ Variables, data types, loops, conditionals\n→ Functions, scope, basic error handling\n\nUse: Python.org official tutorial (free)\nPractice: Exercism.org Python track (free)\n\nSpend 2-3 hours/day. Don't skip the exercises.",
+          "text": "Week 1: Fundamentals\n\n→ Variables, data types, loops, conditionals\n→ Functions, scope, basic error handling\n\nUse: Python.org official tutorial (free)\nPractice: Exercism.org Python track (free)\n\nSpend 2-3 hours/day. Don't skip the exercises.\n\nexercism.org",
           "img": ".github/images/threads/t03_02.png"
         },
         {
-          "text": "Week 2: Data Structures + Problem Solving\n\n→ Lists, dicts, sets, tuples\n→ List comprehensions, slicing\n→ File I/O, JSON handling\n\nUse: Automate the Boring Stuff (free online)\nPractice: LeetCode Easy problems in Python\n\nBuild something small: a to-do CLI app.",
+          "text": "Week 2: Data Structures + Problem Solving\n\n→ Lists, dicts, sets, tuples\n→ List comprehensions, slicing\n→ File I/O, JSON handling\n\nUse: Automate the Boring Stuff (free online)\nPractice: LeetCode Easy problems in Python\n\n\nautomatetheboringstuff.com",
           "img": ".github/images/threads/t03_03.png"
         },
         {
-          "text": "Week 3: Libraries + Real Projects\n\n→ requests, BeautifulSoup (web scraping)\n→ pandas (data analysis)\n→ Flask or FastAPI (web APIs)\n\nProject: Build a web scraper that saves data to CSV.\nProject: Build a REST API with 3 endpoints.\n\nPut both on GitHub.",
+          "text": "Week 3: Libraries + Real Projects\n\n→ requests, BeautifulSoup (web scraping)\n→ pandas (data analysis)\n→ Flask or FastAPI (web APIs)\n\nProject: Build a web scraper that saves data to CSV.\nProject: Build a REST API with 3 endpoints.\n\nPut both on GitHub.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t03_04.png"
         },
         {
-          "text": "Week 4: Portfolio + Job Readiness\n\n→ Git basics (commit, push, branch, PR)\n→ Write a README for each project\n→ Deploy one project (Render, Railway, or Vercel)\n→ Build a simple portfolio page\n\nApply to 10 junior Python roles. Don't wait until you feel ready.",
+          "text": "Week 4: Portfolio + Job Readiness\n\n→ Git basics (commit, push, branch, PR)\n→ Write a README for each project\n→ Deploy one project (Render, Railway, or Vercel)\n→ Build a simple portfolio page\n\nApply to 10 junior Python roles. Don't wait until you feel ready.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t03_05.png"
         },
         {
-          "text": "Resources that are 100% free:\n\n→ python.org/tutorial\n→ automatetheboringstuff.com\n→ exercism.org\n→ realpython.com (many free articles)\n→ freecodecamp.org Python course on YouTube\n→ kaggle.com/learn (Python + Pandas)\n\nNo excuses. Just start.",
+          "text": "Resources that are 100% free:\n\n→ docs.python.org/3/tutorial\n→ automatetheboringstuff.com\n→ exercism.org\n→ realpython.com (many free articles)\n→ freecodecamp.org Python course on YouTube\n→ www.kaggle.com/learn (Python + Pandas)\n\nNo excuses. Just start.",
           "img": ".github/images/threads/t03_06.png"
         },
         {
@@ -139,31 +139,31 @@
           "img": ".github/images/threads/t04_01.png"
         },
         {
-          "text": "1/ Cursor — AI-powered code editor\n\nFree tier gives you autocomplete + chat with your codebase.\n\nReplaces: GitHub Copilot ($10/mo)\n\ncursor.com",
+          "text": "1/ Cursor - AI-powered code editor\n\nFree tier gives you autocomplete + chat with your codebase.\n\nReplaces: GitHub Copilot ($10/mo)\n\ncursor.com",
           "img": ".github/images/threads/t04_02.png"
         },
         {
-          "text": "2/ Supabase — Backend as a Service\n\nPostgres database, auth, storage, realtime, edge functions.\n\nFree tier: 500MB database, 1GB storage, 50,000 monthly active users.\n\nReplaces: Firebase + Auth0 ($25+/mo)\n\nsupabase.com",
+          "text": "2/ Supabase - Backend as a Service\n\nPostgres database, auth, storage, realtime, edge functions.\n\nFree tier: 500MB database, 1GB storage, 50,000 monthly active users.\n\nReplaces: Firebase + Auth0 ($25+/mo)\n\nsupabase.com",
           "img": ".github/images/threads/t04_03.png"
         },
         {
-          "text": "3/ Vercel — Frontend deployment\n\nDeploy React/Next.js with zero config. Free SSL, CDN, preview deploys.\n\nFree for personal projects and hobby use.\n\nReplaces: Heroku + Netlify paid tiers ($7+/mo)\n\nvercel.com",
+          "text": "3/ Vercel - Frontend deployment\n\nDeploy React/Next.js with zero config. Free SSL, CDN, preview deploys.\n\nFree for personal projects and hobby use.\n\nReplaces: Heroku + Netlify paid tiers ($7+/mo)\n\nvercel.com",
           "img": ".github/images/threads/t04_04.png"
         },
         {
-          "text": "4/ Excalidraw — Whiteboard for diagrams\n\nClean, hand-drawn style diagrams. Real-time collaboration.\n\nCompletely free. Open source.\n\nReplaces: Miro, Figma for diagramming ($12+/mo)\n\nexcalidraw.com",
+          "text": "4/ Excalidraw - Whiteboard for diagrams\n\nClean, hand-drawn style diagrams. Real-time collaboration.\n\nCompletely free. Open source.\n\nReplaces: Miro, Figma for diagramming ($12+/mo)\n\nexcalidraw.com",
           "img": ".github/images/threads/t04_05.png"
         },
         {
-          "text": "5/ Plausible/Umami — Privacy-first analytics\n\nUmami is self-hosted, 100% free. Plausible has a paid plan but Umami doesn't.\n\nReplaces: Google Analytics (free but privacy-invasive) or Mixpanel ($25+/mo)\n\numami.is",
+          "text": "5/ Plausible/Umami - Privacy-first analytics\n\nUmami is self-hosted, 100% free. Plausible has a paid plan but Umami doesn't.\n\nReplaces: Google Analytics (free but privacy-invasive) or Mixpanel ($25+/mo)\n\numami.is",
           "img": ".github/images/threads/t04_06.png"
         },
         {
-          "text": "6/ Resend — Email API\n\nBeautiful developer experience. React Email for templates.\n\n3,000 emails/month free. Way simpler than SendGrid.\n\nReplaces: SendGrid/Mailgun on paid tiers\n\nresend.com",
+          "text": "6/ Resend - Email API\n\nBeautiful developer experience. React Email for templates.\n\n3,000 emails/month free. Way simpler than SendGrid.\n\nReplaces: SendGrid/Mailgun on paid tiers\n\nresend.com",
           "img": ".github/images/threads/t04_07.png"
         },
         {
-          "text": "7/ Linear — Project management\n\nFree for teams up to 250 issues. Fastest PM tool I've ever used.\n\nReplaces: Jira ($7.75/user/mo) and the suffering that comes with it.\n\nlinear.app",
+          "text": "7/ Linear - Project management\n\nFree for teams up to 250 issues. Fastest PM tool I've ever used.\n\nReplaces: Jira ($7.75/user/mo) and the suffering that comes with it.\n\nlinear.app",
           "img": ".github/images/threads/t04_08.png"
         },
         {
@@ -197,7 +197,7 @@
           "img": ".github/images/threads/t05_05.png"
         },
         {
-          "text": "5/ developer-roadmap\n\nVisual roadmaps for frontend, backend, DevOps, AI, blockchain.\n\nUpdated monthly. Shows you exactly what to learn next.\n\n⭐ 310K+ stars\nroadmap.sh",
+          "text": "5/ developer-roadmap\n\nVisual roadmaps for frontend, backend, DevOps, AI, blockchain.\n\nUpdated monthly. Shows you exactly what to learn next.\n\n⭐ 310K+ stars\nroadmap.sh\n\ngithub.com/kamranahmedse/developer-roadmap",
           "img": ".github/images/threads/t05_06.png"
         },
         {
@@ -209,11 +209,11 @@
           "img": ".github/images/threads/t05_08.png"
         },
         {
-          "text": "8/ tech-interview-handbook\n\nAlgorithms, behavioral questions, resume tips, negotiation advice.\n\nBy an ex-Meta engineer.\n\n⭐ 125K+ stars\ntechinterviewhandbook.org",
+          "text": "8/ tech-interview-handbook\n\nAlgorithms, behavioral questions, resume tips, negotiation advice.\n\nBy an ex-Meta engineer.\n\n⭐ 125K+ stars\ntechinterviewhandbook.org\n\ngithub.com/yangshun/tech-interview-handbook",
           "img": ".github/images/threads/t05_09.png"
         },
         {
-          "text": "9/ 30-seconds-of-code\n\nShort code snippets for JS, Python, React, CSS.\n\nQuick reference for common patterns.\n\n⭐ 122K+ stars\n30secondsofcode.org",
+          "text": "9/ 30-seconds-of-code\n\nShort code snippets for JS, Python, React, CSS.\n\nQuick reference for common patterns.\n\n⭐ 122K+ stars\n30secondsofcode.org\n\ngithub.com/Chalarangelo/30-seconds-of-code",
           "img": ".github/images/threads/t05_10.png"
         },
         {
@@ -231,7 +231,7 @@
       "topic": "remote-job-red-flags",
       "tweets": [
         {
-          "text": "Remote job hunting in 2026 — a complete guide.\n\nWhere to actually find remote jobs. Red flags to avoid. How to negotiate.\n\nEverything I wish someone told me.\n\n🧵👇",
+          "text": "Remote job hunting in 2026 - a complete guide.\n\nWhere to actually find remote jobs. Red flags to avoid. How to negotiate.\n\nEverything I wish someone told me.\n\n🧵👇",
           "img": ".github/images/threads/t06_01.png"
         },
         {
@@ -239,15 +239,15 @@
           "img": ".github/images/threads/t06_02.png"
         },
         {
-          "text": "Red flags in remote job listings:\n\n→ \"Must overlap 8 hours with US timezone\" = not remote\n→ No salary range = lowball incoming\n→ \"Startup culture\" in remote context = always online\n→ \"Camera on\" for daily standups = surveillance\n→ No async tools mentioned = office worker at home",
+          "text": "Red flags in remote job listings:\n\n→ \"Must overlap 8 hours with US timezone\" = not remote\n→ No salary range = lowball incoming\n→ \"Startup culture\" = always online\n→ \"Camera on\" daily standups = surveillance\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t06_03.png"
         },
         {
-          "text": "How to stand out applying remotely:\n\n1/ Record a 60-second Loom intro\n2/ Show timezone overlap in your cover note\n3/ Mention async tools you use (Notion, Linear, Slack)\n4/ Include a link to your work, not a PDF\n\nVideo cuts through 500+ applications.",
+          "text": "How to stand out applying remotely:\n\n1/ Record a 60-second Loom intro\n2/ Show timezone overlap in your cover note\n3/ Mention async tools you use (Notion, Linear, Slack)\n4/ Include a link to your work, not a PDF\n\nVideo cuts through 500+ applications.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t06_04.png"
         },
         {
-          "text": "Negotiating remote compensation:\n\n→ Never accept the first offer\n→ Ask \"Is this adjusted for location?\"\n→ If they adjust for cost of living, negotiate perks instead\n→ Get the remote policy in writing\n\n\"Permanent remote\" means nothing without a contract clause.",
+          "text": "Negotiating remote compensation:\n\n→ Never accept the first offer\n→ Ask \"Is this adjusted for location?\"\n→ If they adjust for cost of living, negotiate perks instead\n→ Get the remote policy in writing\n\n\"Permanent remote\" means nothing without a contract clause.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t06_05.png"
         },
         {
@@ -265,35 +265,35 @@
           "img": ".github/images/threads/t07_01.png"
         },
         {
-          "text": "1/ ChatGPT/Claude for cover letters\n\nPaste the job description + your resume.\n\nPrompt: \"Write a cover letter for [role] at [company]. Match tone to their careers page.\"\n\n30 seconds vs 30 minutes.",
+          "text": "1/ ChatGPT/Claude for cover letters\n\nPaste the job description + your resume.\n\nPrompt: \"Write a cover letter for [role] at [company]. Match tone to their careers page.\"\n\n30 seconds vs 30 minutes.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t07_02.png"
         },
         {
-          "text": "2/ Teal — Job application tracker\n\nAI-powered board that tracks applications, tailors your resume, and highlights keyword matches.\n\nFree basic plan.\n\ntealhq.com",
+          "text": "2/ Teal - Job application tracker\n\nAI-powered board that tracks applications, tailors your resume, and highlights keyword matches.\n\nFree basic plan.\n\ntealhq.com",
           "img": ".github/images/threads/t07_03.png"
         },
         {
-          "text": "3/ Jobscan — ATS resume optimizer\n\nPaste your resume + job description. It tells you exactly which keywords to add.\n\nCompatibility score before you apply.\n\n5 free scans/month.\n\njobscan.co",
+          "text": "3/ Jobscan - ATS resume optimizer\n\nPaste your resume + job description. It tells you exactly which keywords to add.\n\nCompatibility score before you apply.\n\n5 free scans/month.\n\njobscan.co",
           "img": ".github/images/threads/t07_04.png"
         },
         {
-          "text": "4/ Otta — Smart job matching\n\nSet your preferences once. Get matched to roles from top companies.\n\nNo spam. No recruiter messages. Just relevant jobs.\n\nFree.\n\notta.com",
+          "text": "4/ Otta - Smart job matching\n\nSet your preferences once. Get matched to roles from top companies.\n\nNo spam. No recruiter messages. Just relevant jobs.\n\nFree.\n\notta.com",
           "img": ".github/images/threads/t07_05.png"
         },
         {
-          "text": "5/ Huntr — Job search CRM\n\nKanban board for your job search. Track applications, contacts, interviews.\n\nChrome extension auto-saves jobs from any board.\n\nFree.\n\nhuntr.co",
+          "text": "5/ Huntr - Job search CRM\n\nKanban board for your job search. Track applications, contacts, interviews.\n\nChrome extension auto-saves jobs from any board.\n\nFree.\n\nhuntr.co",
           "img": ".github/images/threads/t07_06.png"
         },
         {
-          "text": "6/ Interview Warmup by Google\n\nAI-powered mock interviews. Speaks your answers back to you.\n\nAnalyzes filler words, answer structure, talking points.\n\nCompletely free.\n\ngrow.google/certificates/interview-warmup",
+          "text": "6/ Interview Warmup by Google\n\nAI-powered mock interviews. Speaks your answers back to you.\n\nAnalyzes filler words, answer structure, talking points.\n\nCompletely free.\n\ngrow.google/certificates/interview-warmup\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t07_07.png"
         },
         {
-          "text": "7/ CVin.Bio — Live profile link\n\nDrop any resume format. Get a live URL that works like a web portfolio.\n\nBypass ATS entirely. Track who views your profile.\n\nFree.\n\ncvin.bio",
+          "text": "7/ CVin.Bio - Live profile link\n\nDrop any resume format. Get a live URL that works like a web portfolio.\n\nBypass ATS entirely. Track who views your profile.\n\nFree.\n\ncvin.bio",
           "img": ".github/images/threads/t07_08.png"
         },
         {
-          "text": "The job market is harder than ever. But the tools available are better than ever.\n\nUse them. Share this with someone still doing it the old way.",
+          "text": "The job market is harder than ever. But the tools available are better than ever.\n\nUse them. Share this with someone still doing it the old way.\n\ncvin.bio",
           "img": ".github/images/threads/t07_09.png"
         }
       ]
@@ -307,23 +307,23 @@
           "img": ".github/images/threads/t08_01.png"
         },
         {
-          "text": "1/ The Two-Column Collapse\n\nOlder systems parse PDFs top-to-bottom, left-to-right. They don't understand columns.\n\nIf 'Skills' is next to 'Work History', the ATS mashes them into garbled text.\n\nInstant rejection. Before a human ever sees it.",
+          "text": "1/ The Two-Column Collapse\n\nOlder systems parse PDFs top-to-bottom, left-to-right. They don't understand columns.\n\nIf 'Skills' is next to 'Work History', the ATS mashes them into garbled text.\n\nInstant rejection. Before a human ever sees it.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t08_02.png"
         },
         {
-          "text": "2/ Invisible SVG Contact Info\n\nCustom vector icons (mail icon, phone icon) instead of raw text? OCR libraries skip them.\n\nWithout 'Email:' as a text anchor, parsers fail to map the string.\n\nYour email literally disappears from the database.",
+          "text": "2/ Invisible SVG Contact Info\n\nCustom vector icons (mail icon, phone icon) instead of raw text? OCR libraries skip them.\n\nWithout 'Email:' as a text anchor, parsers fail to map the string.\n\nYour email literally disappears from the database.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t08_03.png"
         },
         {
-          "text": "3/ Keyword Matching is Boolean\n\nLegacy ATS scoring is exact string matching. Not an LLM.\n\n'Node.js' vs 'NodeJS' = different keywords. Your score drops.\n\nWe had to build fuzzy-matching arrays mapping 40+ variations just to handle this.",
+          "text": "3/ Keyword Matching is Boolean\n\nLegacy ATS scoring is exact string matching. Not an LLM.\n\n'Node.js' vs 'NodeJS' = different keywords. Your score drops.\n\nWe had to build fuzzy-matching arrays mapping 40+ variations just to handle this.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t08_04.png"
         },
         {
-          "text": "4/ DOCX is a ZIP of XML\n\nUpload .docx = upload an XML tree. Complex nested tables = deeply layered XML.\n\nIf the expected node path fails, the parser throws a silent error.\n\nThe recruiter sees: empty fields.",
+          "text": "4/ DOCX is a ZIP of XML\n\nUpload .docx = upload an XML tree. Complex nested tables = deeply layered XML.\n\nIf the expected node path fails, the parser throws a silent error.\n\nThe recruiter sees: empty fields.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t08_05.png"
         },
         {
-          "text": "5/ The Real Numbers\n\n75% of resumes never reach a human.\nAverage time on each resume: 7.4 seconds.\n85% of Fortune 500 companies use ATS.\n\nThe filter wasn't built to find the best candidates. It was built to reduce volume. You are collateral damage.",
+          "text": "5/ The Real Numbers\n\n75% of resumes never reach a human.\nAverage time on each resume: 7.4 seconds.\n85% of Fortune 500 companies use ATS.\n\nThe filter wasn't built to find the best candidates. It was built to reduce volume. You are collateral damage.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t08_06.png"
         },
         {
@@ -337,27 +337,27 @@
       "topic": "web3-career-guide",
       "tweets": [
         {
-          "text": "How to break into Web3 in 2026 — even with zero blockchain experience.\n\nSalaries, skills, where to look, and what to learn first.\n\nNo fluff. Just the path.\n\n🧵👇",
+          "text": "How to break into Web3 in 2026 - even with zero blockchain experience.\n\nSalaries, skills, where to look, and what to learn first.\n\nNo fluff. Just the path.\n\n🧵👇",
           "img": ".github/images/threads/t09_01.png"
         },
         {
-          "text": "Web3 roles:\n\n→ Smart contract dev (Solidity, Rust)\n→ Frontend (React + ethers.js)\n→ Protocol engineer\n→ DevRel\n→ Security auditor\n→ Community manager\n→ Product manager\n→ On-chain analyst\n\nYou don't need to be a Solidity wizard for all of these.",
+          "text": "Web3 roles:\n\n→ Smart contract dev (Solidity, Rust)\n→ Frontend (React + ethers.js)\n→ Protocol engineer\n→ DevRel\n→ Security auditor\n→ Community manager\n→ Product manager\n→ On-chain analyst\n\nYou don't need to be a Solidity wizard for all of these.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t09_02.png"
         },
         {
-          "text": "Salary benchmarks (2026 data):\n\n→ Junior Solidity dev: $80-120K\n→ Senior smart contract eng: $150-250K\n→ Protocol engineer: $200-350K\n→ Security auditor: $180-300K\n→ DevRel: $100-180K\n→ Community manager: $60-100K\n\nWeb3 still pays 20-40% above Web2 for equivalent seniority.",
+          "text": "Web3 salary benchmarks (2026):\n\n→ Junior Solidity dev: $80-120K\n→ Senior smart contract eng: $150-250K\n→ Protocol engineer: $200-350K\n→ Security auditor: $180-300K\n→ DevRel: $100-180K\n\nWeb3 pays 20-40% above Web2.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t09_03.png"
         },
         {
-          "text": "Where to find Web3 jobs:\n\n→ cvin.bio/jobs — we track thousands of roles\n→ crypto.jobs\n→ web3.career\n→ Wellfound (crypto filter)\n→ Protocol-specific job boards (Solana, Ethereum, Polkadot)\n\nFollow project Discord channels. Many roles are posted there first.",
+          "text": "Where to find Web3 jobs:\n\n→ cvin.bio/jobs - we track thousands of roles\n→ crypto.jobs\n→ web3.career\n→ Wellfound (crypto filter)\n→ Protocol-specific job boards (Solana, Ethereum, Polkadot)\n\nFollow project Discord channels. Many roles are posted there first.",
           "img": ".github/images/threads/t09_04.png"
         },
         {
-          "text": "If you know JavaScript/TypeScript:\n\nWeek 1: Solidity basics (CryptoZombies.io)\nWeek 2: Build + deploy a smart contract (Remix IDE)\nWeek 3: Connect frontend to contract (ethers.js)\nWeek 4: Deploy to testnet. Write tests. Push to GitHub.\n\nPortfolio project done.",
+          "text": "If you know JavaScript/TypeScript:\n\nWeek 1: Solidity basics (CryptoZombies.io)\nWeek 2: Build + deploy a smart contract (Remix IDE)\nWeek 3: Connect frontend to contract (ethers.js)\nWeek 4: Deploy to testnet. Write tests. Push to GitHub.\n\nPortfolio project done.\n\ncryptozombies.io",
           "img": ".github/images/threads/t09_05.png"
         },
         {
-          "text": "If you don't code at all:\n\nWeb3 still needs:\n→ Community managers (manage Discord/Telegram)\n→ Content writers (documentation, blogs)\n→ Analysts (Dune Analytics, Nansen)\n→ Marketing (growth, partnerships)\n\nLearn the ecosystem. Contribute to DAOs. Build in public.",
+          "text": "If you don't code at all:\n\nWeb3 still needs:\n→ Community managers (manage Discord/Telegram)\n→ Content writers (documentation, blogs)\n→ Analysts (Dune Analytics, Nansen)\n→ Marketing (growth, partnerships)\n\nLearn the ecosystem. Contribute to DAOs. Build in public.\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t09_06.png"
         },
         {
@@ -375,15 +375,15 @@
           "img": ".github/images/threads/t10_01.png"
         },
         {
-          "text": "Technical interviews:\n\n→ NeetCode.io — 150 curated problems by pattern\n→ Blind 75 / Grind 75 lists\n→ LeetCode free tier (2,000+ problems)\n→ HackerRank Interview Prep Kit\n\nDo 2-3 problems/day for 30 days.\nNot 20/day for 3 days.",
+          "text": "Technical interviews:\n\n→ NeetCode.io - 150 curated problems by pattern\n→ Blind 75 / Grind 75 lists\n→ LeetCode free tier (2,000+ problems)\n→ HackerRank Interview Prep Kit\n\nDo 2-3 problems/day for 30 days.\nNot 20/day for 3 days.\n\nneetcode.io",
           "img": ".github/images/threads/t10_02.png"
         },
         {
-          "text": "System design:\n\n→ system-design-primer (GitHub, 290K stars)\n→ ByteByteGo YouTube channel (free)\n→ Designing Data-Intensive Applications (the bible)\n→ interviewing.io blog (free deep dives)\n\nPractice talking through designs out loud. Record yourself.",
+          "text": "System design:\n\n→ system-design-primer (GitHub, 290K stars)\n→ ByteByteGo YouTube channel (free)\n→ Designing Data-Intensive Applications (the bible)\n→ interviewing.io blog (free deep dives)\n\n\ngithub.com/donnemartin/system-design-primer",
           "img": ".github/images/threads/t10_03.png"
         },
         {
-          "text": "Behavioral interviews:\n\n→ STAR method: Situation, Task, Action, Result\n→ Prep 5 stories: conflict, failure, leadership, ambiguity, impact\n→ Amazon Leadership Principles\n→ Interview Warmup by Google (free AI mock)\n\nBehavioral rounds eliminate more candidates than technical ones.",
+          "text": "Behavioral interviews:\n\n→ STAR method: Situation, Task, Action, Result\n→ Prep 5 stories: conflict, failure, leadership, ambiguity, impact\n→ Amazon Leadership Principles\n→ Interview Warmup by Google (free AI mock)\n\n\ngrow.google/certificates/interview-warmup\n\ncvin.bio/jobs",
           "img": ".github/images/threads/t10_04.png"
         },
         {
@@ -391,7 +391,7 @@
           "img": ".github/images/threads/t10_05.png"
         },
         {
-          "text": "Mock interviews:\n\n→ Pramp — free peer-to-peer practice\n→ interviewing.io — anonymous with FAANG engineers\n→ Interview Warmup by Google — AI feedback\n→ Record yourself on Loom\n\n#1 reason people fail: nerves. Practice fixes nerves.",
+          "text": "Mock interviews:\n\n→ Pramp - free peer-to-peer practice\n→ interviewing.io - anonymous with FAANG engineers\n→ Interview Warmup by Google - AI feedback\n→ Record yourself on Loom\n\n#1 reason people fail: nerves. Practice fixes nerves.\n\npramp.com",
           "img": ".github/images/threads/t10_06.png"
         },
         {
@@ -448,7 +448,7 @@
     },
     {
       "id": "i012",
-      "text": "Rust jobs grew 45% on our board YoY.\n\nMost are in: blockchain, infrastructure, systems programming.\n\nAverage salary: 15% higher than equivalent Go or Python roles.\n\nIf you're looking for a high-leverage skill to learn in 2026, Rust is it.\n\ncvin.bio/jobs"
+      "text": "Rust jobs grew 45% on our board YoY.\n\nMost are in: blockchain, infrastructure, systems programming.\n\nAverage salary: 15% higher than equivalent Go or Python roles.\n\nIf you're looking for a high-use skill to learn in 2026, Rust is it.\n\ncvin.bio/jobs"
     },
     {
       "id": "i013",
@@ -534,11 +534,11 @@
     },
     {
       "id": "e003",
-      "text": "What's the worst interview question you've ever been asked?\n\nI'll start: \"If you were a kitchen utensil, which one would you be and why?\"\n\nThis was for a senior engineering role.\n\nDrop yours below 👇"
+      "text": "What's the worst interview question you've ever been asked?\n\nI'll start: \"If you were a kitchen utensil, which one would you be and why?\"\n\nThis was for a senior engineering role.\n\nDrop yours below 👇\n\ncvin.bio/jobs"
     },
     {
       "id": "e004",
-      "text": "One sentence that changed how I think about careers:\n\n\"Your company would post your job opening before your obituary.\"\n\nWhat's the one sentence that changed your career perspective? Reply below."
+      "text": "One sentence that changed how I think about careers:\n\n\"Your company would post your job opening before your obituary.\"\n\nWhat's the one sentence that changed your career perspective? Reply below.\n\ncvin.bio/jobs"
     },
     {
       "id": "e005",
@@ -550,15 +550,15 @@
     },
     {
       "id": "e007",
-      "text": "What's the one tool you can't live without as a developer?\n\nNot the obvious ones. Something most people don't know about.\n\nI'll compile the best answers into a thread later this week."
+      "text": "What's the one tool you can't live without as a developer?\n\nNot the obvious ones. Something most people don't know about.\n\nI'll compile the best answers into a thread later this week.\n\ncvin.bio/jobs"
     },
     {
       "id": "e008",
-      "text": "Controversial opinion: cover letters are dead and everyone knows it but nobody wants to say it.\n\nAgree or disagree? And if you disagree, when was the last time a cover letter actually got you the job?"
+      "text": "Controversial opinion: cover letters are dead and everyone knows it but nobody wants to say it.\n\nAgree or disagree? And if you disagree, when was the last time a cover letter actually got you the job?\n\ncvin.bio/jobs"
     },
     {
       "id": "e009",
-      "text": "What's one thing you learned the hard way in your career that you wish someone had told you on day one?\n\nMine: \"Don't stay loyal to a company that wouldn't stay loyal to you.\"\n\nYours? 👇"
+      "text": "What's one thing you learned the hard way in your career that you wish someone had told you on day one?\n\nMine: \"Don't stay loyal to a company that wouldn't stay loyal to you.\"\n\nYours? 👇\n\ncvin.bio/jobs"
     },
     {
       "id": "e010",
@@ -570,15 +570,15 @@
     },
     {
       "id": "e012",
-      "text": "Hot take: the 8-hour workday is theater.\n\nMost people do 4-5 hours of actual productive work. The rest is meetings, context switching, and performative busyness.\n\nAgree? Or am I wrong?\n\nDrop your actual productive hours below."
+      "text": "Hot take: the 8-hour workday is theater.\n\nMost people do 4-5 hours of actual productive work. The rest is meetings, context switching, and performative busyness.\n\nAgree? Or am I wrong?\n\nDrop your actual productive hours below.\n\ncvin.bio/jobs"
     },
     {
       "id": "e013",
-      "text": "What's the biggest red flag you've seen in a job listing?\n\nI'll start: \"We're like a family here.\"\n\nIt always means: unpaid overtime, no boundaries, and emotional manipulation.\n\nYour turn 👇"
+      "text": "What's the biggest red flag you've seen in a job listing?\n\nI'll start: \"We're like a family here.\"\n\nIt always means: unpaid overtime, no boundaries, and emotional manipulation.\n\nYour turn 👇\n\ncvin.bio/jobs"
     },
     {
       "id": "e014",
-      "text": "If you could give one piece of advice to someone entering tech in 2026, what would it be?\n\nMine: Learn to ship. A finished ugly project > 10 unfinished beautiful ones.\n\nDrop yours below."
+      "text": "If you could give one piece of advice to someone entering tech in 2026, what would it be?\n\nMine: Learn to ship. A finished ugly project > 10 unfinished beautiful ones.\n\nDrop yours below.\n\ncvin.bio/jobs"
     },
     {
       "id": "e015",
@@ -586,7 +586,7 @@
     },
     {
       "id": "e016",
-      "text": "What did you google today as a \"senior\" developer?\n\nI'll start: \"how to center a div\"\n\nNo judgment zone 👇"
+      "text": "What did you google today as a \"senior\" developer?\n\nI'll start: \"how to center a div\"\n\nNo judgment zone 👇\n\ncvin.bio/jobs"
     },
     {
       "id": "e017",
@@ -594,11 +594,11 @@
     },
     {
       "id": "e018",
-      "text": "72% of resumes are rejected before a human sees them.\n\nBut here's the question: has improving your resume format ever actually gotten you more interviews?\n\nOr is networking still the only thing that works? Honest answers only."
+      "text": "72% of resumes are rejected before a human sees them.\n\nBut here's the question: has improving your resume format ever actually gotten you more interviews?\n\nOr is networking still the only thing that works? Honest answers only.\n\ncvin.bio/jobs"
     },
     {
       "id": "e019",
-      "text": "Name a company that ghosted you after a final round interview.\n\nI won't judge. But other job seekers deserve to know which companies respect candidates and which don't.\n\n👇"
+      "text": "Name a company that ghosted you after a final round interview.\n\nI won't judge. But other job seekers deserve to know which companies respect candidates and which don't.\n\n👇\n\ncvin.bio/jobs"
     },
     {
       "id": "e020",
@@ -606,7 +606,7 @@
     },
     {
       "id": "e021",
-      "text": "Quick poll: how many applications did it take for your last job?\n\n→ Under 10\n→ 10-50\n→ 50-200\n→ 200+\n\nReply with your number. Let's see what the real average is."
+      "text": "Quick poll: how many applications did it take for your last job?\n\n→ Under 10\n→ 10-50\n→ 50-200\n→ 200+\n\nReply with your number. Let's see what the real average is.\n\ncvin.bio/jobs"
     },
     {
       "id": "e022",
@@ -614,15 +614,15 @@
     },
     {
       "id": "e023",
-      "text": "What's the best career decision you ever made?\n\nMine: leaving a comfortable job to build something from scratch. Terrifying. Best thing I ever did.\n\nYours?"
+      "text": "What's the best career decision you ever made?\n\nMine: leaving a comfortable job to build something from scratch. Terrifying. Best thing I ever did.\n\nYours?\n\ncvin.bio/jobs"
     },
     {
       "id": "e024",
-      "text": "If you could learn any skill from scratch right now, what would it be?\n\n→ AI/ML\n→ Blockchain/Web3\n→ Cybersecurity\n→ Data Engineering\n→ Something else (reply)\n\nI'll curate free resources for whatever wins."
+      "text": "If you could learn any skill from scratch right now, what would it be?\n\n→ AI/ML\n→ Blockchain/Web3\n→ Cybersecurity\n→ Data Engineering\n→ Something else (reply)\n\nI'll curate free resources for whatever wins.\n\ncvin.bio/jobs"
     },
     {
       "id": "e025",
-      "text": "Unpopular opinion: remote work is better for productivity but worse for career growth.\n\nThe people who get promoted are the ones who are visible. Not the ones who ship the most.\n\nAgree or disagree?"
+      "text": "Unpopular opinion: remote work is better for productivity but worse for career growth.\n\nThe people who get promoted are the ones who are visible. Not the ones who ship the most.\n\nAgree or disagree?\n\ncvin.bio/jobs"
     },
     {
       "id": "e026",
@@ -630,15 +630,15 @@
     },
     {
       "id": "e027",
-      "text": "What's the most useful thing you've ever built as a side project?\n\nDoesn't matter how small. What solved a real problem for you?\n\nI'll start: a CLI tool that bulk-renames files based on regex patterns. Use it daily."
+      "text": "What's the most useful thing you've ever built as a side project?\n\nDoesn't matter how small. What solved a real problem for you?\n\nI'll start: a CLI tool that bulk-renames files based on regex patterns. Use it daily.\n\ncvin.bio/jobs"
     },
     {
       "id": "e028",
-      "text": "The worst career advice you've ever received?\n\nI'll start: \"Just be patient and your hard work will get noticed.\"\n\n3 years later: it didn't.\n\nYour worst advice? 👇"
+      "text": "The worst career advice you've ever received?\n\nI'll start: \"Just be patient and your hard work will get noticed.\"\n\n3 years later: it didn't.\n\nYour worst advice? 👇\n\ncvin.bio/jobs"
     },
     {
       "id": "e029",
-      "text": "What's a hill you'll die on about tech careers?\n\nMine: nobody should have to do a 6-round interview process for any role. If you can't evaluate someone in 3 rounds, the problem is your process.\n\nYours?"
+      "text": "What's a hill you'll die on about tech careers?\n\nMine: nobody should have to do a 6-round interview process for any role. If you can't evaluate someone in 3 rounds, the problem is your process.\n\nYours?\n\ncvin.bio/jobs"
     },
     {
       "id": "e030",
