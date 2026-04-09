@@ -1,0 +1,12 @@
+{
+  "subject": "https://cvin.bio",
+  "properties": {
+    "http://schema.org/name": "CVin.Bio"
+  },
+  "links": [
+    {
+      "rel": "lrdd",
+      "template": "https://cvin.bio/.well-known/webfinger?resource={uri}"
+    }
+  ]
+}

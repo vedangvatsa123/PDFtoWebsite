@@ -1,0 +1,10 @@
+[
+  {
+    "domain": "cvin.bio",
+    "credentials": [
+      {
+        "url": "https://cvin.bio/about"
+      }
+    ]
+  }
+]

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+  <Subject>https://cvin.bio</Subject>
+  <Property type="http://schema.org/name">CVin.Bio</Property>
+  <Link rel="lrdd" template="https://cvin.bio/.well-known/webfinger?resource={uri}"/>
+</XRD>

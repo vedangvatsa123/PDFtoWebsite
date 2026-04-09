@@ -1,0 +1,5 @@
+version: STSv1
+mode: testing
+mx: mx1.cvin.bio
+mx: mx2.cvin.bio
+max_age: 86400

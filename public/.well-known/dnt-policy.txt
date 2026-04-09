@@ -1,0 +1,1 @@
+Do Not Track Policy: The CVin.Bio domain respects Do Not Track (DNT) headers and does not authorize third-party behavioral tracking networks.
