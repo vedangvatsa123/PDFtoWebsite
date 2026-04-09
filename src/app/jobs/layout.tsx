@@ -30,13 +30,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Search open roles at OpenAI, Stripe, Cloudflare, Anthropic, Databricks, and 170+ top tech companies. Updated daily.`,
       url: `${siteUrl}/jobs`,
       type: 'website',
-      images: [{ url: `${siteUrl}/jobs/opengraph-image`, width: 1200, height: 630, alt: 'CVin.Bio Tech Jobs' }],
+      images: [{ url: `${siteUrl}/images/jobs-og.png`, width: 1200, height: 630, alt: 'CVin.Bio Tech Jobs' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `Browse ${countStr} Tech Jobs`,
       description: 'Search open roles at top tech companies. Updated daily.',
-      images: [`${siteUrl}/jobs/opengraph-image`],
+      images: [`${siteUrl}/images/jobs-og.png`],
     },
     alternates: { canonical: `${siteUrl}/jobs` },
   };
