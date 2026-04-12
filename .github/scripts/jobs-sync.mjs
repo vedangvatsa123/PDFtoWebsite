@@ -94,6 +94,7 @@ const KEYWORD_LABELS = [
 
 // ─── Greenhouse company slugs to fetch ───
 const GREENHOUSE_SLUGS = [
+  'stripe','coinbase','kraken','binance','figma','airbnb','dropbox','slack','discord','reddit','epicgames','mozilla','consensys','chainlink','netlify','vercel','hashicorp','datadog','okta','twilio',
   // Tier 1 — Major tech
   'gitlab','stripe','figma','datadog','cloudflare','elastic','twilio',
   'mongodb','cockroachlabs','launchdarkly','coinbase','brex','mercury',
@@ -163,6 +164,7 @@ const WORKABLE_SLUGS = [
 
 // ─── Lever company slugs ───
 const LEVER_SLUGS = [
+  'shopify','notion','replit','linear','superhuman','webflow','framer','loom','zapier',
   // APAC
   'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral','paytm','gopuff','shopback-2',
 ];
@@ -404,6 +406,86 @@ async function fetchRemotive() {
     return jobs;
   } catch (e) {
     console.error(`  ❌ Remotive error: ${e.message}`);
+    return [];
+  }
+}
+
+
+// ─── Source: Arbeitnow ───
+async function fetchArbeitnow() {
+  console.log('\n── Arbeitnow ──');
+  try {
+    const res = await fetch('https://arbeitnow.com/api/job-board-api?page=1');
+    const data = await res.json();
+    const jobs = (data.data || []).map(j => ({
+      source: 'arbeitnow',
+      external_id: `arbeitnow_${j.slug}`,
+      dedup_hash: dedupHash(j.company_name, j.title),
+      title: j.title,
+      company: j.company_name,
+      company_logo: null,
+      location: j.remote ? 'Remote' : (j.location || 'Unknown'),
+      job_type: (j.job_types || []).join(', ') || 'full_time',
+      salary: null,
+      description: j.description.substring(0, 5000),
+      tags: j.tags && j.tags.length ? j.tags : extractTags(`${j.title} ${j.description || ''}`),
+      apply_url: j.url,
+      category: null,
+      published_at: j.created_at ? new Date(j.created_at * 1000).toISOString() : null,
+    })).filter(j => j.location && j.location.toLowerCase().includes('remote'));
+    console.log(`  Found ${jobs.length} jobs`);
+    return jobs;
+  } catch (e) {
+    console.error(`  ❌ Arbeitnow error: ${e.message}`);
+    return [];
+  }
+}
+
+// ─── Source: WeWorkRemotely ───
+async function fetchWeWorkRemotely() {
+  console.log('\n── WeWorkRemotely ──');
+  try {
+    const res = await fetch('https://weworkremotely.com/remote-jobs.rss');
+    const xml = await res.text();
+    const jobs = [];
+    const itemRegex = /<item>[\s\S]*?<\/item>/g;
+    let match;
+    while ((match = itemRegex.exec(xml)) !== null) {
+      const item = match[0];
+      const getTag = (tag) => {
+        const tMatch = item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`));
+        return tMatch ? tMatch[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() : '';
+      };
+      
+      const titleFull = getTag('title');
+      let company = 'Unknown', title = titleFull;
+      if (titleFull.includes(': ')) {
+        const parts = titleFull.split(': ');
+        company = parts[0];
+        title = parts.slice(1).join(': ');
+      }
+      
+      jobs.push({
+        source: 'weworkremotely',
+        external_id: `wwr_${getTag('guid')}`,
+        dedup_hash: dedupHash(company, title),
+        title,
+        company,
+        company_logo: null,
+        location: getTag('category') || 'Remote',
+        job_type: 'full_time',
+        salary: null,
+        description: getTag('description').substring(0, 5000),
+        tags: extractTags(`${title} ${getTag('description')}`),
+        apply_url: getTag('link'),
+        category: null,
+        published_at: new Date(getTag('pubDate')).toISOString(),
+      });
+    }
+    console.log(`  Found ${jobs.length} jobs`);
+    return jobs;
+  } catch(e) {
+    console.error(`  ❌ WWR error: ${e.message}`);
     return [];
   }
 }
@@ -960,6 +1042,8 @@ async function main() {
   // Fetch from all sources (aggregators first = richer data wins dedup)
   const remoteok = await fetchRemoteOK();
   const remotive = await fetchRemotive();
+  const arbeitnow = await fetchArbeitnow();
+  const wwr = await fetchWeWorkRemotely();
   const himalayas = await fetchHimalayas();
   const jobicy = await fetchJobicy();
   const greenhouse = await fetchGreenhouse();
@@ -972,7 +1056,7 @@ async function main() {
   const foorilla = await fetchFoorilla();
 
   // Merge all jobs — priority order (first seen wins dedup via DB constraint)
-  const allJobs = [...remoteok, ...remotive, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr, ...foorilla];
+  const allJobs = [...remoteok, ...remotive, ...arbeitnow, ...wwr, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr, ...foorilla];
   console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
 
   // Filter out invalid entries
