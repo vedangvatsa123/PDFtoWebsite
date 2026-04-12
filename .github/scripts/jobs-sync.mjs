@@ -123,6 +123,7 @@ const GREENHOUSE_SLUGS = [
   'govtech','motional',
   // Tier 10 — E-commerce/Marketplace
   'doordashusa',
+  'ghost','buffer','doist','zapier','hotjar','automattic','basecamp','duckduckgo','invision','toptal','1password',
 ];
 
 // ─── Ashby company slugs ───
@@ -381,7 +382,7 @@ async function fetchBambooHR() {
 async function fetchRemotive() {
   console.log('\n── Remotive ──');
   try {
-    const res = await fetch('https://remotive.com/api/remote-jobs?limit=200');
+    const res = await fetch('https://remotive.com/api/remote-jobs?limit=500');
     const data = await res.json();
     const jobs = (data.jobs || []).map(j => {
       const tags = j.tags?.length ? j.tags : extractTags(`${j.title} ${j.description || ''}`);
@@ -411,33 +412,39 @@ async function fetchRemotive() {
 }
 
 
-// ─── Source: Arbeitnow ───
+// ─── Source: Arbeitnow (Paginated) ───
 async function fetchArbeitnow() {
   console.log('\n── Arbeitnow ──');
+  let allJobs = [];
   try {
-    const res = await fetch('https://arbeitnow.com/api/job-board-api?page=1');
-    const data = await res.json();
-    const jobs = (data.data || []).map(j => ({
-      source: 'arbeitnow',
-      external_id: `arbeitnow_${j.slug}`,
-      dedup_hash: dedupHash(j.company_name, j.title),
-      title: j.title,
-      company: j.company_name,
-      company_logo: null,
-      location: j.remote ? 'Remote' : (j.location || 'Unknown'),
-      job_type: (j.job_types || []).join(', ') || 'full_time',
-      salary: null,
-      description: j.description.substring(0, 5000),
-      tags: j.tags && j.tags.length ? j.tags : extractTags(`${j.title} ${j.description || ''}`),
-      apply_url: j.url,
-      category: null,
-      published_at: j.created_at ? new Date(j.created_at * 1000).toISOString() : null,
-    })).filter(j => j.location && j.location.toLowerCase().includes('remote'));
-    console.log(`  Found ${jobs.length} jobs`);
-    return jobs;
+    for (let page = 1; page <= 5; page++) {
+      console.log(`  Fetching page ${page}...`);
+      const res = await fetch(`https://arbeitnow.com/api/job-board-api?page=${page}`);
+      const data = await res.json();
+      const jobs = (data.data || []).map(j => ({
+        source: 'arbeitnow',
+        external_id: `arbeitnow_${j.slug}`,
+        dedup_hash: dedupHash(j.company_name, j.title),
+        title: j.title,
+        company: j.company_name,
+        company_logo: null,
+        location: j.remote ? 'Remote' : (j.location || 'Unknown'),
+        job_type: (j.job_types || []).join(', ') || 'full_time',
+        salary: null,
+        description: j.description.substring(0, 5000),
+        tags: j.tags && j.tags.length ? j.tags : extractTags(`${j.title} ${j.description || ''}`),
+        apply_url: j.url,
+        category: null,
+        published_at: j.created_at ? new Date(j.created_at * 1000).toISOString() : null,
+      })).filter(j => j.location && j.location.toLowerCase().includes('remote'));
+      allJobs = [...allJobs, ...jobs];
+      if (data.data?.length < 10) break; // End of pages
+    }
+    console.log(`  Found ${allJobs.length} total jobs from Arbeitnow`);
+    return allJobs;
   } catch (e) {
     console.error(`  ❌ Arbeitnow error: ${e.message}`);
-    return [];
+    return allJobs;
   }
 }
 
@@ -494,7 +501,7 @@ async function fetchWeWorkRemotely() {
 async function fetchHimalayas() {
   console.log('\n── Himalayas ──');
   try {
-    const res = await fetch('https://himalayas.app/jobs/api?limit=200');
+    const res = await fetch('https://himalayas.app/jobs/api?limit=500');
     const data = await res.json();
     const jobs = (data.jobs || []).map(j => ({
       source: 'himalayas',
