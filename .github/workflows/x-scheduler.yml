@@ -15,6 +15,10 @@ on:
         description: 'Only run the job sync (skip posting)'
         type: boolean
         default: false
+      mass_scan:
+        description: 'Check all 19k+ jobs for 404s in parallel'
+        type: boolean
+        default: false
 
 concurrency:
   group: social-poster-${{ github.event.schedule || 'manual' }}
@@ -120,4 +124,5 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          MASS_SCAN: ${{ github.event.inputs.mass_scan }}
         run: node .github/scripts/prune-404s.mjs
