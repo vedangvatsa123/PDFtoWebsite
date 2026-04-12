@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import pLimit from 'p-limit'; // I need to check if I can use this or just a manual batch
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
