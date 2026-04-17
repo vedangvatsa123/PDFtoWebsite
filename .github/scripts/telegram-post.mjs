@@ -23,7 +23,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 }
 
 const JOBS_PER_POST = 10;
-const FETCH_LIMIT = 100; // fetch extra to allow company dedup
+const FETCH_LIMIT = 500; // fetch extra to allow company dedup
 const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
