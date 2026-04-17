@@ -70,8 +70,8 @@ function cleanTitle(title) {
   let clean = decodeHTML(title);
   // Remove ALL parenthetical content
   clean = clean.replace(/\s*\(.*?\)/g, '');
-  // Remove everything after " - "
-  clean = clean.replace(/\s+-\s+.*$/, '');
+  // Remove everything after " - " or " – " or " — " (hyphen, en dash, em dash)
+  clean = clean.replace(/\s+[-–—]\s+.*$/, '');
   // Remove comma-separated department qualifiers like ", Brand & Communications"
   clean = clean.replace(/,\s+[A-Z][a-zA-Z\s&/]+$/, '');
   return clean.trim() || decodeHTML(title);
@@ -128,6 +128,10 @@ function pickJobs(jobs, limit) {
   const nonRemote = [];
 
   for (const job of jobs) {
+    // Skip bad data: truncated names, non-English titles
+    if (!job.company || job.company.includes('...') || job.company.length <= 2) continue;
+    if (!job.title || /[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af\u0400-\u04ff]/.test(job.title)) continue;
+
     const key = job.company.toLowerCase().trim();
     if (seen.has(key)) continue;
     seen.add(key);

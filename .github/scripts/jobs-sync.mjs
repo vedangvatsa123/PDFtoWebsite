@@ -1081,15 +1081,21 @@ async function main() {
   const smartrecruiters = await fetchSmartRecruiters();
   const workday = await fetchWorkday();
   const bamboohr = await fetchBambooHR();
-  const foorilla = await fetchFoorilla();
+  // Foorilla removed — produced garbage truncated company names
 
   // Merge all jobs — priority order (first seen wins dedup via DB constraint)
-  const allJobs = [...remoteok, ...remotive, ...arbeitnow, ...wwr, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr, ...foorilla];
+  const allJobs = [...remoteok, ...remotive, ...arbeitnow, ...wwr, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr];
   console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
 
-  // Filter out invalid entries
-  const validJobs = allJobs.filter(j => j.title && j.company && j.apply_url);
-  console.log(`   Valid jobs: ${validJobs.length}`);
+  // Filter out invalid entries and bad data
+  const validJobs = allJobs.filter(j => {
+    if (!j.title || !j.company || !j.apply_url) return false;
+    if (j.company.includes('...') || j.company.length <= 2) return false;
+    // Reject non-Latin titles (CJK, Cyrillic, Czech diacritics, etc.)
+    if (/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af\u0400-\u04ff]/.test(j.title)) return false;
+    return true;
+  });
+  console.log(`   Valid jobs: ${validJobs.length} (filtered ${allJobs.length - validJobs.length} bad)`);
 
   // Stamp synced_at on every record
   const now = new Date().toISOString();
