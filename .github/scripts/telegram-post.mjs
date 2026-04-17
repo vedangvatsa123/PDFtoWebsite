@@ -126,6 +126,7 @@ function pickJobs(jobs, limit) {
   const seen = new Set();
   const remote = [];
   const nonRemote = [];
+  const overflow = []; // extra jobs from same companies if we need to fill
 
   for (const job of jobs) {
     // Skip bad data: truncated names, non-English titles
@@ -133,7 +134,10 @@ function pickJobs(jobs, limit) {
     if (!job.title || /[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af\u0400-\u04ff]/.test(job.title)) continue;
 
     const key = job.company.toLowerCase().trim();
-    if (seen.has(key)) continue;
+    if (seen.has(key)) {
+      overflow.push(job); // save for backfill
+      continue;
+    }
     seen.add(key);
 
     if (isRemote(job.location)) {
@@ -152,6 +156,11 @@ function pickJobs(jobs, limit) {
   picked.push(...nonRemote.slice(0, remaining));
   if (picked.length < limit) {
     picked.push(...remote.slice(minRemote, minRemote + (limit - picked.length)));
+  }
+
+  // If still under limit, backfill with extra jobs from same companies
+  if (picked.length < limit) {
+    picked.push(...shuffle(overflow).slice(0, limit - picked.length));
   }
 
   return picked.slice(0, limit);
