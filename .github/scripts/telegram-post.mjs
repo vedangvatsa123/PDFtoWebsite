@@ -55,16 +55,18 @@ function cleanCompany(name) {
   clean = clean
     .replace(/\s*(,?\s*(Inc\.?|LLC|Ltd\.?|Corp\.?|GmbH|S\.?R\.?L\.?|Pty\.?|Co\.?|PLC|AG|SE))+\.?\s*$/i, '')
     .replace(/\s+(Infrastructure|Technology|Technologies|Solutions|Services|Digital|Software|Global|Group|International)\s*&.*$/i, '')
-    .replace(/\s*\(.*\)\s*$/, '')
+    .replace(/\s*\(.*?\)/g, '')
     .trim();
+  // Break domain-like names so Telegram doesn't auto-link (e.g. Expatfile.tax → Expatfile·tax)
+  clean = clean.replace(/\.([a-z]{2,6})$/i, '\u200B.$1');
   return clean || decodeHTML(name);
 }
 
 function cleanTitle(title) {
   if (!title) return '';
   let clean = decodeHTML(title);
-  // Remove parenthetical qualifiers like "(United States/Spanish speakers)"
-  clean = clean.replace(/\s*\(.*\)\s*$/, '');
+  // Remove ALL parenthetical content like "(Native Norwegian)" or "(remotely)"
+  clean = clean.replace(/\s*\(.*?\)/g, '');
   // Remove department suffixes like " - Product" or " - SEO"
   clean = clean.replace(/\s+-\s+[A-Z][a-zA-Z\s&/]*$/, '');
   return clean.trim() || decodeHTML(title);
