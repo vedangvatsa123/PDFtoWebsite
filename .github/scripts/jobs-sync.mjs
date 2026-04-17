@@ -124,6 +124,9 @@ const GREENHOUSE_SLUGS = [
   // Tier 10 — E-commerce/Marketplace
   'doordashusa',
   'ghost','buffer','doist','zapier','hotjar','automattic','basecamp','duckduckgo','invision','toptal','1password',
+  // Remote-first additions
+  'atlassian','cribl',
+  'superblocks','warp','mmhmm','greenhouse','temporal',
 ];
 
 // ─── Ashby company slugs ───
@@ -154,6 +157,18 @@ const ASHBY_SLUGS = [
   'sanity','livekit','oyster','infisical','stream','statsig','doppler','hightouch','posthog',
   'zapier','benchling','fullstory','airbyte','prefect',
   'coinhako',
+  // Remote-first additions
+  'helpscout','contra',
+  // Remote-first — Batch 2 (verified via ATS probing)
+  'sourcegraph','toggl','flocksafety','mural','snyk','miro','gong',
+  'dbt-labs','gitbook','fly','retool','pulumi','upstash','turso',
+  'tinybird','hasura','appsmith','coda','mux',
+  'fleetdm','teleport','betterstack','chronosphere',
+  'deno','bun','cal','prisma','raycast','todoist',
+  'height','pitch','papaya-global','invisionapp',
+  'liveblocks','mullvad','lightstep','around',
+  // Remote-first — Batch 3 (verified active job boards)
+  'synthesia','deepl','deepgram','pinecone','chromatic','coder','weaviate','wistia',
   // Crypto & Migrated from Greenhouse
   'opensea','phantom','magic','taxbit','nansen',
 ];
@@ -168,6 +183,10 @@ const LEVER_SLUGS = [
   'shopify','notion','replit','linear','superhuman','webflow','framer','loom','zapier',
   // APAC
   'ninjavan','lalamove','patsnap','immutable','cred','nium','binance','mistral','paytm','gopuff','shopback-2',
+  // Remote-first additions
+  'spotify',
+  // Remote-first — Batch 3 (verified active)
+  'stackblitz','labelbox',
 ];
 
 // ─── Helpers ───
@@ -731,6 +750,8 @@ const SMARTRECRUITERS_SLUGS = [
   'Visa','Canva','ServiceNow',
   // Migrated from Greenhouse
   'Bigcommerce','Polygontechnology',
+  // Remote-first additions
+  'DocuSign',
 ];
 
 async function fetchSmartRecruiters() {
