@@ -56,19 +56,24 @@ function cleanCompany(name) {
     .replace(/\s*(,?\s*(Inc\.?|LLC|Ltd\.?|Corp\.?|GmbH|S\.?R\.?L\.?|Pty\.?|Co\.?|PLC|AG|SE))+\.?\s*$/i, '')
     .replace(/\s+(Infrastructure|Technology|Technologies|Solutions|Services|Digital|Software|Global|Group|International)\s*&.*$/i, '')
     .replace(/\s*\(.*?\)/g, '')
+    .replace(/\s+\d+$/, '') // Strip trailing numbers like "Shopback 2"
     .trim();
-  // Break domain-like names so Telegram doesn't auto-link (e.g. Expatfile.tax → Expatfile·tax)
-  clean = clean.replace(/\.([a-z]{2,6})$/i, '\u200B.$1');
+  // Break domain-like names so Telegram doesn't auto-link (e.g. Expatfile.tax)
+  if (clean.includes('.')) {
+    clean = clean.replace(/\.([a-z]{2,6})$/i, '\u200B.$1');
+  }
   return clean || decodeHTML(name);
 }
 
 function cleanTitle(title) {
   if (!title) return '';
   let clean = decodeHTML(title);
-  // Remove ALL parenthetical content like "(Native Norwegian)" or "(remotely)"
+  // Remove ALL parenthetical content
   clean = clean.replace(/\s*\(.*?\)/g, '');
-  // Remove department suffixes like " - Product" or " - SEO"
-  clean = clean.replace(/\s+-\s+[A-Z][a-zA-Z\s&/]*$/, '');
+  // Remove everything after " - "
+  clean = clean.replace(/\s+-\s+.*$/, '');
+  // Remove trailing ", City" patterns
+  clean = clean.replace(/,\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s*$/, '');
   return clean.trim() || decodeHTML(title);
 }
 
@@ -255,11 +260,10 @@ async function main() {
     console.log(`  Posted. Message ID: ${result.message_id}`);
   }
 
-  // 4. Mark ALL fetched jobs as posted (not just the 10 picked)
-  //    This prevents the skipped duplicates from clogging the queue
-  const allIds = allJobs.map(j => j.id);
-  await markJobsPosted(allIds);
-  console.log(`  Marked ${allIds.length} jobs as posted`);
+  // 4. Mark ONLY the picked jobs as posted
+  const pickedIds = jobs.map(j => j.id);
+  await markJobsPosted(pickedIds);
+  console.log(`  Marked ${pickedIds.length} jobs as posted`);
 }
 
 main().catch(e => {
