@@ -51,9 +51,9 @@ function escapeHTML(text) {
 function cleanCompany(name) {
   if (!name) return '';
   let clean = decodeHTML(name);
-  // Strip legal suffixes and subsidiary labels
+  // Strip legal suffixes (require space/comma before suffix to avoid matching word endings like 'Wise')
   clean = clean
-    .replace(/\s*(,?\s*(Inc\.?|LLC|Ltd\.?|Corp\.?|GmbH|S\.?R\.?L\.?|Pty\.?|Co\.?|PLC|AG|SE))+\.?\s*$/i, '')
+    .replace(/[,\s]+(?:Inc\.?|LLC|Ltd\.?|Corp\.?|GmbH|S\.?R\.?L\.?|Pty\.?|Co\.?|PLC|AG|SE)\.?\s*$/i, '')
     .replace(/\s+(Infrastructure|Technology|Technologies|Solutions|Services|Digital|Software|Global|Group|International)\s*&.*$/i, '')
     .replace(/\s*\(.*?\)/g, '')
     .replace(/\s+\d+$/, '') // Strip trailing numbers like "Shopback 2"
@@ -72,8 +72,8 @@ function cleanTitle(title) {
   clean = clean.replace(/\s*\(.*?\)/g, '');
   // Remove everything after " - "
   clean = clean.replace(/\s+-\s+.*$/, '');
-  // Remove trailing ", City" patterns
-  clean = clean.replace(/,\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s*$/, '');
+  // Remove comma-separated department qualifiers like ", Brand & Communications"
+  clean = clean.replace(/,\s+[A-Z][a-zA-Z\s&/]+$/, '');
   return clean.trim() || decodeHTML(title);
 }
 
