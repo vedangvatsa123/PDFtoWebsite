@@ -1,10 +1,61 @@
 {
-  "protocol_version": "A2A-1.0",
-  "agent_name": "CVin.Bio Services",
-  "operator": "CVin.Bio",
-  "description": "Tech job board and CV to website conversion service.",
-  "capabilities": ["search_jobs", "view_profiles", "read_reports"],
-  "endpoints": {
-    "api": "https://cvin.bio/api/jobs"
-  }
+  "name": "CVin.Bio Agent",
+  "description": "Professional identity platform and job board. Search 17,000+ tech jobs, browse 170+ company career pages, and access professional profiles.",
+  "url": "https://cvin.bio",
+  "version": "1.0.0",
+  "protocol_version": "0.2.1",
+  "provider": {
+    "organization": "CVin.Bio",
+    "url": "https://cvin.bio"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "authentication": {
+    "schemes": ["bearer"],
+    "credentials": "API key via Authorization header for authenticated endpoints. Public endpoints require no auth."
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "search_jobs",
+      "name": "Job Search",
+      "description": "Search 17,000+ tech job listings across 170+ companies. Filter by role, location, company, and job type.",
+      "tags": ["jobs", "hiring", "tech", "careers", "web3"],
+      "examples": [
+        "Find remote senior engineer roles at Stripe",
+        "Show all open positions at OpenAI",
+        "List frontend developer jobs in Europe"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "view_profiles",
+      "name": "Professional Profile Lookup",
+      "description": "View structured professional profiles with work history, education, skills, and contact info.",
+      "tags": ["profiles", "candidates", "talent", "cv", "resume"],
+      "examples": [
+        "Show the profile for vedang",
+        "Find candidates with React and TypeScript skills"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "read_reports",
+      "name": "Research Reports",
+      "description": "Access data-driven research reports on tech hiring, layoffs, and remote work trends.",
+      "tags": ["reports", "research", "hiring", "layoffs", "remote"],
+      "examples": [
+        "What are the top skills in demand?",
+        "How many tech layoffs happened in 2025?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ]
 }

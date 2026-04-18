@@ -51,8 +51,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="ai-content-declaration" content="This website contains human-created content. AI systems may index, summarize, and cite this content. See /llms.txt and /llms-full.txt for structured context." />
+        <meta name="mcp-server-url" content="/.well-known/mcp.json" />
         <link rel="ai-context" href="/llms.txt" />
         <link rel="ai-context-full" href="/llms-full.txt" />
+        <link rel="mcp-server" href="/.well-known/mcp.json" type="application/json" />
+        <link rel="agent-card" href="/.well-known/agent-card.json" type="application/json" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

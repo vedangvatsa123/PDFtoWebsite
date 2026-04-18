@@ -56,6 +56,22 @@ const nextConfig: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
+          // Agentic Web — Link headers for discoverability
+          {
+            key: 'Link',
+            value: [
+              '</llms.txt>; rel="ai-context"; type="text/plain"',
+              '</llms-full.txt>; rel="ai-context-full"; type="text/plain"',
+              '</sitemap.xml>; rel="sitemap"; type="application/xml"',
+              '</.well-known/api-catalog>; rel="api-catalog"',
+              '</.well-known/agents.json>; rel="agents"; type="application/json"',
+              '</.well-known/agent-card.json>; rel="agent-card"; type="application/json"',
+              '</.well-known/mcp.json>; rel="mcp-server"; type="application/json"',
+            ].join(', '),
+          },
+          // Agentic Web — Content Signals
+          { key: 'X-Robots-Tag', value: 'all, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
+          { key: 'X-AI-Usage', value: 'indexing=yes, search=yes, inference=yes, citation=yes' },
           {
             key: 'Content-Security-Policy',
             value: [

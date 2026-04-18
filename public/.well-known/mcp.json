@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "name": "CVin.Bio MCP Server",
+  "description": "Search professional profiles and job listings from the CVin.Bio talent database via MCP.",
+  "url": "https://cvin.bio",
+  "server": {
+    "transport": "stdio",
+    "package": "@cvinbio/mcp-server",
+    "registry": "npm",
+    "repository": "https://github.com/vedangvatsa123/PDFtoWebsite"
+  },
+  "tools": [
+    {
+      "name": "search_candidates",
+      "description": "Search the CVin.Bio professional database by skills, location, or keyword. Returns matching candidate profiles with work history, education, and skills.",
+      "parameters": {
+        "query": "Search term: a skill, location, job title, or keyword",
+        "limit": "Number of results (1-20, default 10)"
+      }
+    },
+    {
+      "name": "get_profile",
+      "description": "Get the full professional profile for a specific CVin.Bio user by their username slug.",
+      "parameters": {
+        "username": "The CVin.Bio username/slug (e.g. 'vedang')"
+      }
+    }
+  ],
+  "installation": {
+    "claude_desktop": {
+      "command": "npx",
+      "args": ["tsx", "mcp-server.ts"],
+      "env": {
+        "SUPABASE_URL": "your_supabase_url",
+        "SUPABASE_KEY": "your_service_role_key"
+      }
+    }
+  }
+}
