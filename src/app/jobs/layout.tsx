@@ -18,10 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
     .not('company', 'ilike', '%Gopuff%');
 
   let countStr = '17,000+';
-  if (count && count >= 1000) {
-    countStr = `${Math.floor(count / 1000)},000+`;
-  } else if (count) {
-    countStr = `${count}`;
+  if (count) {
+    countStr = count.toLocaleString();
   }
 
   return {

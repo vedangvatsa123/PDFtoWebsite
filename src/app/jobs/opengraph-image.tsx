@@ -19,10 +19,8 @@ export default async function Image() {
     .not('company', 'ilike', '%Gopuff%');
 
   let jobsCountText = '17,000+';
-  if (count && count >= 1000) {
-    jobsCountText = `${Math.floor(count / 1000).toLocaleString()},000+`;
-  } else if (count) {
-    jobsCountText = `${count}`;
+  if (count) {
+    jobsCountText = count.toLocaleString();
   }
 
   return new ImageResponse(
