@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 
+export const dynamic = 'force-dynamic';
+
 // Only these emails can access the admin dashboard
 const ADMIN_EMAILS = ['vatsvedang@gmail.com'];
 

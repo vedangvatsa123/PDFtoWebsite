@@ -146,7 +146,7 @@ export default function AdminPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const token = session?.access_token;
       if (!token) { setError('No session'); setLoading(false); return; }
-      fetch('/api/admin/analytics', { headers: { Authorization: `Bearer ${token}` } })
+      fetch('/api/admin/analytics', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
         .then(async r => { if (!r.ok) { const d = await r.json(); throw new Error(JSON.stringify(d)); } return r.json(); })
         .then(setData).catch(e => setError(e.message)).finally(() => setLoading(false));
     });
