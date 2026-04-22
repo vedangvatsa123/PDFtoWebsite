@@ -165,54 +165,54 @@ function CostComparison() {
 /* ─── BESPOKE SVG: COMPETITIVE LANDSCAPE ─── */
 function CompetitiveLandscape() {
   const incumbents = [
-    { name: 'LinkedIn', x: 65, y: 45, r: 30, rev: '$17.1B', color: 'fill-zinc-200 dark:fill-zinc-800' },
-    { name: 'Indeed', x: 155, y: 58, r: 24, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
-    { name: 'ZipRecruiter', x: 260, y: 48, r: 16, rev: '$449M', color: 'fill-zinc-200 dark:fill-zinc-800' },
-    { name: 'Wellfound', x: 55, y: 120, r: 12, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
-    { name: 'Otta', x: 125, y: 128, r: 10, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
-    { name: 'Hired', x: 190, y: 125, r: 10, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'LinkedIn', x: 70, y: 55, r: 34, rev: '$17.1B', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Indeed', x: 170, y: 70, r: 28, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'ZipRecruiter', x: 285, y: 58, r: 20, rev: '$449M', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Wellfound', x: 60, y: 145, r: 14, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Otta', x: 140, y: 155, r: 12, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Hired', x: 210, y: 150, r: 12, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
   ];
   const aiPlayers = [
-    { name: 'Juicebox AI', x: 310, y: 75, r: 20, rev: '$850M val', color: 'fill-amber-200 dark:fill-amber-900/60' },
-    { name: 'Eightfold AI', x: 350, y: 42, r: 18, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
-    { name: 'SeekOut', x: 405, y: 68, r: 14, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
-    { name: 'Moonhub', x: 270, y: 120, r: 12, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
-    { name: 'hireEZ', x: 345, y: 115, r: 12, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'Juicebox AI', x: 340, y: 90, r: 22, rev: '$850M val', color: 'fill-amber-200 dark:fill-amber-900/60' },
+    { name: 'Eightfold AI', x: 390, y: 52, r: 20, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'SeekOut', x: 455, y: 80, r: 16, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'Moonhub', x: 300, y: 145, r: 14, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'hireEZ', x: 385, y: 140, r: 14, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
   ];
   return (
-    <svg viewBox="0 0 520 280" fill="none" className="w-full h-auto" aria-hidden="true">
+    <svg viewBox="0 0 580 310" fill="none" className="w-full h-auto" aria-hidden="true">
       {/* Axis labels */}
-      <text x="260" y="270" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit">General purpose ← → Domain-specific / AI-native</text>
-      <text x="12" y="140" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit" transform="rotate(-90 12 140)">Scale</text>
+      <text x="290" y="300" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[10px]" fontFamily="inherit">General purpose ← → Domain-specific / AI-native</text>
+      <text x="14" y="155" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[10px]" fontFamily="inherit" transform="rotate(-90 14 155)">Scale</text>
       {/* Grid */}
-      <line x1="30" y1="250" x2="500" y2="250" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
-      <line x1="30" y1="25" x2="30" y2="250" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
+      <line x1="30" y1="270" x2="555" y2="270" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
+      <line x1="30" y1="25" x2="30" y2="270" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
       {/* Vertical divider */}
-      <line x1="235" y1="25" x2="235" y2="250" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" strokeDasharray="4 3" />
-      <text x="130" y="245" textAnchor="middle" className="fill-zinc-300 dark:fill-zinc-700 text-[8px] font-semibold" fontFamily="inherit">Job boards / marketplaces</text>
-      <text x="370" y="245" textAnchor="middle" className="fill-amber-400/70 dark:fill-amber-600/50 text-[8px] font-semibold" fontFamily="inherit">AI sourcing tools</text>
+      <line x1="255" y1="25" x2="255" y2="270" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" strokeDasharray="4 3" />
+      <text x="140" y="265" textAnchor="middle" className="fill-zinc-300 dark:fill-zinc-700 text-[9px] font-semibold" fontFamily="inherit">Job boards / marketplaces</text>
+      <text x="410" y="265" textAnchor="middle" className="fill-amber-400/70 dark:fill-amber-600/50 text-[9px] font-semibold" fontFamily="inherit">AI sourcing tools</text>
       {/* Incumbents */}
       {incumbents.map((p, i) => (
         <g key={`inc-${i}`}>
           <circle cx={p.x} cy={p.y} r={p.r} className={p.color} />
-          <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 text-[8px] font-bold" fontFamily="inherit">{p.name}</text>
-          {p.rev && <text x={p.x} y={p.y + 13} textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[7px]" fontFamily="inherit">{p.rev}</text>}
+          <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 text-[10px] font-bold" fontFamily="inherit">{p.name}</text>
+          {p.rev && <text x={p.x} y={p.y + 15} textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">{p.rev}</text>}
         </g>
       ))}
       {/* AI players */}
       {aiPlayers.map((p, i) => (
         <g key={`ai-${i}`}>
           <circle cx={p.x} cy={p.y} r={p.r} className={p.color} />
-          <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-zinc-700 dark:fill-zinc-300 text-[7px] font-bold" fontFamily="inherit">{p.name}</text>
-          {p.rev && <text x={p.x} y={p.y + 13} textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[6px]" fontFamily="inherit">{p.rev}</text>}
+          <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-zinc-700 dark:fill-zinc-300 text-[9px] font-bold" fontFamily="inherit">{p.name}</text>
+          {p.rev && <text x={p.x} y={p.y + 15} textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[7px]" fontFamily="inherit">{p.rev}</text>}
         </g>
       ))}
       {/* CVin.Bio - positioned in the unique gap: structured + agent-queryable */}
-      <rect x="380" y="155" width="120" height="80" rx="8" className="stroke-zinc-400 dark:stroke-zinc-500" strokeWidth="1" strokeDasharray="4 3" fill="none" />
-      <text x="440" y="152" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px] font-semibold" fontFamily="inherit">Agent-queryable infrastructure</text>
-      <circle cx="440" cy="195" r="18" className="fill-zinc-900 dark:fill-zinc-100" />
-      <text x="440" y="193" textAnchor="middle" className="fill-white dark:fill-zinc-900 text-[7px] font-bold" fontFamily="inherit">CVin.Bio</text>
-      <text x="440" y="203" textAnchor="middle" className="fill-white/60 dark:fill-zinc-900/50 text-[6px]" fontFamily="inherit">MCP + structured</text>
+      <rect x="415" y="170" width="135" height="90" rx="10" className="stroke-zinc-400 dark:stroke-zinc-500" strokeWidth="1.5" strokeDasharray="5 3" fill="none" />
+      <text x="482" y="166" textAnchor="middle" className="fill-zinc-500 dark:fill-zinc-400 text-[9px] font-semibold" fontFamily="inherit">Agent-queryable infrastructure</text>
+      <circle cx="482" cy="215" r="22" className="fill-zinc-900 dark:fill-zinc-100" />
+      <text x="482" y="212" textAnchor="middle" className="fill-white dark:fill-zinc-900 text-[9px] font-bold" fontFamily="inherit">CVin.Bio</text>
+      <text x="482" y="224" textAnchor="middle" className="fill-white/70 dark:fill-zinc-900/60 text-[7px]" fontFamily="inherit">MCP + structured data</text>
     </svg>
   );
 }
