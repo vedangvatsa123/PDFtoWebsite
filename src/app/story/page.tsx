@@ -500,7 +500,7 @@ export default function StoryPage() {
             </div>
           </div>
 
-          <Callout>Every AI sourcing tool automates the recruiter. None of them make the candidate queryable. That is the layer we build.</Callout>
+          <Callout>AI sourcing tools let recruiters search candidates through proprietary dashboards. We make candidates directly queryable by AI agents via open structured protocols.</Callout>
 
           <Sources>
             <Cite href="https://juicebox.ai">Juicebox AI</Cite> · <Cite href="https://eightfold.ai">Eightfold AI</Cite> · <Cite href="https://seekout.com">SeekOut</Cite> · <Cite href="https://moonhub.ai">Moonhub</Cite> · <Cite href="https://hireez.com">hireEZ</Cite> · <Cite href="https://www.gem.com">Gem</Cite> · <Cite href="https://www.businessofapps.com/data/linkedin-statistics/">Business of Apps</Cite> · <Cite href="https://tracxn.com">Tracxn</Cite>
