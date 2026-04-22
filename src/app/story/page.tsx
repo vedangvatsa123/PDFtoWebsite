@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
 import Link from 'next/link';
+import { getPlatformStats } from '@/lib/get-platform-stats';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
 
@@ -218,12 +219,12 @@ function CompetitiveLandscape() {
 }
 
 /* ─── BESPOKE SVG: PLATFORM STACK ─── */
-function PlatformStack() {
+function PlatformStack({ statsLabel }: { statsLabel: string }) {
   return (
     <svg viewBox="0 0 520 200" fill="none" className="w-full h-auto" aria-hidden="true">
       <rect x="30" y="145" width="460" height="48" rx="8" className="fill-zinc-200 dark:fill-zinc-800" />
       <text x="260" y="166" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 text-[11px] font-bold" fontFamily="inherit">Multi-source job aggregation</text>
-      <text x="260" y="182" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit">17,000+ listings from 170+ companies</text>
+      <text x="260" y="182" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit">{statsLabel}</text>
       <rect x="60" y="90" width="400" height="48" rx="8" className="fill-zinc-400 dark:fill-zinc-600" />
       <text x="260" y="111" textAnchor="middle" className="fill-white dark:fill-zinc-200 text-[11px] font-bold" fontFamily="inherit">Structured candidate profiles</text>
       <text x="260" y="127" textAnchor="middle" className="fill-white/70 dark:fill-zinc-300/60 text-[9px]" fontFamily="inherit">Schema.org, JSON-LD, skill extraction</text>
@@ -237,7 +238,8 @@ function PlatformStack() {
 }
 
 
-export default function StoryPage() {
+export default async function StoryPage() {
+  const stats = await getPlatformStats();
   return (
     <div className="h-screen overflow-y-auto bg-[#fafafa] dark:bg-black selection:bg-zinc-200 dark:selection:bg-zinc-800 transition-colors duration-200 flex flex-col">
       <Header />
@@ -251,7 +253,7 @@ export default function StoryPage() {
               Talent infrastructure<br />for the agentic era
             </h1>
             <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              CVin.Bio turns any CV into a live website. Every profile is structured so that both humans and AI systems can read it. Candidates get a free professional URL and skill-matched jobs from 170+ companies. Employers get a searchable talent database filtered by structured skill data, not keywords. <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026. The hiring infrastructure needs to be ready for that.
+              CVin.Bio turns any CV into a live website. Every profile is structured so that both humans and AI systems can read it. Candidates get a free professional URL and {`skill-matched jobs from ${stats.companyCountDisplay} companies`}. Employers get a searchable talent database filtered by structured skill data, not keywords. <Cite href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-identifies-the-top-10-strategic-technology-trends-for-2025">Gartner projects</Cite> 40% of enterprise apps will embed AI agents by EOY 2026. The hiring infrastructure needs to be ready for that.
             </p>
           </div>
           <div className="hidden lg:block">
@@ -387,7 +389,7 @@ export default function StoryPage() {
             </p>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 text-center">Platform architecture</p>
-              <PlatformStack />
+              <PlatformStack statsLabel={`${stats.jobCountDisplay} listings from ${stats.companyCountDisplay} companies`} />
             </div>
           </div>
 
@@ -585,8 +587,8 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-8">
             {[
-              { metric: '17,000+', desc: 'Live job listings aggregated' },
-              { metric: '170+', desc: 'Companies tracked' },
+              { metric: stats.jobCountDisplay, desc: 'Live job listings aggregated' },
+              { metric: stats.companyCountDisplay, desc: 'Companies tracked' },
               { metric: '100+', desc: 'AI user agents with crawler access' },
               { metric: '3', desc: 'Research reports with email capture' },
               { metric: '4', desc: 'AI discovery layers deployed' },
@@ -601,7 +603,7 @@ export default function StoryPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-              Job board aggregates listings from OpenAI, Anthropic, Stripe, Airbnb, Coinbase, Cloudflare, Databricks, Snowflake, and 160+ others. Profile engine parses CVs into structured, schema-annotated pages. MCP server is operational.
+              {`Job board aggregates listings from OpenAI, Anthropic, Stripe, Airbnb, Coinbase, Cloudflare, Databricks, Snowflake, and ${stats.totalCompanies - 8}+ others.`} Profile engine parses CVs into structured, schema-annotated pages. MCP server is operational.
             </p>
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
               Three published research reports (<Cite href="https://cvin.bio/tech-talent-report">Tech Talent 2026</Cite>, <Cite href="https://cvin.bio/layoffs-report">Layoffs 2026</Cite>, <Cite href="https://cvin.bio/remote-talent-report">Remote Talent 2026</Cite>) gated behind email capture. Active distribution on LinkedIn and X.
