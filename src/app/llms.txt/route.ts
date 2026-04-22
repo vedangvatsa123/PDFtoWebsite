@@ -1,10 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
+import { getPlatformStats } from '@/lib/get-platform-stats';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600; // Cache for 1 hour
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cvin.bio';
+
+  const stats = await getPlatformStats();
 
   const lines: string[] = [
     '# CVin.Bio',
@@ -14,8 +17,8 @@ export async function GET() {
     '## Useful Links',
     '',
     `- Homepage: ${siteUrl}`,
-    `- Job Board (17,000+ live listings): ${siteUrl}/jobs`,
-    `- Companies (170+ hiring): ${siteUrl}/companies`,
+    `- Job Board (${stats.jobCountDisplay} live listings): ${siteUrl}/jobs`,
+    `- Companies (${stats.companyCountDisplay} hiring): ${siteUrl}/companies`,
     `- Tech Talent Report 2026: ${siteUrl}/tech-talent-report`,
     `- Tech Layoffs Report 2026: ${siteUrl}/layoffs-report`,
     `- Remote Talent Report 2026: ${siteUrl}/remote-talent-report`,
