@@ -16,13 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Analysis of ${stats.jobCountDisplay} listings across ${stats.companyCountDisplay} companies. Skills, roles, compensation, and regional hiring patterns.`,
       url: `${siteUrl}/tech-talent-report`,
       type: 'article',
-      images: [{ url: `${siteUrl}/opengraph-image`, width: 1200, height: 630, alt: 'Tech Talent Report 2026' }],
+      images: [{ url: `${siteUrl}/tech-talent-report/opengraph-image`, width: 1200, height: 630, alt: 'Tech Talent Report 2026' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'The Tech Talent Report 2026',
       description: `${stats.jobCountDisplay} jobs analyzed. What the data reveals about tech hiring in 2026.`,
-      images: [`${siteUrl}/opengraph-image`],
+      images: [`${siteUrl}/tech-talent-report/opengraph-image`],
     },
     alternates: { canonical: `${siteUrl}/tech-talent-report` },
   };

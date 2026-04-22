@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     description: 'Since 2020, 750,000+ tech workers have been laid off. Data-driven analysis of who is cutting, why, and what happens next.',
     url: `${siteUrl}/layoffs-report`,
     type: 'article',
-    images: [{ url: `${siteUrl}/opengraph-image`, width: 1200, height: 630, alt: 'Tech Layoffs Report 2026' }],
+    images: [{ url: `${siteUrl}/layoffs-report/opengraph-image`, width: 1200, height: 630, alt: 'Tech Layoffs Report 2026' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'The Tech Layoffs Report 2026',
     description: '750K+ tech workers laid off since 2020. The data behind the headlines.',
-    images: [`${siteUrl}/opengraph-image`],
+    images: [`${siteUrl}/layoffs-report/opengraph-image`],
   },
   alternates: { canonical: `${siteUrl}/layoffs-report` },
 };
