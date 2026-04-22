@@ -164,36 +164,55 @@ function CostComparison() {
 
 /* ─── BESPOKE SVG: COMPETITIVE LANDSCAPE ─── */
 function CompetitiveLandscape() {
-  const players = [
-    { name: 'LinkedIn', x: 80, y: 50, r: 32, rev: '$17.1B' },
-    { name: 'Indeed', x: 180, y: 65, r: 26, rev: '' },
-    { name: 'ZipRecruiter', x: 290, y: 55, r: 18, rev: '$449M' },
-    { name: 'Wellfound', x: 60, y: 140, r: 14, rev: '' },
-    { name: 'Otta', x: 150, y: 150, r: 12, rev: '' },
-    { name: 'Hired', x: 230, y: 145, r: 12, rev: '' },
+  const incumbents = [
+    { name: 'LinkedIn', x: 65, y: 45, r: 30, rev: '$17.1B', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Indeed', x: 155, y: 58, r: 24, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'ZipRecruiter', x: 260, y: 48, r: 16, rev: '$449M', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Wellfound', x: 55, y: 120, r: 12, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Otta', x: 125, y: 128, r: 10, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+    { name: 'Hired', x: 190, y: 125, r: 10, rev: '', color: 'fill-zinc-200 dark:fill-zinc-800' },
+  ];
+  const aiPlayers = [
+    { name: 'Juicebox AI', x: 310, y: 75, r: 20, rev: '$850M val', color: 'fill-amber-200 dark:fill-amber-900/60' },
+    { name: 'Eightfold AI', x: 350, y: 42, r: 18, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'SeekOut', x: 405, y: 68, r: 14, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'Moonhub', x: 270, y: 120, r: 12, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
+    { name: 'hireEZ', x: 345, y: 115, r: 12, rev: '', color: 'fill-amber-100 dark:fill-amber-900/40' },
   ];
   return (
-    <svg viewBox="0 0 420 220" fill="none" className="w-full h-auto" aria-hidden="true">
+    <svg viewBox="0 0 520 280" fill="none" className="w-full h-auto" aria-hidden="true">
       {/* Axis labels */}
-      <text x="210" y="210" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit">General purpose ← → Domain-specific</text>
-      <text x="12" y="110" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit" transform="rotate(-90 12 110)">Scale</text>
+      <text x="260" y="270" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit">General purpose ← → Domain-specific / AI-native</text>
+      <text x="12" y="140" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[9px]" fontFamily="inherit" transform="rotate(-90 12 140)">Scale</text>
       {/* Grid */}
-      <line x1="30" y1="190" x2="390" y2="190" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
-      <line x1="30" y1="30" x2="30" y2="190" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
-      {/* Players */}
-      {players.map((p, i) => (
-        <g key={i}>
-          <circle cx={p.x} cy={p.y} r={p.r} className="fill-zinc-200 dark:fill-zinc-800" />
+      <line x1="30" y1="250" x2="500" y2="250" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
+      <line x1="30" y1="25" x2="30" y2="250" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" />
+      {/* Vertical divider */}
+      <line x1="235" y1="25" x2="235" y2="250" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="0.5" strokeDasharray="4 3" />
+      <text x="130" y="245" textAnchor="middle" className="fill-zinc-300 dark:fill-zinc-700 text-[8px] font-semibold" fontFamily="inherit">Job boards / marketplaces</text>
+      <text x="370" y="245" textAnchor="middle" className="fill-amber-400/70 dark:fill-amber-600/50 text-[8px] font-semibold" fontFamily="inherit">AI sourcing tools</text>
+      {/* Incumbents */}
+      {incumbents.map((p, i) => (
+        <g key={`inc-${i}`}>
+          <circle cx={p.x} cy={p.y} r={p.r} className={p.color} />
           <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 text-[8px] font-bold" fontFamily="inherit">{p.name}</text>
           {p.rev && <text x={p.x} y={p.y + 13} textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[7px]" fontFamily="inherit">{p.rev}</text>}
         </g>
       ))}
-      {/* CVin.Bio - positioned in the opportunity gap */}
-      <circle cx="350" cy="140" r="16" className="fill-zinc-900 dark:fill-zinc-100" />
-      <text x="350" y="143" textAnchor="middle" className="fill-white dark:fill-zinc-900 text-[7px] font-bold" fontFamily="inherit">CVin.Bio</text>
-      {/* Opportunity zone */}
-      <rect x="300" y="100" width="100" height="80" rx="8" className="stroke-zinc-400 dark:stroke-zinc-500" strokeWidth="1" strokeDasharray="4 3" fill="none" />
-      <text x="350" y="96" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px] font-semibold" fontFamily="inherit">Opportunity gap</text>
+      {/* AI players */}
+      {aiPlayers.map((p, i) => (
+        <g key={`ai-${i}`}>
+          <circle cx={p.x} cy={p.y} r={p.r} className={p.color} />
+          <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-zinc-700 dark:fill-zinc-300 text-[7px] font-bold" fontFamily="inherit">{p.name}</text>
+          {p.rev && <text x={p.x} y={p.y + 13} textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[6px]" fontFamily="inherit">{p.rev}</text>}
+        </g>
+      ))}
+      {/* CVin.Bio - positioned in the unique gap: structured + agent-queryable */}
+      <rect x="380" y="155" width="120" height="80" rx="8" className="stroke-zinc-400 dark:stroke-zinc-500" strokeWidth="1" strokeDasharray="4 3" fill="none" />
+      <text x="440" y="152" textAnchor="middle" className="fill-zinc-400 dark:fill-zinc-500 text-[8px] font-semibold" fontFamily="inherit">Agent-queryable infrastructure</text>
+      <circle cx="440" cy="195" r="18" className="fill-zinc-900 dark:fill-zinc-100" />
+      <text x="440" y="193" textAnchor="middle" className="fill-white dark:fill-zinc-900 text-[7px] font-bold" fontFamily="inherit">CVin.Bio</text>
+      <text x="440" y="203" textAnchor="middle" className="fill-white/60 dark:fill-zinc-900/50 text-[6px]" fontFamily="inherit">MCP + structured</text>
     </svg>
   );
 }
@@ -342,7 +361,7 @@ export default function StoryPage() {
                 Global recruitment exceeds <Cite href="https://www.staffingindustry.com/">$640 billion</Cite>. LinkedIn generates <Cite href="https://www.businessofapps.com/data/linkedin-statistics/">$17.1B annually</Cite>. ZipRecruiter brings in <Cite href="https://investors.ziprecruiter.com">$449M</Cite>. The AI recruitment segment alone is valued at <Cite href="https://www.einpresswire.com/">$700M+</Cite>, growing 7% yearly.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                All incumbents are horizontal. No platform is built for sourcing builders of autonomous systems. Wellfound, Otta, and Hired are generalist tech platforms with no structured skill verification, no machine-readable profiles, and no agent-queryable infrastructure.
+                All incumbents are horizontal. Meanwhile, a new wave of AI sourcing startups (Juicebox AI at $850M valuation, Eightfold AI at $2.1B, SeekOut with $189M raised, Moonhub, hireEZ) have collectively raised over $900M, validating that investors see the gap. But every one of those tools automates what recruiters do. None build the structured talent layer that AI agents can query directly.
               </p>
             </div>
             <div className="lg:col-span-2 flex items-center">
@@ -397,33 +416,95 @@ export default function StoryPage() {
           </div>
         </section>
 
-        {/* ═══════ SECTION 5: COMPETITIVE LANDSCAPE ═══════ */}
+        {/* ═══════ SECTION 5: COMPETITION ═══════ */}
         <section className="mb-28">
-          <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Competitive landscape</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Horizontal incumbents leave the vertical wide open</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Competition</p>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Well-funded competitors automate recruiters. We replace the need for them.</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-12">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                All incumbents are horizontal. None offer structured skill verification, machine-readable profiles, or agent-queryable infrastructure.
+                The recruiting-tech space has three layers. Horizontal job boards serve everyone and match on keywords. A new wave of AI sourcing tools automates what recruiters do manually: searching databases, sending outreach, filtering résumés. Both leave the same gap open: no structured, agent-queryable talent infrastructure.
               </p>
-              <div className="space-y-2">
-                {[
-                  { bold: 'LinkedIn, Indeed, ZipRecruiter', rest: ': serve every industry, no depth filtering by verified skill' },
-                  { bold: 'Wellfound, Otta, Hired', rest: ': generalist tech, no structured data layer' },
-                  { bold: 'CVin.Bio', rest: ': structured profiles, skill-based search, AI-queryable from day one' },
-                ].map((item, i) => (
-                  <p key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
-                    <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
-                    <span><span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.bold}</span> {item.rest}</span>
-                  </p>
-                ))}
-              </div>
+              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
+                CVin.Bio does not compete with recruiters or sourcing tools. It builds the protocol layer they will all eventually need to query.
+              </p>
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6 text-center">Where we sit</p>
               <CompetitiveLandscape />
             </div>
           </div>
+
+          {/* ── TIER 1: Horizontal Incumbents ── */}
+          <div className="mb-10">
+            <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] font-semibold mb-4">Tier 1 · Horizontal job platforms</p>
+            <div className="space-y-2">
+              {[
+                { bold: 'LinkedIn', rest: '($17.1B rev). Dominant network but matches on keywords, not verified capability. Recruiter Lite starts at $170/mo with limited InMails.' },
+                { bold: 'Indeed', rest: '. Volume-first model. Spray-and-pray applications. No structured skill layer.' },
+                { bold: 'ZipRecruiter', rest: '($449M rev). SMB-focused job distribution. No talent profiling.' },
+                { bold: 'Wellfound, Otta, Hired', rest: '. Generalist tech job boards. No machine-readable profiles, no agent endpoints, no MCP infrastructure.' },
+              ].map((item, i) => (
+                <p key={i} className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.7] flex items-start gap-2">
+                  <span className="w-1 h-1 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-[7px] shrink-0" />
+                  <span><span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.bold}</span> {item.rest}</span>
+                </p>
+              ))}
+            </div>
+          </div>
+
+          {/* ── TIER 2: AI Sourcing Tools ── */}
+          <div className="mb-10">
+            <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] font-semibold mb-4">Tier 2 · AI sourcing tools</p>
+            <p className="text-[14px] text-zinc-500 dark:text-zinc-400 leading-[1.8] mb-5">
+              These platforms automate the recruiter&apos;s workflow: search, filter, outreach. They are powerful but serve the same model. A human recruiter still sits in the loop, and candidate data remains unstructured.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { name: 'Juicebox AI (PeopleGPT)', funding: '$116M raised · $850M valuation', desc: 'Natural-language search across 800M+ profiles. AI agents source and send outreach. Series B led by DST Global with Sequoia, Coatue.', gap: 'Automates the recruiter. Does not make candidates discoverable to AI systems.' },
+                { name: 'Eightfold AI', funding: '$424M raised · $2.1B valuation', desc: 'Enterprise talent intelligence: external hiring, internal mobility, skills taxonomies.', gap: 'Enterprise-only. No candidate-facing product. Candidates have no agency or profile.' },
+                { name: 'SeekOut', funding: '$189M raised', desc: 'Advanced aggregated search with semantic matching, diversity filters, and talent analytics.', gap: 'Recruiter SaaS. Dashboard for humans. No agent-queryable API, no structured profiles.' },
+                { name: 'Moonhub', funding: '$44M raised', desc: 'AI recruiter with human-in-the-loop expert model. Sources, screens, and delivers shortlists.', gap: 'Managed service. Candidates are passive data. No profile infrastructure.' },
+                { name: 'hireEZ', funding: '$45M raised', desc: 'Outbound sourcing with Boolean and AI-assisted search, CRM, and campaign automation.', gap: 'Recruiter tooling. No candidate-side product. No structured talent protocol.' },
+                { name: 'Gem', funding: '$148M raised', desc: 'Recruiting CRM with pipeline analytics, sourcing automation, and ATS integrations.', gap: 'Workflow orchestration for recruiting teams. No talent discovery layer.' },
+              ].map((comp) => (
+                <div key={comp.name} className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-900/20">
+                  <h4 className="text-[13px] font-bold text-zinc-900 dark:text-zinc-50 mb-1">{comp.name}</h4>
+                  <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400 mb-2">{comp.funding}</p>
+                  <p className="text-[12px] text-zinc-500 dark:text-zinc-400 leading-[1.65] mb-3">{comp.desc}</p>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 leading-[1.6] italic border-t border-zinc-100 dark:border-zinc-800/50 pt-2">{comp.gap}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── TIER 3: CVin.Bio ── */}
+          <div className="p-6 sm:p-8 rounded-2xl border border-zinc-900 dark:border-zinc-100 bg-zinc-900 dark:bg-zinc-100 mb-6">
+            <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] font-semibold mb-3">Our category · Talent infrastructure</p>
+            <h4 className="text-lg font-serif font-bold text-white dark:text-zinc-900 mb-3">CVin.Bio</h4>
+            <p className="text-[14px] text-zinc-300 dark:text-zinc-600 leading-[1.8] mb-4">
+              Not a sourcing tool. Not a job board. A structured talent protocol where every profile is machine-readable, every skill is verified against work history, and AI agents can query candidates directly via MCP. The platform creates the data layer that every recruiter, ATS, and AI agent will eventually need to read from.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { check: 'Structured profiles (Schema.org, JSON-LD)' },
+                { check: 'Agent-queryable MCP server' },
+                { check: 'Candidate-facing product (free)' },
+                { check: 'Skill-matched job discovery' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-2 text-[11px] text-zinc-300 dark:text-zinc-600 leading-[1.6]">
+                  <span className="text-green-400 dark:text-green-600 mt-0.5 shrink-0">✓</span>
+                  {item.check}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Callout>Every AI sourcing tool automates the recruiter. None of them make the candidate queryable. That is the layer we build.</Callout>
+
+          <Sources>
+            <Cite href="https://juicebox.ai">Juicebox AI</Cite> · <Cite href="https://eightfold.ai">Eightfold AI</Cite> · <Cite href="https://seekout.com">SeekOut</Cite> · <Cite href="https://moonhub.ai">Moonhub</Cite> · <Cite href="https://hireez.com">hireEZ</Cite> · <Cite href="https://www.gem.com">Gem</Cite> · <Cite href="https://www.businessofapps.com/data/linkedin-statistics/">Business of Apps</Cite> · <Cite href="https://tracxn.com">Tracxn</Cite>
+          </Sources>
         </section>
 
         {/* ═══════ SECTION 6: BUSINESS MODEL ═══════ */}
@@ -475,7 +556,7 @@ export default function StoryPage() {
         {/* ═══════ SECTION 7: WHY NOW ═══════ */}
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Why now</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Four converging forces creating a timing window</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Four reasons the timing is now</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-10">
             {[
               { n: '01', title: 'Agent frameworks are going to production', body: 'LangChain, CrewAI, AutoGen, Semantic Kernel all graduated to enterprise in 2025. Every adopter needs engineers who understand tool calling, memory architectures, and agent behavior.' },
@@ -685,7 +766,7 @@ export default function StoryPage() {
                 <div className="space-y-5">
                   {[
                     { q: 'Phase 1', items: 'Employer dashboard beta, first paid featured listings, expanded job pipeline' },
-                    { q: 'Phase 2', items: 'Agent Hiring Module alpha with design partners from the agentic ecosystem' },
+                    { q: 'Phase 2', items: 'Agent Hiring Module alpha with design partners building agentic products' },
                     { q: 'Phase 3', items: 'Sourcing subscription launch, placement success fee model operational' },
                     { q: 'Phase 4', items: 'Agent-to-agent protocol design, enterprise pilot partnerships' },
                   ].map((item, i) => (
