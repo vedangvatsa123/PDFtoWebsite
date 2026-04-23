@@ -127,6 +127,27 @@ const GREENHOUSE_SLUGS = [
   // Remote-first additions
   'atlassian','cribl',
   'superblocks','warp','mmhmm','greenhouse','temporal',
+  // Batch 4 — API-verified 2026-04-24
+  // Autonomous vehicles & robotics
+  'waymo','nuro','lucidmotors',
+  // AI / ML / Compute
+  'coreweave','samsara',
+  // Security
+  'verkada','zscaler',
+  // Enterprise / SaaS
+  'relativity','contentful','fivetran','salesloft','ziprecruiter',
+  // Gaming
+  'riotgames','unity3d','scopely',
+  // Fintech / Crypto
+  'affirm','payoneer','ripple','carta','fireblocks','bitgo',
+  // Health
+  'onemedical','cloverhealth','cerebral',
+  // Consumer / Marketplace
+  'duolingo','opendoor','stockx','sweetgreen','glossier',
+  // Ed-tech
+  'udemy','coursera',
+  // Dev tools
+  'neo4j','buildkite','melio','upgrade',
 ];
 
 // ─── Ashby company slugs ───
@@ -171,6 +192,21 @@ const ASHBY_SLUGS = [
   'synthesia','deepl','deepgram','pinecone','chromatic','coder','weaviate','wistia',
   // Crypto & Migrated from Greenhouse
   'opensea','phantom','magic','taxbit','nansen',
+  // Batch 4 — API-verified 2026-04-24
+  // AI / ML
+  'baseten',
+  // Crypto / Web3
+  'polymarket','conduit','helius','goldsky','espresso',
+  // Dev tools
+  'mintlify','zed','speakeasy','ashby',
+  // Fintech
+  'moderntreasury','abound',
+  // Data
+  'motherduck',
+  // Security
+  'oneleet',
+  // Payments / Identity
+  'coinflow','passage',
 ];
 
 // ─── Workable company slugs ───
@@ -187,6 +223,26 @@ const LEVER_SLUGS = [
   'spotify',
   // Remote-first — Batch 3 (verified active)
   'stackblitz','labelbox',
+  // Crypto / Digital Assets
+  'anchorage',
+  // Batch 4 — API-verified 2026-04-24 (74 new companies, ~3,800+ jobs)
+  // ── Round 1: Major companies ──
+  'palantir','zoox','whoop','ro','cloudinary','outreach','kabam',
+  'sonatype','agiloft','metabase','arcadia','prosper','15five','clari','brilliant',
+  // ── Round 2: Health / Communication ──
+  'lyrahealth','aircall','hive','greenlight','anomali','prismic',
+  // ── Round 3: Enterprise SaaS ──
+  'dlocal','aleph','walkme','contentsquare','protolabs','megaport','voodoo',
+  'netomi','mindtickle','bazaarvoice','kiddom','rise','versapay',
+  'gearset','sysdig','pivotal','activecampaign','omnisend','superside',
+  'angellist','mendix','quantcast','veo','kepler',
+  'deliverect','frontify','revel','vida','happyco','bloom','doola',
+  'articulate','teikametrics','aero','chownow','plexus','safe',
+  'addx','finch','digimarc','highspot','palo-it',
+  'everbridge','logz','snaplogic','vendavo','venteur',
+  'benchsci','fevo','relay','factor',
+  // ── Original Batch 4 ──
+  'veeva','plaid','wealthfront','jumpcloud','appen','rover',
 ];
 
 // ─── Helpers ───

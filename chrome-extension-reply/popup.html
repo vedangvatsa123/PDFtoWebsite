@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 340px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #111;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+    label:first-of-type { margin-top: 0; }
+    select, input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 13px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+      color: #111;
+      outline: none;
+      transition: border-color 0.12s;
+    }
+    select:focus, input:focus {
+      border-color: #999;
+    }
+    .save-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      background: #0f0f0f;
+      color: #fff;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .save-btn:hover { background: #333; }
+    .status {
+      font-size: 12px;
+      color: #16a34a;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+    .status.visible { display: block; }
+    .hint {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 20px 0;
+    }
+    .usage {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+    .usage strong { color: #555; }
+  </style>
+</head>
+<body>
+  <h1>QuickReply</h1>
+  <p class="subtitle">Human-like replies on X and LinkedIn</p>
+
+  <label>AI Provider</label>
+  <select id="provider">
+    <option value="gemini">Google Gemini</option>
+    <option value="openai">OpenAI</option>
+  </select>
+
+  <label>API Key</label>
+  <input type="password" id="apiKey" placeholder="Paste your API key here">
+  <p class="hint" id="keyHint">Get a free Gemini key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#666">aistudio.google.com</a></p>
+
+  <label>Model (optional)</label>
+  <input type="text" id="model" placeholder="e.g. gemini-2.0-flash or gpt-4o-mini">
+  <p class="hint">Leave blank for the default model.</p>
+
+  <button class="save-btn" id="saveBtn">Save Settings</button>
+  <p class="status" id="status">Settings saved</p>
+
+  <hr>
+
+  <div class="usage">
+    <strong>How to use:</strong><br>
+    1. Navigate to any post on X or LinkedIn<br>
+    2. Click the chat bubble (bottom-right)<br>
+    3. Pick a tone and hit Generate<br>
+    4. Copy or paste directly into the reply box
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

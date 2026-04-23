@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "QuickReply — Human Replies",
+  "version": "1.0.0",
+  "description": "Generate sharp, human-like replies on X and LinkedIn with one click.",
+  "permissions": ["storage", "activeTab"],
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*",
+        "https://www.linkedin.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ]
+}

@@ -622,6 +622,23 @@ const COMPANIES: Record<string, CompanyMeta> = {
       github: 'https://github.com/adyen',
     },
   },
+  'anchorage-digital': {
+    slug: 'anchorage-digital',
+    name: 'Anchorage Digital',
+    website: 'https://www.anchorage.com',
+    founded: 2017,
+    hq: 'San Francisco, CA (remote-first)',
+    size: '400+',
+    stage: 'Series D',
+    funding: '$487M+',
+    industry: 'Digital Asset Infrastructure',
+    description: 'Anchorage Digital is a federally chartered digital asset platform providing custody, trading, staking, governance, and financing services to institutional clients. Founded by Diogo Mónica and Nathan McCauley in 2017, Anchorage received a federal bank charter from the OCC in January 2021, making it the first federally chartered digital asset bank in the United States.',
+    socials: {
+      x: 'https://x.com/Anchorage',
+      linkedin: 'https://linkedin.com/company/anchoragedigital',
+      github: 'https://github.com/AnchorageDigital',
+    },
+  },
 };
 
 export function getCompanyMeta(slug: string): CompanyMeta | null {
