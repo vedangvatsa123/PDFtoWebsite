@@ -130,8 +130,8 @@ function cleanTitle(title) {
   let clean = decodeHTML(title);
   // Remove ALL parenthetical content
   clean = clean.replace(/\s*\(.*?\)/g, '');
-  // Remove everything after " - " or " – " or " — " (hyphen, en dash, em dash)
-  clean = clean.replace(/\s+[-–—]\s+.*$/, '');
+  // Remove everything after separators (hyphen/en-dash with >=1 space, or any em-dash/pipe)
+  clean = clean.replace(/(?:\s+[-–]\s*|\s*[-–]\s+|—|\|).*$/, '');
   // Remove comma-separated department qualifiers like ", Brand & Communications"
   clean = clean.replace(/,\s+[A-Z][a-zA-Z\s&/]+$/, '');
   return clean.trim() || decodeHTML(title);
