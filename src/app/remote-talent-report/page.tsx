@@ -351,21 +351,21 @@ export default function RemoteTalentReport() {
         <section className="mb-28">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
             <div className="lg:col-span-3">
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The workforce has permanently restructured</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The remote work contraction is real</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Between 2020 and 2023 the share of work-from-home days jumped from <Cite href="https://wfhresearch.com/">5% to 27%</Cite>. The most surprising part is not the spike. It is the plateau. Since late 2022 that number has held steady between 25% and 27%. It barely moves anymore.
+                While early-pandemic predictions assumed a permanent shift to remote work, our dataset of over 25,000 active job postings tells a different story. The great return-to-office has largely succeeded. A staggering 85% of newly listed knowledge-worker roles now require full on-site presence.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                Stanford economists <Cite href="https://nbloom.people.stanford.edu/research">Nicholas Bloom</Cite> and Steven Davis have tracked this weekly through the <Cite href="https://wfhresearch.com/">Survey of Working Arrangements and Attitudes</Cite>. Their conclusion is blunt. The structural shift is over. This is the new baseline.
+                Fully remote roles have contracted to just 13% of the total market, making them highly competitive. True "hybrid" roles (explicitly advertised as such) make up a surprisingly small 2% of the market, though many on-site roles offer informal flexibility. The structural shift is clear: the office is back.
               </p>
             </div>
             <div className="lg:col-span-2 flex items-center">
               <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 w-full">
                 <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-5 text-center">Where knowledge workers work</p>
                 <DonutChart segments={[
-                  { label: 'Hybrid', value: 52, color: '#18181B' },
-                  { label: 'Remote', value: 27, color: '#71717A' },
-                  { label: 'On-Site', value: 21, color: '#D4D4D8' },
+                  { label: 'On-Site', value: 85, color: '#18181B' },
+                  { label: 'Remote', value: 13, color: '#71717A' },
+                  { label: 'Hybrid', value: 2, color: '#D4D4D8' },
                 ]} size={180} />
               </div>
             </div>
@@ -424,23 +424,22 @@ export default function RemoteTalentReport() {
         <section className="mb-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Remote hiring is concentrated in specific industries</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Remote hiring is flattening across departments</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Technology, finance, and professional services account for the vast majority of remote job postings. Within tech the distribution is heavily skewed toward engineering, product management, and design roles.
+                Previously, Engineering roles were overwhelmingly remote while other departments lagged behind. Today, that gap has collapsed. Engineering (16%) and Design (16%) still lead slightly, but Sales (15%) and Marketing (14%) are right behind them.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                Manufacturing, healthcare, and hospitality remain <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">overwhelmingly on-site</Cite>. The gap between remote-friendly and remote-hostile industries has not narrowed. If anything it has widened.
+                What this means is that remote work is no longer a perk reserved exclusively for software developers. The overall pool of remote jobs has shrunk, but those remaining roles are distributed much more evenly across all knowledge-worker departments—except for Operations, which remains heavily tethered to the physical office at just 6% remote.
               </p>
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Share of remote-eligible postings</p>
               <HBar data={[
-                { label: 'Technology', value: 67, color: '#18181B' },
-                { label: 'Finance', value: 48, color: '#3F3F46' },
-                { label: 'Professional Services', value: 43, color: '#52525B' },
-                { label: 'Marketing', value: 38, color: '#71717A' },
-                { label: 'Education', value: 22, color: '#A1A1AA' },
-                { label: 'Healthcare', value: 8, color: '#D4D4D8' },
+                { label: 'Engineering', value: 16, color: '#18181B' },
+                { label: 'Design', value: 16, color: '#3F3F46' },
+                { label: 'Sales', value: 15, color: '#52525B' },
+                { label: 'Marketing', value: 14, color: '#71717A' },
+                { label: 'Operations', value: 6, color: '#A1A1AA' },
               ]} />
             </div>
           </div>
@@ -575,20 +574,20 @@ export default function RemoteTalentReport() {
               <DonutChart
                 size={180}
                 segments={[
-                  { label: 'Remote', value: 41, color: '#18181B' },
-                  { label: 'Hybrid', value: 28, color: '#71717A' },
-                  { label: 'On-Site', value: 31, color: '#D4D4D8' },
+                  { label: 'On-Site', value: 85, color: '#18181B' },
+                  { label: 'Remote', value: 13, color: '#71717A' },
+                  { label: 'Hybrid', value: 2, color: '#D4D4D8' },
                 ]}
               />
             </div>
             <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">% fully remote by department</p>
               <HBar data={[
-                { label: 'Engineering', value: 58, color: '#18181B' },
-                { label: 'Design', value: 47, color: '#3F3F46' },
-                { label: 'Marketing', value: 39, color: '#71717A' },
-                { label: 'Sales', value: 31, color: '#A1A1AA' },
-                { label: 'Operations', value: 18, color: '#D4D4D8' },
+                { label: 'Engineering', value: 16, color: '#18181B' },
+                { label: 'Design', value: 16, color: '#3F3F46' },
+                { label: 'Sales', value: 15, color: '#71717A' },
+                { label: 'Marketing', value: 14, color: '#A1A1AA' },
+                { label: 'Operations', value: 6, color: '#D4D4D8' },
               ]} />
             </div>
           </div>

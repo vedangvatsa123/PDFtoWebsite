@@ -281,16 +281,16 @@ function HeroViz() {
 
 function SkillRadarChart() {
   const skills = [
-    { name: 'AI / ML', pct: 3884 },
-    { name: 'Engineering', pct: 3271 },
-    { name: 'Platform', pct: 2471 },
-    { name: 'Security', pct: 2273 },
-    { name: 'Growth', pct: 2245 },
-    { name: 'Infra', pct: 1873 },
-    { name: 'Compliance', pct: 1860 },
-    { name: 'Operations', pct: 1668 },
+    { name: 'AI / ML', pct: 5443 },
+    { name: 'Platform', pct: 4418 },
+    { name: 'Support', pct: 4212 },
+    { name: 'Growth', pct: 3826 },
+    { name: 'Solutions', pct: 3673 },
+    { name: 'Operations', pct: 3212 },
+    { name: 'Security', pct: 2700 },
+    { name: 'Infrastructure', pct: 2447 },
   ];
-  const max = 3884;
+  const max = 5443;
   const cx = 150, cy = 130, maxR = 100;
   return (
     <svg viewBox="0 0 300 280" fill="none" className="w-full h-auto max-w-xs mx-auto" aria-hidden="true">
@@ -373,21 +373,21 @@ export default function TechTalentReport() {
         <section className="mb-28">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
             <div className="lg:col-span-3">
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">86% of tech roles still require you to show up</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">85% of tech roles still require you to show up</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Of 15,458 listings, only 13.9% are explicitly remote and 3.5% are hybrid. The remaining 82.6% require on-site presence. This aligns with broader industry data. According to <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, remote job availability in the US declined from about 27% in 2022 to roughly 16% by late 2024.
+                Of nearly 26,000 listings, only 13% are explicitly remote and 2% are hybrid. The remaining 85% require on-site presence. This aligns with broader industry data. According to <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, remote job availability in the US declined steadily through 2024 and has hit a stable bottom in 2026.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                Remote roles skew toward engineering (39.8% of remote listings) and sales (15.7%). Product management is 6.5% of remote roles. Infrastructure and security are notably under-represented in remote work, each at just 1.3%.
+                Remote roles skew heavily toward engineering and sales. Infrastructure and physical operations are notably under-represented in remote work, tethering those teams to office or warehouse locations.
               </p>
             </div>
             <div className="lg:col-span-2 flex items-center">
               <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 w-full">
                 <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-5 text-center">Work arrangement</p>
                 <DonutChart segments={[
-                  { label: 'On-site', value: 83, color: '#18181B' },
-                  { label: 'Remote', value: 14, color: '#6366f1' },
-                  { label: 'Hybrid', value: 3, color: '#14b8a6' },
+                  { label: 'On-site', value: 85, color: '#18181B' },
+                  { label: 'Remote', value: 13, color: '#6366f1' },
+                  { label: 'Hybrid', value: 2, color: '#14b8a6' },
                 ]} size={180} />
               </div>
             </div>
@@ -521,14 +521,14 @@ export default function TechTalentReport() {
           <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 mt-10">
             <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Most tagged skills</p>
             <HBar data={[
-              { label: 'AI / Machine Learning', value: 25.1, color: '#18181B' },
-              { label: 'Engineering', value: 21.2, color: '#27272A' },
-              { label: 'Platform', value: 16.0, color: '#3F3F46' },
-              { label: 'Security', value: 14.7, color: '#52525B' },
-              { label: 'Growth', value: 14.5, color: '#71717A' },
-              { label: 'Infrastructure', value: 12.1, color: '#A1A1AA' },
-              { label: 'Go', value: 8.9, color: '#D4D4D8' },
-              { label: 'Python', value: 6.4, color: '#E4E4E7' },
+              { label: 'AI / Machine Learning', value: 21, color: '#18181B' },
+              { label: 'Platform', value: 17, color: '#27272A' },
+              { label: 'Support', value: 16, color: '#3F3F46' },
+              { label: 'Growth', value: 15, color: '#52525B' },
+              { label: 'Solutions', value: 14, color: '#71717A' },
+              { label: 'Operations', value: 12, color: '#A1A1AA' },
+              { label: 'Security', value: 10, color: '#D4D4D8' },
+              { label: 'Infrastructure', value: 9, color: '#E4E4E7' },
             ]} unit="%" />
           </div>
           <Sources>
