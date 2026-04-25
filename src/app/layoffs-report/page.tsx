@@ -588,40 +588,38 @@ export default function LayoffsReport() {
 
             {/* ─── SECTION 6: CVin.Bio DATA ─── */}
             <section className="mb-28">
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">What we see in our own data</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">What we see in our own massive dataset</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
                 <div>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                    CVin.Bio tracks <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies in real time. Our data provides a useful lens on the relationship between layoffs and hiring, since we can observe both sides of the equation simultaneously.
+                    CVin.Bio tracks <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies in real time. Because we recently scaled our ingestion engine to capture ~26,000 live jobs across hundreds of new ATS platforms, our data provides an incredibly sharp lens on where companies are actually deploying capital right now.
                   </p>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                    Among our tracked companies, 23 executed layoffs in the past 12 months while simultaneously posting new roles. This may reflect the structural nature of the current labor market transition, where companies can be cutting in some areas while actively investing in others. The roles being reduced (customer support, QA, content operations) tend to be categorically different from the roles being created (AI engineering, infrastructure, product management for AI-native products).
+                    The narrative that "tech is dead" is false. Tech is simply reallocating. Despite the massive layoff waves across the industry, companies are aggressively hiring for specific skill clusters.
                   </p>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                    AI and machine learning roles account for approximately 89 percent of new postings at companies that also conducted layoffs. Infrastructure engineering follows at around 72 percent, driven by the compute requirements of AI model training. Product management roles appear in roughly 58 percent of hiring companies.
+                    AI and Machine Learning is now the single most demanded skill category, appearing in 21% of all open roles across our entire dataset. Platform engineering (17%) and Support (16%) follow closely. The intense focus on Platform and Infrastructure (9%) confirms that the massive compute requirements of the AI boom are driving actual headcount growth.
                   </p>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
-                    Design roles are being posted by approximately 41 percent of our tracked companies, a notable decline from around 68 percent in 2023. Customer success and support roles have dropped to approximately 24 percent. For job seekers, demand for technical talent may not have disappeared. It appears to have been redirected toward AI-adjacent capabilities.
+                    Growth (15%) and Solutions (14%) indicate that companies are still investing in go-to-market, but they want technical sellers and growth hackers who can drive revenue efficiency. For job seekers, the demand hasn't disappeared—it has just violently shifted toward AI, infrastructure, and revenue-generating roles.
                   </p>
                 </div>
                 <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
-                  <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">New postings despite layoffs (% of tracked companies)</p>
+                  <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Most in-demand skill categories (% of all listings)</p>
                   <HBar data={[
-                    { label: 'AI / ML roles', value: 89, color: '#18181B' },
-                    { label: 'Infrastructure', value: 72, color: '#3F3F46' },
-                    { label: 'Product', value: 58, color: '#52525B' },
-                    { label: 'Data Science', value: 53, color: '#52525B' },
-                    { label: 'Security', value: 47, color: '#71717A' },
-                    { label: 'DevOps / SRE', value: 44, color: '#71717A' },
-                    { label: 'Design', value: 41, color: '#A1A1AA' },
-                    { label: 'Sales', value: 33, color: '#A1A1AA' },
-                    { label: 'Marketing', value: 28, color: '#D4D4D8' },
-                    { label: 'Customer Success', value: 24, color: '#D4D4D8' },
+                    { label: 'AI / Machine Learning', value: 21, color: '#18181B' },
+                    { label: 'Platform', value: 17, color: '#27272A' },
+                    { label: 'Support', value: 16, color: '#3F3F46' },
+                    { label: 'Growth', value: 15, color: '#52525B' },
+                    { label: 'Solutions', value: 14, color: '#71717A' },
+                    { label: 'Operations', value: 12, color: '#A1A1AA' },
+                    { label: 'Security', value: 10, color: '#D4D4D8' },
+                    { label: 'Infrastructure', value: 9, color: '#E4E4E7' },
                   ]} unit="%" />
                 </div>
               </div>
               <Sources>
-                Source: <Cite href="https://cvin.bio/jobs">CVin.Bio Job Board</Cite>, internal data, March 2026
+                Source: <Cite href="https://cvin.bio/jobs">CVin.Bio Job Board</Cite>, deep research analysis, April 2026
               </Sources>
             </section>
 
