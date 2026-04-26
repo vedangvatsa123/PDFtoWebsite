@@ -7,7 +7,7 @@
     "transport": "stdio",
     "package": "@cvinbio/mcp-server",
     "registry": "npm",
-    "repository": "https://github.com/vedangvatsa123/PDFtoWebsite"
+    "repository": "https://github.com/vedangvatsa/PDFtoWebsite"
   },
   "tools": [
     {

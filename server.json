@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.vedangvatsa123/cvinbio",
+  "name": "io.github.vedangvatsa/cvinbio",
   "description": "Search professional profiles from the CVin.Bio talent database.",
   "repository": {
-    "url": "https://github.com/vedangvatsa123/PDFtoWebsite",
+    "url": "https://github.com/vedangvatsa/PDFtoWebsite",
     "source": "github"
   },
   "version": "1.0.0",

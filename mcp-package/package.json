@@ -2,7 +2,7 @@
   "name": "@cvinbio/mcp-server",
   "version": "1.0.0",
   "description": "MCP server for searching professional profiles from the CVin.Bio talent database",
-  "mcpName": "io.github.vedangvatsa123/cvinbio",
+  "mcpName": "io.github.vedangvatsa/cvinbio",
   "main": "index.js",
   "bin": {
     "cvinbio-mcp": "./index.js"
@@ -18,7 +18,7 @@
   "homepage": "https://cvin.bio",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vedangvatsa123/PDFtoWebsite"
+    "url": "https://github.com/vedangvatsa/PDFtoWebsite"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
