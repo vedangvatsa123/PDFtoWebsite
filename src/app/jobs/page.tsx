@@ -427,7 +427,7 @@ export default function JobsPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={job.company_logo || `https://logo.clearbit.com/${job.company.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`}
+                  src={job.company_logo || `https://www.google.com/s2/favicons?domain=${job.company.toLowerCase().replace(/[^a-z0-9]/g, '')}.com&sz=128`}
                   alt={`${job.company} logo`}
                   className="h-5 w-5 rounded shrink-0 object-cover"
                   loading="lazy"
