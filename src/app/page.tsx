@@ -113,7 +113,7 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <main id="main-content" className="flex-1 flex flex-col items-center justify-start pt-[8vh] sm:pt-[10vh] p-4 py-2 sm:py-4">
+      <main id="main-content" className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4 sm:space-y-6 text-center">
           <div className="rounded-2xl p-2 sm:p-4 dark:bg-white dark:shadow-md">
             <Image
@@ -128,10 +128,10 @@ export default function Home() {
 
           <div className="space-y-3">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-balance">
-              The CV format built for AI agents.
+              The CV format built for AI agents
             </h1>
             <Link href="/ai-discovery" className="inline-block text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
-              Get a machine-readable profile and auto-match with jobs. &rarr;
+              Get an AI-ready profile and auto-match with jobs &rarr;
             </Link>
           </div>
 
