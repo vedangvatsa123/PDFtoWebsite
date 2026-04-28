@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const data = await getProfileBySlug(slug);
   if (!data) {
-    const decodedSearch = slug.replace(/-/g, ' ').toLowerCase();
+    const decodedSearch = slug.replace(/-/g, '%').toLowerCase();
     const { data: jobs } = await supabaseForCompany.from('jobs').select('company').ilike('company', `${decodedSearch}%`).limit(1);
     if (jobs && jobs.length > 0) {
       const { getCompanyMeta } = await import('@/lib/company-data');
@@ -276,7 +276,7 @@ export default async function ProfileSlugPage({ params }: PageProps) {
 
   const data = await getProfileBySlug(slug);
   if (!data) {
-    const decodedSearch = slug.replace(/-/g, ' ').toLowerCase();
+    const decodedSearch = slug.replace(/-/g, '%').toLowerCase();
     const { data: jobs } = await supabaseForCompany
       .from('jobs')
       .select('*')
