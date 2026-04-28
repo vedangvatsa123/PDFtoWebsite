@@ -114,7 +114,6 @@ jobs:
           fi
 
       - name: Sync remote jobs
-        if: steps.slot.outputs.slot == 'thread' || github.event.inputs.sync_only == 'true'
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
