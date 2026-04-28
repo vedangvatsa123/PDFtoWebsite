@@ -271,42 +271,49 @@ function normalizeJobType(raw) {
   return raw;
 }
 
-async function fetchExistingHashes() {
-  // Fetch all existing dedup_hashes from DB to skip duplicates client-side
+async function fetchExistingKeys() {
+  // Fetch all existing dedup_hashes AND external_ids from DB to skip duplicates client-side
   const allHashes = new Set();
+  const allExternalIds = new Set();
   let offset = 0;
   const pageSize = 1000;
   while (true) {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/jobs?select=dedup_hash&offset=${offset}&limit=${pageSize}`,
+      `${SUPABASE_URL}/rest/v1/jobs?select=dedup_hash,external_id&offset=${offset}&limit=${pageSize}`,
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
     );
     if (!res.ok) break;
     const rows = await res.json();
     if (rows.length === 0) break;
-    for (const r of rows) allHashes.add(r.dedup_hash);
+    for (const r of rows) {
+      allHashes.add(r.dedup_hash);
+      if (r.external_id) allExternalIds.add(r.external_id);
+    }
     offset += pageSize;
   }
-  return allHashes;
+  return { allHashes, allExternalIds };
 }
 
 async function supabaseUpsert(jobs) {
-  // Deduplicate by dedup_hash in-memory
+  // Deduplicate by external_id in-memory (prefer external_id over dedup_hash)
   const seen = new Map();
   for (const job of jobs) {
-    if (!seen.has(job.dedup_hash)) {
-      seen.set(job.dedup_hash, job);
+    const key = job.external_id || job.dedup_hash;
+    if (!seen.has(key)) {
+      seen.set(key, job);
     }
   }
   const unique = [...seen.values()];
   console.log(`   After in-memory dedup: ${unique.length} unique jobs`);
 
-  // Pre-fetch existing hashes to skip duplicates client-side
-  console.log(`   📥 Fetching existing hashes from DB...`);
-  const existingHashes = await fetchExistingHashes();
-  console.log(`   📥 Found ${existingHashes.size} existing jobs in DB`);
+  // Pre-fetch existing keys to skip duplicates client-side
+  console.log(`   📥 Fetching existing keys from DB...`);
+  const { allHashes, allExternalIds } = await fetchExistingKeys();
+  console.log(`   📥 Found ${allExternalIds.size} existing external_ids, ${allHashes.size} hashes in DB`);
 
-  const newJobs = unique.filter(j => !existingHashes.has(j.dedup_hash));
+  // A job is new if BOTH its external_id AND dedup_hash are missing from DB
+  // This ensures re-posted roles (same title, new ATS id) get inserted
+  const newJobs = unique.filter(j => !allExternalIds.has(j.external_id));
   const skippedCount = unique.length - newJobs.length;
   console.log(`   🆕 ${newJobs.length} new jobs to insert (${skippedCount} already exist)`);
 
@@ -659,7 +666,7 @@ async function fetchGreenhouse() {
           tags: extractTags(j.title),
           apply_url: j.absolute_url,
           category: null,
-          published_at: j.first_published || j.updated_at || null,
+          published_at: j.updated_at || j.first_published || null,
         }));
       if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs`);
       jobs.push(...companyJobs);
