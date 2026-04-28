@@ -23,11 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: `Tech Jobs — Browse ${countStr} Open Roles at Top Companies`,
+    title: `Browse ${countStr} Open Roles at Top Companies | CVin.Bio`,
     description: `Browse ${countStr} tech job openings at top companies including OpenAI, Stripe, Cloudflare, Anthropic and more. Filter by role, location, and company. Updated daily.`,
     keywords: ['tech jobs', 'software engineer jobs', 'AI jobs', 'remote tech jobs', 'startup jobs', 'engineering careers'],
     openGraph: {
-      title: `Browse ${countStr} Tech Jobs at Top Companies`,
+      title: `Browse ${countStr} Jobs at Top Companies`,
       description: `Search open roles at OpenAI, Stripe, Cloudflare, Anthropic, Databricks, and hundreds of top tech companies. Updated daily.`,
       url: `${siteUrl}/jobs`,
       type: 'website',
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Browse ${countStr} Tech Jobs`,
+      title: `Browse ${countStr} Jobs`,
       description: 'Search open roles at top tech companies. Updated daily.',
     },
     alternates: { canonical: `${siteUrl}/jobs` },
