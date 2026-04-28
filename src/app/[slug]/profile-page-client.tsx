@@ -287,7 +287,7 @@ export default function ProfilePageClient({ data, slug }: Props) {
             </div>
             {cardDataUrl ? (
               <div className="flex flex-col items-center gap-2 w-full">
-                <img src={cardDataUrl} alt={`${name || 'CVin.Bio'} shareable story card`} className="w-24 rounded-xl shadow-lg border border-border" />
+                <img src={cardDataUrl} alt={`${data.profile.fullName || 'CVin.Bio'} shareable story card`} className="w-24 rounded-xl shadow-lg border border-border" />
                 <a
                   href={cardDataUrl}
                   download={`cvin-${slug}.png`}

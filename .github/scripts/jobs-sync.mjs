@@ -311,9 +311,9 @@ async function supabaseUpsert(jobs) {
   const { allHashes, allExternalIds } = await fetchExistingKeys();
   console.log(`   📥 Found ${allExternalIds.size} existing external_ids, ${allHashes.size} hashes in DB`);
 
-  // A job is new if BOTH its external_id AND dedup_hash are missing from DB
-  // This ensures re-posted roles (same title, new ATS id) get inserted
-  const newJobs = unique.filter(j => !allExternalIds.has(j.external_id));
+  // A job is new only if BOTH its external_id AND dedup_hash are absent from DB
+  // This prevents cross-source duplicates (same company+title from RemoteOK vs Greenhouse)
+  const newJobs = unique.filter(j => !allExternalIds.has(j.external_id) && !allHashes.has(j.dedup_hash));
   const skippedCount = unique.length - newJobs.length;
   console.log(`   🆕 ${newJobs.length} new jobs to insert (${skippedCount} already exist)`);
 

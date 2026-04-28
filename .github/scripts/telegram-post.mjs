@@ -271,7 +271,7 @@ function formatJobsMessage(jobs) {
 
   lines.push('');
   lines.push('—');
-  lines.push('Turn your CV into a Website: <a href="https://cvin.bio?utm_source=telegram&utm_medium=job_post">cvin.bio</a>');
+  lines.push('Turn your CV into a Website: <a href="https://cvin.bio?utm_source=social&utm_medium=telegram">cvin.bio</a>');
 
   return lines.join('\n');
 }
