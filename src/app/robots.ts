@@ -49,6 +49,12 @@ export default function robots(): MetadataRoute.Robots {
           'ICC-Crawler',
           'Neevabot',
           'ISSCyberRiskCrawler',
+          'MistralBot',
+          'xAI-Grok',
+          'Claude-SearchBot',
+          'BraveBot',
+          'SamsungBot',
+          'MojeekBot',
 
           // ── Search Engines ──
           'Googlebot',
