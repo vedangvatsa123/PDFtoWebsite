@@ -53,6 +53,17 @@ const LOCATIONS = [
   { value: 'onsite', label: 'On-site' },
 ];
 
+function addUTM(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.set('utm_source', 'cvin.bio');
+    u.searchParams.set('utm_medium', 'job_board');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -247,7 +258,7 @@ export default function JobsPage() {
     if (userSkills.length === 0) {
       e.preventDefault();
       posthog.capture('jobs_interstitial_modal_shown', { job_id: job.id, company: job.company });
-      setPendingJobApply(job.apply_url);
+      setPendingJobApply(addUTM(job.apply_url));
     }
   };
 
@@ -407,7 +418,7 @@ export default function JobsPage() {
             {jobs.map((job) => (
               <a
                 key={job.id}
-                href={job.apply_url}
+                href={addUTM(job.apply_url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-job-id={job.id}
