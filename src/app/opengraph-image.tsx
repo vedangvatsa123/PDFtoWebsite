@@ -57,7 +57,7 @@ export default async function Image() {
                
                {/* Left Column: Profile */}
                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '45%', borderRight: '1px solid #e4e4e7', paddingRight: 48 }}>
-                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=480&h=480&q=80" style={{ width: 340, height: 340, borderRadius: 340, border: '2px solid #e4e4e7', objectFit: 'cover' }} />
+                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=480&h=480&q=80" alt="CVin.Bio profile example" style={{ width: 340, height: 340, borderRadius: 340, border: '2px solid #e4e4e7', objectFit: 'cover' }} />
                </div>
                
                {/* Right Column: Experience */}

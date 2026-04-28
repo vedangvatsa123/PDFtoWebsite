@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     title: 'Companies Hiring Now | CVin.Bio',
     description: 'Browse all companies actively hiring on CVin.Bio. Discover open roles at top tech companies.',
     siteName: 'CVin.Bio',
+    images: [{ url: 'https://cvin.bio/opengraph-image', width: 1200, height: 630, alt: 'Browse companies hiring on CVin.Bio' }],
   },
   twitter: { card: 'summary_large_image', title: 'Companies Hiring Now | CVin.Bio' },
   robots: { index: true, follow: true },
@@ -162,7 +163,7 @@ export default async function CompaniesPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=64`}
-                  alt={c.name}
+                  alt={`${c.name} logo`}
                   className="h-5 w-5 sm:h-6 sm:w-6 rounded-md opacity-80 hover:opacity-100 transition-all shrink-0"
                   loading="lazy"
                 />
@@ -196,7 +197,7 @@ export default async function CompaniesPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`https://www.google.com/s2/favicons?domain=${domainFor(company.name)}&sz=32`}
-                  alt={company.name}
+                  alt={`${company.name} logo`}
                   className="h-5 w-5 rounded shrink-0"
                   loading="lazy"
                 />

@@ -34,7 +34,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
           {/* Right Visual Side */}
           <div style={{ display: 'flex', width: '45%', height: '100%', backgroundColor: '#f4f4f5' }}>
-            <img src={post.featuredImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={post.featuredImage} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
 
         </div>

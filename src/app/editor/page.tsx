@@ -1199,7 +1199,7 @@ export default function EditorPage() {
                         </div>
                         {cardDataUrl ? (
                             <div className="flex flex-col items-center gap-2 w-full">
-                                <img src={cardDataUrl} alt="Story card preview" className="w-24 rounded-xl shadow-lg border border-border" />
+                                <img src={cardDataUrl} alt={`${celebrationSlug || 'CVin.Bio'} shareable story card`} className="w-24 rounded-xl shadow-lg border border-border" />
                                 <a
                                     href={cardDataUrl}
                                     download={`cvin-${celebrationSlug}.png`}
@@ -1477,7 +1477,7 @@ export default function EditorPage() {
                                             <label htmlFor="avatar-upload" className="relative group cursor-pointer flex-shrink-0">
                                                 <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
                                                     {profile.avatarUrl ? (
-                                                        <img src={profile.avatarUrl} alt="Profile" className="h-full w-full object-cover" />
+                                                        <img src={profile.avatarUrl} alt={`${profile.fullName || 'User'} profile photo`} className="h-full w-full object-cover" />
                                                     ) : (
                                                         <UploadCloud className="h-6 w-6 text-gray-400" />
                                                     )}

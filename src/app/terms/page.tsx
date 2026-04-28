@@ -5,6 +5,13 @@ import MicroFooter from '@/components/micro-footer';
 export const metadata: Metadata = {
   title: 'Terms & Privacy',
   description: 'Terms of Service and Privacy Policy for the CVin.Bio platform.',
+  openGraph: {
+    title: 'Terms & Privacy | CVin.Bio',
+    description: 'Terms of Service and Privacy Policy for the CVin.Bio platform.',
+    url: 'https://cvin.bio/terms',
+    images: [{ url: 'https://cvin.bio/opengraph-image', width: 1200, height: 630, alt: 'CVin.Bio Terms & Privacy' }],
+  },
+  twitter: { card: 'summary_large_image', title: 'Terms & Privacy | CVin.Bio' },
 };
 
 export default function TermsPage() {
