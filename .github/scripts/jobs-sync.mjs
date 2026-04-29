@@ -374,24 +374,36 @@ function normalizeJobType(raw) {
 }
 
 async function fetchExistingKeys() {
+  // Wait for connection pool to drain after massive parallel fetches
+  await sleep(2000);
+  
   // Fetch all existing dedup_hashes AND external_ids from DB to skip duplicates client-side
   const allHashes = new Set();
   const allExternalIds = new Set();
   let offset = 0;
   const pageSize = 1000;
+  let retries = 0;
   while (true) {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/jobs?select=dedup_hash,external_id&offset=${offset}&limit=${pageSize}`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-    );
-    if (!res.ok) break;
-    const rows = await res.json();
-    if (rows.length === 0) break;
-    for (const r of rows) {
-      allHashes.add(r.dedup_hash);
-      if (r.external_id) allExternalIds.add(r.external_id);
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/jobs?select=dedup_hash,external_id&offset=${offset}&limit=${pageSize}`,
+        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+      );
+      if (!res.ok) break;
+      const rows = await res.json();
+      if (rows.length === 0) break;
+      for (const r of rows) {
+        allHashes.add(r.dedup_hash);
+        if (r.external_id) allExternalIds.add(r.external_id);
+      }
+      offset += pageSize;
+      retries = 0; // reset on success
+    } catch (e) {
+      retries++;
+      if (retries > 5) { console.error('  ❌ fetchExistingKeys failed after 5 retries'); break; }
+      console.log(`  ⚠ fetchExistingKeys retry ${retries}/5: ${e.message}`);
+      await sleep(3000 * retries);
     }
-    offset += pageSize;
   }
   return { allHashes, allExternalIds };
 }
@@ -1274,15 +1286,15 @@ const BAMBOOHR_SLUGS = [
 
 async function fetchBambooHR() {
   console.log('\n── BambooHR ──');
-  const jobs = [];
+  const allJobs = [];
 
-  for (const slug of BAMBOOHR_SLUGS) {
+  const tasks = BAMBOOHR_SLUGS.map(slug => async () => {
     try {
       const res = await fetch(`https://${slug}.bamboohr.com/careers/list`, {
         headers: { 'Accept': 'application/json' },
         redirect: 'manual',
       });
-      if (res.status !== 200) { console.log(`  ⚠ ${slug}: ${res.status}`); continue; }
+      if (res.status !== 200) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
       const data = await res.json();
       const openings = data.result || (Array.isArray(data) ? data : []);
       const companyJobs = openings.map(j => {
@@ -1307,26 +1319,24 @@ async function fetchBambooHR() {
       }).filter(j => j.title);
 
       // --- TECH COMPANY HEURISTIC FILTER ---
-      // BambooHR contains many non-tech SMBs.
-      // We consider it a tech company if they have at least one engineering/tech role open.
       const isTechCompany = companyJobs.some(j => 
         /engineer|developer|swe|software|frontend|backend|fullstack|data scien|machine learning|ai\b|product manager|ux design|qa /i.test(j.title)
       );
+      if (!isTechCompany) return [];
 
-      if (!isTechCompany) {
-        continue;
-      }
-
-      if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs (Verified Tech Company)`);
-      jobs.push(...companyJobs);
+      if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs (Tech)`);
+      return companyJobs;
     } catch (e) {
       console.log(`  ⚠ ${slug}: ${e.message}`);
+      return [];
     }
-    await sleep(300);
-  }
+  });
 
-  console.log(`  Total: ${jobs.length} jobs from BambooHR`);
-  return jobs;
+  const results = await workerPool(tasks, 200);
+  results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
+
+  console.log(`  Total: ${allJobs.length} jobs from BambooHR`);
+  return allJobs;
 }
 
 // ─── Source: Remotive ───
@@ -1513,12 +1523,12 @@ async function fetchJobicy() {
 // ─── Source: Greenhouse (per-company) ───
 async function fetchGreenhouse() {
   console.log('\n── Greenhouse ──');
-  const jobs = [];
+  const allJobs = [];
 
-  for (const slug of GREENHOUSE_SLUGS) {
+  const tasks = GREENHOUSE_SLUGS.map(slug => async () => {
     try {
       const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`);
-      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); continue; }
+      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
       const data = await res.json();
       const companyJobs = (data.jobs || [])
         .map(j => ({
@@ -1529,35 +1539,38 @@ async function fetchGreenhouse() {
           company: j.company_name || slug,
           company_logo: null,
           location: j.location?.name || 'Remote',
-          job_type: null, // Greenhouse doesn't provide this
+          job_type: null,
           salary: null,
-          description: null, // Would need 2nd call
+          description: null,
           tags: extractTags(j.title),
           apply_url: j.absolute_url,
           category: null,
           published_at: j.updated_at || j.first_published || null,
         }));
       if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs`);
-      jobs.push(...companyJobs);
+      return companyJobs;
     } catch (e) {
       console.log(`  ⚠ ${slug}: ${e.message}`);
+      return [];
     }
-    await sleep(500); // Rate limit protection
-  }
+  });
 
-  console.log(`  Total: ${jobs.length} jobs from Greenhouse`);
-  return jobs;
+  const results = await workerPool(tasks, 200);
+  results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
+
+  console.log(`  Total: ${allJobs.length} jobs from Greenhouse`);
+  return allJobs;
 }
 
 // ─── Source: Ashby (per-company) ───
 async function fetchAshby() {
   console.log('\n── Ashby ──');
-  const jobs = [];
+  const allJobs = [];
 
-  for (const slug of ASHBY_SLUGS) {
+  const tasks = ASHBY_SLUGS.map(slug => async () => {
     try {
       const res = await fetch(`https://api.ashbyhq.com/posting-api/job-board/${slug}`);
-      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); continue; }
+      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
       const data = await res.json();
       const companyJobs = (data.jobs || [])
         .map(j => ({
@@ -1577,15 +1590,18 @@ async function fetchAshby() {
           published_at: j.publishedAt || null,
         }));
       if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs`);
-      jobs.push(...companyJobs);
+      return companyJobs;
     } catch (e) {
       console.log(`  ⚠ ${slug}: ${e.message}`);
+      return [];
     }
-    await sleep(500);
-  }
+  });
 
-  console.log(`  Total: ${jobs.length} jobs from Ashby`);
-  return jobs;
+  const results = await workerPool(tasks, 200);
+  results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
+
+  console.log(`  Total: ${allJobs.length} jobs from Ashby`);
+  return allJobs;
 }
 
 // ─── Source: Workable (per-company) ───
@@ -1638,12 +1654,12 @@ async function fetchWorkable() {
 // ─── Source: Lever (per-company) ───
 async function fetchLever() {
   console.log('\n── Lever ──');
-  const jobs = [];
+  const allJobs = [];
 
-  for (const slug of LEVER_SLUGS) {
+  const tasks = LEVER_SLUGS.map(slug => async () => {
     try {
       const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`);
-      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); continue; }
+      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
       const data = await res.json();
       const companyJobs = (Array.isArray(data) ? data : [])
         .map(j => ({
@@ -1663,15 +1679,18 @@ async function fetchLever() {
           published_at: j.createdAt ? new Date(j.createdAt).toISOString() : null,
         }));
       if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs`);
-      jobs.push(...companyJobs);
+      return companyJobs;
     } catch (e) {
       console.log(`  ⚠ ${slug}: ${e.message}`);
+      return [];
     }
-    await sleep(500);
-  }
+  });
 
-  console.log(`  Total: ${jobs.length} jobs from Lever`);
-  return jobs;
+  const results = await workerPool(tasks, 200);
+  results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
+
+  console.log(`  Total: ${allJobs.length} jobs from Lever`);
+  return allJobs;
 }
 
 // ─── Source: SmartRecruiters (per-company) ───
@@ -1999,23 +2018,24 @@ async function main() {
   console.log('🚀 Jobs Sync — Starting');
   const startTime = Date.now();
 
-  // Fetch from all sources (aggregators first = richer data wins dedup)
-  const remoteok = await fetchRemoteOK();
-  const remotive = await fetchRemotive();
-  const arbeitnow = await fetchArbeitnow();
-  const wwr = await fetchWeWorkRemotely();
-  const himalayas = await fetchHimalayas();
-  const jobicy = await fetchJobicy();
-  const greenhouse = await fetchGreenhouse();
-  const ashby = await fetchAshby();
-  const workable = await fetchWorkable();
-  const lever = await fetchLever();
-  const smartrecruiters = await fetchSmartRecruiters();
-  const workday = await fetchWorkday();
-  const bamboohr = await fetchBambooHR();
-  // Foorilla removed — produced garbage truncated company names
+  // Fetch from ALL sources in parallel — each source internally uses 200-concurrent worker pools
+  const [remoteok, remotive, arbeitnow, wwr, himalayas, jobicy, greenhouse, ashby, workable, lever, smartrecruiters, workday, bamboohr] = await Promise.all([
+    fetchRemoteOK(),
+    fetchRemotive(),
+    fetchArbeitnow(),
+    fetchWeWorkRemotely(),
+    fetchHimalayas(),
+    fetchJobicy(),
+    fetchGreenhouse(),
+    fetchAshby(),
+    fetchWorkable(),
+    fetchLever(),
+    fetchSmartRecruiters(),
+    fetchWorkday(),
+    fetchBambooHR(),
+  ]);
 
-  // Merge all jobs — priority order (first seen wins dedup via DB constraint)
+  // Merge all jobs
   const allJobs = [...remoteok, ...remotive, ...arbeitnow, ...wwr, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr];
   console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
 

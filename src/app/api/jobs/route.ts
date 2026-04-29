@@ -251,7 +251,7 @@ export async function GET(request: NextRequest) {
   // Build query — select only needed columns (skip description to reduce payload)
   let query = supabase
     .from('jobs')
-    .select('id,title,company,company_logo,location,job_type,salary,tags,apply_url,category,source,published_at', { count: 'exact' })
+    .select('id,title,company,company_logo,location,job_type,salary,tags,apply_url,category,source,published_at', { count: 'estimated' })
     .not('company', 'ilike', '%Gopuff%')
     .order('published_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false });
