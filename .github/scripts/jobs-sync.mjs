@@ -437,7 +437,7 @@ async function supabaseUpsert(jobs) {
 
   // Batch insert only new jobs — 200 per batch, 50 concurrent
   const batchSize = 200;
-  const concurrency = 50;
+  const concurrency = 5;
   let inserted = 0;
   const batches = [];
 
@@ -449,7 +449,7 @@ async function supabaseUpsert(jobs) {
   async function insertBatch(batch) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
+      const timeout = setTimeout(() => controller.abort(), 120000);
       const res = await fetch(`${SUPABASE_URL}/rest/v1/jobs?on_conflict=external_id`, {
         method: 'POST',
         headers: {
@@ -468,6 +468,26 @@ async function supabaseUpsert(jobs) {
         return result.length;
       } else {
         const err = await res.text();
+        // If dedup_hash conflict, try row-by-row (slower but handles cross-source dupes)
+        if (err.includes('dedup_hash')) {
+          let count = 0;
+          for (const job of batch) {
+            try {
+              const r2 = await fetch(`${SUPABASE_URL}/rest/v1/jobs?on_conflict=external_id`, {
+                method: 'POST',
+                headers: {
+                  'apikey': SUPABASE_KEY,
+                  'Authorization': `Bearer ${SUPABASE_KEY}`,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'resolution=ignore-duplicates,return=representation',
+                },
+                body: JSON.stringify([job]),
+              });
+              if (r2.ok) { const r = await r2.json(); count += r.length; }
+            } catch {} // silently skip individual dupe failures
+          }
+          return count;
+        }
         console.error(`  ❌ Batch error: ${err.substring(0, 200)}`);
         return 0;
       }
@@ -1332,7 +1352,7 @@ async function fetchBambooHR() {
     }
   });
 
-  const results = await workerPool(tasks, 200);
+  const results = await workerPool(tasks, 20);
   results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
 
   console.log(`  Total: ${allJobs.length} jobs from BambooHR`);
@@ -1555,7 +1575,7 @@ async function fetchGreenhouse() {
     }
   });
 
-  const results = await workerPool(tasks, 200);
+  const results = await workerPool(tasks, 50);
   results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
 
   console.log(`  Total: ${allJobs.length} jobs from Greenhouse`);
@@ -1597,7 +1617,7 @@ async function fetchAshby() {
     }
   });
 
-  const results = await workerPool(tasks, 200);
+  const results = await workerPool(tasks, 50);
   results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
 
   console.log(`  Total: ${allJobs.length} jobs from Ashby`);
@@ -1686,7 +1706,7 @@ async function fetchLever() {
     }
   });
 
-  const results = await workerPool(tasks, 200);
+  const results = await workerPool(tasks, 50);
   results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
 
   console.log(`  Total: ${allJobs.length} jobs from Lever`);
@@ -2018,8 +2038,9 @@ async function main() {
   console.log('🚀 Jobs Sync — Starting');
   const startTime = Date.now();
 
-  // Fetch from ALL sources in parallel — each source internally uses 200-concurrent worker pools
-  const [remoteok, remotive, arbeitnow, wwr, himalayas, jobicy, greenhouse, ashby, workable, lever, smartrecruiters, workday, bamboohr] = await Promise.all([
+  // ── PHASE 1: High-value sources (parallel, 50 concurrent each) ──
+  console.log('\n═══ Phase 1: Core sources ═══');
+  const [remoteok, remotive, arbeitnow, wwr, himalayas, jobicy, greenhouse, ashby, workable, lever, smartrecruiters, workday] = await Promise.all([
     fetchRemoteOK(),
     fetchRemotive(),
     fetchArbeitnow(),
@@ -2032,76 +2053,68 @@ async function main() {
     fetchLever(),
     fetchSmartRecruiters(),
     fetchWorkday(),
-    fetchBambooHR(),
   ]);
 
-  // Merge all jobs
-  const allJobs = [...remoteok, ...remotive, ...arbeitnow, ...wwr, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday, ...bamboohr];
-  console.log(`\n📊 Total jobs collected: ${allJobs.length}`);
+  const phase1Jobs = [...remoteok, ...remotive, ...arbeitnow, ...wwr, ...himalayas, ...jobicy, ...greenhouse, ...ashby, ...workable, ...lever, ...smartrecruiters, ...workday];
+  console.log(`\n📊 Phase 1 collected: ${phase1Jobs.length} jobs`);
 
-  // Filter out invalid entries and bad data
-  const BLOCKED_COMPANIES = ['impuls hrk'];
-  const BLOCKED_TITLE_WORDS = ['(m/w/d)', 'm/w/d', 'w/m/d', 'entwickler', 'mitarbeiter', 'gesucht', 'du liebst', 'werde unser', 'praktikum'];
-
-  const validJobs = allJobs.filter(j => {
-    if (!j.title || !j.company || !j.apply_url) return false;
-    if (j.company.includes('...') || j.company.length <= 2) return false;
-    
-    if (BLOCKED_COMPANIES.includes(j.company.toLowerCase().trim())) return false;
-    
-    const lowerTitle = j.title.toLowerCase();
-    if (BLOCKED_TITLE_WORDS.some(w => lowerTitle.includes(w))) return false;
-
-    // Reject titles that start with numeric IDs (e.g. "55475267629 - Product Development...")
-    if (/^\d{5,}/.test(j.title.trim())) return false;
-
-    // Reject non-Latin titles (CJK, Cyrillic, Czech diacritics, etc.)
-    if (/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af\u0400-\u04ff]/.test(j.title)) return false;
-    return true;
-  });
-  console.log(`   Valid jobs: ${validJobs.length} (filtered ${allJobs.length - validJobs.length} bad)`);
-
-  // ── Title normalization ──
-  for (const job of validJobs) {
-    let t = job.title;
-
-    // 1. Decode HTML entities (e.g. &amp; → &, &lt; → <)
-    t = t.replace(/&amp;/gi, '&')
-         .replace(/&lt;/gi, '<')
-         .replace(/&gt;/gi, '>')
-         .replace(/&quot;/gi, '"')
-         .replace(/&#39;/gi, "'")
-         .replace(/&nbsp;/gi, ' ');
-
-    // 2. Trim noisy suffixes: cut at first " - ", " / ", or " (" if the core part is ≥20 chars
-    const match = t.match(/^(.{20,}?)\s*[\-\/]\s+.+/) || t.match(/^(.{20,}?)\s*\(.+/);
-    if (match) {
-      t = match[1].trim();
-    }
-
-    // 3. Clean up extra whitespace
-    t = t.replace(/\s+/g, ' ').trim();
-
-    job.title = t;
+  // Process and upsert Phase 1 immediately
+  const phase1Valid = filterAndNormalize(phase1Jobs);
+  if (phase1Valid.length > 0) {
+    const { inserted, skipped } = await supabaseUpsert(phase1Valid);
+    console.log(`✅ Phase 1: Inserted ${inserted}, Skipped ${skipped}`);
   }
 
-  // Stamp synced_at on every record
-  const now = new Date().toISOString();
-  for (const job of validJobs) {
-    job.synced_at = now;
-  }
+  // ── PHASE 2: BambooHR (5,138 slugs, needs separate socket pool) ──
+  console.log('\n═══ Phase 2: BambooHR ═══');
+  await sleep(5000); // Let sockets fully drain
+  const bamboohr = await fetchBambooHR();
+  console.log(`📊 Phase 2 collected: ${bamboohr.length} jobs`);
 
-  // Upsert to Supabase
-  if (validJobs.length > 0) {
-    const { inserted, skipped } = await supabaseUpsert(validJobs);
-    console.log(`\n✅ Inserted: ${inserted}, Skipped (duplicates): ${skipped}`);
+  const phase2Valid = filterAndNormalize(bamboohr);
+  if (phase2Valid.length > 0) {
+    const { inserted, skipped } = await supabaseUpsert(phase2Valid);
+    console.log(`✅ Phase 2: Inserted ${inserted}, Skipped ${skipped}`);
   }
 
   // Cleanup old jobs
   await cleanupOldJobs();
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`\n🏁 Done in ${elapsed}s`);
+  console.log(`\n🏁 Done in ${elapsed}s — Total: ${phase1Jobs.length + bamboohr.length} jobs processed`);
+}
+
+// ── Shared filter/normalize logic ──
+function filterAndNormalize(allJobs) {
+  const BLOCKED_COMPANIES = ['impuls hrk'];
+  const BLOCKED_TITLE_WORDS = ['(m/w/d)', 'm/w/d', 'w/m/d', 'entwickler', 'mitarbeiter', 'gesucht', 'du liebst', 'werde unser', 'praktikum'];
+
+  const validJobs = allJobs.filter(j => {
+    if (!j.title || !j.company || !j.apply_url) return false;
+    if (j.company.includes('...') || j.company.length <= 2) return false;
+    if (BLOCKED_COMPANIES.includes(j.company.toLowerCase().trim())) return false;
+    const lowerTitle = j.title.toLowerCase();
+    if (BLOCKED_TITLE_WORDS.some(w => lowerTitle.includes(w))) return false;
+    if (/^\d{5,}/.test(j.title.trim())) return false;
+    if (/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af\u0400-\u04ff]/.test(j.title)) return false;
+    return true;
+  });
+  console.log(`   Valid jobs: ${validJobs.length} (filtered ${allJobs.length - validJobs.length} bad)`);
+
+  // Title normalization
+  for (const job of validJobs) {
+    let t = job.title;
+    t = t.replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&nbsp;/gi, ' ');
+    const match = t.match(/^(.{20,}?)\s*[\-\/]\s+.+/) || t.match(/^(.{20,}?)\s*\(.+/);
+    if (match) t = match[1].trim();
+    t = t.replace(/\s+/g, ' ').trim();
+    job.title = t;
+  }
+
+  // Stamp synced_at
+  const now = new Date().toISOString();
+  for (const job of validJobs) job.synced_at = now;
+  return validJobs;
 }
 
 main().catch(e => { console.error('Fatal:', e); process.exit(1); });
