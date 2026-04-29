@@ -6,6 +6,32 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// ── Non-English title detection ──
+// Matches titles that are clearly non-English (German, French, Spanish, etc.)
+const NON_ENGLISH_PATTERNS = [
+  // German
+  /\b(und|oder|für|mit|bei|zur|zum|ein|eine|des|dem|den|als|auf|nach|aus|über|unter|vor|zwischen|durch|gegen|ohne|während)\b/i,
+  /\b(Stellvertretend|Abteilung|Geschäftsführ|Sachbearbeit|Fachangestellt|Mitarbeiter|Leiter|Berater|Steuer|Buchhalt|Werkstudent|Praktikant|Ausbildung|Kaufm[aä]nn|Entwickl)\w*/,
+  /\b(gmbh|gesellschaft|verwaltung|beratung|betrieb|abteilung|fachkraft)\b/i,
+  // French
+  /\b(responsable|ingénieur|développeur|chargé|adjoint|directeur|gestionnaire|conseiller|technicien)\b/i,
+  /\b(avec|dans|pour|chez|entre|cette|sont|nous|vous|leur|mais|donc|alors)\b/i,
+  // Spanish
+  /\b(ingeniero|desarrollador|gerente|coordinador|analista|ejecutivo|técnico|especialista|asesor)\b/i,
+  /\b(para|como|está|este|esta|pero|también|desde|donde|cuando|porque)\b/i,
+  // Portuguese
+  /\b(engenheiro|desenvolvedor|analista|gerente|coordenador|especialista|técnico)\b/i,
+  // Dutch
+  /\b(medewerker|adviseur|beheerder|directeur|coördinator|verantwoordelijk)\b/i,
+  // Detect extended non-ASCII chars heavily used in European languages (ä,ö,ü,ß,ñ,ç etc.)
+  /[äöüßñçàèìòùâêîôûëïãõ]{2,}/i,
+];
+
+function isNonEnglishTitle(title: string): boolean {
+  if (!title) return false;
+  return NON_ENGLISH_PATTERNS.some(p => p.test(title));
+}
+
 // ── Role keyword families for title matching ──
 const ROLE_FAMILIES: Record<string, string[]> = {
   frontend:    ['frontend', 'front-end', 'front end', 'react', 'vue', 'angular', 'ui engineer', 'ui developer', 'css', 'next.js', 'nextjs'],
@@ -222,10 +248,10 @@ export async function GET(request: NextRequest) {
     // Not authenticated — show all jobs unfiltered
   }
 
-  // Build query
+  // Build query — select only needed columns (skip description to reduce payload)
   let query = supabase
     .from('jobs')
-    .select('*', { count: 'exact' })
+    .select('id,title,company,company_logo,location,job_type,salary,tags,apply_url,category,source,published_at', { count: 'exact' })
     .not('company', 'ilike', '%Gopuff%')
     .order('published_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false });
@@ -255,8 +281,8 @@ export async function GET(request: NextRequest) {
     query = query.or(`tags.ov.{${userProfile.skills.join(',')}},${titleFilters}`);
   }
 
-  // Fetch a large batch so we have enough to interleave across companies
-  const fetchLimit = limit * 6;
+  // Fetch a larger batch to allow company interleaving (3x is enough)
+  const fetchLimit = limit * 3;
   query = query.range(offset, offset + fetchLimit - 1);
 
   const { data: rawJobs, error, count } = await query;
@@ -266,9 +292,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 });
   }
 
+  // Filter out non-English titles before interleaving
+  const englishJobs = (rawJobs || []).filter(job => !isNonEnglishTitle(job.title));
+
   // Round-robin interleave: group by company, then deal one from each in rotation
   const buckets: Record<string, any[]> = {};
-  for (const job of (rawJobs || [])) {
+  for (const job of englishJobs) {
     const key = (job.company || '').toLowerCase();
     if (!buckets[key]) buckets[key] = [];
     buckets[key].push(job);
@@ -333,7 +362,7 @@ export async function GET(request: NextRequest) {
     jobsWithMatches.sort((a, b) => b.match_score - a.match_score);
   }
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     jobs: jobsWithMatches,
     total: count || 0,
     page,
@@ -342,4 +371,8 @@ export async function GET(request: NextRequest) {
     userSkills: (userProfile?.skills || []).map(s => s.trim()).filter(Boolean),
     profileComplete,
   });
+
+  // Cache for 60s on CDN, serve stale while revalidating for up to 5 min
+  response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+  return response;
 }
