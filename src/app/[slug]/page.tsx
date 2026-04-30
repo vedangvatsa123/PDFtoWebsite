@@ -436,10 +436,45 @@ export default async function ProfileSlugPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Company About — verified data or auto-generated from jobs */}
-          {(() => {
+          {/* Company About — verified data or fetched from company website */}
+          {await (async () => {
             const topLocations = [...new Set(jobs.map((j: any) => j.location?.split(',')[0]?.trim()).filter(Boolean))].slice(0, 5);
+
+            // Try fetching real company description from their website
+            let siteDesc = '';
+            if (!meta) {
+              try {
+                const domain = companyName.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com';
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 3000);
+                const resp = await fetch(`https://${domain}`, {
+                  signal: controller.signal,
+                  headers: { 'User-Agent': 'CVinBot/1.0' },
+                  redirect: 'follow',
+                });
+                clearTimeout(timeout);
+                if (resp.ok) {
+                  const html = await resp.text();
+                  // Extract meta description
+                  const descMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i)
+                    || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*name=["']description["']/i);
+                  if (descMatch?.[1]) {
+                    siteDesc = descMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
+                  }
+                  // Fallback: og:description
+                  if (!siteDesc) {
+                    const ogMatch = html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i)
+                      || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:description["']/i);
+                    if (ogMatch?.[1]) {
+                      siteDesc = ogMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
+                    }
+                  }
+                }
+              } catch { /* timeout or network error — fall through to generic */ }
+            }
+
             const description = meta?.description
+              || (siteDesc ? `${siteDesc} ${companyName} has ${totalJobs} open positions.` : '')
               || `${companyName} is actively hiring with ${totalJobs} open ${totalJobs === 1 ? 'position' : 'positions'}. ${remotePercent > 0 ? `${remotePercent}% of roles are remote. ` : ''}${topLocations.length > 0 ? `Key hiring locations include ${topLocations.join(', ')}.` : ''} ${topSkills.length > 0 ? `In-demand skills include ${topSkills.slice(0, 5).join(', ')}.` : ''}`;
             return (
               <div className="mb-8 p-5 rounded-xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50">
