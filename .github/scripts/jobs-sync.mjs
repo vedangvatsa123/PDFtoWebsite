@@ -112,6 +112,18 @@ const GREENHOUSE_SLUGS = [
   'tailscale','temporal','thedutchie','toast','toptal','trivago','twilio','twitch','udemy',
   'uniswap','unity3d','upgrade','vercel','verkada','warp','waymo','webflow','xendit','zapier',
   'ziprecruiter','zscaler',
+  // Marketing / Content / Design / BD-heavy companies
+  'spotify','notion','shopify','adobe','canva','mailchimp','hootsuite','sproutsocial',
+  'buzzfeed','voxmedia','nytimes','medium','wix','squarespace','hubspot','mailerlite',
+  'loom','miro','airtable','typeform','calendly','later','buffer','sprinklr',
+  'nike','peloton','warbyparker','allbirds','everlane','glossier','casper',
+  'netflix','hulu','paramount','warnermedia','nbcuniversal',
+  'salesforce','zendesk','freshworks','intercom','drift','gong',
+  'deel','oysterhr','remotecom','velocityglobal','papaya','omnipresent',
+  'wunderkind','iterable','braze','segment','amplitude','mixpanel',
+  'figma','sketch','invision','framer','webflow','readymag',
+  'superhuman','linear','productboard','pendo','fullstory',
+  'outreach','apollo','clearbit','zoominfo','lusha','seamlessai',
 ];
 
 // ─── Ashby company slugs ───
@@ -345,6 +357,17 @@ const LEVER_SLUGS = [
   'txidigital','unico','upguard','vacancies','veeva','vendavo','venteur','veo','vergesense',
   'versapay','vevo','vida','vivrelle','voodoo','vrchat','walkme','waveapps','wealthfront','webflow',
   'whereby','whoop','willowinc','wisdomai','workwave','wr','z1tech','zapier','zeta','zocks','zoox',
+  // Marketing / Content / Design / BD-heavy companies
+  'spotify','shopify','notion','nike','netflix','hulu','peloton','warbyparker',
+  'allbirds','casper','sweetgreen','everlane','reformation','awaytravel',
+  'hubspot','salesforce','zendesk','freshworks','gong','outreach',
+  'hootsuite','sproutsocial','latercom','buffer','mailchimp','activecampaign',
+  'canva','figma','sketch','framer','miro','loom',
+  'medium','substack','buzzfeed','voxmedia',
+  'wix','squarespace','webflow','contentful','sanity',
+  'deel','oyster','remotecom','papaya','omnipresent',
+  'clearbit','zoominfo','apollo','seamlessai','lusha',
+  'pendo','amplitude','fullstory','mixpanel','segment','heap',
 ];
 
 // ─── Helpers ───
