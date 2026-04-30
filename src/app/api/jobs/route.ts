@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
-import { normalizeLocation } from '@/lib/normalize-location';
+import { normalizeLocation as normalizeLocationDisplay } from '@/lib/normalize-location';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -436,7 +436,7 @@ export async function GET(request: NextRequest) {
       title: job.title,
       company: job.company,
       company_logo: job.company_logo,
-      location: normalizeLocation(job.location),
+      location: normalizeLocationDisplay(job.location),
       job_type: job.job_type,
       salary: job.salary,
       tags: job.tags || [],
