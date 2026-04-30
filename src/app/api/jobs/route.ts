@@ -311,28 +311,77 @@ export async function GET(request: NextRequest) {
     return true;
   });
 
-  // Round-robin interleave: group by company, then deal one from each in rotation
-  const buckets: Record<string, any[]> = {};
-  for (const job of englishJobs) {
-    const key = (job.company || '').toLowerCase();
-    if (!buckets[key]) buckets[key] = [];
-    buckets[key].push(job);
+  // Two-level interleave: by department category, then by company within each category
+  // This ensures marketing, sales, design, content roles surface alongside engineering
+  function guessCategory(job: any): string {
+    const t = (job.title || '').toLowerCase();
+    const c = (job.category || '').toLowerCase();
+    if (/engineer|developer|swe|software|devops|sre|platform|architect|backend|frontend|full.?stack/.test(t) || c === 'engineering') return 'Engineering';
+    if (/marketing|growth|seo|sem|content strat|brand/.test(t) || c === 'marketing') return 'Marketing';
+    if (/content|writer|editor|copywrite|blog|communi/.test(t) || c === 'content') return 'Content';
+    if (/design|ux|ui|creative|graphic/.test(t) || c === 'design') return 'Design';
+    if (/\bsale|account exec|business dev|bdm|revenue/.test(t) || c === 'sales') return 'Sales';
+    if (/product manag|product own|tpm|program manag/.test(t) || c === 'product') return 'Product';
+    if (/data scien|data analy|analytics|bi |data eng|machine learn|ml |ai /.test(t) || c === 'data') return 'Data & AI';
+    if (/recrui|talent|people|hr |human res/.test(t)) return 'People';
+    if (/financ|account|controller|treasury|fp&a/.test(t)) return 'Finance';
+    if (/customer|support|success/.test(t)) return 'Customer Success';
+    if (/opera|ops |supply|logistics/.test(t)) return 'Operations';
+    if (/legal|counsel|compliance/.test(t)) return 'Legal';
+    if (/security|infosec|cyber/.test(t)) return 'Security';
+    return 'Other';
   }
-  // Sort companies by job count descending so the largest pools get dealt first
-  const companyKeys = Object.keys(buckets).sort((a, b) => buckets[b].length - buckets[a].length);
+
+  // Group by category → company
+  const catBuckets: Record<string, Record<string, any[]>> = {};
+  for (const job of englishJobs) {
+    const cat = guessCategory(job);
+    const co = (job.company || '').toLowerCase();
+    if (!catBuckets[cat]) catBuckets[cat] = {};
+    if (!catBuckets[cat][co]) catBuckets[cat][co] = [];
+    catBuckets[cat][co].push(job);
+  }
+
+  // Build per-category streams (company-interleaved within each category)
+  const catStreams: Record<string, any[]> = {};
+  for (const [cat, companies] of Object.entries(catBuckets)) {
+    const coKeys = Object.keys(companies).sort((a, b) => companies[b].length - companies[a].length);
+    const stream: any[] = [];
+    let r = 0;
+    while (true) {
+      let added = false;
+      for (const co of coKeys) {
+        if (r < companies[co].length) { stream.push(companies[co][r]); added = true; }
+      }
+      if (!added) break;
+      r++;
+    }
+    catStreams[cat] = stream;
+  }
+
+  // Round-robin across categories to produce a diverse feed
+  const catKeys = Object.keys(catStreams).sort((a, b) => catStreams[b].length - catStreams[a].length);
+  const catPointers: Record<string, number> = {};
+  for (const k of catKeys) catPointers[k] = 0;
+
   const jobs: any[] = [];
-  let round = 0;
+  const seenIds = new Set<string>();
   while (jobs.length < limit) {
     let added = false;
-    for (const key of companyKeys) {
-      if (round < buckets[key].length) {
-        jobs.push(buckets[key][round]);
-        added = true;
-        if (jobs.length >= limit) break;
+    for (const cat of catKeys) {
+      while (catPointers[cat] < catStreams[cat].length) {
+        const job = catStreams[cat][catPointers[cat]];
+        catPointers[cat]++;
+        if (!seenIds.has(job.id)) {
+          seenIds.add(job.id);
+          jobs.push(job);
+          added = true;
+          break;
+        }
       }
+      if (jobs.length >= limit) break;
     }
     if (!added) break;
-    round++;
   }
 
   // Calculate match scores per job
