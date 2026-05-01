@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVin.Bio Auto-Fill</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 340px;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #0f1117;
+      color: #e4e4e7;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1a1b2e 0%, #0f1117 100%);
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .header-text h1 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f4f4f5;
+      letter-spacing: -0.3px;
+    }
+    .header-text p {
+      font-size: 10px;
+      color: #71717a;
+      margin-top: 1px;
+    }
+
+    /* ── Content ── */
+    .content {
+      padding: 16px 18px;
+    }
+
+    /* ── Setup View ── */
+    .setup-section {
+      margin-bottom: 14px;
+    }
+    .setup-section label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #a1a1aa;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-group {
+      display: flex;
+      gap: 6px;
+    }
+    .input-group input {
+      flex: 1;
+      height: 36px;
+      background: #1a1b2e;
+      border: 1px solid #27273a;
+      border-radius: 8px;
+      padding: 0 12px;
+      color: #e4e4e7;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus {
+      border-color: #6366f1;
+    }
+    .input-group input::placeholder {
+      color: #52525b;
+    }
+    .btn-connect {
+      height: 36px;
+      padding: 0 14px;
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-connect:hover { opacity: 0.9; }
+    .btn-connect:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ── Status ── */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+    .status.success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.15);
+    }
+    .status.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+    .status.loading {
+      background: rgba(99, 102, 241, 0.1);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.15);
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status.success .status-dot { background: #4ade80; }
+    .status.error .status-dot { background: #f87171; }
+    .status.loading .status-dot {
+      background: #818cf8;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── Profile Card ── */
+    .profile-card {
+      background: #1a1b2e;
+      border: 1px solid #27273a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .profile-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      overflow: hidden;
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f4f4f5;
+    }
+    .profile-email {
+      font-size: 11px;
+      color: #71717a;
+      margin-top: 1px;
+    }
+    .profile-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .field-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      background: #0f1117;
+      border-radius: 6px;
+      font-size: 10px;
+      color: #a1a1aa;
+    }
+    .field-chip .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .field-chip .dot.filled { background: #4ade80; }
+    .field-chip .dot.empty { background: #3f3f46; }
+
+    /* ── Fill Button ── */
+    .btn-fill {
+      width: 100%;
+      height: 42px;
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-fill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    .btn-fill:active { transform: translateY(0); }
+    .btn-fill:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Result ── */
+    .fill-result {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .fill-result.success {
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+    }
+    .fill-result.partial {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.12);
+      color: #fbbf24;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 10px 18px;
+      border-top: 1px solid #1e1e2e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer a {
+      font-size: 10px;
+      color: #6366f1;
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+    .footer .version {
+      font-size: 9px;
+      color: #3f3f46;
+    }
+
+    /* ── Disconnect ── */
+    .btn-disconnect {
+      background: none;
+      border: none;
+      color: #71717a;
+      font-size: 10px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      padding: 2px 0;
+    }
+    .btn-disconnect:hover { color: #f87171; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-logo">CV</div>
+    <div class="header-text">
+      <h1>CVin.Bio Auto-Fill</h1>
+      <p>Fill job applications instantly</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Setup View -->
+    <div id="setup-view">
+      <div class="setup-section">
+        <label>Your CVin.Bio Username</label>
+        <div class="input-group">
+          <input type="text" id="username-input" placeholder="e.g. vedang" spellcheck="false" />
+          <button class="btn-connect" id="connect-btn">Connect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="status-bar" class="status hidden">
+      <span class="status-dot"></span>
+      <span id="status-text"></span>
+    </div>
+
+    <!-- Connected View -->
+    <div id="connected-view" class="hidden">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar" id="avatar">
+            <span id="avatar-initial"></span>
+          </div>
+          <div>
+            <div class="profile-name" id="profile-name">—</div>
+            <div class="profile-email" id="profile-email">—</div>
+          </div>
+        </div>
+        <div class="profile-fields" id="profile-fields"></div>
+      </div>
+
+      <button class="btn-fill" id="fill-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+        Fill This Page
+      </button>
+
+      <div id="fill-result" class="fill-result hidden"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <a href="https://cvin.bio" target="_blank">cvin.bio</a>
+      <span style="color: #27273a; margin: 0 4px;">·</span>
+      <button class="btn-disconnect hidden" id="disconnect-btn">Disconnect</button>
+    </div>
+    <span class="version">v1.0.0</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,24 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "CVin.Bio Quick Apply",
+  "name": "CVin.Bio Auto-Fill",
   "version": "1.0.0",
-  "description": "One-click job applications powered by your CVin.Bio profile. Auto-fills forms and generates AI cover letters.",
-  "permissions": [
-    "storage",
-    "activeTab"
-  ],
-  "host_permissions": [
-    "https://*.greenhouse.io/*",
-    "https://*.lever.co/*",
-    "https://*.ashbyhq.com/*",
-    "https://*.smartrecruiters.com/*",
-    "https://*.workable.com/*",
-    "https://*.bamboohr.com/*",
-    "https://*.myworkdayjobs.com/*",
-    "https://*.breezy.hr/*",
-    "https://cvin.bio/*",
-    "https://www.cvin.bio/*"
-  ],
+  "description": "Auto-fill job application forms with your CVin.Bio profile data",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://cvin.bio/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -29,26 +15,11 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://boards.greenhouse.io/*",
-        "https://*.greenhouse.io/embed/job_app*",
-        "https://jobs.lever.co/*",
-        "https://jobs.ashbyhq.com/*",
-        "https://*.ashbyhq.com/*/application*",
-        "https://jobs.smartrecruiters.com/*",
-        "https://apply.workable.com/*",
-        "https://*.bamboohr.com/careers/*",
-        "https://*.myworkdayjobs.com/*",
-        "https://*.breezy.hr/*"
-      ],
+      "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["styles/overlay.css"],
       "run_at": "document_idle"
     }
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
