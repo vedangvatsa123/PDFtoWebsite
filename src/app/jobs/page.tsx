@@ -235,6 +235,7 @@ export default function JobsPage() {
   const handleQuickApply = async (job: Job) => {
     // Step 1: Check auth
     if (!user) {
+      setPendingJobApply(null);
       setShowLoginForApply(true);
       return;
     }
@@ -357,6 +358,7 @@ export default function JobsPage() {
     trackClick(job.id, job);
     if (userSkills.length === 0) {
       e.preventDefault();
+      setShowLoginForApply(false);
       posthog.capture('jobs_interstitial_modal_shown', { job_id: job.id, company: job.company });
       setPendingJobApply(addUTM(job.apply_url));
     }
