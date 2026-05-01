@@ -481,7 +481,48 @@ export default function JobsPage() {
                     )}
                   </div>
                 </div>
-                <ExternalLink className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700 group-hover:text-primary shrink-0 transition-colors" />
+                {(job.source === 'lever' || job.source === 'ashby') ? (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Quick apply via API
+                      const applyBtn = e.currentTarget;
+                      applyBtn.disabled = true;
+                      applyBtn.textContent = '...';
+                      fetch('/api/apply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          jobId: job.id,
+                          userId: 'anonymous', // Will be replaced with auth
+                          userData: { fullName: 'Quick Apply', email: 'user@cvin.bio', isPro: false },
+                        }),
+                      })
+                        .then(r => r.json())
+                        .then(data => {
+                          if (data.success) {
+                            applyBtn.textContent = '✓';
+                            applyBtn.className = applyBtn.className.replace('text-primary', 'text-emerald-500');
+                          } else {
+                            // Fallback to redirect
+                            window.open(addUTM(job.apply_url), '_blank');
+                            applyBtn.textContent = '→';
+                          }
+                        })
+                        .catch(() => {
+                          window.open(addUTM(job.apply_url), '_blank');
+                          applyBtn.textContent = '→';
+                        });
+                    }}
+                    className="text-[10px] font-semibold text-primary bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded-full shrink-0 transition-all opacity-0 group-hover:opacity-100"
+                    title="Quick Apply with CVin.Bio"
+                  >
+                    ⚡ Apply
+                  </button>
+                ) : (
+                  <ExternalLink className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700 group-hover:text-primary shrink-0 transition-colors" />
+                )}
               </a>
             ))}
           </div>
