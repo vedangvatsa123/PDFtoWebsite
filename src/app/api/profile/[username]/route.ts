@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { getProfileBySlug } from '@/lib/supabase-server';
 
 export async function GET(
   _req: NextRequest,
@@ -7,31 +7,31 @@ export async function GET(
 ) {
   const { username } = await params;
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const result = await getProfileBySlug(username);
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('full_name, email, phone, location, website, github, linkedin, summary, skills, experience, profile_picture_url, links')
-    .eq('username', username)
-    .single();
-
-  if (error || !data) {
+  if (!result) {
     return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
   }
 
-  // Flatten link values into top-level fields
-  if (data.links && Array.isArray(data.links)) {
-    for (const link of data.links) {
-      if (link.type === 'email' && link.value && !data.email) data.email = link.value;
-      if (link.type === 'location' && link.value && !data.location) data.location = link.value;
-      if (link.type === 'website' && link.value && !data.website) data.website = link.value;
-    }
-  }
+  const { profile, workExperience } = result;
 
-  return NextResponse.json(data, {
+  // Flatten into the shape the extension expects
+  const response = {
+    full_name: profile.fullName,
+    email: profile.email || '',
+    phone: profile.phone || '',
+    location: profile.location || '',
+    website: profile.website || '',
+    github: profile.github || '',
+    linkedin: profile.linkedin || '',
+    summary: profile.summary || '',
+    skills: profile.skills || [],
+    experience: workExperience || [],
+    profile_picture_url: profile.avatarUrl || '',
+    links: profile.links || [],
+  };
+
+  return NextResponse.json(response, {
     headers: {
       'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
       'Access-Control-Allow-Origin': '*',
