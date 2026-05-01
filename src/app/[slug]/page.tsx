@@ -281,7 +281,7 @@ export default async function ProfileSlugPage({ params }: PageProps) {
     const decodedSearch = slug.replace(/-/g, '%').toLowerCase();
     const { data: jobs } = await supabaseForCompany
       .from('jobs')
-      .select('*')
+      .select('id, title, company, company_logo, location, job_type, tags, category, apply_url, published_at, created_at, source, salary')
       .ilike('company', `${decodedSearch}%`)
       .limit(100);
 
