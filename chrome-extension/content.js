@@ -66,8 +66,54 @@
     {
       profileKey: 'website',
       extract: (p) => p.website || '',
-      patterns: ['website', 'portfolio', 'personal.?site', 'url', 'homepage', 'blog'],
+      patterns: ['website', 'portfolio', 'personal.?site', 'homepage', 'blog'],
       excludePatterns: ['linkedin', 'github', 'twitter', 'company'],
+    },
+    {
+      profileKey: 'twitter',
+      extract: (p) => {
+        const link = (p.links || []).find((l) => l.type === 'twitter');
+        return link ? link.value : '';
+      },
+      patterns: ['twitter', 'x\\.com', 'twitter.?x', 'x\\/twitter'],
+    },
+    {
+      profileKey: 'google_scholar',
+      extract: (p) => {
+        const link = (p.links || []).find((l) => l.type === 'google-scholar' || l.type === 'scholar');
+        return link ? link.value : '';
+      },
+      patterns: ['scholar', 'google.?scholar', 'publications'],
+    },
+    {
+      profileKey: 'telegram',
+      extract: (p) => {
+        const link = (p.links || []).find((l) => l.type === 'telegram');
+        return link ? link.value : '';
+      },
+      patterns: ['telegram', 't\\.me'],
+    },
+    {
+      profileKey: 'instagram',
+      extract: (p) => {
+        const link = (p.links || []).find((l) => l.type === 'instagram');
+        return link ? link.value : '';
+      },
+      patterns: ['instagram', 'insta'],
+    },
+    {
+      profileKey: 'youtube',
+      extract: (p) => {
+        const link = (p.links || []).find((l) => l.type === 'youtube');
+        return link ? link.value : '';
+      },
+      patterns: ['youtube'],
+    },
+    {
+      profileKey: 'any_url',
+      extract: (p) => p.website || p.linkedin || '',
+      patterns: ['url', 'link', 'profile.?url', 'social'],
+      excludePatterns: ['linkedin', 'github', 'twitter', 'company', 'email', 'website', 'portfolio', 'instagram', 'youtube', 'telegram', 'scholar'],
     },
 
     // ── Professional ──
