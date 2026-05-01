@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import MicroFooter from '@/components/micro-footer';
-import { Briefcase, ExternalLink, Search, Target, Clock, ChevronDown, Sparkles, UploadCloud, Loader2, X } from 'lucide-react';
+import { Briefcase, ExternalLink, Search, Target, Clock, ChevronDown, Sparkles, UploadCloud, Loader2, X, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/auth';
+import { LoginDialog } from '@/components/login-dialog';
+import { createClient } from '@/utils/supabase/client';
 import posthog from 'posthog-js';
 
 interface Job {
@@ -133,6 +136,16 @@ function JobTypeBadge({ type }: { type: string | null }) {
   );
 }
 
+interface ApplyUserData {
+  fullName: string;
+  email: string;
+  phone?: string;
+  linkedIn?: string;
+  github?: string;
+  website?: string;
+  resumeUrl?: string;
+}
+
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [total, setTotal] = useState(0);
@@ -149,8 +162,13 @@ export default function JobsPage() {
   const [profileComplete, setProfileComplete] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [pendingJobApply, setPendingJobApply] = useState<string | null>(null);
+  const [applyingJobId, setApplyingJobId] = useState<string | null>(null);
+  const [appliedJobs, setAppliedJobs] = useState<Set<string>>(new Set());
+  const [applyUserData, setApplyUserData] = useState<ApplyUserData | null>(null);
+  const [showLoginForApply, setShowLoginForApply] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useUser();
 
   const fetchJobs = useCallback(async (pageNum: number, append = false) => {
     if (append) setLoadingMore(true); else setLoading(true);
@@ -182,6 +200,88 @@ export default function JobsPage() {
       setLoadingMore(false);
     }
   }, [type, loc, search, matchOnly]);
+
+  // Fetch user profile data for Quick Apply
+  useEffect(() => {
+    if (!user) { setApplyUserData(null); return; }
+    const supabase = createClient();
+    supabase.from('profiles')
+      .select('full_name, links, skills, about, experience, education')
+      .eq('id', user.id)
+      .single()
+      .then(({ data: p }) => {
+        if (!p) return;
+        const links = p.links || [];
+        const getLink = (t: string) => links.find((l: any) => l.type === t)?.value || undefined;
+        const fullName = p.full_name || '';
+        const email = getLink('email') || user.email || '';
+        const hasName = fullName && fullName !== 'Your Name' && fullName.length > 1;
+        const hasContent = (p.skills?.length > 0) || (p.experience?.length > 0) || (p.about?.length > 10);
+        if (hasName && hasContent) {
+          setApplyUserData({
+            fullName,
+            email,
+            phone: getLink('phone'),
+            linkedIn: getLink('linkedin'),
+            github: getLink('github'),
+            website: getLink('website'),
+          });
+        } else {
+          setApplyUserData(null); // Profile incomplete
+        }
+      });
+  }, [user]);
+
+  const handleQuickApply = async (job: Job) => {
+    // Step 1: Check auth
+    if (!user) {
+      setShowLoginForApply(true);
+      return;
+    }
+    // Step 2: Check profile completeness
+    if (!applyUserData) {
+      toast({
+        title: 'Complete your profile first',
+        description: 'Add your name, skills, and experience to use Quick Apply.',
+      });
+      router.push('/editor');
+      return;
+    }
+    // Step 3: Submit via API
+    setApplyingJobId(job.id);
+    trackClick(job.id, job);
+    posthog.capture('quick_apply_clicked', { job_id: job.id, company: job.company, source: job.source });
+    try {
+      const res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: job.id,
+          userId: user.id,
+          userData: { ...applyUserData, isPro: false },
+        }),
+      });
+      const data = await res.json();
+      if (data.status === 'redirect' || data.apply_url) {
+        // Server-side apply not available for this ATS — redirect
+        window.open(data.apply_url || addUTM(job.apply_url), '_blank');
+        setAppliedJobs(prev => new Set(prev).add(job.id));
+        toast({ title: 'Application tracked', description: `Opened ${job.company} apply page.` });
+      } else if (data.success) {
+        setAppliedJobs(prev => new Set(prev).add(job.id));
+        posthog.capture('quick_apply_success', { job_id: job.id, company: job.company });
+        toast({ title: '✓ Applied!', description: `Application sent to ${job.company}.` });
+      } else {
+        // Fallback to redirect
+        window.open(addUTM(job.apply_url), '_blank');
+        toast({ variant: 'destructive', title: 'Auto-apply failed', description: data.error || 'Opened apply page instead.' });
+      }
+    } catch {
+      window.open(addUTM(job.apply_url), '_blank');
+    } finally {
+      setApplyingJobId(null);
+    }
+  };
 
   useEffect(() => {
     setPage(1);
@@ -482,18 +582,27 @@ export default function JobsPage() {
                   </div>
                 </div>
                 {(job.source === 'lever' || job.source === 'ashby') ? (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      trackClick(job.id, job);
-                      window.open(addUTM(job.apply_url), '_blank');
-                    }}
-                    className="text-[10px] font-semibold text-primary bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded-full shrink-0 transition-all opacity-0 group-hover:opacity-100"
-                    title="Quick Apply with CVin.Bio"
-                  >
-                    ⚡ Apply
-                  </button>
+                  appliedJobs.has(job.id) ? (
+                    <span className="text-[10px] font-semibold text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full shrink-0">✓ Applied</span>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleQuickApply(job);
+                      }}
+                      disabled={applyingJobId === job.id}
+                      className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded-full shrink-0 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                      title="Quick Apply with CVin.Bio"
+                    >
+                      {applyingJobId === job.id ? (
+                        <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                      ) : (
+                        <Zap className="h-2.5 w-2.5" />
+                      )}
+                      Apply
+                    </button>
+                  )
                 ) : (
                   <ExternalLink className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700 group-hover:text-primary shrink-0 transition-colors" />
                 )}
@@ -586,6 +695,39 @@ export default function JobsPage() {
                   Skip and apply
                 </a>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Login dialog for Quick Apply */}
+        {showLoginForApply && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in zoom-in-95 duration-200">
+              <button
+                onClick={() => setShowLoginForApply(false)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Zap className="h-5 w-5 text-primary" />
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Sign in to Quick Apply</h3>
+              </div>
+              <p className="text-sm text-center text-zinc-500 dark:text-zinc-400 mb-6">
+                Create your profile once, then apply to jobs with one click.
+              </p>
+              <LoginDialog trigger={
+                <button className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-black text-white dark:bg-white dark:text-black font-semibold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md">
+                  Sign in to continue
+                </button>
+              } />
+              <button
+                onClick={() => setShowLoginForApply(false)}
+                className="flex items-center justify-center w-full mt-3 px-4 py-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 font-medium text-sm transition-colors"
+              >
+                Maybe later
+              </button>
             </div>
           </div>
         )}
