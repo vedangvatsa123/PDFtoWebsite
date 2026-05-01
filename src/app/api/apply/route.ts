@@ -30,14 +30,25 @@ function parseGreenhouseUrl(url: string) {
   return null;
 }
 
-// ── Rate limiter (in-memory, per user) ──
+// ── Anti-block: realistic browser fingerprint ──
+const BROWSER_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+
+// Random delay (1-3s) to avoid machine-timing fingerprinting
+function jitterDelay(): Promise<void> {
+  const ms = 1000 + Math.random() * 2000;
+  return new Promise(r => setTimeout(r, ms));
+}
+
+// ── Rate limiter (in-memory, per user + per company) ──
 const rateLimits = new Map<string, { count: number; resetAt: number }>();
+const companyLimits = new Map<string, { count: number; resetAt: number }>();
 const DAILY_LIMIT_FREE = 3;
 const DAILY_LIMIT_PRO = 50;
-const MIN_INTERVAL_MS = 3000; // 3 seconds between applies
+const COMPANY_HOURLY_LIMIT = 5; // Max 5 apps to same company per hour across all users
+const MIN_INTERVAL_MS = 5000; // 5 seconds between applies
 const lastApplyTime = new Map<string, number>();
 
-function checkRateLimit(userId: string, isPro: boolean): { allowed: boolean; reason?: string } {
+function checkRateLimit(userId: string, isPro: boolean, company?: string): { allowed: boolean; reason?: string } {
   const now = Date.now();
   const limit = isPro ? DAILY_LIMIT_PRO : DAILY_LIMIT_FREE;
 
@@ -55,10 +66,23 @@ function checkRateLimit(userId: string, isPro: boolean): { allowed: boolean; rea
     return { allowed: false, reason: `Daily limit of ${limit} applications reached. ${isPro ? '' : 'Upgrade to Pro for 50/day.'}` };
   }
 
+  // Check per-company hourly limit (prevents flooding a single ATS)
+  if (company) {
+    const companyKey = `company:${company.toLowerCase()}`;
+    const compEntry = companyLimits.get(companyKey);
+    if (compEntry) {
+      if (now > compEntry.resetAt) {
+        companyLimits.delete(companyKey); // Reset after 1 hour
+      } else if (compEntry.count >= COMPANY_HOURLY_LIMIT) {
+        return { allowed: false, reason: `Too many applications to ${company} recently. Try again later.` };
+      }
+    }
+  }
+
   return { allowed: true };
 }
 
-function recordApply(userId: string) {
+function recordApply(userId: string, company?: string) {
   const now = Date.now();
   const today = new Date().toISOString().slice(0, 10);
   const key = `${userId}:${today}`;
@@ -69,6 +93,17 @@ function recordApply(userId: string) {
     rateLimits.set(key, { count: 1, resetAt: now + 86400000 });
   }
   lastApplyTime.set(userId, now);
+
+  // Track per-company
+  if (company) {
+    const companyKey = `company:${company.toLowerCase()}`;
+    const compEntry = companyLimits.get(companyKey);
+    if (compEntry) {
+      compEntry.count++;
+    } else {
+      companyLimits.set(companyKey, { count: 1, resetAt: now + 3600000 }); // 1 hour window
+    }
+  }
 }
 
 // ── Lever Submit ──
@@ -76,7 +111,11 @@ async function submitLever(company: string, postingId: string, userData: any): P
   try {
     // First fetch the apply page to get CSRF token
     const applyPageRes = await fetch(`https://jobs.lever.co/${company}/${postingId}/apply`, {
-      headers: { 'User-Agent': 'CVin.Bio Auto-Apply/1.0' },
+      headers: {
+        'User-Agent': BROWSER_UA,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
     });
 
     if (!applyPageRes.ok) {
@@ -114,13 +153,18 @@ async function submitLever(company: string, postingId: string, userData: any): P
       formData.append('csrf_token', csrfMatch[1]);
     }
 
+    // Add jitter delay before submission
+    await jitterDelay();
+
     // Submit
     const submitRes = await fetch(`https://jobs.lever.co/${company}/${postingId}/apply`, {
       method: 'POST',
       body: formData,
       headers: {
-        'User-Agent': 'CVin.Bio Auto-Apply/1.0',
+        'User-Agent': BROWSER_UA,
         'Referer': `https://jobs.lever.co/${company}/${postingId}/apply`,
+        'Origin': `https://jobs.lever.co`,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
     });
 
@@ -159,12 +203,17 @@ async function submitAshby(company: string, jobId: string, userData: any): Promi
     if (userData.linkedIn) payload.applicationForm['_systemfield_linkedin'] = userData.linkedIn;
     if (userData.website) payload.applicationForm['_systemfield_website'] = userData.website;
 
+    // Add jitter delay before submission
+    await jitterDelay();
+
     // Submit via Ashby's public posting API
     const submitRes = await fetch('https://api.ashbyhq.com/posting-api/application-form/submit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'CVin.Bio Auto-Apply/1.0',
+        'User-Agent': BROWSER_UA,
+        'Origin': 'https://jobs.ashbyhq.com',
+        'Referer': `https://jobs.ashbyhq.com/${company}`,
       },
       body: JSON.stringify(payload),
     });
@@ -194,7 +243,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check rate limit
+    // Check rate limit (basic check first, company check after job fetch)
     const rateCheck = checkRateLimit(userId, userData.isPro || false);
     if (!rateCheck.allowed) {
       return NextResponse.json({ error: rateCheck.reason }, { status: 429 });
@@ -227,6 +276,12 @@ export async function POST(req: NextRequest) {
     let method = 'redirect';
     let atsResponse: any = null;
     let errorMessage: string | null = null;
+
+    // Check per-company rate limit (now that we know the company)
+    const companyRateCheck = checkRateLimit(userId, userData.isPro || false, job.company);
+    if (!companyRateCheck.allowed) {
+      return NextResponse.json({ error: companyRateCheck.reason }, { status: 429 });
+    }
 
     // Route to the correct ATS handler
     const applyUrl = job.apply_url || '';
@@ -271,7 +326,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Record rate limit
-    recordApply(userId);
+    recordApply(userId, job.company);
 
     return NextResponse.json({
       success: status === 'submitted' || status === 'redirect',
