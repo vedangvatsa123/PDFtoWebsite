@@ -39,71 +39,21 @@ function jitterDelay(): Promise<void> {
   return new Promise(r => setTimeout(r, ms));
 }
 
-// ── Rate limiter (in-memory, per user + per company) ──
-const rateLimits = new Map<string, { count: number; resetAt: number }>();
-const companyLimits = new Map<string, { count: number; resetAt: number }>();
-const DAILY_LIMIT_FREE = 3;
-const DAILY_LIMIT_PRO = 50;
-const COMPANY_HOURLY_LIMIT = 5; // Max 5 apps to same company per hour across all users
+// ── Rate limiter (per-user cooldown only) ──
 const MIN_INTERVAL_MS = 5000; // 5 seconds between applies
 const lastApplyTime = new Map<string, number>();
 
-function checkRateLimit(userId: string, isPro: boolean, company?: string): { allowed: boolean; reason?: string } {
+function checkRateLimit(userId: string): { allowed: boolean; reason?: string } {
   const now = Date.now();
-  const limit = isPro ? DAILY_LIMIT_PRO : DAILY_LIMIT_FREE;
-
-  // Check minimum interval
   const lastTime = lastApplyTime.get(userId) || 0;
   if (now - lastTime < MIN_INTERVAL_MS) {
     return { allowed: false, reason: 'Please wait a few seconds between applications' };
   }
-
-  // Check daily limit
-  const today = new Date().toISOString().slice(0, 10);
-  const key = `${userId}:${today}`;
-  const entry = rateLimits.get(key);
-  if (entry && entry.count >= limit) {
-    return { allowed: false, reason: `Daily limit of ${limit} applications reached. ${isPro ? '' : 'Upgrade to Pro for 50/day.'}` };
-  }
-
-  // Check per-company hourly limit (prevents flooding a single ATS)
-  if (company) {
-    const companyKey = `company:${company.toLowerCase()}`;
-    const compEntry = companyLimits.get(companyKey);
-    if (compEntry) {
-      if (now > compEntry.resetAt) {
-        companyLimits.delete(companyKey); // Reset after 1 hour
-      } else if (compEntry.count >= COMPANY_HOURLY_LIMIT) {
-        return { allowed: false, reason: `Too many applications to ${company} recently. Try again later.` };
-      }
-    }
-  }
-
   return { allowed: true };
 }
 
-function recordApply(userId: string, company?: string) {
-  const now = Date.now();
-  const today = new Date().toISOString().slice(0, 10);
-  const key = `${userId}:${today}`;
-  const entry = rateLimits.get(key);
-  if (entry) {
-    entry.count++;
-  } else {
-    rateLimits.set(key, { count: 1, resetAt: now + 86400000 });
-  }
-  lastApplyTime.set(userId, now);
-
-  // Track per-company
-  if (company) {
-    const companyKey = `company:${company.toLowerCase()}`;
-    const compEntry = companyLimits.get(companyKey);
-    if (compEntry) {
-      compEntry.count++;
-    } else {
-      companyLimits.set(companyKey, { count: 1, resetAt: now + 3600000 }); // 1 hour window
-    }
-  }
+function recordApply(userId: string) {
+  lastApplyTime.set(userId, Date.now());
 }
 
 // ── Lever Submit ──
@@ -244,7 +194,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check rate limit (basic check first, company check after job fetch)
-    const rateCheck = checkRateLimit(userId, userData.isPro || false);
+    const rateCheck = checkRateLimit(userId);
     if (!rateCheck.allowed) {
       return NextResponse.json({ error: rateCheck.reason }, { status: 429 });
     }
@@ -276,12 +226,6 @@ export async function POST(req: NextRequest) {
     let method = 'redirect';
     let atsResponse: any = null;
     let errorMessage: string | null = null;
-
-    // Check per-company rate limit (now that we know the company)
-    const companyRateCheck = checkRateLimit(userId, userData.isPro || false, job.company);
-    if (!companyRateCheck.allowed) {
-      return NextResponse.json({ error: companyRateCheck.reason }, { status: 429 });
-    }
 
     // Route to the correct ATS handler
     const applyUrl = job.apply_url || '';
@@ -326,7 +270,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Record rate limit
-    recordApply(userId, job.company);
+    recordApply(userId);
 
     return NextResponse.json({
       success: status === 'submitted' || status === 'redirect',
