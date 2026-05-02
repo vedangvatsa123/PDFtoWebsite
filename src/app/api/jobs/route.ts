@@ -144,10 +144,13 @@ function computeMatchScore(
   const userSkillsLower = user.skills.map(s => s.toLowerCase());
   const jobTagsLower = (job.tags || []).map(t => t.toLowerCase());
   const jobTitleLower = job.title.toLowerCase();
-  // Match against both tags AND job title
+  // Match against both tags AND job title (bidirectional: skill⊂tag OR tag⊂skill)
   const matchedSkills = user.skills.filter(s => {
     const sl = s.toLowerCase();
-    return jobTagsLower.includes(sl) || jobTitleLower.includes(sl);
+    // Split compound skills like "AI & Automation" into parts
+    const parts = sl.split(/[\s&,/]+/).filter(p => p.length > 2);
+    return jobTagsLower.some(t => t.includes(sl) || sl.includes(t) || parts.some(p => t === p || t.includes(p)))
+      || parts.some(p => jobTitleLower.includes(p));
   });
   if (matchedSkills.length > 0) {
     const skillScore = Math.min(40, matchedSkills.length * 10);
