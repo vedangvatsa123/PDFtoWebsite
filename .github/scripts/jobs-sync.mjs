@@ -167,6 +167,11 @@ const GREENHOUSE_SLUGS = [
   // AI-focused companies
   'inflectionai','cerebrassystems','c3iot','snorkelai','khanacademy',
   'labelbox','descript','figureai','apptronik','sambanovasystems',
+  // AI companies — round 2 (top 100)
+  'xai','togetherai','vectara','lightningai','tenstorrent',
+  'graphcore','heygen','udio','moveworks','observeai',
+  'cresta','abnormalsecurity','pathai','arizeai','fireworksai',
+  'coactive','contextualai','dagger',
 ];
 
 // ─── Ashby company slugs ───
@@ -359,6 +364,10 @@ const ASHBY_SLUGS = [
   'alchemy','buffer','uniswap',
   // AI-focused companies
   'figure',
+  // AI companies — round 2 (top 100)
+  'alephalpha','reka','langchain','unstructured','d-matrix','rain',
+  'pika','ideogram','suno','skydio','insitro',
+  'livekit','deepgram','poolside','cognition','sierra','tavus','coactive',
 ];
 
 // ─── Workable company slugs ───

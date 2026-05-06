@@ -261,6 +261,13 @@ const PRIORITY_COMPANIES = new Set([
   'inflection','cerebras','groq','grammarly','figure','shield ai',
   'khan academy','sambanova','snorkel','descript','jasper','c3 ai',
   'datarobot','together ai','lightning ai','xai','labelbox',
+  // AI companies — round 2 (top 100)
+  'reka','aleph alpha','langchain','unstructured','pinecone','weaviate',
+  'graphcore','tenstorrent','heygen','pika','ideogram','suno','udio',
+  'moveworks','abnormal security','arize','fireworks','contextual ai',
+  'cognition','poolside','livekit','deepgram','skydio','insitro','pathai',
+  'vectara','cresta','observe ai','modal','baseten','anyscale','tavus',
+  'physical intelligence','sanctuary ai','d-matrix','rain ai',
 ]);
 
 function isHighProfileCompany(company) {
