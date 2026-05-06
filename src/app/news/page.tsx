@@ -230,7 +230,7 @@ export default function NewsPage() {
                 />
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                  <h3 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors line-clamp-3 leading-snug">
                     {item.title}
                   </h3>
                   <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400 min-w-0">
