@@ -186,8 +186,8 @@ function cleanTitle(title) {
   clean = clean.replace(/\s*\([^)]*$/, '');
   // Remove everything after separators (hyphen/en-dash with >=1 space, em-dash, pipe, or colon)
   clean = clean.replace(/(?:\s+[-–]\s*|\s*[-–]\s+|—|\||\s*:\s).*$/, '');
-  // Remove comma-separated department qualifiers like ", Brand & Communications"
-  clean = clean.replace(/,\s+[A-Z][a-zA-Z\s&/]+$/, '');
+  // Remove comma-separated department qualifiers like ", Post-Training" or ", Brand & Communications"
+  clean = clean.replace(/,\s+[A-Z][a-zA-Z\s&/\-]+$/, '');
   return clean.trim() || decodeHTML(title);
 }
 
