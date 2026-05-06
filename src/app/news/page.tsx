@@ -125,7 +125,7 @@ export default function NewsPage() {
   return (
     <div className="h-screen overflow-y-auto bg-[#fafafa] dark:bg-black selection:bg-primary/10 transition-colors duration-200 flex flex-col">
       <Header />
-      <main id="main-content" className="w-full max-w-3xl mx-auto px-6 py-12 md:py-20 lg:py-24 pb-32 flex-1">
+      <main id="main-content" className="w-full max-w-5xl mx-auto px-6 py-12 md:py-20 lg:py-24 pb-32 flex-1">
         {/* Hero */}
         <div className="flex flex-col mb-10">
           <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2 transition-colors">
@@ -193,47 +193,38 @@ export default function NewsPage() {
           </div>
         )}
 
-        {/* News items */}
+        {/* News items — 2-column grid */}
         {!loading && items.length > 0 && (
-          <div className="flex flex-col gap-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {items.map((item, i) => (
               <a
                 key={`${item.url}-${i}`}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-start gap-3 px-4 py-3 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
+                className="group flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm dark:hover:shadow-white/5 transition-all"
               >
                 {/* Source favicon */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`https://www.google.com/s2/favicons?domain=${item.sourceIcon}&sz=64`}
                   alt={item.source}
-                  className="h-5 w-5 rounded shrink-0 mt-0.5"
+                  className="h-5 w-5 rounded shrink-0"
                   loading="lazy"
                 />
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors leading-snug">
+                  <h3 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors truncate">
                     {item.title}
                   </h3>
-                  {item.description && (
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
-                      {item.description}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${SOURCE_COLORS[item.source] || 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'}`}>
-                      {item.source}
-                    </span>
-                    <span className="flex items-center gap-1 text-[10px] text-zinc-400">
-                      <Clock className="h-2.5 w-2.5" />
-                      {timeAgo(item.publishedAt)}
-                    </span>
+                  <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400 min-w-0">
+                    <span className="font-medium shrink-0">{item.source}</span>
+                    <span className="text-zinc-300 dark:text-zinc-700 shrink-0">·</span>
+                    <span className="shrink-0">{timeAgo(item.publishedAt)}</span>
                   </div>
                 </div>
 
-                <ExternalLink className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700 group-hover:text-primary shrink-0 mt-1 transition-colors" />
+                <ExternalLink className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700 group-hover:text-primary shrink-0 transition-colors" />
               </a>
             ))}
           </div>

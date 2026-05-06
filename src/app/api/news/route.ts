@@ -32,7 +32,18 @@ function extractTag(xml: string, tag: string): string {
 }
 
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ').trim();
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function truncateAtWord(text: string, max = 180): string {
+  if (!text || text.length <= max) return text || '';
+  const trimmed = text.slice(0, max);
+  const lastSpace = trimmed.lastIndexOf(' ');
+  return (lastSpace > max * 0.6 ? trimmed.slice(0, lastSpace) : trimmed) + '…';
 }
 
 function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
@@ -44,7 +55,7 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
     const title = stripHtml(extractTag(item, 'title'));
     const link = extractTag(item, 'link') || '';
     const pubDate = extractTag(item, 'pubDate');
-    const description = stripHtml(extractTag(item, 'description')).slice(0, 200);
+    const description = truncateAtWord(stripHtml(extractTag(item, 'description')));
     
     if (title && link) {
       items.push({
@@ -67,7 +78,7 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
       const linkMatch = entry.match(/<link[^>]*href="([^"]+)"[^>]*\/?\s*>/i);
       const link = linkMatch?.[1] || extractTag(entry, 'link') || '';
       const updated = extractTag(entry, 'updated') || extractTag(entry, 'published');
-      const summary = stripHtml(extractTag(entry, 'summary') || extractTag(entry, 'content')).slice(0, 200);
+      const summary = truncateAtWord(stripHtml(extractTag(entry, 'summary') || extractTag(entry, 'content')));
       
       if (title && link) {
         items.push({
@@ -83,6 +94,14 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
   }
   
   return items;
+}
+
+// ── Filter out promotional, buying guide, and lifestyle content ──
+const PROMO_PATTERNS = /\b(best\s+\w+\s+(for|of|in|to|we|tested|under|you)|buying guide|gift guide|deals?\s+(of|this|today)|coupon|discount|sale\s+alert|promo code|affiliate|tested\s+in\s+our|our\s+top\s+(pick|recommendation)|vs\.?\s+\w+\s+vs\.?|percent\s+off|%\s+off|\$\d+\s+off|budget.?friendly|how\s+to\s+save|where\s+to\s+buy|best\s+cheap|mattress|bed\s+frame|pillow|blender|vacuum|air\s+fryer|coffee\s+maker|headphone|earbud|smartwatch|fitness\s+tracker|luggage|backpack|skin\s*care|moisturizer|shampoo|sunscreen|supplement|vitamin|protein\s+powder|recipe|cookbook|diet\s+plan|meal\s+kit|cleaning\s+product|laundry|dishwasher|refrigerator|washer|dryer|air\s+purifier|dehumidifier|humidifier|space\s+heater|lawn\s+mower|grill|smoker|fire\s+pit|patio|outdoor\s+furniture|garden|plant|pet\s+food|dog\s+bed|cat\s+litter)\b/i;
+
+function isPromoContent(item: NewsItem): boolean {
+  const text = `${item.title} ${item.description}`.toLowerCase();
+  return PROMO_PATTERNS.test(text);
 }
 
 // In-memory cache (60s TTL)
@@ -118,6 +137,7 @@ async function fetchAllNews(): Promise<NewsItem[]> {
   const seen = new Set<string>();
   const deduped = allItems.filter(item => {
     if (seen.has(item.url)) return false;
+    if (isPromoContent(item)) return false;
     seen.add(item.url);
     return true;
   });
