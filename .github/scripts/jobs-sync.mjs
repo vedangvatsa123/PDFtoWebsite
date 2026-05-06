@@ -164,6 +164,9 @@ const GREENHOUSE_SLUGS = [
   'vercel','verkada','warp','waymo','xendit','ziprecruiter','zscaler','medium',
   'airtable','typeform','calendly','later','glossier','intercom','wunderkind','iterable',
   'braze',
+  // AI-focused companies
+  'inflectionai','cerebrassystems','c3iot','snorkelai','khanacademy',
+  'labelbox','descript','figureai','apptronik','sambanovasystems',
 ];
 
 // ─── Ashby company slugs ───
@@ -354,6 +357,8 @@ const ASHBY_SLUGS = [
   'zello','zencastr','zenjob','zero','zerorfi','zettabyte-space','zip','zippymh','zyphra',
   // Migrated from Greenhouse/Lever → Ashby
   'alchemy','buffer','uniswap',
+  // AI-focused companies
+  'figure',
 ];
 
 // ─── Workable company slugs ───
@@ -400,6 +405,8 @@ const LEVER_SLUGS = [
   'veo','vergesense','versapay','vevo','vida','vivrelle','voodoo','vrchat',
   'walkme','waveapps','wealthfront','whereby','whoop','willowinc','wisdomai','workwave',
   'wr','z1tech','zeta','zocks','zoox','activecampaign','medium',
+  // AI-focused companies
+  'shieldai','sanctuary','tecton','labelbox',
 ];
 
 // ─── Helpers ───

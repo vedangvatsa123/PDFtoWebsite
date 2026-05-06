@@ -257,6 +257,10 @@ const PRIORITY_COMPANIES = new Set([
   'livekit','elevenlabs','midjourney','hugging face','runway','character',
   'uniswap','alchemy','chainalysis','fireblocks','consensys','phantom','opensea',
   'wealthsimple','monzo','nubank','mercari','flexport','faire','toast',
+  // AI companies
+  'inflection','cerebras','groq','grammarly','figure','shield ai',
+  'khan academy','sambanova','snorkel','descript','jasper','c3 ai',
+  'datarobot','together ai','lightning ai','xai','labelbox',
 ]);
 
 function isHighProfileCompany(company) {
