@@ -268,6 +268,13 @@ const PRIORITY_COMPANIES = new Set([
   'cognition','poolside','livekit','deepgram','skydio','insitro','pathai',
   'vectara','cresta','observe ai','modal','baseten','anyscale','tavus',
   'physical intelligence','sanctuary ai','d-matrix','rain ai',
+  // Web3 protocols
+  'solana','arbitrum','optimism','eigenlayer','celestia','avalanche',
+  'polkadot','layerzero','zksync','magic eden','injective','pyth',
+  // More tech companies
+  'spotify','netflix','jetbrains','atlassian','webflow','amplitude',
+  'mixpanel','supabase','posthog','railway','algolia','contentful',
+  'plaid','ramp','deel','n26','trade republic','lemonade',
 ]);
 
 function isHighProfileCompany(company) {

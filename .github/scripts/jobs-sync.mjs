@@ -172,6 +172,9 @@ const GREENHOUSE_SLUGS = [
   'graphcore','heygen','udio','moveworks','observeai',
   'cresta','abnormalsecurity','pathai','arizeai','fireworksai',
   'coactive','contextualai','dagger',
+  // Tech companies + Web3
+  'amplitude','mixpanel','contentful','webflow','algolia','fastly',
+  'jetbrains','hubspot','oscar','n26','traderepublic','layerzerolabs',
 ];
 
 // ─── Ashby company slugs ───
@@ -368,6 +371,9 @@ const ASHBY_SLUGS = [
   'alephalpha','reka','langchain','unstructured','d-matrix','rain',
   'pika','ideogram','suno','skydio','insitro',
   'livekit','deepgram','poolside','cognition','sierra','tavus','coactive',
+  // Tech companies + Web3 protocols
+  'amplitude','loom','oplabs','solanalabs','ava-labs','cosmos',
+  'elliptic','injective','pythnetwork','eigen-labs','magiceden','matter-labs',
 ];
 
 // ─── Workable company slugs ───
@@ -416,6 +422,8 @@ const LEVER_SLUGS = [
   'wr','z1tech','zeta','zocks','zoox','activecampaign','medium',
   // AI-focused companies
   'shieldai','sanctuary','tecton','labelbox',
+  // Tech companies + Web3
+  'spotify','netflix','jetbrains','atlassian','celestia','animocabrands','offchainlabs',
 ];
 
 // ─── Helpers ───
