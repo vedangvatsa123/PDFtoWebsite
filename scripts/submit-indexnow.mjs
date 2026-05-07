@@ -11,40 +11,21 @@ const INDEXNOW_KEY = '6db32ca940dd46cab89375c221953bd6';
 const SITE_HOST = 'cvin.bio';
 
 async function submit() {
-  console.log('Fetching ALL companies...');
-  const allJobs = [];
-  let page = 0;
-  while (true) {
-    const { data } = await supabase
-      .from('jobs')
-      .select('company')
-      .range(page * 1000, (page + 1) * 1000 - 1);
-    if (!data || data.length === 0) break;
-    allJobs.push(...data);
-    if (data.length < 1000) break;
-    page++;
+  console.log('Fetching live sitemap to get canonical URLs...');
+  
+  const sitemapRes = await fetch(`https://${SITE_HOST}/sitemap.xml`);
+  if (!sitemapRes.ok) {
+    console.error('Failed to fetch sitemap');
+    return;
   }
   
-  const companyNames = new Set();
-  allJobs.forEach(j => {
-    if (j.company && !j.company.includes('...')) companyNames.add(j.company);
-  });
+  const xml = await sitemapRes.text();
+  const matches = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)];
+  const urls = matches.map(m => m[1]).filter(url => !url.includes('sitemap.xml'));
 
-  const toSlug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '').replace(/^-+/, '');
-  const seenSlugs = new Set();
-  
-  const urls = [];
-  
-  companyNames.forEach(name => {
-    const slug = toSlug(name);
-    if (!seenSlugs.has(slug)) {
-      seenSlugs.add(slug);
-      urls.push(`https://${SITE_HOST}/${slug}`);
-    }
-  });
+  console.log(`Found ${urls.length} total URLs in sitemap. Submitting to IndexNow...`);
 
-  console.log(`Found ${urls.length} total company URLs. Submitting to IndexNow...`);
-
+  // IndexNow limits to 10k per request, we are well under it
   const payload = {
     host: SITE_HOST,
     key: INDEXNOW_KEY,
