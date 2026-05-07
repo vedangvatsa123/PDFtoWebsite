@@ -46,14 +46,12 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-// Clean up verbose Techmeme-style titles: truncate at first semicolon or em-dash
+// Clean up verbose Techmeme-style titles: strip author attribution only
 function cleanTitle(title: string): string {
-  // Strip (Author/Publication) attribution
+  // Strip (Author/Publication) attribution at the end
   let clean = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
-  // Truncate at semicolon (second clause is always secondary context)
-  clean = clean.replace(/;\s+.+$/, '').trim();
-  // Cap at 120 chars
-  if (clean.length > 120) clean = clean.substring(0, 119) + '…';
+  // Strip trailing source attribution like "— Source Name" or "| Source"  
+  clean = clean.replace(/\s*[—–|]\s*[A-Z][\w\s.&''-]{2,30}$/, '').trim();
   return clean;
 }
 
