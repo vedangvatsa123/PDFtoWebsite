@@ -134,3 +134,20 @@ jobs:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node .github/scripts/telegram-post.mjs
+
+      - name: Post AI jobs to @hashtag_ai
+        continue-on-error: true
+        env:
+          TELEGRAM_AI_BOT_TOKEN: ${{ secrets.TELEGRAM_AI_BOT_TOKEN }}
+          TELEGRAM_AI_CHANNEL_ID: '@hashtag_ai'
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node .github/scripts/telegram-ai-jobs.mjs
+          git add .github/scripts/.telegram-ai-jobs-posted.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update AI jobs dedup state [skip ci]"
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin main && git push && break || sleep $((i * 3))
+            done
+          fi
