@@ -5,6 +5,7 @@ import MicroFooter from '@/components/micro-footer';
 export const metadata: Metadata = {
   title: 'Terms & Privacy',
   description: 'Terms of Service and Privacy Policy for the CVin.Bio platform.',
+  alternates: { canonical: 'https://cvin.bio/terms' },
   openGraph: {
     title: 'Terms & Privacy | CVin.Bio',
     description: 'Terms of Service and Privacy Policy for the CVin.Bio platform.',
