@@ -85,7 +85,6 @@ jobs:
 
       - name: Post to Bluesky and commit state
         continue-on-error: true
-        if: steps.slot.outputs.slot == 'engagement'
         env:
           BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
         run: |
