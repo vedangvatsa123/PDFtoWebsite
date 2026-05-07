@@ -153,24 +153,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (data.length < 1000) break;
       page++;
     }
-    const companyNames = new Set<string>();
+    const companyCounts: Record<string, number> = {};
     allJobs.forEach(j => {
-      if (j.company && !j.company.includes('...')) companyNames.add(j.company);
+      if (j.company && !j.company.includes('...')) {
+        const key = j.company.toLowerCase().trim();
+        companyCounts[key] = (companyCounts[key] || 0) + 1;
+      }
     });
     const toSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '').replace(/^-+/, '');
     const seenSlugs = new Set<string>();
-    companyNames.forEach(name => {
-      const slug = toSlug(name);
-      if (!seenSlugs.has(slug)) {
-        seenSlugs.add(slug);
-        companyEntries.push({
-          url: `${siteUrl}/${slug}`,
-          lastModified: new Date(),
-          changeFrequency: 'daily' as const,
-          priority: 0.8,
-        });
-      }
-    });
+    // Only include companies with 3+ jobs (avoid thin-content pages in sitemap)
+    Object.entries(companyCounts)
+      .filter(([, count]) => count >= 3)
+      .forEach(([name]) => {
+        const slug = toSlug(name);
+        if (!seenSlugs.has(slug)) {
+          seenSlugs.add(slug);
+          companyEntries.push({
+            url: `${siteUrl}/${slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'daily' as const,
+            priority: 0.8,
+          });
+        }
+      });
   } catch (e) {
     console.error('Sitemap: failed to fetch companies', e);
   }
