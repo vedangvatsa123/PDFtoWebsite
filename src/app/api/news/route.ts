@@ -37,7 +37,7 @@ function extractTag(xml: string, tag: string): string {
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, '')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
     .replace(/&#8217;/g, "'").replace(/&#8216;/g, "'").replace(/&#8220;/g, '"').replace(/&#8221;/g, '"')
     .replace(/&#8211;/g, '\u2013').replace(/&#8212;/g, '\u2014').replace(/&#8230;/g, '\u2026')
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n)))
@@ -52,7 +52,9 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
   // RSS 2.0 format
   const rssItems = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || [];
   for (const item of rssItems.slice(0, 20)) {
-    const title = stripHtml(extractTag(item, 'title'));
+    let title = stripHtml(extractTag(item, 'title'));
+    // Strip Techmeme-style author attribution: (Author Name/Publication)
+    title = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
     const link = extractTag(item, 'link') || '';
     const pubDate = extractTag(item, 'pubDate');
     const description = stripHtml(extractTag(item, 'description')).slice(0, 300);
@@ -73,7 +75,8 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
   if (items.length === 0) {
     const entries = xml.match(/<entry[\s>][\s\S]*?<\/entry>/gi) || [];
     for (const entry of entries.slice(0, 20)) {
-      const title = stripHtml(extractTag(entry, 'title'));
+      let title = stripHtml(extractTag(entry, 'title'));
+      title = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
       const linkMatch = entry.match(/<link[^>]*href="([^"]+)"[^>]*\/?\s*>/i);
       const link = linkMatch?.[1] || extractTag(entry, 'link') || '';
       const updated = extractTag(entry, 'updated') || extractTag(entry, 'published');
