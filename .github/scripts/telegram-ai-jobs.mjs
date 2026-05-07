@@ -192,6 +192,24 @@ const BRAND_CASE = {
   'nvidia': 'NVIDIA', 'google': 'Google', 'apple': 'Apple',
   'microsoft': 'Microsoft', 'amazon': 'Amazon', 'meta': 'Meta',
   'tesla': 'Tesla', 'waymo': 'Waymo',
+  // Added — common lowercase DB entries
+  'skydio': 'Skydio', 'pika': 'Pika', 'suno': 'Suno', 'udio': 'Udio',
+  'mistral': 'Mistral', 'cohere': 'Cohere', 'groq': 'Groq',
+  'modal': 'Modal', 'baseten': 'Baseten', 'replicate': 'Replicate',
+  'runway': 'Runway', 'heygen': 'HeyGen', 'ideogram': 'Ideogram',
+  'livekit': 'LiveKit', 'moveworks': 'Moveworks', 'cresta': 'Cresta',
+  'sierra': 'Sierra', 'poolside': 'Poolside', 'tavus': 'Tavus',
+  'arize': 'Arize', 'snorkel': 'Snorkel AI', 'datarobot': 'DataRobot',
+  'weaviate': 'Weaviate', 'vectara': 'Vectara',
+  'graphcore': 'Graphcore', 'tenstorrent': 'Tenstorrent',
+  'jasper': 'Jasper', 'c3 ai': 'C3 AI', 'lambda': 'Lambda',
+  'figure': 'Figure', 'nuro': 'Nuro', 'cruise': 'Cruise',
+  'shield ai': 'Shield AI', 'insitro': 'Insitro',
+  'fireworks': 'Fireworks AI', 'anyscale': 'Anyscale',
+  'inflection': 'Inflection', 'character': 'Character AI',
+  'reka': 'Reka', 'aleph alpha': 'Aleph Alpha',
+  'abnormal security': 'Abnormal Security', 'observe ai': 'Observe AI',
+  'contextual ai': 'Contextual AI',
 };
 
 function cleanCompany(name) {
