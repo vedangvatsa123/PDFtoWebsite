@@ -399,6 +399,58 @@
           "img": ".github/images/threads/t10_07.png"
         }
       ]
+    },
+    {
+      "id": "t011",
+      "topic": "broken-job-market-stats",
+      "tweets": [
+        {
+          "text": "The job market in 2026, in 10 numbers.\n\nNone of this is opinion."
+        },
+        {
+          "text": "75% of resumes are rejected before a human sees them.\n\nNot after review. Before.",
+          "img": ".github/images/post_111.png"
+        },
+        {
+          "text": "7.4 seconds.\n\nThat's the average a recruiter spends on the ones that do get through.",
+          "img": ".github/images/post_112.png"
+        },
+        {
+          "text": "250 people apply per opening now.\n\nYou're not being evaluated. You're being sorted.",
+          "img": ".github/images/post_113.png"
+        },
+        {
+          "text": "Bad hires cost companies $240k on average.\n\nBut they still won't spend 20 minutes reading your actual work.",
+          "img": ".github/images/post_114.png"
+        },
+        {
+          "text": "85% of jobs get filled through networking.\n\nThe application form exists to make you feel like you had a fair shot.",
+          "img": ".github/images/post_115.png"
+        },
+        {
+          "text": "63% of \"entry-level\" listings ask for 3+ years.\n\nEntry level for who.",
+          "img": ".github/images/post_116.png"
+        },
+        {
+          "text": "92 million jobs gone by 2030.\n\nNot reshuffled. Gone.",
+          "img": ".github/images/post_117.png"
+        },
+        {
+          "text": "6 seconds.\n\nThat's how long your CV has before it's in the reject pile. Page two doesn't exist.",
+          "img": ".github/images/post_118.png"
+        },
+        {
+          "text": "72% of candidates get ghosted after a final round interview.\n\nFive rounds of prep. Then nothing.",
+          "img": ".github/images/post_119.png"
+        },
+        {
+          "text": "3 out of 4 resumes get thrown out by software.\n\nYou're not losing to better candidates. You're losing to a parser.",
+          "img": ".github/images/post_120.png"
+        },
+        {
+          "text": "PDFs get filtered.\nLinks get clicked.\n\ncvin.bio"
+        }
+      ]
     }
   ],
   "insights": [

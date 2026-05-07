@@ -46,23 +46,43 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+// Clean up verbose Techmeme-style titles: truncate at first semicolon or em-dash
+function cleanTitle(title: string): string {
+  // Strip (Author/Publication) attribution
+  let clean = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
+  // Truncate at semicolon (second clause is always secondary context)
+  clean = clean.replace(/;\s+.+$/, '').trim();
+  // Cap at 120 chars
+  if (clean.length > 120) clean = clean.substring(0, 119) + '…';
+  return clean;
+}
+
+// Extract real article URL from Techmeme description HTML
+function extractRealUrl(description: string, fallbackUrl: string): string {
+  const match = description.match(/<a\s+href="(https?:\/\/(?!www\.techmeme\.com)[^"]+)"/i);
+  return match?.[1] || fallbackUrl;
+}
+
 function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
   const items: NewsItem[] = [];
   
   // RSS 2.0 format
   const rssItems = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || [];
   for (const item of rssItems.slice(0, 20)) {
-    let title = stripHtml(extractTag(item, 'title'));
-    // Strip Techmeme-style author attribution: (Author Name/Publication)
-    title = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
+    const rawTitle = stripHtml(extractTag(item, 'title'));
+    const title = cleanTitle(rawTitle);
     const link = extractTag(item, 'link') || '';
     const pubDate = extractTag(item, 'pubDate');
-    const description = stripHtml(extractTag(item, 'description')).slice(0, 300);
+    const rawDesc = extractTag(item, 'description');
+    const description = stripHtml(rawDesc).slice(0, 300);
     
-    if (title && link) {
+    // For Techmeme, extract the real article URL from the description
+    const url = source === 'Techmeme' ? extractRealUrl(rawDesc, link) : link;
+    
+    if (title && url) {
       items.push({
         title,
-        url: link,
+        url,
         source,
         sourceIcon: icon,
         publishedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
@@ -75,8 +95,7 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
   if (items.length === 0) {
     const entries = xml.match(/<entry[\s>][\s\S]*?<\/entry>/gi) || [];
     for (const entry of entries.slice(0, 20)) {
-      let title = stripHtml(extractTag(entry, 'title'));
-      title = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
+      const title = cleanTitle(stripHtml(extractTag(entry, 'title')));
       const linkMatch = entry.match(/<link[^>]*href="([^"]+)"[^>]*\/?\s*>/i);
       const link = linkMatch?.[1] || extractTag(entry, 'link') || '';
       const updated = extractTag(entry, 'updated') || extractTag(entry, 'published');
@@ -126,7 +145,7 @@ function normalizeTitle(title: string): string {
     .replace(/[^a-z0-9\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
-    .split(' ').slice(0, 8).join(' '); // First 8 words as fingerprint
+    .split(' ').slice(0, 6).join(' '); // First 6 words as fingerprint (tighter dedup)
 }
 
 // In-memory cache (60s TTL)
@@ -153,17 +172,22 @@ async function fetchAllNews(): Promise<NewsItem[]> {
   );
 
   const allItems: NewsItem[] = [];
+  const MAX_PER_SOURCE = 8; // Prevent any single feed from dominating
   for (const r of results) {
-    if (r.status === 'fulfilled') allItems.push(...r.value);
+    if (r.status === 'fulfilled') allItems.push(...r.value.slice(0, MAX_PER_SOURCE));
   }
 
+  // 24h freshness cutoff — only show recent news
+  const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+  const fresh = allItems.filter(item => new Date(item.publishedAt).getTime() > cutoff);
+
   // Sort by date (newest first)
-  allItems.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  fresh.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
   // Deduplicate by URL AND by similar title (cross-source same story)
   const seenUrls = new Set<string>();
   const seenTitles = new Set<string>();
-  const deduped = allItems.filter(item => {
+  const deduped = fresh.filter(item => {
     if (seenUrls.has(item.url)) return false;
     if (isJunk(item)) return false;
     const fingerprint = normalizeTitle(item.title);

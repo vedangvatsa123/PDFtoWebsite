@@ -92,6 +92,133 @@ const POSTS = [
   `Way more companies listing salary now than even a year ago. The holdouts are mostly big legacy companies still posting "competitive." Everyone else figured out that hiding the number just costs them applicants.\n\ncvin.bio/jobs`,
   `One thing we didn't expect: how many hiring managers just google candidates before looking at the resume. If nothing comes up, you get skipped.\n\nA PDF sitting in your downloads folder doesn't show up on Google. A live link does.\n\ncvin.bio/pdf-breaks-ats`,
   `Most jobs say "remote" but then you read the description and it says "must overlap 4 hours with US EST" or "async-first team." Remote in 2026 basically means "we don't have an office for you but we still need you online."\n\nWe dug into this more here: cvin.bio/remote-talent-report`,
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  `"We are a family."
+
+If they use "family" to steal your weekends, you are in a cult.
+
+Find companies that respect your time at cvin.bio`,
+  `Expecting 8 years of experience for an entry-level role is wild.
+
+Skip the ghost jobs and the 7-round interview circuses.
+
+Match directly with hiring companies at cvin.bio`,
+  `Monitoring restroom time. Are we running companies or prisons?
+
+Treating adults like children is exactly why top talent leaves.
+
+Find remote-first companies that measure output at cvin.bio`,
+  `Giving 3 years to a company only to be laid off by an AI script.
+
+Automation is for code, not empathy.
+
+Connect directly with real hiring managers at cvin.bio`,
+  `The classic 2:14 AM Saturday "emergency".
+
+A lack of planning by leadership is not an emergency for your weekend.
+
+High-quality teams are hiring async-first developers right now at cvin.bio`,
+  `"Unlimited PTO" is the biggest scam in tech.
+
+It usually means: unlimited days off, as long as you never actually use them.
+
+Find teams that value actual work-life balance at cvin.bio`,
+  `0.5% equity and no salary does not pay the rent.
+
+Engineers: your skills are highly valuable. Stop working for free.
+
+Get paid what you are actually worth at cvin.bio`,
+  `Nothing screams "terrible management" quite like mouse-tracking software.
+
+Remote work requires trust. If they have to track your mouse, leave.
+
+Find remote companies that respect you at cvin.bio`,
+  `An 8-hour take-home project just to get rejected.
+
+Companies are using interview assignments as free consulting.
+
+Skip the ridiculous hiring hoops and drop your resume on cvin.bio`,
+  `"Can you just join the Zoom from bed?"
+
+When people are sick, they need to rest.
+
+Find tech teams that respect your health at cvin.bio`,
+  `75% of resumes never reach a human.
+
+Your carefully crafted CV gets filtered by a robot before anyone reads it.
+
+A link doesn't get filtered. It gets clicked. cvin.bio`,
+  `7.4 seconds. That's how long a recruiter spends on your CV.
+
+The rest is decided by an algorithm.
+
+Make every second count. cvin.bio`,
+  `250 applications per job opening in 2026.
+
+The system is not broken for companies. It is broken for you.
+
+cvin.bio`,
+  `$240,000. The average cost of one bad hire.
+
+Companies spend more recovering from mistakes than finding good people.
+
+Be impossible to ignore. cvin.bio`,
+  `85% of jobs are filled through networking, not applications.
+
+The old way of applying is not working anymore.
+
+cvin.bio`,
+  `63% of entry-level jobs require 3+ years of experience.
+
+The listing is broken, not the talent.
+
+cvin.bio`,
+  `92 million jobs will be displaced by 2030.
+
+The market is shifting faster than most people realize.
+
+Start positioning yourself now. cvin.bio`,
+  `6 seconds before your CV hits the reject pile.
+
+Nobody reads cover letters. Nobody reads page two.
+
+Make the first impression count. cvin.bio`,
+  `72% of candidates are ghosted after a final interview.
+
+No rejection email. No feedback. Just silence.
+
+The hiring process is broken. cvin.bio`,
+  `3 out of 4 resumes are rejected by a robot, not a person.
+
+Stop competing with bots.
+
+cvin.bio`,
 ];
 
 // Instagram-optimized captions: punchy hook, emojis, shorter body, hashtags
@@ -169,6 +296,133 @@ const IG_POSTS = [
   `We track 6,000+ job listings. Way more companies are listing salary now than a year ago.\n\nThe holdouts are mostly big legacy companies still posting "competitive." Everyone else figured out that hiding the number costs them applicants.\n\ncvin.bio/jobs\n\n#salary #transparency #hiring #jobmarket #compensation`,
   `One thing we did not expect from running a job board: how many hiring managers just google candidates before looking at the resume.\n\nIf nothing comes up, you get skipped. A PDF in your downloads folder does not show up on Google. A live link does.\n\ncvin.bio\n\n#resume #google #hiring #careeradvice #portfolio`,
   `6,000+ jobs on our board say "remote." But then you read the description. Must overlap 4 hours with US EST. Or async-first team. Or no office but still need you online.\n\nRemote in 2026 is not what most people think it is.\n\ncvin.bio/remote-talent-report\n\n#remotework #wfh #hiring #jobmarket #careeradvice`,
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  `"We are a family."
+
+If they use "family" to steal your weekends, you are in a cult.
+
+Find companies that respect your time at cvin.bio`,
+  `Expecting 8 years of experience for an entry-level role is wild.
+
+Skip the ghost jobs and the 7-round interview circuses.
+
+Match directly with hiring companies at cvin.bio`,
+  `Monitoring restroom time. Are we running companies or prisons?
+
+Treating adults like children is exactly why top talent leaves.
+
+Find remote-first companies that measure output at cvin.bio`,
+  `Giving 3 years to a company only to be laid off by an AI script.
+
+Automation is for code, not empathy.
+
+Connect directly with real hiring managers at cvin.bio`,
+  `The classic 2:14 AM Saturday "emergency".
+
+A lack of planning by leadership is not an emergency for your weekend.
+
+High-quality teams are hiring async-first developers right now at cvin.bio`,
+  `"Unlimited PTO" is the biggest scam in tech.
+
+It usually means: unlimited days off, as long as you never actually use them.
+
+Find teams that value actual work-life balance at cvin.bio`,
+  `0.5% equity and no salary does not pay the rent.
+
+Engineers: your skills are highly valuable. Stop working for free.
+
+Get paid what you are actually worth at cvin.bio`,
+  `Nothing screams "terrible management" quite like mouse-tracking software.
+
+Remote work requires trust. If they have to track your mouse, leave.
+
+Find remote companies that respect you at cvin.bio`,
+  `An 8-hour take-home project just to get rejected.
+
+Companies are using interview assignments as free consulting.
+
+Skip the ridiculous hiring hoops and drop your resume on cvin.bio`,
+  `"Can you just join the Zoom from bed?"
+
+When people are sick, they need to rest.
+
+Find tech teams that respect your health at cvin.bio`,
+  `75% of resumes never reach a human.
+
+Your carefully crafted CV gets filtered by a robot before anyone reads it.
+
+A link doesn't get filtered. It gets clicked. cvin.bio`,
+  `7.4 seconds. That's how long a recruiter spends on your CV.
+
+The rest is decided by an algorithm.
+
+Make every second count. cvin.bio`,
+  `250 applications per job opening in 2026.
+
+The system is not broken for companies. It is broken for you.
+
+cvin.bio`,
+  `$240,000. The average cost of one bad hire.
+
+Companies spend more recovering from mistakes than finding good people.
+
+Be impossible to ignore. cvin.bio`,
+  `85% of jobs are filled through networking, not applications.
+
+The old way of applying is not working anymore.
+
+cvin.bio`,
+  `63% of entry-level jobs require 3+ years of experience.
+
+The listing is broken, not the talent.
+
+cvin.bio`,
+  `92 million jobs will be displaced by 2030.
+
+The market is shifting faster than most people realize.
+
+Start positioning yourself now. cvin.bio`,
+  `6 seconds before your CV hits the reject pile.
+
+Nobody reads cover letters. Nobody reads page two.
+
+Make the first impression count. cvin.bio`,
+  `72% of candidates are ghosted after a final interview.
+
+No rejection email. No feedback. Just silence.
+
+The hiring process is broken. cvin.bio`,
+  `3 out of 4 resumes are rejected by a robot, not a person.
+
+Stop competing with bots.
+
+cvin.bio`,
 ];
 
 // Facebook-optimized: conversational, longer, questions to drive comments
@@ -787,6 +1041,133 @@ cvin.bio/pdf-breaks-ats`,
 We researched this in detail:
 
 cvin.bio/remote-talent-report`,
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  `"We are a family."
+
+If they use "family" to steal your weekends, you are in a cult.
+
+Find companies that respect your time at cvin.bio`,
+  `Expecting 8 years of experience for an entry-level role is wild.
+
+Skip the ghost jobs and the 7-round interview circuses.
+
+Match directly with hiring companies at cvin.bio`,
+  `Monitoring restroom time. Are we running companies or prisons?
+
+Treating adults like children is exactly why top talent leaves.
+
+Find remote-first companies that measure output at cvin.bio`,
+  `Giving 3 years to a company only to be laid off by an AI script.
+
+Automation is for code, not empathy.
+
+Connect directly with real hiring managers at cvin.bio`,
+  `The classic 2:14 AM Saturday "emergency".
+
+A lack of planning by leadership is not an emergency for your weekend.
+
+High-quality teams are hiring async-first developers right now at cvin.bio`,
+  `"Unlimited PTO" is the biggest scam in tech.
+
+It usually means: unlimited days off, as long as you never actually use them.
+
+Find teams that value actual work-life balance at cvin.bio`,
+  `0.5% equity and no salary does not pay the rent.
+
+Engineers: your skills are highly valuable. Stop working for free.
+
+Get paid what you are actually worth at cvin.bio`,
+  `Nothing screams "terrible management" quite like mouse-tracking software.
+
+Remote work requires trust. If they have to track your mouse, leave.
+
+Find remote companies that respect you at cvin.bio`,
+  `An 8-hour take-home project just to get rejected.
+
+Companies are using interview assignments as free consulting.
+
+Skip the ridiculous hiring hoops and drop your resume on cvin.bio`,
+  `"Can you just join the Zoom from bed?"
+
+When people are sick, they need to rest.
+
+Find tech teams that respect your health at cvin.bio`,
+  `75% of resumes never reach a human.
+
+Your carefully crafted CV gets filtered by a robot before anyone reads it.
+
+A link doesn't get filtered. It gets clicked. cvin.bio`,
+  `7.4 seconds. That's how long a recruiter spends on your CV.
+
+The rest is decided by an algorithm.
+
+Make every second count. cvin.bio`,
+  `250 applications per job opening in 2026.
+
+The system is not broken for companies. It is broken for you.
+
+cvin.bio`,
+  `$240,000. The average cost of one bad hire.
+
+Companies spend more recovering from mistakes than finding good people.
+
+Be impossible to ignore. cvin.bio`,
+  `85% of jobs are filled through networking, not applications.
+
+The old way of applying is not working anymore.
+
+cvin.bio`,
+  `63% of entry-level jobs require 3+ years of experience.
+
+The listing is broken, not the talent.
+
+cvin.bio`,
+  `92 million jobs will be displaced by 2030.
+
+The market is shifting faster than most people realize.
+
+Start positioning yourself now. cvin.bio`,
+  `6 seconds before your CV hits the reject pile.
+
+Nobody reads cover letters. Nobody reads page two.
+
+Make the first impression count. cvin.bio`,
+  `72% of candidates are ghosted after a final interview.
+
+No rejection email. No feedback. Just silence.
+
+The hiring process is broken. cvin.bio`,
+  `3 out of 4 resumes are rejected by a robot, not a person.
+
+Stop competing with bots.
+
+cvin.bio`,
 ];
 
 // Pick the right content per platform

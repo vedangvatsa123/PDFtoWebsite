@@ -81,6 +81,140 @@ const POSTS = [
   `Job listing said "Remote."\n\nOffer letter said "Remote during onboarding."\n\nWeek 3: mandatory office. 5 days. 90-minute commute.\n\nNobody mentioned it during 4 interviews. cvin.bio`,
   `Changed one word on his resume. Interview requests tripled.\n\n"Managed" became "Led."\n\nSame resume. Same experience. Same person. Different keyword.\n\nYour career shouldn't depend on vocabulary. cvin.bio`,
   `He resigned. Suddenly they found the budget.\n\nThe raise they denied for 2 years appeared in 24 hours.\n\nHe stayed. Laid off 3 months later.\n\nA counter offer isn't a compliment. It's a stalling tactic. cvin.bio`,
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  `"We are a family."
+
+If they use "family" to steal your weekends, you are in a cult.
+
+Find companies that respect your time at cvin.bio`,
+  `Expecting 8 years of experience for an entry-level role is wild.
+
+Skip the ghost jobs and the 7-round interview circuses.
+
+Match directly with hiring companies at cvin.bio`,
+  `Monitoring restroom time. Are we running companies or prisons?
+
+Treating adults like children is exactly why top talent leaves.
+
+Find remote-first companies that measure output at cvin.bio`,
+  `Giving 3 years to a company only to be laid off by an AI script.
+
+Automation is for code, not empathy.
+
+Connect directly with real hiring managers at cvin.bio`,
+  `The classic 2:14 AM Saturday "emergency".
+
+A lack of planning by leadership is not an emergency for your weekend.
+
+High-quality teams are hiring async-first developers right now at cvin.bio`,
+  `"Unlimited PTO" is the biggest scam in tech.
+
+It usually means: unlimited days off, as long as you never actually use them.
+
+Find teams that value actual work-life balance at cvin.bio`,
+  `0.5% equity and no salary does not pay the rent.
+
+Engineers: your skills are highly valuable. Stop working for free.
+
+Get paid what you are actually worth at cvin.bio`,
+  `Nothing screams "terrible management" quite like mouse-tracking software.
+
+Remote work requires trust. If they have to track your mouse, leave.
+
+Find remote companies that respect you at cvin.bio`,
+  `An 8-hour take-home project just to get rejected.
+
+Companies are using interview assignments as free consulting.
+
+Skip the ridiculous hiring hoops and drop your resume on cvin.bio`,
+  `"Can you just join the Zoom from bed?"
+
+When people are sick, they need to rest.
+
+Find tech teams that respect your health at cvin.bio`,
+  `75% of resumes never reach a human.
+
+Your carefully crafted CV gets filtered by a robot before anyone reads it.
+
+A link doesn't get filtered. It gets clicked. cvin.bio`,
+  `7.4 seconds. That's how long a recruiter spends on your CV.
+
+The rest is decided by an algorithm.
+
+Make every second count. cvin.bio`,
+  `250 applications per job opening in 2026.
+
+The system is not broken for companies. It is broken for you.
+
+cvin.bio`,
+  `$240,000. The average cost of one bad hire.
+
+Companies spend more recovering from mistakes than finding good people.
+
+Be impossible to ignore. cvin.bio`,
+  `85% of jobs are filled through networking, not applications.
+
+The old way of applying is not working anymore.
+
+cvin.bio`,
+  `63% of entry-level jobs require 3+ years of experience.
+
+The listing is broken, not the talent.
+
+cvin.bio`,
+  `92 million jobs will be displaced by 2030.
+
+The market is shifting faster than most people realize.
+
+Start positioning yourself now. cvin.bio`,
+  `6 seconds before your CV hits the reject pile.
+
+Nobody reads cover letters. Nobody reads page two.
+
+Make the first impression count. cvin.bio`,
+  `72% of candidates are ghosted after a final interview.
+
+No rejection email. No feedback. Just silence.
+
+The hiring process is broken. cvin.bio`,
+  `3 out of 4 resumes are rejected by a robot, not a person.
+
+Stop competing with bots.
+
+cvin.bio`,
 ];
 
 // ── AT Protocol helpers ───────────────────────────────────────────────────
