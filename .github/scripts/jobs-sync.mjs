@@ -1369,7 +1369,10 @@ const BAMBOOHR_SLUGS = [
 
 // ─── Personio company slugs ───
 const PERSONIO_SLUGS = [
-  'arweave','aurora','celonis','scroll',
+  // Discovered via scan-personio-breezy.mjs — active tech companies with open positions
+  'aboutyou','agile-robots-se','alan','arweave','aurora','celonis','contabo',
+  'egym','gnosis','merantix','planradar-gmbh','scroll','tonies',
+  'tractable','usercentrics-gmbh',
 ];
 
 // ─── Breezy HR company slugs ───
@@ -1452,14 +1455,18 @@ async function fetchPersonio() {
         if (!idMatch || !nameTagMatch) continue;
         const id = idMatch[1];
         const title = nameTagMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim();
+        const officeMatch = pos.match(/<office>([\s\S]*?)<\/office>/);
+        const office = officeMatch ? officeMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim() : '';
+        const cleanCompany = slug.replace(/-(gmbh|se|sas|ag|io|ltd|ab|bv|nv)$/i, '')
+          .split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         companyJobs.push({
           source: 'personio',
           external_id: `po_${slug}_${id}`,
           dedup_hash: dedupHash(slug, title),
           title,
-          company: slug.charAt(0).toUpperCase() + slug.slice(1),
+          company: cleanCompany,
           company_logo: null,
-          location: 'Remote',
+          location: office || 'Remote',
           job_type: 'full_time',
           salary: null,
           description: null,
