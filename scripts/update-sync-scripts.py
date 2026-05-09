@@ -11,10 +11,12 @@ def get_slugs():
         'ashbyhq': set(),
         'leverco': set(),
         'greenhouse': set(),
-        'bamboohr': set()
+        'bamboohr': set(),
+        'personio': set(),
+        'breezy': set()
     }
     
-    cursor.execute("SELECT ATS_name, url_string FROM companies WHERE ATS_name IN ('ashbyhq', 'leverco', 'greenhouse', 'bamboohr')")
+    cursor.execute("SELECT ATS_name, url_string FROM companies WHERE ATS_name IN ('ashbyhq', 'leverco', 'greenhouse', 'bamboohr', 'personio', 'breezy')")
     results = cursor.fetchall()
     
     for ats, url in results:
@@ -28,6 +30,10 @@ def get_slugs():
         elif ats == 'greenhouse' and 'job-boards.greenhouse.io/' in url:
             slug = url.rstrip('/').split('/')[-1]
         elif ats == 'bamboohr' and '.bamboohr.com' in url:
+            slug = url.split('://')[-1].split('.')[0]
+        elif ats == 'personio' and '.jobs.personio.de' in url:
+            slug = url.split('://')[-1].split('.')[0]
+        elif ats == 'breezy' and '.breezy.hr' in url:
             slug = url.split('://')[-1].split('.')[0]
             
         if slug and len(slug) < 100:
@@ -78,6 +84,8 @@ def update_file(slugs):
     replace_array('ASHBY_SLUGS', slugs['ashbyhq'])
     replace_array('LEVER_SLUGS', slugs['leverco'])
     replace_array('BAMBOOHR_SLUGS', slugs['bamboohr'])
+    replace_array('PERSONIO_SLUGS', slugs['personio'])
+    replace_array('BREEZY_SLUGS', slugs['breezy'])
 
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
@@ -87,6 +95,8 @@ def update_file(slugs):
     print(f"Added Lever: {len(slugs['leverco'])}")
     print(f"Added Greenhouse: {len(slugs['greenhouse'])}")
     print(f"Added BambooHR: {len(slugs['bamboohr'])}")
+    print(f"Added Personio: {len(slugs['personio'])}")
+    print(f"Added Breezy: {len(slugs['breezy'])}")
 
 if __name__ == '__main__':
     slugs = get_slugs()

@@ -147,34 +147,25 @@ const BANNED_REGEX = new RegExp(BANNED_PATTERNS.join('|'), 'i');
 
 // ─── Greenhouse company slugs to fetch ───
 const GREENHOUSE_SLUGS = [
-  'adyen','affirm','agoda','airbnb','airtable','anthropic','aptoslabs','asana',
-  'attentive','binance','bitgo','block','braze','brex','buildkite','bybit',
-  'calendly','carta','cerebral','chime','circleci','cloudflare','cloverhealth','cockroachlabs',
-  'coinbase','consensys','coreweave','coursera','cribl','databricks','datadog','deepmind',
-  'discord','doordashusa','dropbox','duolingo','elastic','epicgames','faire','fireblocks',
-  'fivetran','fleetio','flexport','formhealth','gemini','ghost','gitlab','glossier',
-  'govtech','grafanalabs','greenhouse','gusto','idme','iherb','instacart','intercom',
-  'iterable','jfrog','justworks','klaviyo','lattice','launchdarkly','lucidmotors','lyft',
-  'marqeta','melio','mercari','mercury','mmhmm','mongodb','monzo','motional',
-  'mozilla','neo4j','netlify','nubank','nuro','okta','okx','onemedical',
-  'opendoor','pagerduty','payoneer','phonepe','pinterest','planetscale','postman','reddit',
-  'relativity','remote','riotgames','ripple','robinhood','salesloft','samsara','scaleai',
-  'scopely','sendbird','sofi','stabilityai','stockx','stripe','tailscale','temporal',
-  'thedutchie','toast','trivago','twilio','twitch','udemy','unity3d','upgrade',
-  'vercel','verkada','warp','waymo','xendit','ziprecruiter','zscaler','medium',
-  'airtable','typeform','calendly','later','glossier','intercom','wunderkind','iterable',
-  'braze',
-  // AI-focused companies
-  'inflectionai','cerebrassystems','c3iot','snorkelai','khanacademy',
-  'labelbox','descript','figureai','apptronik','sambanovasystems',
-  // AI companies — round 2 (top 100)
-  'xai','togetherai','vectara','lightningai','tenstorrent',
-  'graphcore','heygen','udio','moveworks','observeai',
-  'cresta','abnormalsecurity','pathai','arizeai','fireworksai',
-  'coactive','contextualai','dagger',
-  // Tech companies + Web3
-  'amplitude','mixpanel','contentful','webflow','algolia','fastly',
-  'jetbrains','hubspot','oscar','n26','traderepublic','layerzerolabs',
+  'abnormalsecurity','adyen','affirm','agoda','airbnb','airtable','algolia','amplitude','anthropic',
+  'apptronik','aptoslabs','arizeai','asana','attentive','binance','bitgo','block','braze','brex',
+  'buildkite','bybit','c3iot','calendly','carta','cerebral','cerebrassystems','chime','circleci',
+  'cloudflare','cloverhealth','coactive','cockroachlabs','coinbase','consensys','contentful',
+  'contextualai','coreweave','coursera','cresta','cribl','dagger','databricks','datadog','deepmind',
+  'descript','discord','doordashusa','dropbox','duolingo','elastic','epicgames','faire','fastly',
+  'figureai','fireblocks','fireworksai','fivetran','fleetio','flexport','formhealth','gemini',
+  'ghost','gitlab','glossier','govtech','grafanalabs','graphcore','greenhouse','gusto','heygen',
+  'hubspot','idme','iherb','inflectionai','instacart','intercom','iterable','jetbrains','jfrog',
+  'justworks','khanacademy','klaviyo','labelbox','later','lattice','launchdarkly','layerzerolabs',
+  'lightningai','lucidmotors','lyft','marqeta','medium','melio','mercari','mercury','mixpanel',
+  'mmhmm','mongodb','monzo','motional','moveworks','mozilla','n26','neo4j','netlify','nubank',
+  'nuro','observeai','okta','okx','onemedical','opendoor','oscar','pagerduty','pathai','payoneer',
+  'phonepe','pinterest','planetscale','postman','reddit','relativity','remote','riotgames','ripple',
+  'robinhood','salesloft','sambanovasystems','samsara','scaleai','scopely','sendbird','snorkelai',
+  'sofi','stabilityai','stockx','stripe','tailscale','temporal','tenstorrent','thedutchie','toast',
+  'togetherai','traderepublic','trivago','twilio','twitch','typeform','udemy','udio','unity3d',
+  'upgrade','vectara','vercel','verkada','warp','waymo','webflow','wunderkind','xai','xendit',
+  'ziprecruiter','zscaler',
 ];
 
 // ─── Ashby company slugs ───
@@ -185,45 +176,45 @@ const ASHBY_SLUGS = [
   'adaptive-ml','adaptivesecurity','addi','additiveai','adonis','adtucon','aegis-ai','afterquery',
   'agent','agentio','agi-inc','aiand','aida','aidkit','airapps','airbound','airbyte','airgarage',
   'airops','airspace-intelligence.com','airtasker','airwallex','aiwyn','alan','alcazar-energy',
-  'alembic','aleph','alephalpha','alexai','alleviatehealth','allium','alljoined','allspice',
-  'almabase','almedia','alpenlabs','alternativepayments','altimate','ambiencehealthcare',
-  'ambient.ai','ambrook','amca','ami','amo','amperos','amplo','anagram','anatomy-financial',
-  'anglehealth','anima','anrok','ansiblehealth','answersnow','antares','anterior','antithesis',
-  'anyscale','anysignal','anything','anyvan','apex-technology-inc','apexgrowth','applied',
-  'applied-behavioral-services','appsmith','april','aqua-voice','aquarianlp','arago',
-  'arb-interactive','arbiter-ai','arbor','arcade','arcade-ai','arch.co','archive','arena',
+  'alchemy','alembic','aleph','alephalpha','alexai','alleviatehealth','allium','alljoined',
+  'allspice','almabase','almedia','alpenlabs','alternativepayments','altimate','ambiencehealthcare',
+  'ambient.ai','ambrook','amca','ami','amo','amperos','amplitude','amplo','anagram',
+  'anatomy-financial','anglehealth','anima','anrok','ansiblehealth','answersnow','antares',
+  'anterior','antithesis','anyscale','anysignal','anything','anyvan','apex-technology-inc',
+  'apexgrowth','applied','applied-behavioral-services','appsmith','april','aqua-voice','aquarianlp',
+  'arago','arb-interactive','arbiter-ai','arbor','arcade','arcade-ai','arch.co','archive','arena',
   'arkenstonedefense','arlo','around','arqu','array-behavioral-care','artemis','artisan','asari.ai',
   'ascertain','ashby','ashgro','asimov','aspora','assembledhq','assorthealth','assured',
   'assured-health','astera','astral','astro-mechanica','astronomer','asymmetric.re','ataraxis-ai',
   'athena-hq','athenaactuarial','atlan','atlas','atlasresidential','atob','atomic',
   'atomicindustries','atroposhealth','atticus','attio','august-health','aurelian','aurorasolar',
-  'authzed','aven','avid4','avida','away','axelera','axiom','axiombio','axion','axle-health','baba',
-  'backflip','backflip.ai','backmarket','bankjoy','barkbus','barnes','barti','base','base-power',
-  'baseten','basiccapital','basis-ai','basis-research','bastion','baton','bayesianhealth','beam',
-  'beamery','beamimpact','bedrock','bedrockocean','ben','benchling','bespokelabs','bestow',
-  'better-mortgage','betterstack','betterup','bevel','biconomy','binance.us','bioptimizers',
-  'blackbird-labs-inc','blacksmith','bland','blissway','blockhouse','blockworks','blossom-health',
-  'blp-digital','blueberrypediatrics','blumen','bobyard','bookkeeper360','boost','botcrew','bounce',
-  'brainco','brainly','braintrust','branchlab','bravehealth','bree','brellium','brightstar-ai',
-  'brightwheel','brigit','brinc','brisk-teaching','bubble','build','buildout','bullpen-talent',
-  'bun','bunch','bunkerhillhealth','bureau','burklandassociates','buspatrol','cal','camber',
-  'cambio','cambly','campfire','campus','camunda','canals','candidhealth','cantina',
-  'canvas-medical','cape','carbonx','cardless','careers.azx.io','cargado','cargo-one','carry',
-  'cartesia','cas','casap','casca','causal','causaly','cbai','cchn','centivo','centralhq',
-  'chainalysis-careers','chainlink-labs','chalkboard','chambercardio','chapter','character',
-  'charthop','chatbase','checkly','chestnut','chromatic','chronosphere','chronospherejobs',
-  'circuithub','citizen','civilgrid','claim-health','claritypay','claritypediatrics','clarium',
-  'clasp-group','claylabs','clearco','clearvector','clerk','clickup','clipboard','clipbook','close',
-  'cloudzero','clubhouse','cluely','coactive','coalesce','cobot','coda','coder','coderabbit',
-  'codes-health','coefficientgiving','cognition','cohere','coinflow','coinhako','cointracker',
-  'colonist','column','comfy-org','comity','commonroom','commons','commure','company','composio',
-  'compound','comulate','concourse','conduct','conductorone','conduit','confiant','confluent',
-  'connecthum','conscious-talent','continua','continue','contra','convey','coreflow',
-  'coreoftheheart','cortea','counsel','coursecareers','cow-dao','cradlebio','creatify',
-  'critical-energy','crosby','crusoe','cruxclimate','cryptio','cubby-beds','cube','cubesoftware',
-  'cultureai','curri','cursor','cuspai','cybcube','cyber.fund','cyberhaven','cylinderhealth',
-  'cytora.com','cyvl','d-matrix','dailypay','dakota','dandy','darkroom','dash0','datacurve',
-  'dataguard','dataplor','datasnipper.com','datologyai','dave','david-ai','davidenergy',
+  'authzed','ava-labs','aven','avid4','avida','away','axelera','axiom','axiombio','axion',
+  'axle-health','baba','backflip','backflip.ai','backmarket','bankjoy','barkbus','barnes','barti',
+  'base','base-power','baseten','basiccapital','basis-ai','basis-research','bastion','baton',
+  'bayesianhealth','beam','beamery','beamimpact','bedrock','bedrockocean','ben','benchling',
+  'bespokelabs','bestow','better-mortgage','betterstack','betterup','bevel','biconomy','binance.us',
+  'bioptimizers','blackbird-labs-inc','blacksmith','bland','blissway','blockhouse','blockworks',
+  'blossom-health','blp-digital','blueberrypediatrics','blumen','bobyard','bookkeeper360','boost',
+  'botcrew','bounce','brainco','brainly','braintrust','branchlab','bravehealth','bree','brellium',
+  'brightstar-ai','brightwheel','brigit','brinc','brisk-teaching','bubble','buffer','build',
+  'buildout','bullpen-talent','bun','bunch','bunkerhillhealth','bureau','burklandassociates',
+  'buspatrol','cal','camber','cambio','cambly','campfire','campus','camunda','canals',
+  'candidhealth','cantina','canvas-medical','cape','carbonx','cardless','careers.azx.io','cargado',
+  'cargo-one','carry','cartesia','cas','casap','casca','causal','causaly','cbai','cchn','centivo',
+  'centralhq','chainalysis-careers','chainlink-labs','chalkboard','chambercardio','chapter',
+  'character','charthop','chatbase','checkly','chestnut','chromatic','chronosphere',
+  'chronospherejobs','circuithub','citizen','civilgrid','claim-health','claritypay',
+  'claritypediatrics','clarium','clasp-group','claylabs','clearco','clearvector','clerk','clickup',
+  'clipboard','clipbook','close','cloudzero','clubhouse','cluely','coactive','coalesce','cobot',
+  'coda','coder','coderabbit','codes-health','coefficientgiving','cognition','cohere','coinflow',
+  'coinhako','cointracker','colonist','column','comfy-org','comity','commonroom','commons',
+  'commure','company','composio','compound','comulate','concourse','conduct','conductorone',
+  'conduit','confiant','confluent','connecthum','conscious-talent','continua','continue','contra',
+  'convey','coreflow','coreoftheheart','cortea','cosmos','counsel','coursecareers','cow-dao',
+  'cradlebio','creatify','critical-energy','crosby','crusoe','cruxclimate','cryptio','cubby-beds',
+  'cube','cubesoftware','cultureai','curri','cursor','cuspai','cybcube','cyber.fund','cyberhaven',
+  'cylinderhealth','cytora.com','cyvl','d-matrix','dailypay','dakota','dandy','darkroom','dash0',
+  'datacurve','dataguard','dataplor','datasnipper.com','datologyai','dave','david-ai','davidenergy',
   'davistechnologymanagement','day9','daydream-ai','dbt-labs','decagon','decart-ai','decimal',
   'deel','deepgram','deepl','deepnote','deepsky','deepslate','deeptune','definelycareers',
   'dehazelabs','delinea','deliveroo','delphi','delve','demandbase','deno','depthfirst',
@@ -232,28 +223,28 @@ const ASHBY_SLUGS = [
   'drata','dreamthree','dualentry','dubclub','duck-duck-go','duckbill','duet','duna','dune','dust',
   'dyna-robotics','e2b','earthforce','easygenerator','easyllama.com','echo','ecosia.org','edia',
   'edra','edsights','edvisorly','egra','eigen-labs','eightsleep','ekho','ekumenlabs','electric',
-  'element451','elevenlabs','eliseai','eliza','ello','eloquentai','ema','embedding-vc','emerald-ai',
-  'emora-health','empirical-security','empora','endex','endgame','endurance-energy','ens-labs',
-  'episteme','equal-ventures','equip','ernest','espa','espresso','essentialai','etched','ether.fi',
-  'ethereum-foundation','ethglobal','eventual','evenup','everai','everfield','everops','everself',
-  'everstar','evertune','every-io','exa','exegy','expressable','extend','eyebot','ezhealth',
-  'eztexting','factory','faculty','far.ai','farmraise','farsight','fathom.video','featherlessai',
-  'feathr','fernstone','fieldguide','filmhub','fin','finch','finni-health','firecrawl',
-  'firstbaseio','firstmate','firstround','firststreet','fitt','fizz','flagright.com','flai',
-  'flashbots.net','fleetdm','fleetline','fleetpulse','fleetworks','flint','flipturn','floatme',
-  'flocksafety','flora','flowengineering','flowhub','fluency','flux','fly','focused','found',
-  'foundry-for-good','fourier','fourth-power','fractional-ai','freed','freeplay','frequence',
-  'freshpaint','frontcareers','fuel-cycle','fulcrum','fullstory','fundamentalresearchlabs',
-  'fundwell','further','furtherai','fuse','futurefitai','futureproofing','g2','g2i','gamechanger',
-  'gamma','garage','general-medicine','generalintelligencecompany','generalist','genomics',
-  'geoforce','get-ivy','gigaml','gitbook','givebutter','glacis-ai','glide','glimpse',
-  'global-x-etfs','glomo','glow25','go-augment','go-nimbly','goanagram','goldsky','golinks','gong',
-  'goodship','goodstack','goody','gorgias','gotphoto','govdash','goveagle','govsignals','govwell',
-  'gptzero','granola','graphite','graphitehq','gravityclimate','greatquestion',
-  'green-tree-school-and-services','greenlitecareers','gridcare','gridunity','gruntwork','grvt',
-  'gt-bio','haast','hackerone','hadrian-automation','halliday','handshake','handspring','hang',
-  'hanover-park','happyrobot.ai','harmonic','harvey','hasura','hatch','haus','hawk',
-  'hawkeyeinnovations','haydenai','haystacknews','hcompany','healthaxis','healthprogresshub',
+  'element451','elevenlabs','eliseai','eliza','elliptic','ello','eloquentai','ema','embedding-vc',
+  'emerald-ai','emora-health','empirical-security','empora','endex','endgame','endurance-energy',
+  'ens-labs','episteme','equal-ventures','equip','ernest','espa','espresso','essentialai','etched',
+  'ether.fi','ethereum-foundation','ethglobal','eventual','evenup','everai','everfield','everops',
+  'everself','everstar','evertune','every-io','exa','exegy','expressable','extend','eyebot',
+  'ezhealth','eztexting','factory','faculty','far.ai','farmraise','farsight','fathom.video',
+  'featherlessai','feathr','fernstone','fieldguide','figure','filmhub','fin','finch','finni-health',
+  'firecrawl','firstbaseio','firstmate','firstround','firststreet','fitt','fizz','flagright.com',
+  'flai','flashbots.net','fleetdm','fleetline','fleetpulse','fleetworks','flint','flipturn',
+  'floatme','flocksafety','flora','flowengineering','flowhub','fluency','flux','fly','focused',
+  'found','foundry-for-good','fourier','fourth-power','fractional-ai','freed','freeplay',
+  'frequence','freshpaint','frontcareers','fuel-cycle','fulcrum','fullstory',
+  'fundamentalresearchlabs','fundwell','further','furtherai','fuse','futurefitai','futureproofing',
+  'g2','g2i','gamechanger','gamma','garage','general-medicine','generalintelligencecompany',
+  'generalist','genomics','geoforce','get-ivy','gigaml','gitbook','givebutter','glacis-ai','glide',
+  'glimpse','global-x-etfs','glomo','glow25','go-augment','go-nimbly','goanagram','goldsky',
+  'golinks','gong','goodship','goodstack','goody','gorgias','gotphoto','govdash','goveagle',
+  'govsignals','govwell','gptzero','granola','graphite','graphitehq','gravityclimate',
+  'greatquestion','green-tree-school-and-services','greenlitecareers','gridcare','gridunity',
+  'gruntwork','grvt','gt-bio','haast','hackerone','hadrian-automation','halliday','handshake',
+  'handspring','hang','hanover-park','happyrobot.ai','harmonic','harvey','hasura','hatch','haus',
+  'hawk','hawkeyeinnovations','haydenai','haystacknews','hcompany','healthaxis','healthprogresshub',
   'healthsherpa','hedra','heidihealth.com.au','height','heirloomcarbon','helion','helius',
   'hellobrightline','hellohera','hellopatient','helm-ai','helpscout','heron-power','heyjobs',
   'higharc','highbeam','highlightai','hightouch','hiive','hims-and-hers','hirehangar','hive.co',
@@ -262,20 +253,20 @@ const ASHBY_SLUGS = [
   'human','human-computer-lab','humandelta','humans-and','humatahealth','hyperbolic','hypercubic',
   'hyperexponential','hyperhug','ibbx','ideals','ideogram','idler','illumio','immersivelabs',
   'imprint','improbable','impulse','inertia','inference','infinite','infinity-constellation',
-  'infisical','innate','inngest','inspectiv','instructure','intellistack','interaction','interface',
-  'interplay','interrahealth','intro','intus','invisionapp','ironcladhq','iverify','jampack-ai',
-  'january','jbs-dev','jellyfish','jellyfishcareers','jerry.ai','jimdo.com','join9am','joinbetter',
-  'joinsherpa','joor','joyfulhealth','judgmentlabs','juicebox','julius','jump','jump-app',
-  'junction','junior','junipersquare','justplay-gmbh','justwin','k-id','kale','kalibri-labs',
-  'kalshi','kamiwaza','kayak','keep','kernel','kilocode','kin','kindred','kirin','kit','kiwi',
-  'known','knox-systems','kodex','kognitos','kognity','kojo','kombo','kong','kraken.com','krea',
-  'kueski','kustomer','ladder','lambda','lancedb','langchain','lap','lark','latamcent',
-  'latitudecareers','laurel','lawhive','layerfi','leadbank','leandata','leantechniques','leap',
-  'leapsome','ledger','legionhealth','leland','lemlist','lemonade','lendable','leona','level',
-  'levelpath','lgads','li.fi','libra','lido.fi','life-space-digital','lightdash','lightning',
-  'lightspark','lightstep','lilt-corporate','limble','lime','linda','lindushealth','lindy','linear',
-  'linera.io','linqapp','liquid-ai','listenlabs','liv-golf','liveblocks','livekit','livinghr',
-  'lm-studio','loancrate','logiqal','loot-labs','lottie','lovable','loveholidays',
+  'infisical','injective','innate','inngest','insitro','inspectiv','instructure','intellistack',
+  'interaction','interface','interplay','interrahealth','intro','intus','invisionapp','ironcladhq',
+  'iverify','jampack-ai','january','jbs-dev','jellyfish','jellyfishcareers','jerry.ai','jimdo.com',
+  'join9am','joinbetter','joinsherpa','joor','joyfulhealth','judgmentlabs','juicebox','julius',
+  'jump','jump-app','junction','junior','junipersquare','justplay-gmbh','justwin','k-id','kale',
+  'kalibri-labs','kalshi','kamiwaza','kayak','keep','kernel','kilocode','kin','kindred','kirin',
+  'kit','kiwi','known','knox-systems','kodex','kognitos','kognity','kojo','kombo','kong',
+  'kraken.com','krea','kueski','kustomer','ladder','lambda','lancedb','langchain','lap','lark',
+  'latamcent','latitudecareers','laurel','lawhive','layerfi','leadbank','leandata','leantechniques',
+  'leap','leapsome','ledger','legionhealth','leland','lemlist','lemonade','lendable','leona',
+  'level','levelpath','lgads','li.fi','libra','lido.fi','life-space-digital','lightdash',
+  'lightning','lightspark','lightstep','lilt-corporate','limble','lime','linda','lindushealth',
+  'lindy','linear','linera.io','linqapp','liquid-ai','listenlabs','liv-golf','liveblocks','livekit',
+  'livinghr','lm-studio','loancrate','logiqal','loom','loot-labs','lottie','lovable','loveholidays',
   'lpadesignstudios','luminai','luminary','lydian','lynk','lyric','m-kopa','mach','mach9',
   'machinify','macroscopic','madhive','magic','magic.dev','magical','magiceden','magicschool',
   'maincode','mainstay','mandolin','mangomint','manifest-law','manusai','mapbox','maple','marble',
@@ -297,83 +288,73 @@ const ASHBY_SLUGS = [
   'obvio','obvious','ocra','odys-aviation','odyssey','office-hours','omaze','omnea','omni',
   'omniscient','one-pass-solutions','oneapp','onebrief','onecrew','oneleet','onepot','onereach.ai',
   'oneschema','onhires','onramp','opal','openai','openevidence','opengov','openhands',
-  'openhomefoundation','openrouter','opensea','opfoundation','opslevel','optimum','optro','opus1',
-  'opusclip','orb','orbit','orbital','orca','orchard','orum','osmo','oso','oumi','outpost',
+  'openhomefoundation','openrouter','opensea','opfoundation','oplabs','opslevel','optimum','optro',
+  'opus1','opusclip','orb','orbit','orbital','orca','orchard','orum','osmo','oso','oumi','outpost',
   'outpostnow','outset','outsmart','outtake','overflow','overviewenergy','owner','oxio','oxman',
   'oyster','p2p.org','paddle','palette-media','palmstreet','pano-ai','panoptyc','papaya-global',
   'parable','parabola-io','paradigm','paradox','parafin','paraform','paragon','parallel',
   'parashift','pareto-ai','parity','parker','partiful','partsbase','passage','passport','patch.io',
   'patreon','payabli','pebl','peek','people-culture-talent','peppr','perchwell','perk','permitflow',
   'perplexity','persona','persona.ai','phantom','phia','phil','phoebe','phoebe-work','phoenix',
-  'phonic','physicalintelligence','pinecone','pitch','plaid','plain','planehr','plantingspace',
-  'plasma','plasmidsaurus','platoapp','plaud','playground','playpowerlabs','playson','pleo',
-  'pluralfinance','pluto-health','pmmalliance','pod-network','podium-automation','poesis',
-  'polaranalytics','polymarket','poolside','popl','posh','posh-ai','poshmark','posthog','powerus',
-  'pravah','prefect','prelim','primary','primeintellect','primer','primer.io','prior-labs','prisma',
-  'procurementsciences','procurify','prodigy-education','product-now','profound',
-  'project-expedition','prokeep','promise','promise-studios','prompt','proofofplay','propelus',
-  'protege','provable','proxima-fusion','pulumi','puzzle.io','pylon','pylon-labs','quadrivia',
-  'qualified','quant-aq','quantware','quarks-tech','quartermaster','quicknode','qumis','quora',
-  'quotewell','rabot','radai','raiku','railway','rain','ramp','range','raspberry','raycast',
-  'reacher','read-ai','ready','real','rebecca-school','recraft','red-gate','redpine','reducto',
-  'reedsy','reevo','reflect-orbital','reflectionai','reflexrobotics','reflow','reframesystems',
-  'regent','rehire','reindeer-ai','reinforce-labs-inc','reka','reklamehealth','relay','relayfi',
-  'relayprotocol','remarcable-inc','remedyrobotics','render','renuity','replicated','replit',
-  'replo','reprally','reprise','rerun','rescale','resend','resq','restream','retell-ai','retool',
-  'rev','reve','revenuecat','revic','reviserobotics','revv-hq','rewind','rho','ridealso','rilla',
-  'rillet','river','riveron','rize','roadsurfer.com','roboflow','robot-learning-co','roebling',
-  'rogo','roo-code','roompricegenie','rothys','rowan','ruby-labs','rula','rundoo','runna','runway',
-  'rwazi','rythm','s2','safelease','sagelabs.ai','sahara','salesape-ai','salient','sanctuary',
-  'sandbar','sandboxaq','sanity','sapiom','sardine','satispay','savvy','scalemath','scaler',
-  'scan-com','scarlet','scorewarrior','scribdinc','scribe','sdsc','seamflow','seconddinner',
-  'sellfire','semgrep','seneca','sensmore','sent','sentient','sentra','sentry','seon','sequence',
-  'serverobotics','sesame','sevaro','sevenai','sfcompute','shepherd','shiftkey','shortstory',
-  'sibill','siena','sierra','sierra-studio','sieve','siftstack','signalwire','sigp','silver','sim',
-  'simular','siro','sisu','sitemate','siteminder','skimmer','skymavis','skynrg','slant',
-  'slash-financial','sleeper','slingshotai','slope','smallest','smalls','smallstep','smartleaf',
-  'snappy','snd','snowball','snowflake','snyk','sobek-ai','socure','softwarevision','sola','solace',
-  'somethings','somnia','sonio','sourcegraph','sourgum','span','span.app','spare','speak',
-  'speakeasy','spear-ai','spearbio','specter','spexi','spherical','spiral','squads','squint.ai',
-  'ssi','st-labs','stable','stacker','stackone','stainlessapi','standardfleet','starbridge',
-  'starpath.space','startvim','stash','statista','statsig','stay22','stayai','staycation','steel',
-  'stellar-health','stepful','stickermule','strategic-growth-partners','stream','streetgroup',
-  'strongdm','stronghold','stuut-ai','stytch','substack','subzero','suite-studios','sully-ai',
-  'sunday','sunflower-sober','suno','supabase','super.com','superdial','superduper','superhuman',
-  'superlinear','superpower','suzy','swans','swarmer','sweedpos.com','sweep','swoop','sydecar',
-  'symbiotic','symmetry','synquery','synthesia','synthflow','synthpop','tabs','tabz','taekus',
-  'tajir','take2','taktile','talentsafari','talkiatry','talos-trading','tandem','tarro',
-  'tavahealth','tavily','tavus','taxbit','taxfix.com','teal-health','teambridge','teamworks',
-  'technimove','teleport','teleskope','tem','tempo','tempo-xyz','tenexlabs','tennr','tensorwave',
-  'teraswitch','terraai','terranova','tessera-labs','texture','the-exploration-company','the-flex',
-  'the-global-talent-co','the-learning-spectrum','the-sales-people','the-studio','theflex',
-  'themindcompany','thesis','thewfsgroup','theydo','thndr','thought-machine','thrill-labs',
-  'tigerdata','tilthq','timely','tin-can','tinybird','titan','titan-ai','tldr.tech','todoist',
-  'toggl','toma','toms','toogeza','topline-pro','toposbio','traba','trainline','transfr',
-  'transgrid-energy','traversal','trawa','treeswift','tremendous','triumph-arcade','truelogic',
-  'trust-wallet','truthsystems','tryalma','tunnl','turnstile','turquoise-health','turso','twelve',
-  'twelve-labs','twenty','twin-so','tyba','udisc','uipath','unify','union','union-tech','unit',
-  'unit410','unitxlabs','universalagi','unlearn','unwrap','uplane','upside','upside-tech','upstash',
-  'uptimeai','upvest','usekernel','usul','vanilla','vanta','vantageanalytics','vapi','vector',
-  'vegaclaims','vellum','vendelux','vercel','versemedical','vertical-aerospace','verto','vetcove',
-  'vibe','vibecode','vibiz','vinci4d','virtahealth','virtuous','visanahealth','vitalize','vitvio',
-  'viz.ai','voldex','vori','vow','voxel','vynca','wagmo','walrus','wand','warp','watershed',
-  'wealth-com','wealthsimple','weave','weaviate','webai','weekend','wellth','what3words','wheel',
-  'whetstoneresearch','whippy','winona','wisp','wispr-flow','wistia','withcherry','withclutch',
-  'withdaydream','withdefault','withpulley','withwisdom','witnessai','woflow','wokelo-ai',
-  'wordsmith','wordware.ai','workweave','workyard','worldly','wrapbook','writer','wundergraph',
-  'xbowcareers','yeet','yendo','yondr','you-health','yourco','zapier','zayzoon','zed','zeely',
-  'zello','zencastr','zenjob','zero','zerorfi','zettabyte-space','zip','zippymh','zyphra',
-  // Migrated from Greenhouse/Lever → Ashby
-  'alchemy','buffer','uniswap',
-  // AI-focused companies
-  'figure',
-  // AI companies — round 2 (top 100)
-  'alephalpha','reka','langchain','unstructured','d-matrix','rain',
-  'pika','ideogram','suno','skydio','insitro',
-  'livekit','deepgram','poolside','cognition','sierra','tavus','coactive',
-  // Tech companies + Web3 protocols
-  'amplitude','loom','oplabs','solanalabs','ava-labs','cosmos',
-  'elliptic','injective','pythnetwork','eigen-labs','magiceden','matter-labs',
+  'phonic','physicalintelligence','pika','pinecone','pitch','plaid','plain','planehr',
+  'plantingspace','plasma','plasmidsaurus','platoapp','plaud','playground','playpowerlabs',
+  'playson','pleo','pluralfinance','pluto-health','pmmalliance','pod-network','podium-automation',
+  'poesis','polaranalytics','polymarket','poolside','popl','posh','posh-ai','poshmark','posthog',
+  'powerus','pravah','prefect','prelim','primary','primeintellect','primer','primer.io',
+  'prior-labs','prisma','procurementsciences','procurify','prodigy-education','product-now',
+  'profound','project-expedition','prokeep','promise','promise-studios','prompt','proofofplay',
+  'propelus','protege','provable','proxima-fusion','pulumi','puzzle.io','pylon','pylon-labs',
+  'pythnetwork','quadrivia','qualified','quant-aq','quantware','quarks-tech','quartermaster',
+  'quicknode','qumis','quora','quotewell','rabot','radai','raiku','railway','rain','ramp','range',
+  'raspberry','raycast','reacher','read-ai','ready','real','rebecca-school','recraft','red-gate',
+  'redpine','reducto','reedsy','reevo','reflect-orbital','reflectionai','reflexrobotics','reflow',
+  'reframesystems','regent','rehire','reindeer-ai','reinforce-labs-inc','reka','reklamehealth',
+  'relay','relayfi','relayprotocol','remarcable-inc','remedyrobotics','render','renuity',
+  'replicated','replit','replo','reprally','reprise','rerun','rescale','resend','resq','restream',
+  'retell-ai','retool','rev','reve','revenuecat','revic','reviserobotics','revv-hq','rewind','rho',
+  'ridealso','rilla','rillet','river','riveron','rize','roadsurfer.com','roboflow',
+  'robot-learning-co','roebling','rogo','roo-code','roompricegenie','rothys','rowan','ruby-labs',
+  'rula','rundoo','runna','runway','rwazi','rythm','s2','safelease','sagelabs.ai','sahara',
+  'salesape-ai','salient','sanctuary','sandbar','sandboxaq','sanity','sapiom','sardine','satispay',
+  'savvy','scalemath','scaler','scan-com','scarlet','scorewarrior','scribdinc','scribe','sdsc',
+  'seamflow','seconddinner','sellfire','semgrep','seneca','sensmore','sent','sentient','sentra',
+  'sentry','seon','sequence','serverobotics','sesame','sevaro','sevenai','sfcompute','shepherd',
+  'shiftkey','shortstory','sibill','siena','sierra','sierra-studio','sieve','siftstack',
+  'signalwire','sigp','silver','sim','simular','siro','sisu','sitemate','siteminder','skimmer',
+  'skydio','skymavis','skynrg','slant','slash-financial','sleeper','slingshotai','slope','smallest',
+  'smalls','smallstep','smartleaf','snappy','snd','snowball','snowflake','snyk','sobek-ai','socure',
+  'softwarevision','sola','solace','solanalabs','somethings','somnia','sonio','sourcegraph',
+  'sourgum','span','span.app','spare','speak','speakeasy','spear-ai','spearbio','specter','spexi',
+  'spherical','spiral','squads','squint.ai','ssi','st-labs','stable','stacker','stackone',
+  'stainlessapi','standardfleet','starbridge','starpath.space','startvim','stash','statista',
+  'statsig','stay22','stayai','staycation','steel','stellar-health','stepful','stickermule',
+  'strategic-growth-partners','stream','streetgroup','strongdm','stronghold','stuut-ai','stytch',
+  'substack','subzero','suite-studios','sully-ai','sunday','sunflower-sober','suno','supabase',
+  'super.com','superdial','superduper','superhuman','superlinear','superpower','suzy','swans',
+  'swarmer','sweedpos.com','sweep','swoop','sydecar','symbiotic','symmetry','synquery','synthesia',
+  'synthflow','synthpop','tabs','tabz','taekus','tajir','take2','taktile','talentsafari',
+  'talkiatry','talos-trading','tandem','tarro','tavahealth','tavily','tavus','taxbit','taxfix.com',
+  'teal-health','teambridge','teamworks','technimove','teleport','teleskope','tem','tempo',
+  'tempo-xyz','tenexlabs','tennr','tensorwave','teraswitch','terraai','terranova','tessera-labs',
+  'texture','the-exploration-company','the-flex','the-global-talent-co','the-learning-spectrum',
+  'the-sales-people','the-studio','theflex','themindcompany','thesis','thewfsgroup','theydo',
+  'thndr','thought-machine','thrill-labs','tigerdata','tilthq','timely','tin-can','tinybird',
+  'titan','titan-ai','tldr.tech','todoist','toggl','toma','toms','toogeza','topline-pro','toposbio',
+  'traba','trainline','transfr','transgrid-energy','traversal','trawa','treeswift','tremendous',
+  'triumph-arcade','truelogic','trust-wallet','truthsystems','tryalma','tunnl','turnstile',
+  'turquoise-health','turso','twelve','twelve-labs','twenty','twin-so','tyba','udisc','uipath',
+  'unify','union','union-tech','uniswap','unit','unit410','unitxlabs','universalagi','unlearn',
+  'unstructured','unwrap','uplane','upside','upside-tech','upstash','uptimeai','upvest','usekernel',
+  'usul','vanilla','vanta','vantageanalytics','vapi','vector','vegaclaims','vellum','vendelux',
+  'vercel','versemedical','vertical-aerospace','verto','vetcove','vibe','vibecode','vibiz',
+  'vinci4d','virtahealth','virtuous','visanahealth','vitalize','vitvio','viz.ai','voldex','vori',
+  'vow','voxel','vynca','wagmo','walrus','wand','warp','watershed','wealth-com','wealthsimple',
+  'weave','weaviate','webai','weekend','wellth','what3words','wheel','whetstoneresearch','whippy',
+  'winona','wisp','wispr-flow','wistia','withcherry','withclutch','withdaydream','withdefault',
+  'withpulley','withwisdom','witnessai','woflow','wokelo-ai','wordsmith','wordware.ai','workweave',
+  'workyard','worldly','wrapbook','writer','wundergraph','xbowcareers','yeet','yendo','yondr',
+  'you-health','yourco','zapier','zayzoon','zed','zeely','zello','zencastr','zenjob','zero',
+  'zerorfi','zettabyte-space','zip','zippymh','zyphra',
 ];
 
 // ─── Workable company slugs ───
@@ -383,47 +364,43 @@ const WORKABLE_SLUGS = [
 
 // ─── Lever company slugs ───
 const LEVER_SLUGS = [
-  '15five','3pillarglobal','accesssoftek','accurate','achievers','activecampaign','addx','aeratechnology',
-  'aero','agiloft','air-tek','airalo','aircall','aleph','allegiantair','alltrails',
-  'analyticpartners','anchorage','angellist','anomali','appen','appen-2','applydigital','appzen',
-  'arcadia','artera','articulate','assist-world','bazaarvoice','benchsci','better','binance',
-  'blablacar','bloom','bluecatnetworks','bluelightconsulting','bounteous','brevo','brilliant','brillio-2',
-  'bumbleinc','businesswire','butcherbox','cagents','capital','captivateiq','cellares','centrifuge',
-  'cents','certifyos','chownow','ciandt','cic','civitech','clari','cleanspark',
-  'cloudinary','coalfire','coingecko','coins','color','comply','connectly','contentsquare',
-  'cred','crypto','datalabusa','deleteme','deliverect','demo','deputy','digimarc',
-  'digitalmediamanagement','disher','dlocal','doola','dreamgames','drivetrain','educative','elfbeauty',
-  'emma-sleep','employ','enable','equativ','erg','esper','eternal','everbridge',
-  'everlywell','factor','fampay','farfetch','fevo','fi','field-ai','finch',
-  'find','finn','floqast','freedompay','fresha','frontify','gearset','getlabs',
-  'gettyimages','getwingapp','gohighlevel','goodleap','gopuff','goswift','greenlight','gridware',
-  'h1','happyco','happyhiller','hcvt','healthcare','heartbeathealth','highspot','hightechhigh',
-  'hive','hostinger','houzz','imentor','immutable','imo-online','includedhealth','inductivehealth',
-  'influur','investorflow','ioconnectservices.com','ion','ivo','jobandtalent','jumpcloud','kabam',
-  'kepler','kiddom','klivvr','kpler','kraken123','kubra','labelbox','ladders',
-  'lalamove','lamudi','lendbuzz','levelai','levelup','lever','loadsmart',
-  'logz','lucidworks','lumivero','lumotive','lyrahealth','mactores','mahmee','masterycharter',
-  'matchgroup','matillion','meesho','megaport','mendix','merklescience','metabase','metaprise.ai',
-  'metopera','metr','mindbloom','mindtickle','mistral','nava','neighbor','netomi',
-  'newton','nielsen','nimblerx','ninjavan','nium','nominal','novatalent','numeris',
-  'offchainlabs','omnisend','palantir','palo-it','patsnap','pattern','paytm','pditechnologies',
-  'peakgames','penumbrainc','people-ai','perforce','petvisor','picklerobot','pipedrive','pivotal',
-  'placemakr','plaid','planettechnologies','planner5d','plexus','plusgrade','pointclickcare','pp-la',
-  'ppfa','ppgny','prismic','proof','proper','prosper','protective','protolabs',
-  'provi','quantcast','quantummetric','questanalytics','quokka','rackspace','redsox','regrello',
-  'relay','revel','revhealth','rhombus-systems','rise','rivr','ro','robust-ai',
-  'rover','safe','saviynt','sensortower','shopback-2','signal','singerlewak','smart-working-solutions',
-  'snaplogic','sonatype','sprucesystems','stackblitz','standtogether','suger','supermove','superside',
-  'sure','swordhealth','sysdig','tala','teamsnap','teikametrics','telesat','theblockcrypto',
-  'thinkahead','thinkingbox','toku','topanga','torchdental','trueml','trunkio','trustly',
-  'ttecdigital','txidigital','unico','upguard','vacancies','veeva','vendavo','venteur',
-  'veo','vergesense','versapay','vevo','vida','vivrelle','voodoo','vrchat',
-  'walkme','waveapps','wealthfront','whereby','whoop','willowinc','wisdomai','workwave',
-  'wr','z1tech','zeta','zocks','zoox','activecampaign','medium',
-  // AI-focused companies
-  'shieldai','sanctuary','tecton','labelbox',
-  // Tech companies + Web3
-  'spotify','netflix','jetbrains','atlassian','celestia','animocabrands','offchainlabs',
+  '15five','3pillarglobal','accesssoftek','accurate','achievers','activecampaign','addx',
+  'aeratechnology','aero','agiloft','air-tek','airalo','aircall','aleph','allegiantair','alltrails',
+  'analyticpartners','anchorage','angellist','animocabrands','anomali','appen','appen-2',
+  'applydigital','appzen','arcadia','artera','articulate','assist-world','atlassian','bazaarvoice',
+  'benchsci','better','binance','blablacar','bloom','bluecatnetworks','bluelightconsulting',
+  'bounteous','brevo','brilliant','brillio-2','bumbleinc','businesswire','butcherbox','cagents',
+  'capital','captivateiq','celestia','cellares','centrifuge','cents','certifyos','chownow','ciandt',
+  'cic','civitech','clari','cleanspark','cloudinary','coalfire','coingecko','coins','color',
+  'comply','connectly','contentsquare','cred','crypto','datalabusa','deleteme','deliverect','demo',
+  'deputy','digimarc','digitalmediamanagement','disher','dlocal','doola','dreamgames','drivetrain',
+  'educative','elfbeauty','emma-sleep','employ','enable','equativ','erg','esper','eternal',
+  'everbridge','everlywell','factor','fampay','farfetch','fevo','fi','field-ai','finch','find',
+  'finn','floqast','freedompay','fresha','frontify','gearset','getlabs','gettyimages','getwingapp',
+  'gohighlevel','goodleap','gopuff','goswift','greenlight','gridware','h1','happyco','happyhiller',
+  'hcvt','healthcare','heartbeathealth','highspot','hightechhigh','hive','hostinger','houzz',
+  'imentor','immutable','imo-online','includedhealth','inductivehealth','influur','investorflow',
+  'ioconnectservices.com','ion','ivo','jetbrains','jobandtalent','jumpcloud','kabam','kepler',
+  'kiddom','klivvr','kpler','kraken','kraken123','kubra','labelbox','ladders','lalamove','lamudi',
+  'lendbuzz','levelai','levelup','lever','leverdemo-8','loadsmart','logz','lucidworks','lumivero',
+  'lumotive','lyrahealth','mactores','mahmee','masterycharter','matchgroup','matillion','medium',
+  'meesho','megaport','mendix','merklescience','metabase','metaprise.ai','metopera','metr',
+  'mindbloom','mindtickle','mistral','nava','neighbor','netflix','netomi','newton','nielsen',
+  'nimblerx','ninjavan','nium','nominal','novatalent','numeris','offchainlabs','omnisend',
+  'outreach','palantir','palo-it','patsnap','pattern','paytm','pditechnologies','peakgames',
+  'penumbrainc','people-ai','perforce','petvisor','picklerobot','pipedrive','pivotal','placemakr',
+  'plaid','planettechnologies','planner5d','plexus','plusgrade','pointclickcare','pp-la','ppfa',
+  'ppgny','prismic','proof','proper','prosper','protective','protolabs','provi','quantcast',
+  'quantummetric','questanalytics','quokka','rackspace','redsox','regrello','relay','revel',
+  'revhealth','rhombus-systems','rise','rivr','ro','robust-ai','rover','safe','sanctuary','saviynt',
+  'sensortower','shieldai','shopback-2','signal','singerlewak','smart-working-solutions',
+  'snaplogic','sonatype','spotify','sprucesystems','stackblitz','standtogether','suger','supermove',
+  'superside','sure','swordhealth','sysdig','tala','teamsnap','tecton','teikametrics','teleport',
+  'telesat','theblockcrypto','thinkahead','thinkingbox','toku','topanga','torchdental','trueml',
+  'trunkio','trustly','ttecdigital','txidigital','unico','upguard','vacancies','veeva','vendavo',
+  'venteur','veo','vergesense','versapay','vevo','vida','vivrelle','voodoo','vrchat','walkme',
+  'waveapps','wealthfront','whereby','whoop','willowinc','wisdomai','workwave','wr','z1tech','zeta',
+  'zocks','zoox',
 ];
 
 // ─── Helpers ───
@@ -1390,6 +1367,16 @@ const BAMBOOHR_SLUGS = [
   'zoonewengland','zpesystems','ztr','zurb','zutacore','zwick',
 ];
 
+// ─── Personio company slugs ───
+const PERSONIO_SLUGS = [
+  'arweave','aurora','celonis','scroll',
+];
+
+// ─── Breezy HR company slugs ───
+const BREEZY_SLUGS = [
+
+];
+
 async function fetchBambooHR() {
   console.log('\n── BambooHR ──');
   const allJobs = [];
@@ -1442,6 +1429,97 @@ async function fetchBambooHR() {
   results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
 
   console.log(`  Total: ${allJobs.length} jobs from BambooHR`);
+  return allJobs;
+}
+
+async function fetchPersonio() {
+  console.log('\n── Personio ──');
+  const allJobs = [];
+
+  const tasks = PERSONIO_SLUGS.map(slug => async () => {
+    try {
+      const res = await fetch(`https://${slug}.jobs.personio.de/xml`, {
+        redirect: 'manual', signal: AbortSignal.timeout(10000)
+      });
+      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
+      const text = await res.text();
+      const positions = text.split('<position>');
+      const companyJobs = [];
+      for (let i = 1; i < positions.length; i++) {
+        const pos = positions[i];
+        const idMatch = pos.match(/<id>(.*?)<\/id>/);
+        const nameTagMatch = pos.match(/<name>([\s\S]*?)<\/name>/);
+        if (!idMatch || !nameTagMatch) continue;
+        const id = idMatch[1];
+        const title = nameTagMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim();
+        companyJobs.push({
+          source: 'personio',
+          external_id: `po_${slug}_${id}`,
+          dedup_hash: dedupHash(slug, title),
+          title,
+          company: slug.charAt(0).toUpperCase() + slug.slice(1),
+          company_logo: null,
+          location: 'Remote',
+          job_type: 'full_time',
+          salary: null,
+          description: null,
+          tags: extractTags(title),
+          apply_url: `https://${slug}.jobs.personio.de/job/${id}`,
+          category: null,
+          published_at: null,
+        });
+      }
+      const isTechCompany = companyJobs.some(j => /engineer|developer|swe|software|frontend|backend|fullstack|data scien|machine learning|ai\b|product manager|ux design|qa /i.test(j.title));
+      if (!isTechCompany) return [];
+      if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs (Tech)`);
+      return companyJobs;
+    } catch (e) { console.log(`  ⚠ ${slug}: ${e.message}`); return []; }
+  });
+
+  const results = await workerPool(tasks, 20);
+  results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
+  console.log(`  Total: ${allJobs.length} jobs from Personio`);
+  return allJobs;
+}
+
+async function fetchBreezy() {
+  console.log('\n── Breezy HR ──');
+  const allJobs = [];
+
+  const tasks = BREEZY_SLUGS.map(slug => async () => {
+    try {
+      const res = await fetch(`https://${slug}.breezy.hr/json`, {
+        redirect: 'manual', signal: AbortSignal.timeout(10000)
+      });
+      if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
+      const data = await res.json();
+      const companyJobs = (Array.isArray(data) ? data : []).map(j => ({
+        source: 'breezy',
+        external_id: `br_${slug}_${j.id}`,
+        dedup_hash: dedupHash(slug, j.name || ''),
+        title: (j.name || '').trim(),
+        company: slug.charAt(0).toUpperCase() + slug.slice(1),
+        company_logo: null,
+        location: 'Remote',
+        job_type: 'full_time',
+        salary: null,
+        description: null,
+        tags: extractTags(j.name || ''),
+        apply_url: j.url,
+        category: null,
+        published_at: j.published_date || null,
+      })).filter(j => j.title);
+
+      const isTechCompany = companyJobs.some(j => /engineer|developer|swe|software|frontend|backend|fullstack|data scien|machine learning|ai\b|product manager|ux design|qa /i.test(j.title));
+      if (!isTechCompany) return [];
+      if (companyJobs.length) console.log(`  ✅ ${slug}: ${companyJobs.length} jobs (Tech)`);
+      return companyJobs;
+    } catch (e) { console.log(`  ⚠ ${slug}: ${e.message}`); return []; }
+  });
+
+  const results = await workerPool(tasks, 20);
+  results.forEach(r => { if (Array.isArray(r)) allJobs.push(...r); });
+  console.log(`  Total: ${allJobs.length} jobs from Breezy HR`);
   return allJobs;
 }
 
@@ -2150,13 +2228,16 @@ async function main() {
     console.log(`✅ Phase 1: Inserted ${inserted}, Skipped ${skipped}`);
   }
 
-  // ── PHASE 2: BambooHR (5,138 slugs, needs separate socket pool) ──
-  console.log('\n═══ Phase 2: BambooHR ═══');
+  // ── PHASE 2: BambooHR, Personio, Breezy ──
+  console.log('\n═══ Phase 2: BambooHR & Others ═══');
   await sleep(5000); // Let sockets fully drain
   const bamboohr = await fetchBambooHR();
-  console.log(`📊 Phase 2 collected: ${bamboohr.length} jobs`);
+  const personio = await fetchPersonio();
+  const breezy = await fetchBreezy();
+  const phase2Jobs = [...bamboohr, ...personio, ...breezy];
+  console.log(`📊 Phase 2 collected: ${phase2Jobs.length} jobs`);
 
-  const phase2Valid = filterAndNormalize(bamboohr);
+  const phase2Valid = filterAndNormalize(phase2Jobs);
   if (phase2Valid.length > 0) {
     const { inserted, skipped } = await supabaseUpsert(phase2Valid);
     console.log(`✅ Phase 2: Inserted ${inserted}, Skipped ${skipped}`);
@@ -2166,7 +2247,7 @@ async function main() {
   await cleanupOldJobs();
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`\n🏁 Done in ${elapsed}s — Total: ${phase1Jobs.length + bamboohr.length} jobs processed`);
+  console.log(`\n🏁 Done in ${elapsed}s — Total: ${phase1Jobs.length + phase2Jobs.length} jobs processed`);
 }
 
 // ── Shared filter/normalize logic ──

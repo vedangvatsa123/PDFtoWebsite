@@ -102,6 +102,14 @@ function getAtsPageUrl(applyUrl, source) {
       if (parts[0]) return `https://apply.workable.com/${parts[0]}`;
     }
     
+    if (source === 'personio' || url.hostname.includes('personio.de')) {
+      return `https://${url.hostname}`;
+    }
+
+    if (source === 'breezy' || url.hostname.includes('breezy.hr')) {
+      return `https://${url.hostname}`;
+    }
+    
     // Generic: try the base domain
     return `https://${url.hostname}`;
   } catch { return null; }
