@@ -1369,10 +1369,13 @@ const BAMBOOHR_SLUGS = [
 
 // ─── Personio company slugs ───
 const PERSONIO_SLUGS = [
-  // Discovered via scan-personio-breezy.mjs — active tech companies with open positions
+  // Round 1 — initial discovery
   'aboutyou','agile-robots-se','alan','arweave','aurora','celonis','contabo',
   'egym','gnosis','merantix','planradar-gmbh','scroll','tonies',
   'tractable','usercentrics-gmbh',
+  // Round 3 — expanded EU tech scan (redirect-following)
+  '1komma5grad','banxware','clark','framer','monday','ottonova','penta',
+  'quantpi','smava','tado','vivid','wandelbots','wunderflats',
 ];
 
 // ─── Breezy HR company slugs ───
@@ -1442,7 +1445,7 @@ async function fetchPersonio() {
   const tasks = PERSONIO_SLUGS.map(slug => async () => {
     try {
       const res = await fetch(`https://${slug}.jobs.personio.de/xml`, {
-        redirect: 'manual', signal: AbortSignal.timeout(10000)
+        signal: AbortSignal.timeout(10000)
       });
       if (!res.ok) { console.log(`  ⚠ ${slug}: ${res.status}`); return []; }
       const text = await res.text();
