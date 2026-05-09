@@ -1,6 +1,6 @@
 {
   "threads": {
-    "index": 11
+    "index": 12
   },
   "insights": {
     "index": 10
@@ -9,7 +9,7 @@
     "index": 10
   },
   "lastPostedAt": {
-    "thread": "2026-05-08T05:39:49.466Z",
+    "thread": "2026-05-09T06:04:18.268Z",
     "insight": "2026-04-25T12:04:14.549Z",
     "engagement": "2026-04-24T20:05:57.435Z"
   },
@@ -141,6 +141,11 @@
       "topic": "broken-workplace-1",
       "tweetIds": [],
       "postedAt": "2026-05-08T05:39:49.466Z"
+    },
+    {
+      "topic": "broken-workplace-4",
+      "tweetIds": [],
+      "postedAt": "2026-05-09T06:04:18.268Z"
     }
   ]
 }
