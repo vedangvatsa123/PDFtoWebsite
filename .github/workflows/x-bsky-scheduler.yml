@@ -1,4 +1,4 @@
-name: X + Bluesky Poster (4h cadence)
+name: Social Poster — X + Bluesky + Meta (4h cadence)
 
 on:
   schedule:
@@ -87,3 +87,22 @@ jobs:
               git pull --rebase origin main && git push && break || sleep $((i * 3))
             done
           fi
+
+      - name: Post to Meta (Facebook + Instagram + Threads)
+        continue-on-error: true
+        env:
+          META_PAGE_ID:          ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN:       ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_USER_ID:       ${{ secrets.META_IG_USER_ID }}
+          THREADS_USER_ID:       ${{ secrets.THREADS_USER_ID }}
+          THREADS_ACCESS_TOKEN:  ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: |
+          node .github/scripts/meta-post.mjs
+          git add .github/scripts/meta-state.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: advance Meta post index [skip ci]"
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin main && git push && break || sleep $((i * 3))
+            done
+          fi
+
