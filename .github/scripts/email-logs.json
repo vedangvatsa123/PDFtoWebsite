@@ -8423,5 +8423,40 @@
     "error": "Message rejected: Recipient(s) blocked: dabloonu@gmail.com (bounced)",
     "sentAt": "2026-05-09T06:03:43.953Z",
     "account": "cvinbio@agentmail.to"
+  },
+  {
+    "email": "rajat.vidhate7@gmail.com",
+    "status": "failed",
+    "error": "Message rejected: Recipient(s) blocked: rajat.vidhate7@gmail.com (bounced)",
+    "sentAt": "2026-05-10T06:22:34.057Z",
+    "account": "cvinbio@agentmail.to"
+  },
+  {
+    "email": "beingabhi23@gmail.com",
+    "status": "failed",
+    "error": "Message rejected: Recipient(s) blocked: beingabhi23@gmail.com (bounced)",
+    "sentAt": "2026-05-10T06:22:34.841Z",
+    "account": "cvinbio@agentmail.to"
+  },
+  {
+    "email": "rishabhpaliwal44@gmail.com",
+    "status": "failed",
+    "error": "Message rejected: Recipient(s) blocked: rishabhpaliwal44@gmail.com (bounced)",
+    "sentAt": "2026-05-10T06:22:35.538Z",
+    "account": "cvinbio@agentmail.to"
+  },
+  {
+    "email": "raghavtai57@gmail.com",
+    "status": "failed",
+    "error": "Message rejected: Recipient(s) blocked: raghavtai57@gmail.com (bounced)",
+    "sentAt": "2026-05-10T06:22:36.282Z",
+    "account": "cvinbio@agentmail.to"
+  },
+  {
+    "email": "dabloonu@gmail.com",
+    "status": "failed",
+    "error": "Message rejected: Recipient(s) blocked: dabloonu@gmail.com (bounced)",
+    "sentAt": "2026-05-10T06:22:37.056Z",
+    "account": "cvinbio@agentmail.to"
   }
 ]
