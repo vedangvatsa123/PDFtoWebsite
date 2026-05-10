@@ -1,0 +1,89 @@
+name: X + Bluesky Poster (4h cadence)
+
+on:
+  schedule:
+    - cron: '30 0 * * *'     # 08:30 SGT
+    - cron: '30 4 * * *'     # 12:30 SGT
+    - cron: '30 8 * * *'     # 16:30 SGT
+    - cron: '30 12 * * *'    # 20:30 SGT
+    - cron: '30 16 * * *'    # 00:30 SGT
+    - cron: '30 20 * * *'    # 04:30 SGT
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: 'Content slot to post (insight, engagement)'
+        required: false
+        default: 'engagement'
+
+concurrency:
+  group: x-bsky-poster
+  cancel-in-progress: true
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine content slot
+        id: slot
+        run: |
+          if [ -n "${{ github.event.inputs.slot }}" ]; then
+            echo "slot=${{ github.event.inputs.slot }}" >> $GITHUB_OUTPUT
+          else
+            echo "slot=engagement" >> $GITHUB_OUTPUT
+          fi
+          echo "Content slot: $(cat $GITHUB_OUTPUT)"
+
+      - name: Post to X and commit state
+        continue-on-error: true
+        env:
+          X_CONSUMER_KEY:        ${{ secrets.X_CONSUMER_KEY }}
+          X_CONSUMER_SECRET:     ${{ secrets.X_CONSUMER_SECRET }}
+          X_ACCESS_TOKEN:        ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          X_POST_SLOT:           ${{ steps.slot.outputs.slot }}
+        run: |
+          echo "🎯 Posting slot: $X_POST_SLOT"
+          node .github/scripts/x-post.mjs
+          git add .github/scripts/x-state.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: advance X $X_POST_SLOT index [skip ci]"
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin main && git push && break || sleep $((i * 3))
+            done
+          fi
+
+      - name: Post to Bluesky and commit state
+        continue-on-error: true
+        env:
+          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+        run: |
+          node .github/scripts/bsky-post.mjs
+          git add .github/scripts/bsky-state.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: advance Bluesky post index [skip ci]"
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin main && git push && break || sleep $((i * 3))
+            done
+          fi
