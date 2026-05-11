@@ -18,6 +18,7 @@ const SLOT = process.env.X_POST_SLOT || 'engagement';
 const STATE_FILE   = path.join(__dirname, 'x-state.json');
 const CONTENT_FILE = path.join(__dirname, 'x-content.json');
 const IMAGES_DIR   = path.join(__dirname, '../images');
+const REPO_ROOT    = path.join(__dirname, '../..');
 
 // ── OAuth 1.0a ────────────────────────────────────────────────────────────
 const pct = s => encodeURIComponent(String(s));
@@ -44,7 +45,9 @@ function oauthHeader(method, url, queryParams = {}) {
 // ── Upload image to X v1.1 ────────────────────────────────────────────────
 function uploadMedia(imgPath) {
   return new Promise((resolve, reject) => {
-    if (!imgPath || !fs.existsSync(imgPath)) { resolve(null); return; }
+    if (!imgPath) { console.warn('  ⚠️ No image path provided'); resolve(null); return; }
+    if (!fs.existsSync(imgPath)) { console.warn(`  ⚠️ Image not found: ${imgPath}`); resolve(null); return; }
+    console.log(`  📎 Uploading: ${imgPath} (${(fs.statSync(imgPath).size / 1024).toFixed(0)}KB)`);
     const data     = fs.readFileSync(imgPath);
     const boundary = `----Boundary${crypto.randomBytes(8).toString('hex')}`;
     const UPLOAD_URL = 'https://upload.twitter.com/1.1/media/upload.json';
@@ -291,10 +294,22 @@ async function postSingle(state, content, slotKey) {
   let mediaId = null;
   if (item.img) {
     try {
-      const imgPath = item.img.startsWith('/') ? item.img : path.join(IMAGES_DIR, item.img);
+      // Resolve image path: absolute, repo-relative (.github/...), or IMAGES_DIR-relative
+      let imgPath;
+      if (item.img.startsWith('/')) {
+        imgPath = item.img;
+      } else if (item.img.startsWith('.github/')) {
+        imgPath = path.join(REPO_ROOT, item.img);
+      } else {
+        // Covers both filenames (post_29.png) and subdirs (memes/foo.jpeg)
+        imgPath = path.join(IMAGES_DIR, item.img);
+      }
       mediaId = await uploadMedia(imgPath);
       if (mediaId) console.log('🖼️ Media uploaded:', mediaId);
+      else console.warn('⚠️ No media ID returned — posting without image');
     } catch (e) { console.warn('Image upload failed:', e.message); }
+  } else {
+    console.log('📝 No image for this post');
   }
 
   const result = await postTweet(text, mediaId);
@@ -369,9 +384,17 @@ async function postThread(state, content) {
     let mediaId = null;
     if (imgPath) {
       try {
-        const fullPath = imgPath.startsWith('/') ? imgPath : path.join(path.join(__dirname, '../..'), imgPath);
+        let fullPath;
+        if (imgPath.startsWith('/')) {
+          fullPath = imgPath;
+        } else if (imgPath.startsWith('.github/')) {
+          fullPath = path.join(REPO_ROOT, imgPath);
+        } else {
+          fullPath = path.join(IMAGES_DIR, imgPath);
+        }
         mediaId = await uploadMedia(fullPath);
         if (mediaId) console.log(`  🖼️ Media: ${mediaId}`);
+        else console.warn(`  ⚠️ No media ID — posting tweet without image`);
       } catch (e) { console.warn(`  Image failed: ${e.message}`); }
     }
 
