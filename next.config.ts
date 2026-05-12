@@ -16,6 +16,19 @@ const nextConfigFn = (phase: string): NextConfig => {
         'posthog-js': 'posthog-js/dist/module.no-external.js',
       },
     },
+    // Webpack production bundle optimizations
+    webpack(config, { isServer }) {
+      // Prevent posthog from bloating server-side lambdas
+      if (isServer) {
+        config.externals = [...(config.externals || []), 'posthog-js'];
+      }
+      // Force lucide-react to use the ESM tree-shakeable entry
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'lucide-react': require.resolve('lucide-react'),
+      };
+      return config;
+    },
     images: {
       remotePatterns: [
         {

@@ -442,10 +442,14 @@ export default async function ProfileSlugPage({ params }: PageProps) {
           {(() => {
             const topLocations = [...new Set(jobs.map((j: any) => normalizeLocation(j.location)).filter(l => l && l !== 'Remote'))].slice(0, 5);
 
-            // Load cached descriptions (pre-generated from Wikipedia + website meta tags)
+            // Load cached descriptions via fs at runtime — NOT bundled into the lambda
             let cachedDesc = '';
             try {
-              const descCache = require('@/lib/company-descriptions.json');
+              const fs = eval("require('fs')");
+              const path = eval("require('path')");
+              const filePath = path.join(process.cwd(), 'src', 'lib', 'company-descriptions.json');
+              const raw = fs.readFileSync(filePath, 'utf8');
+              const descCache = JSON.parse(raw);
               cachedDesc = descCache[slug] || '';
             } catch {}
 
