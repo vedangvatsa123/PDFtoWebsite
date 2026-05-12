@@ -4,7 +4,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cvin.bio';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Tech News — cvin.bio',
+    title: 'Tech News | CVin.Bio',
     description: 'Latest tech news from TechCrunch, The Verge, Hacker News, Ars Technica, Wired, and more. Stay updated with the tech industry.',
     keywords: ['tech news', 'technology news', 'startup news', 'AI news', 'software news', 'hacker news'],
     openGraph: {
