@@ -47,6 +47,7 @@ function uploadMedia(imgPath) {
   return new Promise((resolve, reject) => {
     if (!imgPath) { console.warn('  ⚠️ No image path provided'); resolve(null); return; }
     if (!fs.existsSync(imgPath)) { console.warn(`  ⚠️ Image not found: ${imgPath}`); resolve(null); return; }
+    if (imgPath.endsWith('.mp4')) { console.warn(`  ⚠️ Twitter script does not support chunked mp4 upload, skipping media...`); resolve(null); return; }
     console.log(`  📎 Uploading: ${imgPath} (${(fs.statSync(imgPath).size / 1024).toFixed(0)}KB)`);
     const data     = fs.readFileSync(imgPath);
     const boundary = `----Boundary${crypto.randomBytes(8).toString('hex')}`;

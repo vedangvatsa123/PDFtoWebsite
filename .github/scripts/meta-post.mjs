@@ -39,58 +39,49 @@ function saveState(state) {
 
 // ── Facebook Page Post (returns public image URL for IG/Threads) ──────────
 async function postToFacebook(text, imagePath) {
-  if (!META_PAGE_ID || !META_PAGE_TOKEN) {
-    console.log('⏭️  Facebook: no credentials, skipping');
-    return { ok: false, imageUrl: null };
-  }
-
+  if (!META_PAGE_ID || !META_PAGE_TOKEN) return { ok: false, imageUrl: null };
   try {
     if (imagePath && fs.existsSync(imagePath)) {
-      // Post with image
-      const imageData = fs.readFileSync(imagePath);
+      const isVideo = imagePath.endsWith('.mp4');
+      const fileData = fs.readFileSync(imagePath);
       const formData = new FormData();
-      formData.append('message', text);
-      formData.append('source', new Blob([imageData], { type: 'image/jpeg' }), path.basename(imagePath));
+      
+      if (isVideo) {
+        formData.append('description', text);
+        formData.append('source', new Blob([fileData], { type: 'video/mp4' }), require('path').basename(imagePath));
+      } else {
+        formData.append('message', text);
+        formData.append('source', new Blob([fileData], { type: 'image/jpeg' }), require('path').basename(imagePath));
+      }
       formData.append('access_token', META_PAGE_TOKEN);
 
-      const url = `${GRAPH_URL}/${META_PAGE_ID}/photos`;
+      const endpoint = isVideo ? 'videos' : 'photos';
+      const url = `${GRAPH_URL}/${META_PAGE_ID}/${endpoint}`;
+      
       const res = await fetch(url, { method: 'POST', body: formData });
       const data = await res.json();
 
       if (data.id) {
-        console.log(`✅ Facebook: posted photo ${data.id}`);
-
-        // Get the public URL of the uploaded photo for IG/Threads
+        console.log(`✅ Facebook: posted ${isVideo ? 'video' : 'photo'} ${data.id}`);
         let imageUrl = null;
-        try {
-          const imgRes = await fetch(`${GRAPH_URL}/${data.id}?fields=images&access_token=${META_PAGE_TOKEN}`);
-          const imgData = await imgRes.json();
-          if (imgData.images && imgData.images.length > 0) {
-            // Pick the largest image
-            imageUrl = imgData.images[0].source;
-            console.log(`🔗 Facebook CDN URL obtained for IG/Threads`);
-          }
-        } catch (e) { console.warn('⚠️  Could not get FB image URL:', e.message); }
-
+        if (!isVideo) {
+          try {
+            const imgRes = await fetch(`${GRAPH_URL}/${data.id}?fields=images&access_token=${META_PAGE_TOKEN}`);
+            const imgData = await imgRes.json();
+            if (imgData.images && imgData.images.length > 0) imageUrl = imgData.images[0].source;
+          } catch (e) {}
+        }
         return { ok: true, imageUrl };
-      } else {
-        console.error('❌ Facebook photo error:', JSON.stringify(data));
-        return { ok: false, imageUrl: null };
-      }
-    } else {
-      // Text-only post
-      const url = `${GRAPH_URL}/${META_PAGE_ID}/feed`;
-      const params = new URLSearchParams({ message: text, access_token: META_PAGE_TOKEN });
-      const res = await fetch(url, { method: 'POST', body: params });
-      const data = await res.json();
-
-      if (data.id) {
-        console.log(`✅ Facebook: posted ${data.id}`);
-        return { ok: true, imageUrl: null };
       } else {
         console.error('❌ Facebook error:', JSON.stringify(data));
         return { ok: false, imageUrl: null };
       }
+    } else {
+      const url = `${GRAPH_URL}/${META_PAGE_ID}/feed`;
+      const params = new URLSearchParams({ message: text, access_token: META_PAGE_TOKEN });
+      const res = await fetch(url, { method: 'POST', body: params });
+      const data = await res.json();
+      return { ok: !!data.id, imageUrl: null };
     }
   } catch (e) {
     console.error('❌ Facebook exception:', e.message);
@@ -99,29 +90,24 @@ async function postToFacebook(text, imagePath) {
 }
 
 // ── Instagram Post ────────────────────────────────────────────────────────
-async function postToInstagram(text, imageUrl) {
-  if (!META_IG_USER_ID || !META_PAGE_TOKEN) {
-    console.log('⏭️  Instagram: no credentials, skipping');
-    return false;
-  }
-
-  if (!imageUrl) {
-    console.log('⏭️  Instagram: no image URL (required for IG), skipping');
-    return false;
-  }
+async function postToInstagram(text, mediaUrl, isVideo = false) {
+  if (!META_IG_USER_ID || !META_PAGE_TOKEN) return false;
+  if (!mediaUrl) return false;
 
   try {
-    // Step 1: Create media container
     const createParams = new URLSearchParams({
-      image_url: imageUrl,
       caption: text,
       access_token: META_PAGE_TOKEN,
     });
+    
+    if (isVideo) {
+      createParams.append('media_type', 'REELS');
+      createParams.append('video_url', mediaUrl);
+    } else {
+      createParams.append('image_url', mediaUrl);
+    }
 
-    const createRes = await fetch(`${GRAPH_URL}/${META_IG_USER_ID}/media`, {
-      method: 'POST',
-      body: createParams,
-    });
+    const createRes = await fetch(`${GRAPH_URL}/${META_IG_USER_ID}/media`, { method: 'POST', body: createParams });
     const createData = await createRes.json();
 
     if (!createData.id) {
@@ -130,20 +116,21 @@ async function postToInstagram(text, imageUrl) {
     }
 
     console.log(`📦 Instagram: container created ${createData.id}`);
+    // Wait longer for video processing
+    let ready = false;
+    for (let i = 0; i < (isVideo ? 6 : 2); i++) {
+        await new Promise(r => setTimeout(r, 5000));
+        if (isVideo) {
+           const statusRes = await fetch(`${GRAPH_URL}/${createData.id}?fields=status_code&access_token=${META_PAGE_TOKEN}`);
+           const statusData = await statusRes.json();
+           if (statusData.status_code === 'FINISHED') { ready = true; break; }
+        } else {
+           ready = true; break;
+        }
+    }
 
-    // Step 2: Wait for processing
-    await new Promise(r => setTimeout(r, 5000));
-
-    // Step 3: Publish
-    const publishParams = new URLSearchParams({
-      creation_id: createData.id,
-      access_token: META_PAGE_TOKEN,
-    });
-
-    const pubRes = await fetch(`${GRAPH_URL}/${META_IG_USER_ID}/media_publish`, {
-      method: 'POST',
-      body: publishParams,
-    });
+    const publishParams = new URLSearchParams({ creation_id: createData.id, access_token: META_PAGE_TOKEN });
+    const pubRes = await fetch(`${GRAPH_URL}/${META_IG_USER_ID}/media_publish`, { method: 'POST', body: publishParams });
     const pubData = await pubRes.json();
 
     if (pubData.id) {
@@ -160,24 +147,21 @@ async function postToInstagram(text, imageUrl) {
 }
 
 // ── Threads Post ──────────────────────────────────────────────────────────
-async function postToThreads(text, imageUrl) {
-  if (!THREADS_USER_ID || !THREADS_TOKEN) {
-    console.log('⏭️  Threads: no credentials, skipping');
-    return false;
-  }
+async function postToThreads(text, mediaUrl, isVideo = false) {
+  if (!THREADS_USER_ID || !THREADS_TOKEN) return false;
 
   try {
-    const createParams = new URLSearchParams({
-      text,
-      media_type: imageUrl ? 'IMAGE' : 'TEXT',
-      access_token: THREADS_TOKEN,
-    });
-    if (imageUrl) createParams.append('image_url', imageUrl);
+    const createParams = new URLSearchParams({ text, access_token: THREADS_TOKEN });
+    
+    if (mediaUrl) {
+      createParams.append('media_type', isVideo ? 'VIDEO' : 'IMAGE');
+      if (isVideo) createParams.append('video_url', mediaUrl);
+      else createParams.append('image_url', mediaUrl);
+    } else {
+      createParams.append('media_type', 'TEXT');
+    }
 
-    const createRes = await fetch(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads`, {
-      method: 'POST',
-      body: createParams,
-    });
+    const createRes = await fetch(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads`, { method: 'POST', body: createParams });
     const createData = await createRes.json();
 
     if (!createData.id) {
@@ -185,17 +169,20 @@ async function postToThreads(text, imageUrl) {
       return false;
     }
 
-    await new Promise(r => setTimeout(r, 5000));
+    let ready = false;
+    for (let i = 0; i < (isVideo ? 6 : 2); i++) {
+        await new Promise(r => setTimeout(r, 5000));
+        if (isVideo) {
+           const statusRes = await fetch(`https://graph.threads.net/v1.0/${createData.id}?fields=status&access_token=${THREADS_TOKEN}`);
+           const statusData = await statusRes.json();
+           if (statusData.status === 'FINISHED') { ready = true; break; }
+        } else {
+           ready = true; break;
+        }
+    }
 
-    const pubParams = new URLSearchParams({
-      creation_id: createData.id,
-      access_token: THREADS_TOKEN,
-    });
-
-    const pubRes = await fetch(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads_publish`, {
-      method: 'POST',
-      body: pubParams,
-    });
+    const pubParams = new URLSearchParams({ creation_id: createData.id, access_token: THREADS_TOKEN });
+    const pubRes = await fetch(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads_publish`, { method: 'POST', body: pubParams });
     const pubData = await pubRes.json();
 
     if (pubData.id) {
@@ -241,13 +228,13 @@ async function main() {
 
   // 1. Post to Facebook first — get public CDN URL from the uploaded photo
   const fb = await postToFacebook(text, imagePath);
-  const imageUrl = fb.imageUrl;  // public FB CDN URL for IG/Threads
+  
+  const isVideo = imagePath && imagePath.endsWith('.mp4');
+  // For video, we use the public URL directly from the repo. For images, we use FB's CDN link.
+  const mediaUrl = isVideo ? `https://cvin.bio${item.img}` : fb.imageUrl;
 
-  // 2. Post to Instagram using FB CDN URL
-  await postToInstagram(text, imageUrl);
-
-  // 3. Post to Threads using FB CDN URL
-  await postToThreads(text, imageUrl);
+  await postToInstagram(text, mediaUrl, isVideo);
+  await postToThreads(text, mediaUrl, isVideo);
 
   // Advance index if at least Facebook succeeded
   if (fb.ok) {

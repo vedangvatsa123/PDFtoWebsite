@@ -1,0 +1,31 @@
+module.exports = {
+  BANNED_PATTERNS: [
+    '\\btherapists?\\b', '\\bpsychiatric\\b', '\\bpsychiatrist\\b', '\\bnurse\\b',
+    '\\bphysician\\b', '\\bmedical assistant\\b', '\\bphlebotomist\\b',
+    '\\bbehavior technician\\b', '\\brbt\\b', '\\bretail ambassador\\b',
+    '\\bstore (opening|associate|manager|lead|director)\\b', '\\bbarista\\b',
+    '\\bjanitor\\b', '\\bcashier\\b', '\\bbookkeeper\\b', '\\bhvac\\b',
+    '\\bplumbing\\b', '\\bplumber\\b', '\\bwarehouse (associate|supervisor|worker|manager|operator|lead)\\b',
+    '\\bdelivery driver\\b', '\\btruck driver\\b', '\\bteacher\\b', '\\btutor\\b',
+    '\\bcaregiver\\b', '\\bnanny\\b', '\\bhousekeeper\\b', '\\bcleaner\\b',
+    '\\bdentist\\b', '\\bdental\\b', '\\bpharmacist\\b', '\\bpharmacy\\b',
+    '\\bparamedic\\b', '\\bsurgeon\\b', '\\bclinician\\b', '\\boptometrist\\b',
+    '\\bveterinarian\\b', '\\bmassage\\b', '\\besthetician\\b', '\\bsalon\\b',
+    '\\bspa\\b', '\\bfitness instructor\\b', '\\bpersonal trainer\\b', '\\bpastor\\b',
+    '\\bclergy\\b', '\\bmechanic\\b', '\\bforklift\\b', '\\bbartender\\b',
+    '\\bwaiter\\b', '\\bwaitress\\b', '\\bchef\\b', '\\bcook\\b', '\\bdishwasher\\b',
+    '\\bbusser\\b', '\\bhostess\\b', '\\bcounselor\\b', '\\bpainter\\b',
+    '\\bcarpenter\\b', '\\belectrician\\b', '\\bwelder\\b', '\\bmason\\b',
+    '\\bconstruction worker\\b', '\\bsecurity guard\\b', '\\bbouncer\\b',
+    '\\bkeyholder\\b', '\\bretail associate\\b', '\\bdispensary\\b',
+    '\\bcustomer service representative\\b', '\\bpsychologist\\b', '\\bdashmart\\b',
+    '\\bshift (supervisor|leader|manager)\\b', '\\bcall center\\b', '\\broute to market\\b',
+    '\\bsoldering\\b', '\\bmanufacturing technician\\b', '\\brobot operator\\b',
+    '\\bvirtual assistant\\b', '\\bequipment operator\\b', '\\bassembler\\b',
+    '\\bfactory\\b', '\\bdispatcher\\b', '\\bdispatch rider\\b', '\\bdelivery rider\\b',
+    '\\bfood delivery\\b', '\\bdriver operations\\b', '\\blabri\\b',
+    '\\bpeloton expert\\b', '\\binventory\\b', '\\breceiving\\b', '\\bfulfillment\\b',
+    '\\btechnician\\b', '\\bbrand ambassador\\b', '\\bretail\\b', '\\bpart\\\\.time\\b',
+    '\\bseasonal\\b', '\\bcontractor\\b', '\\b1099\\b', '\\bagent, critical incident response\\b'
+  ]
+};

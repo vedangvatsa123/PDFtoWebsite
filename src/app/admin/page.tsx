@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/auth';
 import { createClient } from '@/utils/supabase/client';
 import Header from '@/components/header';
-import Web3SocialCalendar from '@/components/admin/web3-social-calendar';
+import CVinBioVisualCalendar from '@/components/admin/cvinbio-visual-calendar';
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Area, AreaChart } from 'recharts';
 import { Loader2, TrendingUp, TrendingDown, Minus, Globe, Monitor, Smartphone, Tablet, Share2, Send } from 'lucide-react';
@@ -291,6 +291,7 @@ export default function AdminPage() {
                   </div>
                 </div>
               </div>
+            </div>
           </Section>
         )}
 
@@ -808,7 +809,7 @@ export default function AdminPage() {
         )}
 
         {/* ═══ Web3 Jobs Social Schedule ═══ */}
-        <Web3SocialCalendar />
+        <CVinBioVisualCalendar />
 
         <p className="text-[10px] text-muted-foreground/30 pt-6 pb-8 text-center">admin-only · not indexed</p>
       </main>

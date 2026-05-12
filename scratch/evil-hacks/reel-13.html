@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<title>Evil Work Hack #13</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1920px;overflow:hidden;background:#FFFFFF;font-family:'Inter',sans-serif}
+.wrap{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:0 90px;text-align:center;
+}
+.label{
+  font-size:18px;font-weight:700;text-transform:uppercase;
+  letter-spacing:8px;color:#71717A;margin-bottom:48px;
+  opacity:0;transform:translateY(8px);
+}
+.text{
+  font-weight:800;font-size:56px;line-height:1.3;
+  letter-spacing:-0.04em;color:#09090B;max-width:900px;
+  opacity:0;transform:translateY(14px);
+}
+.wm{
+  position:absolute;bottom:64px;left:0;width:100%;
+  text-align:center;z-index:50;opacity:0;
+}
+.wm-name{
+  font-size:28px;font-weight:700;letter-spacing:-0.03em;color:#71717A;
+}
+.wm-tag{
+  font-size:16px;font-weight:400;color:rgba(0,0,0,0.25);
+  margin-top:4px;
+}
+</style></head><body>
+<div class="wrap">
+  <div class="label" id="lb">Evil Work Hack #13</div>
+  <div class="text" id="tx">Put &quot;tentative&quot;<br>on every calendar invite.</div>
+</div>
+<div class="wm" id="wm">
+  <div class="wm-name">cvin.bio</div>
+  <div class="wm-tag">Your CV, your website.</div>
+</div>
+<script>
+function a(el,d,ms,p){setTimeout(()=>{el.style.transition=Object.keys(p).map(k=>k.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())+' '+ms+'ms ease-out').join(',');Object.assign(el.style,p)},d)}
+a(document.getElementById('lb'),400,400,{opacity:'1',transform:'translateY(0)'});
+a(document.getElementById('tx'),800,500,{opacity:'1',transform:'translateY(0)'});
+a(document.getElementById('wm'),600,300,{opacity:'1'});
+</script>
+</body></html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evil Work Hacks — cvin.bio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #09090B;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1080px;
+    height: 1920px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    background: #09090B;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    bottom: 80px;
+    right: 60px;
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #71717A;
+    z-index: 20;
+  }
+
+  /* Title card area */
+  .title-card {
+    position: absolute;
+    z-index: 10;
+    text-align: center;
+    padding: 0 80px;
+    width: 100%;
+  }
+
+  .hack-number {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 12px;
+    color: #71717A;
+    margin-bottom: 50px;
+  }
+
+  .hack-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 58px;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+    color: #FAFAFA;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hack-text .accent {
+    color: #6366F1;
+  }
+
+  /* Minimal decorative line */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: #71717A;
+    margin: 40px auto 0;
+    opacity: 0.4;
+  }
+
+  /* CTA Slide */
+  .cta-slide {
+    background: #FFFFFF !important;
+  }
+
+  .cta-logo {
+    font-family: 'Inter', sans-serif;
+    font-size: 96px;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    color: #09090B;
+    z-index: 10;
+  }
+
+  .cta-sub {
+    font-size: 30px;
+    color: #71717A;
+    font-weight: 400;
+    margin-top: 16px;
+    z-index: 10;
+    letter-spacing: -0.02em;
+  }
+
+  .cta-slide .watermark {
+    color: #71717A;
+  }
+
+  /* Subtle grid overlay for dark slides */
+  .grid-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 1;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- Slide 1 -->
+<div class="slide" id="slide1">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #1</div>
+    <div class="hack-text">
+      Reply <span class="accent">"as per my last email"</span> to someone who never sent one.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- Slide 2 -->
+<div class="slide" id="slide2">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #2</div>
+    <div class="hack-text">
+      Set your status to <span class="accent">"In a meeting"</span> for 8 hours straight. No one will question it.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- Slide 3 -->
+<div class="slide" id="slide3">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #3</div>
+    <div class="hack-text">
+      CC the <span class="accent">entire company</span> on a "quick question" and watch 200 people panic.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- Slide 4 -->
+<div class="slide" id="slide4">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #4</div>
+    <div class="hack-text">
+      Ask <span class="accent">"can everyone see my screen?"</span> when you are not even sharing.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- Slide 5 -->
+<div class="slide" id="slide5">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #5</div>
+    <div class="hack-text">
+      Add <span class="accent">"Sent from my iPhone"</span> to emails you typed on your desktop at 2 PM.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- Slide 6 -->
+<div class="slide" id="slide6">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #6</div>
+    <div class="hack-text">
+      Send <span class="accent">"Thanks for flagging"</span> to something nobody flagged. Then watch them scramble.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- Slide 7 -->
+<div class="slide" id="slide7">
+  <div class="grid-overlay"></div>
+  <div class="title-card">
+    <div class="hack-number">Evil Work Hack #7</div>
+    <div class="hack-text">
+      Text a coworker at a random time. <span class="accent">"Are you joining the meeting?"</span> There is no meeting.
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="watermark">cvin.bio</div>
+</div>
+
+<!-- CTA Slide -->
+<div class="slide cta-slide" id="slide8">
+  <div class="cta-logo">cvin.bio</div>
+  <div class="cta-sub">Your CV, but make it a website.</div>
+</div>
+
+<script>
+  // ── Synth Music (lo-fi ambient pad) ──────────────────────────
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioContext();
+
+  function createPad(freq, startTime, duration, volume = 0.06) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, startTime);
+    filter.Q.setValueAtTime(1, startTime);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 1.5);
+    gain.gain.setValueAtTime(volume, startTime + duration - 1.5);
+    gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  }
+
+  function createSubBass(freq, startTime, duration, volume = 0.04) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.8);
+    gain.gain.setValueAtTime(volume, startTime + duration - 0.8);
+    gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  }
+
+  function createClickTick(time) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(2000, time);
+    osc.frequency.exponentialRampToValueAtTime(500, time + 0.05);
+
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(400, time);
+
+    gain.gain.setValueAtTime(0.03, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(time);
+    osc.stop(time + 0.1);
+  }
+
+  // Schedule ambient music
+  const totalDuration = 28;
+  const now = ctx.currentTime + 0.1;
+
+  // Ambient pads - Cm chord progression (dark, moody)
+  // Cm: C-Eb-G  |  Ab: Ab-C-Eb  |  Fm: F-Ab-C  |  G: G-B-D
+  const chords = [
+    [130.81, 155.56, 196.00],  // Cm
+    [103.83, 130.81, 155.56],  // Ab
+    [87.31, 103.83, 130.81],   // Fm
+    [98.00, 123.47, 146.83],   // G
+  ];
+
+  for (let i = 0; i < 4; i++) {
+    const chord = chords[i % chords.length];
+    const start = now + (i * 7);
+    chord.forEach(freq => {
+      createPad(freq, start, 7.5, 0.05);
+      createPad(freq * 2, start, 7.5, 0.025); // octave up, quieter
+    });
+    createSubBass(chord[0] / 2, start, 7, 0.035);
+  }
+
+  // Subtle tick on each slide transition
+  for (let i = 0; i < 8; i++) {
+    createClickTick(now + (i * 3.2) + 0.1);
+  }
+
+  // High shimmer (very quiet, atmospheric)
+  for (let i = 0; i < totalDuration; i += 4) {
+    const shimmerOsc = ctx.createOscillator();
+    const shimmerGain = ctx.createGain();
+    shimmerOsc.type = 'sine';
+    shimmerOsc.frequency.setValueAtTime(1200 + Math.random() * 400, now + i);
+    shimmerGain.gain.setValueAtTime(0, now + i);
+    shimmerGain.gain.linearRampToValueAtTime(0.008, now + i + 1);
+    shimmerGain.gain.linearRampToValueAtTime(0, now + i + 3.5);
+    shimmerOsc.connect(shimmerGain);
+    shimmerGain.connect(ctx.destination);
+    shimmerOsc.start(now + i);
+    shimmerOsc.stop(now + i + 4);
+  }
+
+  // ── Slide Animation ──────────────────────────────────────────
+  const slides = document.querySelectorAll('.slide');
+  const SLIDE_DURATION = 3200;
+  const TRANSITION = 500;
+  let currentSlide = 0;
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      if (i === index) {
+        slide.style.display = 'flex';
+        slide.style.opacity = '0';
+
+        const titleCard = slide.querySelector('.title-card');
+        const hackNum = slide.querySelector('.hack-number');
+        const hackText = slide.querySelector('.hack-text');
+        const divider = slide.querySelector('.divider');
+
+        if (hackNum) { hackNum.style.opacity = '0'; hackNum.style.transform = 'translateY(15px)'; }
+        if (hackText) { hackText.style.opacity = '0'; hackText.style.transform = 'translateY(25px)'; }
+        if (divider) { divider.style.opacity = '0'; divider.style.transform = 'scaleX(0)'; }
+
+        requestAnimationFrame(() => {
+          slide.style.transition = 'opacity ' + TRANSITION + 'ms ease-out';
+          slide.style.opacity = '1';
+
+          if (hackNum) {
+            setTimeout(() => {
+              hackNum.style.transition = 'opacity 350ms ease-out, transform 350ms ease-out';
+              hackNum.style.opacity = '1';
+              hackNum.style.transform = 'translateY(0)';
+            }, 150);
+          }
+          if (hackText) {
+            setTimeout(() => {
+              hackText.style.transition = 'opacity 450ms ease-out, transform 450ms ease-out';
+              hackText.style.opacity = '1';
+              hackText.style.transform = 'translateY(0)';
+            }, 400);
+          }
+          if (divider) {
+            setTimeout(() => {
+              divider.style.transition = 'opacity 400ms ease-out, transform 400ms ease-out';
+              divider.style.opacity = '0.4';
+              divider.style.transform = 'scaleX(1)';
+            }, 700);
+          }
+        });
+      } else {
+        if (slide.style.display === 'flex') {
+          slide.style.transition = 'opacity ' + TRANSITION + 'ms ease-out';
+          slide.style.opacity = '0';
+          setTimeout(() => { slide.style.display = 'none'; }, TRANSITION);
+        }
+      }
+    });
+  }
+
+  function nextSlide() {
+    currentSlide++;
+    if (currentSlide >= slides.length) return;
+    showSlide(currentSlide);
+  }
+
+  // Start first slide
+  showSlide(0);
+
+  // Auto-advance
+  const interval = setInterval(() => {
+    nextSlide();
+    if (currentSlide >= slides.length - 1) {
+      clearInterval(interval);
+    }
+  }, SLIDE_DURATION);
+</script>
+
+</body>
+</html>
