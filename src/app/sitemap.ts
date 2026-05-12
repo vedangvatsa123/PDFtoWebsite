@@ -145,7 +145,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     let allJobs: any[] = [];
     let page = 0;
-    const isBuild = process.env.npm_lifecycle_event === 'build';
+    const isBuild = process.env.IS_NEXT_BUILD === '1';
     const maxPages = isBuild ? 2 : 40;
     while (page < maxPages) {
       const { data } = await supabase
