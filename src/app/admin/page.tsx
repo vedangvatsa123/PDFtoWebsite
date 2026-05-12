@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/auth';
 import { createClient } from '@/utils/supabase/client';
 import Header from '@/components/header';
+import Web3SocialCalendar from '@/components/admin/web3-social-calendar';
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Area, AreaChart } from 'recharts';
 import { Loader2, TrendingUp, TrendingDown, Minus, Globe, Monitor, Smartphone, Tablet, Share2, Send } from 'lucide-react';
@@ -805,6 +806,9 @@ export default function AdminPage() {
             Add <code className="bg-muted px-1 rounded text-[10px]">POSTHOG_PERSONAL_API_KEY</code> and <code className="bg-muted px-1 rounded text-[10px]">POSTHOG_PROJECT_ID</code> to .env.local for live analytics
           </div>
         )}
+
+        {/* ═══ Web3 Jobs Social Schedule ═══ */}
+        <Web3SocialCalendar />
 
         <p className="text-[10px] text-muted-foreground/30 pt-6 pb-8 text-center">admin-only · not indexed</p>
       </main>
