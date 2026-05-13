@@ -147,6 +147,7 @@ async function postToInstagram(text, mediaUrl, isVideo = false) {
 }
 
 // ── Threads Post ──────────────────────────────────────────────────────────
+// Uses public URL directly (not Facebook CDN) so images always work
 async function postToThreads(text, mediaUrl, isVideo = false) {
   if (!THREADS_USER_ID || !THREADS_TOKEN) return false;
 
@@ -161,23 +162,29 @@ async function postToThreads(text, mediaUrl, isVideo = false) {
       createParams.append('media_type', 'TEXT');
     }
 
+    console.log(`🧵 Threads: creating container (media_type=${mediaUrl ? (isVideo ? 'VIDEO' : 'IMAGE') : 'TEXT'}, url=${mediaUrl || 'none'})`);
     const createRes = await fetch(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads`, { method: 'POST', body: createParams });
     const createData = await createRes.json();
 
     if (!createData.id) {
       console.error('❌ Threads container error:', JSON.stringify(createData));
+      // If IMAGE fails, retry as TEXT-only
+      if (mediaUrl) {
+        console.log('🔄 Threads: retrying as TEXT-only...');
+        return postToThreads(text, null, false);
+      }
       return false;
     }
 
-    let ready = false;
-    for (let i = 0; i < (isVideo ? 6 : 2); i++) {
+    // Wait for media processing
+    for (let i = 0; i < (isVideo ? 10 : 3); i++) {
         await new Promise(r => setTimeout(r, 5000));
-        if (isVideo) {
-           const statusRes = await fetch(`https://graph.threads.net/v1.0/${createData.id}?fields=status&access_token=${THREADS_TOKEN}`);
-           const statusData = await statusRes.json();
-           if (statusData.status === 'FINISHED') { ready = true; break; }
-        } else {
-           ready = true; break;
+        const statusRes = await fetch(`https://graph.threads.net/v1.0/${createData.id}?fields=status&access_token=${THREADS_TOKEN}`);
+        const statusData = await statusRes.json();
+        if (statusData.status === 'FINISHED') break;
+        if (statusData.status === 'ERROR') {
+          console.error('❌ Threads media processing failed:', JSON.stringify(statusData));
+          return false;
         }
     }
 
@@ -204,6 +211,9 @@ async function main() {
   const state = loadState();
   const items = content.engagement || [];
 
+  // Initialize posted history for dedup
+  if (!state.postedHashes) state.postedHashes = [];
+
   // Use the facebook index as the primary (all platforms share the same queue)
   const idx = state.facebook?.index || 0;
 
@@ -214,27 +224,54 @@ async function main() {
 
   const item = items[idx];
   const text = item.text.trim();
+
+  // ── Dedup check: skip if this exact text was already posted ──
+  const hash = text.substring(0, 80);
+  if (state.postedHashes.includes(hash)) {
+    console.log(`⚠️  Duplicate detected (index ${idx}), skipping: "${hash}..."`);
+    state.facebook.index = idx + 1;
+    state.instagram.index = idx + 1;
+    state.threads.index = idx + 1;
+    saveState(state);
+    return;
+  }
+
   console.log(`\n📝 Meta Post #${idx + 1}/${items.length}: "${text.substring(0, 60)}..."`);
 
-  // Resolve image path
+  // Resolve image path — try multiple locations
   let imagePath = null;
   if (item.img) {
-    imagePath = item.img.startsWith('/') ? item.img : path.join(IMAGES_DIR, item.img);
-    if (!fs.existsSync(imagePath)) {
-      console.warn(`⚠️  Image not found: ${imagePath}`);
-      imagePath = null;
+    const candidates = [
+      item.img.startsWith('/') ? path.join(process.cwd(), 'public', item.img) : null,
+      path.join(IMAGES_DIR, item.img),
+      path.join(process.cwd(), 'public/images/social', item.img),
+      path.join(process.cwd(), 'public/images/social', path.basename(item.img)),
+    ].filter(Boolean);
+    for (const p of candidates) {
+      if (fs.existsSync(p)) { imagePath = p; break; }
     }
+    if (!imagePath) console.warn(`⚠️  Image not found in any path: ${item.img}`);
   }
 
   // 1. Post to Facebook first — get public CDN URL from the uploaded photo
   const fb = await postToFacebook(text, imagePath);
   
   const isVideo = imagePath && imagePath.endsWith('.mp4');
-  // For video, we use the public URL directly from the repo. For images, we use FB's CDN link.
-  const mediaUrl = isVideo ? `https://cvin.bio${item.img}` : fb.imageUrl;
 
-  await postToInstagram(text, mediaUrl, isVideo);
-  await postToThreads(text, mediaUrl, isVideo);
+  // Build a public URL for Threads/Instagram independently of Facebook CDN
+  // Threads needs a publicly accessible URL — use the site's own domain
+  let publicMediaUrl = null;
+  if (item.img) {
+    const imgPath = item.img.startsWith('/') ? item.img : `/images/social/${item.img}`;
+    publicMediaUrl = `https://cvin.bio${imgPath}`;
+  }
+  // Prefer FB CDN for Instagram (better compatibility), fallback to public URL
+  const igMediaUrl = fb.imageUrl || publicMediaUrl;
+  // Always use public URL for Threads (FB CDN URLs are often restricted)
+  const threadsMediaUrl = publicMediaUrl;
+
+  await postToInstagram(text, igMediaUrl, isVideo);
+  await postToThreads(text, threadsMediaUrl, isVideo);
 
   // Advance index if at least Facebook succeeded
   if (fb.ok) {
@@ -242,6 +279,9 @@ async function main() {
     state.instagram.index = idx + 1;
     state.threads.index = idx + 1;
     state.lastPostedAt = new Date().toISOString();
+    state.postedHashes.push(hash);
+    // Keep only last 200 hashes to prevent unbounded growth
+    if (state.postedHashes.length > 200) state.postedHashes = state.postedHashes.slice(-200);
     saveState(state);
     console.log(`📊 Advanced Meta index to ${idx + 1}`);
   }
