@@ -47,3 +47,4 @@ mcp-package/node_modules
 
 # lockfiles
 .github/scripts/.x-post.lock
+.github/scripts/ses-*.json
