@@ -17,7 +17,9 @@ import { AUTH_EVENTS } from '@/lib/posthog-events';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const router = useRouter();
@@ -48,6 +50,7 @@ export default function SignUpForm() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
+        // Keeping this for fallback if you don't update the Supabase template immediately
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/editor`,
       },
     });
@@ -59,6 +62,25 @@ export default function SignUpForm() {
       setEmailSent(true);
     }
     setIsLoading(false);
+  };
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsVerifying(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'email',
+    });
+    
+    if (error) {
+      posthog.capture(AUTH_EVENTS.MAGIC_LINK_FAILED, { error: error.message, is_otp: true });
+      toast({ variant: 'destructive', title: 'Invalid Code', description: 'The code you entered is invalid or has expired.' });
+      setIsVerifying(false);
+    } else {
+      // Verification successful, useEffect will redirect to /editor
+    }
   };
 
   const handleGoogleAuth = async () => {
@@ -81,16 +103,34 @@ export default function SignUpForm() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Mail className="h-6 w-6 text-primary" />
         </div>
-        <div className="grid gap-1">
+        <div className="grid gap-1 mb-2">
           <h3 className="text-lg font-semibold">Check your email</h3>
           <p className="text-sm text-muted-foreground">
-            We sent a sign-in link to <span className="font-medium text-foreground">{email}</span>. Click the link in your email to continue.
+            We sent a 6-digit code to <span className="font-medium text-foreground">{email}</span>. Enter it below to sign in.
           </p>
         </div>
+        
+        <form onSubmit={handleVerifyCode} className="grid gap-3 mt-2">
+          <Input 
+            id="code" 
+            type="text" 
+            placeholder="123456" 
+            required 
+            value={code} 
+            onChange={(e) => setCode(e.target.value)} 
+            className="text-center text-lg tracking-widest h-12"
+            maxLength={6}
+          />
+          <Button type="submit" className="w-full" disabled={isVerifying || code.length < 6}>
+            {isVerifying ? <Icons.logo className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {isVerifying ? 'Verifying...' : 'Verify Code'}
+          </Button>
+        </form>
+
         <button
           type="button"
-          className="text-sm text-muted-foreground hover:text-primary transition-colors"
-          onClick={() => { setEmailSent(false); setEmail(''); }}
+          className="text-sm text-muted-foreground hover:text-primary transition-colors mt-4"
+          onClick={() => { setEmailSent(false); setEmail(''); setCode(''); }}
         >
           Use a different email
         </button>
@@ -129,12 +169,12 @@ export default function SignUpForm() {
           <Input id="email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-9" />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Sending...' : 'Send sign-in link'}
+          {isLoading ? 'Sending...' : 'Send code'}
         </Button>
       </form>
 
       <p className="text-xs text-center text-muted-foreground">
-        No password needed. We will email you a secure sign-in link.
+        No password needed. We will email you a secure 6-digit code.
       </p>
     </div>
   );
