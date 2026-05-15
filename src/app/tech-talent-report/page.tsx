@@ -372,7 +372,7 @@ export default function TechTalentReport() {
 
         {/* SECTION 1: REMOTE VS ON-SITE */}
         <section className="mb-28">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-center">
             <div className="lg:col-span-3">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">85% of tech roles still require you to show up</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -396,7 +396,7 @@ export default function TechTalentReport() {
 
           <Callout>Engineering is the most remote-friendly function (40% of remote listings). Infrastructure and security are the least (1.3% each).</Callout>
 
-          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
             <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Breakdown of remote roles by function</p>
             <HBar data={[
               { label: 'Engineering', value: 39.8, color: '#18181B' },
@@ -435,7 +435,7 @@ export default function TechTalentReport() {
 
         {/* SECTION 3: ROLE BREAKDOWN */}
         <section className="mb-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">1 in 3 listings is for a software engineer</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -448,7 +448,7 @@ export default function TechTalentReport() {
                 Design is 2.1%. Our dataset skews toward engineering-heavy companies. The broader market, including agencies and consulting, likely has different proportions.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Role distribution (% of listings)</p>
               <HBar data={[
                 { label: 'Software Engineering', value: 29.8, color: '#18181B' },
@@ -469,7 +469,7 @@ export default function TechTalentReport() {
         {/* SECTION 4: SENIORITY */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Only 2.7% of roles are for new grads</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 2.7% of listings target interns or new graduates. 24.5% ask for senior-level. 6.7% are Staff or Principal. 54.1% do not specify seniority, which typically means mid-level (3 to 7 years).
@@ -481,7 +481,7 @@ export default function TechTalentReport() {
                 Our dataset leans toward established companies. Smaller startups not covered here may have more entry-level openings. But the overall signal is clear: the industry is hiring for experience.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-5 text-center">Seniority distribution</p>
               <DonutChart segments={[
                 { label: 'Mid-level', value: 54, color: '#A1A1AA' },
@@ -501,7 +501,7 @@ export default function TechTalentReport() {
         {/* SECTION 5: SKILLS */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">25% of listings require AI or ML skills</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 25.1% of listings tag AI or ML as a required skill. The <Cite href="https://survey.stackoverflow.co/2025/">2025 Stack Overflow survey</Cite> supports this shift. Python, the dominant AI/ML language, saw its largest single-year adoption jump in a decade (up 7 percentage points). Over 80% of developers now use AI tools in their workflow.
@@ -513,7 +513,7 @@ export default function TechTalentReport() {
                 Go appears in 8.9% of listings, Python in 6.4%, SQL in 5.2%. Go&apos;s strength is driven by the infrastructure-heavy companies in our dataset. The Stack Overflow survey still shows JavaScript and Python as the most widely used languages overall.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Skill demand (% of all listings)</p>
               <SkillRadarChart />
             </div>
@@ -540,7 +540,7 @@ export default function TechTalentReport() {
         {/* SECTION 5a: LIVE MARKET TAGS */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The True Demand: Live Tag Extraction</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 We continuously crawl and index the live tags applied directly by recruiters across our database of nearly 70,000 open roles. This live tracking provides an unfiltered view of precisely which technical skills and domains are seeing the highest actual hiring volume right now.
@@ -549,7 +549,7 @@ export default function TechTalentReport() {
                 Unlike surveyed sentiments, these tags represent true capital allocation. Companies don&apos;t tag roles with specific technology stacks unless they have an immediate business need and budget approved for those skills.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Top Tags (Live Crawl Data)</p>
               {stats?.topTags && stats.topTags.length > 0 ? (
                 <HBar data={stats.topTags.slice(0, 8).map(tag => ({
@@ -576,7 +576,7 @@ export default function TechTalentReport() {
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Languages by tag frequency</p>
               <HBar data={[
                 { label: 'Go', value: 8.9, color: '#18181B' },
@@ -587,7 +587,7 @@ export default function TechTalentReport() {
                 { label: 'JavaScript', value: 1.9, color: '#18181B' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Niche but notable</p>
               <HBar data={[
                 { label: 'Rust', value: 0.9, color: '#18181B' },
@@ -613,7 +613,7 @@ export default function TechTalentReport() {
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Engineering specializations (% of titles)</p>
               <HBar data={[
                 { label: 'Security', value: 2.8, color: '#18181B' },
@@ -625,7 +625,7 @@ export default function TechTalentReport() {
                 { label: 'DevOps/SRE', value: 0.7, color: '#18181B' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Remote rate by specialization</p>
               <HBar data={[
                 { label: 'Cloud', value: 29.8, color: '#18181B' },
@@ -647,7 +647,7 @@ export default function TechTalentReport() {
         {/* SECTION 5b: SKILL DEPTH - AI PENETRATION */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">AI requirements vary wildly by function</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 40.3% of engineering listings require AI or ML skills. For data roles, it is 31%. For product management, 31.6%. Even 23.1% of sales roles now tag AI as a requirement, likely for selling AI products rather than building them.
@@ -659,7 +659,7 @@ export default function TechTalentReport() {
                 This level of AI demand aligns with the <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">Linux Foundation&apos;s 2025 findings</Cite> that 68% of organizations report being understaffed in AI/ML, and core AI skills are present in fewer than half of organizations. The supply-demand gap is real.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">AI/ML requirement by function</p>
               <BubbleChart data={[
                 { label: 'Eng.', value: 40.3, color: '#18181B' },
@@ -675,7 +675,7 @@ export default function TechTalentReport() {
           <Callout>40% of engineering listings now require AI skills. Even 23% of sales roles tag AI as a requirement. AI literacy is becoming a cross-functional expectation.</Callout>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Most common skill pairs (co-occurrence)</p>
               <HBar data={[
                 { label: 'AI + Engineering', value: 13.1, color: '#18181B' },
@@ -686,7 +686,7 @@ export default function TechTalentReport() {
                 { label: 'AI + Infrastructure', value: 10.1, color: '#18181B' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Remote % by seniority</p>
               <HBar data={[
                 { label: 'Junior', value: 33.3, color: '#18181B' },
@@ -713,7 +713,7 @@ export default function TechTalentReport() {
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">AI title categories (% of listings)</p>
               <HBar data={[
                 { label: 'ML Engineer', value: 0.93, color: '#18181B' },
@@ -722,7 +722,7 @@ export default function TechTalentReport() {
                 { label: 'LLM', value: 0.16, color: '#18181B' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">GenAI/LLM title density by region</p>
               <HBar data={[
                 { label: 'India', value: 2.91, color: '#18181B' },
@@ -749,7 +749,7 @@ export default function TechTalentReport() {
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Top frameworks and tools (% of tagged listings)</p>
               <HBar data={[
                 { label: 'Snowflake', value: 3.0, color: '#18181B' },
@@ -762,7 +762,7 @@ export default function TechTalentReport() {
               ]} unit="%" />
             </div>
             <div className="space-y-6">
-              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
                 <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">AI/ML tooling (% of tagged listings)</p>
                 <HBar data={[
                   { label: 'LangChain', value: 0.8, color: '#18181B' },
@@ -773,7 +773,7 @@ export default function TechTalentReport() {
                   { label: 'TensorFlow', value: 0.4, color: '#18181B' },
                 ]} unit="%" />
               </div>
-              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
                 <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-3">Cloud platform leader by region</p>
                 <div className="space-y-2 text-[13px]">
                   {[
@@ -806,7 +806,7 @@ export default function TechTalentReport() {
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Hiring by sector (among tracked companies)</p>
               <HBar data={[
                 { label: 'AI / ML Labs', value: 18.2, color: '#18181B' },
@@ -818,7 +818,7 @@ export default function TechTalentReport() {
                 { label: 'Other', value: 22.6, color: '#18181B' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">AI net hiring effect (LF 2025)</p>
               <HBar data={[
                 { label: 'AI-specific roles', value: 54, color: '#18181B' },
@@ -828,7 +828,7 @@ export default function TechTalentReport() {
                 { label: 'QA/testing', value: 12, color: '#18181B' },
                 { label: 'Entry-level tech', value: 6, color: '#18181B' },
               ]} unit="%" />
-            </div>   </div>
+            </div>
           </div>
           <Sources>
             Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> · <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">LF 2025 Tech Talent</Cite>
@@ -843,7 +843,7 @@ export default function TechTalentReport() {
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">USA top skill tags</p>
               <HBar data={[
                 { label: 'AI', value: 31.8, color: '#18181B' },
@@ -854,7 +854,7 @@ export default function TechTalentReport() {
                 { label: 'Compliance', value: 14.5, color: '#D4D4D8' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">UK top skill tags</p>
               <HBar data={[
                 { label: 'AI', value: 34.7, color: '#18181B' },
@@ -868,7 +868,7 @@ export default function TechTalentReport() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Singapore top tags</p>
               <HBar data={[
                 { label: 'Engineering', value: 33.3, color: '#18181B' },
@@ -878,7 +878,7 @@ export default function TechTalentReport() {
                 { label: 'Finance', value: 26.5, color: '#A1A1AA' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">India top tags</p>
               <HBar data={[
                 { label: 'Engineering', value: 31.7, color: '#18181B' },
@@ -888,7 +888,7 @@ export default function TechTalentReport() {
                 { label: 'AI', value: 13.0, color: '#A1A1AA' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Japan top tags</p>
               <HBar data={[
                 { label: 'AI', value: 28.2, color: '#18181B' },
@@ -906,7 +906,7 @@ export default function TechTalentReport() {
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">AI tag penetration by region</p>
               <HBar data={[
                 { label: 'UK', value: 34.7, color: '#18181B' },
@@ -916,7 +916,7 @@ export default function TechTalentReport() {
                 { label: 'India', value: 13.0, color: '#18181B' },
               ]} unit="%" />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Mobile tag density by region</p>
               <HBar data={[
                 { label: 'India', value: 16.3, color: '#18181B' },

@@ -360,7 +360,7 @@ export default function RemoteTalentReport() {
               </p>
             </div>
             <div className="lg:col-span-2 flex items-center">
-              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 w-full">
+              <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 w-full h-full flex flex-col justify-center">
                 <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-5 text-center">Where knowledge workers work</p>
                 <DonutChart segments={[
                   { label: 'On-Site', value: 85, color: '#18181B' },
@@ -373,7 +373,7 @@ export default function RemoteTalentReport() {
           
           <Callout>The share of remote work days has not meaningfully changed since late 2022. The debate is over.</Callout>
 
-          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
             <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Share of paid work days at home, U.S. full-time workers</p>
             <TrendlineIllustration />
           </div>
@@ -422,7 +422,7 @@ export default function RemoteTalentReport() {
           <>
         {/* ─── SECTION 2: INDUSTRIES ─── */}
         <section className="mb-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Remote hiring is flattening across departments</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -432,7 +432,7 @@ export default function RemoteTalentReport() {
                 What this means is that remote work is no longer a perk reserved exclusively for software developers. The overall pool of remote jobs has shrunk, but those remaining roles are distributed much more evenly across all knowledge-worker departments—except for Operations, which remains heavily tethered to the physical office at just 6% remote.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Share of remote-eligible postings</p>
               <HBar data={[
                 { label: 'Engineering', value: 16, color: '#18181B' },
@@ -456,7 +456,7 @@ export default function RemoteTalentReport() {
             <CompensationIllustration />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 Several 2026 compensation studies show fully remote roles commanding a <Cite href="https://www.levels.fyi/2025/">6% to 7% salary premium</Cite> over equivalent on-site positions. The reason is competition. When a company opens a role to remote candidates it accesses a larger talent pool. But so does every other company.
@@ -465,7 +465,7 @@ export default function RemoteTalentReport() {
                 <Cite href="https://www.nber.org/papers/w30292">Harvard Business School research</Cite> found that the median worker values the option to work from home two or three days per week at roughly 8% of their salary. This creates a negotiation asymmetry that savvy employers exploit.
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Remote premium by role</p>
               <HBar data={[
                 { label: 'Senior Engineering', value: 12, color: '#18181B' },
@@ -486,7 +486,7 @@ export default function RemoteTalentReport() {
 
         {/* ─── SECTION 4: RTO ─── */}
         <section className="mb-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Return-to-office mandates are louder than they are effective</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -523,7 +523,7 @@ export default function RemoteTalentReport() {
         {/* ─── SECTION 5: PRODUCTIVITY ─── */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The productivity debate is settled</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 The <Cite href="https://www.nature.com/articles/s41586-024-07500-2">Stanford-Trip.com randomized controlled trial</Cite> remains the gold standard. In 2022 Nicholas Bloom and his team randomly assigned 1,600 employees to either hybrid or fully in-office schedules. They tracked performance reviews, promotions, and voluntary attrition over two years.
@@ -569,7 +569,7 @@ export default function RemoteTalentReport() {
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6 text-center">Listings by work arrangement</p>
               <DonutChart
                 size={180}
@@ -580,7 +580,7 @@ export default function RemoteTalentReport() {
                 ]}
               />
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">% fully remote by department</p>
               <HBar data={[
                 { label: 'Engineering', value: 16, color: '#18181B' },

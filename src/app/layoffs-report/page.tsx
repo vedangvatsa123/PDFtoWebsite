@@ -375,7 +375,7 @@ export default function LayoffsReport() {
 
           <Callout>2023 was the worst year for tech layoffs in recorded history. 2024 and 2025 were not much better.</Callout>
 
-          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+          <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
             <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Tech employees laid off per year</p>
             <YearlyBarChart />
           </div>
@@ -386,7 +386,7 @@ export default function LayoffsReport() {
 
         {/* ─── SECTION 2: WHO IS CUTTING (free teaser) ─── */}
         <section className="mb-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Layoffs are not just happening in tech anymore</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -394,7 +394,7 @@ export default function LayoffsReport() {
               </p>
 
             </div>
-            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6">
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-6 h-full flex flex-col justify-center">
               <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">2025 announced cuts by sector</p>
               <IndustryTreemap />
             </div>
@@ -441,7 +441,7 @@ export default function LayoffsReport() {
             {/* ─── SECTION 3: BIG TECH LEADING ─── */}
             <section className="mb-28">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The biggest names are the biggest cutters</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                 <div>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                     The companies laying off the most workers are not struggling startups running out of runway. They are the largest, most profitable companies in the world. <Cite href="https://news.crunchbase.com/startups/tech-layoffs/">Amazon cut 16,000 corporate roles</Cite> in January 2026 alone, on top of the 27,000 total it has cut since 2024. Meta reduced its Reality Labs division and eliminated 11,000 positions across the company in 2024 and 2025. Microsoft executed rolling cuts across multiple divisions. Intel laid off over 15,000 employees as it restructured its foundry business.
@@ -456,7 +456,7 @@ export default function LayoffsReport() {
                     This dynamic can create a self-reinforcing cycle. When one company cuts staff and sees its stock rise, others may face board pressure to follow suit. The result can be an industry-wide cascade of reductions driven as much by competitive pressure to demonstrate capital discipline as by operational necessity.
                   </p>
                 </div>
-                <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+                <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
                   <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Largest tech layoffs, 2024-2026</p>
                   <HBar data={[
                     { label: 'Amazon', value: 27000, color: '#18181B' },
@@ -482,7 +482,7 @@ export default function LayoffsReport() {
 
             {/* ─── SECTION 4: AI IS THE DRIVER ─── */}
             <section className="mb-28">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">AI is accelerating workforce restructuring faster than anyone predicted</h2>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
@@ -532,7 +532,7 @@ export default function LayoffsReport() {
             {/* ─── SECTION 5: WHAT HAPPENS TO PEOPLE ─── */}
             <section className="mb-28">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">What actually happens to people who get laid off</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                 <div>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                     The average job search after a tech layoff now takes <Cite href="https://www.bls.gov/news.release/empsit.nr0.htm">5 to 6 months</Cite>. That is roughly double what it was in 2021, when demand for tech talent far outpaced supply. The tech unemployment rate hovers between 3 and 4 percent, still below the national average of 4.2 percent but trending upward since mid-2023.
@@ -589,7 +589,7 @@ export default function LayoffsReport() {
             {/* ─── SECTION 6: CVin.Bio DATA ─── */}
             <section className="mb-28">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">What we see in our own massive dataset</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                 <div>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                     CVin.Bio tracks <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies in real time. Because we recently scaled our ingestion engine to capture nearly 70,000 live jobs across hundreds of new ATS platforms, our data provides an incredibly sharp lens on where companies are actually deploying capital right now.
@@ -604,7 +604,7 @@ export default function LayoffsReport() {
                     Growth (15%) and Solutions (14%) indicate that companies are still investing in go-to-market, but they want technical sellers and growth hackers who can drive revenue efficiency. For job seekers, the demand hasn't disappeared—it has just violently shifted toward AI, infrastructure, and revenue-generating roles.
                   </p>
                 </div>
-                <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+                <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8 h-full flex flex-col justify-center">
                   <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Most in-demand skill categories (% of all listings)</p>
                   <HBar data={[
                     { label: 'AI / Machine Learning', value: 21, color: '#18181B' },

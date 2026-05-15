@@ -205,7 +205,7 @@ export default function AIDiscoveryPage() {
         {/* ─── SECTION 1: THE PROBLEM ─── */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">PDFs are invisible to AI</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 PDF is a print-era format operating in a machine-learning era. When an AI agent encounters a PDF, it must run OCR, infer document structure, resolve formatting ambiguities, and handle layout engine inconsistencies. Most systems deprioritize or skip them entirely.

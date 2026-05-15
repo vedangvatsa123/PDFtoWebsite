@@ -284,7 +284,7 @@ export default async function StoryPage() {
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">The opportunity</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">The labor market is restructuring around AI agents and nobody is serving the new demand</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 U.S. job postings for AI engineers grew by <Cite href="https://www.kore1.com/">143% year over year in 2025</Cite>. The AI agent development segment is projected to grow at a <Cite href="https://www.azumo.com/">52.4% CAGR through 2030</Cite>. By December 2025, <Cite href="https://www.high5test.com/">4.2% of all U.S. job postings</Cite> required AI skills as a core requirement.
@@ -331,7 +331,7 @@ export default async function StoryPage() {
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">The problem</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Hiring talent costs too much, takes too long, and produces poor signal</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 Average U.S. cost per hire is <Cite href="https://www.shrm.org/topics-tools/news/talent-acquisition">$4,800</Cite>. For specialized roles, recruiters charge <Cite href="https://www.techneeds.com/">15-30% of first-year salary</Cite>, pushing a single senior hire to $40-60K in fees. Specialized tech roles take <Cite href="https://www.roberthalf.com/us/en/insights/salary-guide">89+ days to fill</Cite>.
@@ -385,7 +385,7 @@ export default async function StoryPage() {
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Our solution</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Four integrated layers, each feeding the others</h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-10">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
               The free CV-to-website tool brings candidates in. Job matching keeps them engaged. Every profile adds to a structured talent database that employers can query by skill, role, and experience.
             </p>
@@ -424,7 +424,7 @@ export default async function StoryPage() {
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Competition</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Well-funded competitors automate recruiters. We replace the need for them.</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-12">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 The recruiting-tech space has three layers. Horizontal job boards serve everyone and match on keywords. A new wave of AI sourcing tools automates what recruiters do manually: searching databases, sending outreach, filtering résumés. Both leave the same gap open: no structured, agent-queryable talent infrastructure.
@@ -515,7 +515,7 @@ export default async function StoryPage() {
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">Business model</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Three revenue streams aligned with the hiring funnel</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div className="space-y-8">
               {[
                 { n: '01', title: 'Featured placement fees', body: 'Companies pay to boost roles and receive priority placement to skill-matched candidates. High-intent audience, low waste.' },
@@ -603,7 +603,7 @@ export default async function StoryPage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
               {`Job board aggregates listings from OpenAI, Anthropic, Stripe, Airbnb, Coinbase, Cloudflare, Databricks, Snowflake, and ${stats.totalCompanies - 8}+ others.`} Profile engine parses CVs into structured, schema-annotated pages. MCP server is operational.
             </p>
@@ -743,7 +743,7 @@ export default async function StoryPage() {
         <section className="mb-28">
           <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">The ask</p>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8">Pre-seed round to reach first revenue</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                 Product is live. Aggregation engine running. MCP infrastructure operational. Raising a pre-seed to go from working product to first revenue.
