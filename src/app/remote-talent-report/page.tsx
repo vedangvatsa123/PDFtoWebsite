@@ -319,7 +319,7 @@ export default function RemoteTalentReport() {
         {/* ─── HERO ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
           <div>
-            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">CVin.Bio Research / March 2026</p>
+            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">CVin.Bio Research / May 2026</p>
             <h1 className="text-4xl sm:text-[3.4rem] font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8 leading-[1.12]">
               The Remote Talent<br />Report 2026
             </h1>
@@ -592,7 +592,7 @@ export default function RemoteTalentReport() {
             </div>
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio Job Board</Cite>, internal data, March 2026
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio Job Board</Cite>, internal data, May 2026
           </Sources>
         </section>
 

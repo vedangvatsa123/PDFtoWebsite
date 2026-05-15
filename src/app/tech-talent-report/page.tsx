@@ -342,7 +342,7 @@ export default function TechTalentReport() {
         {/* HERO */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
           <div>
-            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">CVin.Bio Research / April 2026</p>
+            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">CVin.Bio Research / May 2026</p>
             <h1 className="text-4xl sm:text-[3.4rem] font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8 leading-[1.12]">
               The Tech Talent<br />Report 2026
             </h1>
@@ -358,7 +358,7 @@ export default function TechTalentReport() {
         {/* BIG NUMBERS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800/50 rounded-2xl overflow-hidden mb-28">
           {[
-            { value: totalJobs, label: 'Active job listings tracked', sub: 'April 2026' },
+            { value: totalJobs, label: 'Active job listings tracked', sub: 'May 2026' },
             { value: totalCompanies, label: 'Companies across 18 countries', sub: 'From Stripe to Grab' },
             { value: remotePercent, label: 'Require on-site presence', sub: `Only ${remoteOnlyPercent} are fully remote` },
             { value: aiPercent, label: 'Require AI or ML skills', sub: `${aiCount} of ${totalJobs} listings` },
@@ -407,7 +407,7 @@ export default function TechTalentReport() {
             ]} unit="%" />
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> for US remote job trends
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> for US remote job trends
           </Sources>
         </section>
 
@@ -428,7 +428,7 @@ export default function TechTalentReport() {
           <Callout>Japan is 38% sales roles. Remote listings are 40% engineering. Every geography has a completely different talent profile.</Callout>
 
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://japan-dev.com/">Japan Dev</Cite> for Japan market context
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://japan-dev.com/">Japan Dev</Cite> for Japan market context
           </Sources>
         </section>
 
@@ -461,7 +461,7 @@ export default function TechTalentReport() {
             </div>
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite>
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite>
           </Sources>
         </section>
 
@@ -493,7 +493,7 @@ export default function TechTalentReport() {
             </div>
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> for global hiring trends · <Cite href="https://www.bls.gov/ooh/computer-and-information-technology/home.htm">BLS</Cite> for CS graduate estimates
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> for global hiring trends · <Cite href="https://www.bls.gov/ooh/computer-and-information-technology/home.htm">BLS</Cite> for CS graduate estimates
           </Sources>
         </section>
 
@@ -532,7 +532,7 @@ export default function TechTalentReport() {
             ]} unit="%" />
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite> for language adoption trends
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite> for language adoption trends
           </Sources>
         </section>
 
@@ -569,7 +569,7 @@ export default function TechTalentReport() {
             </div>
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite> for global language popularity
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite> for global language popularity
           </Sources>
         </section>
 
@@ -609,7 +609,7 @@ export default function TechTalentReport() {
           </div>
           <Callout>Cloud roles are 30% remote. AI Engineer roles are only 8.6% remote. The more proprietary the compute, the less remote the work.</Callout>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026. Specializations extracted from job title keyword matching across 15,458 listings.
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Specializations extracted from job title keyword matching across 15,458 listings.
           </Sources>
         </section>
 
@@ -669,7 +669,7 @@ export default function TechTalentReport() {
           </div>
 
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026. Co-occurrence and cross-tabulation analysis across 15,458 listings.
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Co-occurrence and cross-tabulation analysis across 15,458 listings.
           </Sources>
         </section>
 
@@ -705,7 +705,7 @@ export default function TechTalentReport() {
           </div>
           <Callout>India has 3x the GenAI title density of the US. This may indicate Indian engineering offices are becoming GenAI development hubs, not just execution centers.</Callout>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">LF 2025 Tech Talent</Cite> for net hiring effects
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">LF 2025 Tech Talent</Cite> for net hiring effects
           </Sources>
         </section>
 
@@ -763,7 +763,7 @@ export default function TechTalentReport() {
             </div>
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite> for framework trends
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://survey.stackoverflow.co/2025/">Stack Overflow Developer Survey 2025</Cite> for framework trends
           </Sources>
         </section>
 
@@ -797,10 +797,10 @@ export default function TechTalentReport() {
                 { label: 'QA/testing', value: 12, color: '#18181B' },
                 { label: 'Entry-level tech', value: 6, color: '#18181B' },
               ]} unit="%" />
-            </div>
+            </div>   </div>
           </div>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> · <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">LF 2025 Tech Talent</Cite>
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite> · <Cite href="https://www.linuxfoundation.org/research/open-source-jobs-report-2025">LF 2025 Tech Talent</Cite>
           </Sources>
         </section>
 
@@ -900,7 +900,7 @@ export default function TechTalentReport() {
           <Callout>India has 2.5x more &ldquo;mobile&rdquo; tagged listings than any other region. It also has the lowest AI tag rate at 13%, well below the US (32%) and UK (35%).</Callout>
 
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, April 2026 · <Cite href="https://www.mas.gov.sg/development/fintech">MAS Fintech</Cite> · <Cite href="https://japan-dev.com/">Japan Dev</Cite>
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026 · <Cite href="https://www.mas.gov.sg/development/fintech">MAS Fintech</Cite> · <Cite href="https://japan-dev.com/">Japan Dev</Cite>
           </Sources>
         </section>
 

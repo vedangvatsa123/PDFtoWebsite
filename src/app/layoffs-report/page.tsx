@@ -149,7 +149,7 @@ function YearlyBarChart() {
     { year: '2023', value: 264320, label: '264K' },
     { year: '2024', value: 152922, label: '153K' },
     { year: '2025', value: 124201, label: '124K' },
-    { year: '2026*', value: 40482, label: '40K' },
+    { year: '2026*', value: 113000, label: '113K' },
   ];
   const max = Math.max(...data.map(d => d.value));
   const barWidth = 44;
@@ -185,7 +185,7 @@ function YearlyBarChart() {
           </g>
         );
       })}
-      <text x={totalWidth - 12} y={topPad + chartHeight + 46} textAnchor="end" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">*2026 YTD as of March</text>
+      <text x={totalWidth - 12} y={topPad + chartHeight + 46} textAnchor="end" className="fill-zinc-400 dark:fill-zinc-500 text-[8px]" fontFamily="inherit">*2026 YTD as of May</text>
     </svg>
   );
 }
@@ -326,7 +326,7 @@ export default function LayoffsReport() {
         {/* ─── HERO ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
           <div>
-            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">CVin.Bio Research / March 2026</p>
+            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.2em] mb-6">CVin.Bio Research / May 2026</p>
             <h1 className="text-4xl sm:text-[3.4rem] font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8 leading-[1.12]">
               The Tech Layoffs<br />Report 2026
             </h1>
@@ -345,7 +345,7 @@ export default function LayoffsReport() {
             { value: '750K+', label: 'Tech workers laid off since 2020', href: 'https://layoffs.fyi', sub: 'Layoffs.fyi' },
             { value: '1.2M', label: 'Announced US job cuts in 2025', href: 'https://www.challengergray.com/blog/', sub: 'Challenger' },
             { value: '5.5', label: 'Months, average job search duration', href: 'https://www.bls.gov/news.release/empsit.nr0.htm', sub: 'BLS' },
-            { value: '870', label: 'Jobs lost per day in 2026 YTD', href: 'https://layoffs.fyi', sub: 'Layoffs.fyi' },
+            { value: '837', label: 'Jobs lost per day in 2026 YTD', href: 'https://layoffs.fyi', sub: 'Layoffs.fyi' },
           ].map((d, i) => (
             <div key={i} className="bg-[#fafafa] dark:bg-black p-8 sm:p-10">
               <BigNum {...d} />
@@ -361,7 +361,7 @@ export default function LayoffsReport() {
             <div className="lg:col-span-3">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The numbers are staggering, and they keep climbing</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                According to <Cite href="https://layoffs.fyi">Layoffs.fyi</Cite>, 264,320 tech workers were laid off in 2023 alone, the single worst year on record. 2024 brought another 152,922 cuts across 551 companies. 2025 added 124,201 more from 271 companies. And 2026, barely three months old, has already recorded <Cite href="https://layoffs.fyi">40,482 displaced workers</Cite> across 71 companies.
+                According to <Cite href="https://layoffs.fyi">Layoffs.fyi</Cite>, 264,320 tech workers were laid off in 2023 alone, the single worst year on record. 2024 brought another 152,922 cuts across 551 companies. 2025 added 124,201 more from 271 companies. And 2026, five months in, has already recorded <Cite href="https://layoffs.fyi">113,000 displaced workers</Cite> across 200+ companies.
               </p>
 
             </div>
@@ -619,7 +619,7 @@ export default function LayoffsReport() {
                 </div>
               </div>
               <Sources>
-                Source: <Cite href="https://cvin.bio/jobs">CVin.Bio Job Board</Cite>, deep research analysis, April 2026
+                Source: <Cite href="https://cvin.bio/jobs">CVin.Bio Job Board</Cite>, deep research analysis, May 2026
               </Sources>
             </section>
 

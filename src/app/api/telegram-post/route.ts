@@ -6,30 +6,9 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
-const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID!; // e.g. "@cvinbio_jobs"
+const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID!; // e.g. "@techjobsdaily"
 const CRON_SECRET = process.env.CRON_SECRET || 'cvinbio-tg-2026';
-
-/** Format a single job as a Telegram message with HTML */
-function formatJob(job: any): string {
-  const company = job.company || 'Unknown';
-  const title = job.title || 'Untitled';
-  const location = job.location || 'Not specified';
-  const type = job.job_type || '';
-  const tags = (job.tags || []).slice(0, 5).map((t: string) => `#${t.replace(/[\s.\/\-\+]/g, '_')}`).join(' ');
-  const salary = job.salary ? `\n💰 ${job.salary}` : '';
-  const applyUrl = job.apply_url || '';
-
-  let msg = `🏢 <b>${escapeHtml(company)}</b>\n`;
-  msg += `💼 <b>${escapeHtml(title)}</b>\n`;
-  msg += `📍 ${escapeHtml(location)}`;
-  if (type) msg += ` · ${escapeHtml(type)}`;
-  msg += salary;
-  if (applyUrl) msg += `\n\n<a href="${applyUrl}">Apply Now →</a>`;
-  if (tags) msg += `\n\n${tags}`;
-  msg += `\n\n—\n🔗 More jobs at <a href="https://cvin.bio/jobs">cvin.bio/jobs</a>`;
-
-  return msg;
-}
+const CTA_URL = 'https://cvin.bio/?utm_source=social&utm_medium=telegram&utm_campaign=techjobsdaily';
 
 function escapeHtml(text: string): string {
   return text
@@ -38,8 +17,18 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;');
 }
 
-/** Send a message to Telegram */
-async function sendTelegramMessage(text: string): Promise<boolean> {
+/** Format all jobs into a single batch message */
+function formatBatchMessage(jobs: any[]): string {
+  return jobs.map(job => {
+    const company = escapeHtml(job.company || 'Unknown');
+    const title = escapeHtml(job.title || 'Untitled');
+    const url = job.apply_url || '';
+    return `• ${company} is hiring <a href="${url}">${title}</a>`;
+  }).join('\n');
+}
+
+/** Send a batch message to Telegram with inline keyboard button */
+async function sendBatchToTelegram(text: string): Promise<boolean> {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
   const res = await fetch(url, {
@@ -49,7 +38,12 @@ async function sendTelegramMessage(text: string): Promise<boolean> {
       chat_id: TELEGRAM_CHANNEL_ID,
       text,
       parse_mode: 'HTML',
-      disable_web_page_preview: false,
+      disable_web_page_preview: true,
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: 'Turn your CV into a Website', url: CTA_URL }],
+        ],
+      },
     }),
   });
 
@@ -84,7 +78,7 @@ export async function GET(request: NextRequest) {
     .is('telegram_posted_at', null)
     .not('company', 'ilike', '%Gopuff%')
     .order('published_at', { ascending: false })
-    .limit(10); // Max 10 jobs per cron run to avoid Telegram rate limits
+    .limit(10);
 
   if (error) {
     console.error('Supabase query error:', error);
@@ -95,32 +89,28 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'No new jobs to post', posted: 0 });
   }
 
-  let posted = 0;
-  const failed: string[] = [];
+  // Send as a single batch message
+  const message = formatBatchMessage(jobs);
+  const success = await sendBatchToTelegram(message);
 
-  for (const job of jobs) {
-    const message = formatJob(job);
-    const success = await sendTelegramMessage(message);
+  if (success) {
+    // Mark all jobs as posted
+    const ids = jobs.map(j => j.id);
+    await supabase
+      .from('jobs')
+      .update({ telegram_posted_at: new Date().toISOString() })
+      .in('id', ids);
 
-    if (success) {
-      // Mark as posted so we never double-post
-      await supabase
-        .from('jobs')
-        .update({ telegram_posted_at: new Date().toISOString() })
-        .eq('id', job.id);
-      posted++;
-    } else {
-      failed.push(job.id);
-    }
-
-    // Telegram rate limit: max 20 msgs/min to a channel
-    await new Promise(r => setTimeout(r, 3500));
+    return NextResponse.json({
+      message: `Posted ${jobs.length} jobs to Telegram`,
+      posted: jobs.length,
+      total_found: jobs.length,
+    });
   }
 
   return NextResponse.json({
-    message: `Posted ${posted} jobs to Telegram`,
-    posted,
-    failed,
+    message: 'Failed to post to Telegram',
+    posted: 0,
     total_found: jobs.length,
-  });
+  }, { status: 500 });
 }
