@@ -537,7 +537,37 @@ export default function TechTalentReport() {
           </Sources>
         </section>
 
-        {/* SECTION 5a: PROGRAMMING LANGUAGES */}
+        {/* SECTION 5a: LIVE MARKET TAGS */}
+        <section className="mb-28">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The True Demand: Live Tag Extraction</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+            <div>
+              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
+                We continuously crawl and index the live tags applied directly by recruiters across our database of nearly 70,000 open roles. This live tracking provides an unfiltered view of precisely which technical skills and domains are seeing the highest actual hiring volume right now.
+              </p>
+              <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
+                Unlike surveyed sentiments, these tags represent true capital allocation. Companies don&apos;t tag roles with specific technology stacks unless they have an immediate business need and budget approved for those skills.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/40 rounded-2xl p-8">
+              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">Top Tags (Live Crawl Data)</p>
+              {stats?.topTags && stats.topTags.length > 0 ? (
+                <HBar data={stats.topTags.slice(0, 8).map(tag => ({
+                  label: tag.name,
+                  value: tag.count,
+                  color: '#18181B'
+                }))} unit="" />
+              ) : (
+                <div className="h-40 flex items-center justify-center text-zinc-400 text-sm">Loading live tag data...</div>
+              )}
+            </div>
+          </div>
+          <Sources>
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, Live Extracted Tag Data
+          </Sources>
+        </section>
+
+        {/* SECTION 5b: PROGRAMMING LANGUAGES */}
         <section className="mb-28">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">Go is the most tagged language, not Python</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-5">
