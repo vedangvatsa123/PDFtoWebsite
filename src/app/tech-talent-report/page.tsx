@@ -327,7 +327,7 @@ function SkillRadarChart() {
 
 export default function TechTalentReport() {
   const { stats } = useReportStats();
-  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '68,000+';
+  const jobCount = stats ? stats.totalJobs.toLocaleString() : '68,606';
   const companyCount = stats ? `${stats.totalCompanies}+` : '2,000+';
   const aiPercent = stats ? `${stats.aiPercent}%` : '7%';
   const aiCount = stats ? stats.aiJobs.toLocaleString() : '1,183';
@@ -376,7 +376,7 @@ export default function TechTalentReport() {
             <div className="lg:col-span-3">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">85% of tech roles still require you to show up</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Of nearly 70,000 listings, only 13% are explicitly remote and 2% are hybrid. The remaining 85% require on-site presence. This aligns with broader industry data. According to <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, remote job availability in the US declined steadily through 2024 and has hit a stable bottom in 2026.
+                Of {jobCount} listings, only 13% are explicitly remote and 2% are hybrid. The remaining 85% require on-site presence. This aligns with broader industry data. According to <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, remote job availability in the US declined steadily through 2024 and has hit a stable bottom in 2026.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
                 Remote roles skew heavily toward engineering and sales. Infrastructure and physical operations are notably under-represented in remote work, tethering those teams to office or warehouse locations.
@@ -543,7 +543,7 @@ export default function TechTalentReport() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                We continuously crawl and index the live tags applied directly by recruiters across our database of nearly 70,000 open roles. This live tracking provides an unfiltered view of precisely which technical skills and domains are seeing the highest actual hiring volume right now.
+                We continuously crawl and index the live tags applied directly by recruiters across our database of {jobCount} open roles. This live tracking provides an unfiltered view of precisely which technical skills and domains are seeing the highest actual hiring volume right now.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
                 Unlike surveyed sentiments, these tags represent true capital allocation. Companies don&apos;t tag roles with specific technology stacks unless they have an immediate business need and budget approved for those skills.
@@ -640,7 +640,7 @@ export default function TechTalentReport() {
           </div>
           <Callout>Cloud roles are 30% remote. AI Engineer roles are only 8.6% remote. The more proprietary the compute, the less remote the work.</Callout>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Specializations extracted from job title keyword matching across 68,000+ listings.
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Specializations extracted from job title keyword matching across {jobCount} listings.
           </Sources>
         </section>
 
@@ -700,7 +700,7 @@ export default function TechTalentReport() {
           </div>
 
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Co-occurrence and cross-tabulation analysis across 68,000+ listings.
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Co-occurrence and cross-tabulation analysis across {jobCount} listings.
           </Sources>
         </section>
 

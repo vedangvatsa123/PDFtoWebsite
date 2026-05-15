@@ -297,7 +297,7 @@ export default function LayoffsReport() {
   const [unlocked, setUnlocked] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const { stats } = useReportStats();
-  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '68,000+';
+  const jobCount = stats ? stats.totalJobs.toLocaleString() : '68,606';
   const companyCount = stats ? `${stats.totalCompanies}+` : '2,000+';
 
   useEffect(() => {
@@ -592,7 +592,7 @@ export default function LayoffsReport() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                 <div>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                    CVin.Bio tracks <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies in real time. Because we recently scaled our ingestion engine to capture nearly 70,000 live jobs across hundreds of new ATS platforms, our data provides an incredibly sharp lens on where companies are actually deploying capital right now.
+                    CVin.Bio tracks <Cite href="https://cvin.bio/jobs">{jobCount} live job listings</Cite> from {companyCount} companies in real time. Because we recently scaled our ingestion engine to capture {jobCount} live jobs across hundreds of new ATS platforms, our data provides an incredibly sharp lens on where companies are actually deploying capital right now.
                   </p>
                   <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
                     The narrative that "tech is dead" is false. Tech is simply reallocating. Despite the massive layoff waves across the industry, companies are aggressively hiring for specific skill clusters.
