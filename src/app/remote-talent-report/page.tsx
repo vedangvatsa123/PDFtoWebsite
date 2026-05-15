@@ -288,8 +288,8 @@ export default function RemoteTalentReport() {
   const [unlocked, setUnlocked] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const { stats } = useReportStats();
-  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '19,000+';
-  const companyCount = stats ? `${stats.totalCompanies}+` : '490+';
+  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '68,000+';
+  const companyCount = stats ? `${stats.totalCompanies}+` : '2,000+';
   const remotePercent = stats ? `${stats.remotePercent}%` : '13%';
   const topLoc1 = stats?.topLocations?.[0];
   const topLoc2 = stats?.topLocations?.[3]; // Singapore
@@ -353,7 +353,7 @@ export default function RemoteTalentReport() {
             <div className="lg:col-span-3">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">The remote work contraction is real</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                While early-pandemic predictions assumed a permanent shift to remote work, our dataset of over 25,000 active job postings tells a different story. The great return-to-office has largely succeeded. A staggering 85% of newly listed knowledge-worker roles now require full on-site presence.
+                While early-pandemic predictions assumed a permanent shift to remote work, our dataset of over 68,000 active job postings tells a different story. The great return-to-office has largely succeeded. A staggering 85% of newly listed knowledge-worker roles now require full on-site presence.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
                 Fully remote roles have contracted to just 13% of the total market, making them highly competitive. True "hybrid" roles (explicitly advertised as such) make up a surprisingly small 2% of the market, though many on-site roles offer informal flexibility. The structural shift is clear: the office is back.

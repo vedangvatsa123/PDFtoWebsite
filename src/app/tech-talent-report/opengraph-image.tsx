@@ -8,8 +8,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default async function Image() {
-  let jobCount = '19,000+';
-  let companyCount = '490+';
+  let jobCount = '68,000+';
+  let companyCount = '2,000+';
 
   try {
     const supabase = createClient(

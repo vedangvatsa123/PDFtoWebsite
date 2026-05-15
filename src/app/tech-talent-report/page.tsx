@@ -327,13 +327,14 @@ function SkillRadarChart() {
 
 export default function TechTalentReport() {
   const { stats } = useReportStats();
-  const totalJobs = stats ? stats.totalJobs.toLocaleString() : '19,172';
-  const totalCompanies = stats ? `${stats.totalCompanies}` : '490';
+  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '68,000+';
+  const companyCount = stats ? `${stats.totalCompanies}+` : '2,000+';
   const aiPercent = stats ? `${stats.aiPercent}%` : '7%';
   const aiCount = stats ? stats.aiJobs.toLocaleString() : '1,183';
   const remotePercent = stats ? `${100 - stats.remotePercent}%` : '87%';
   const remoteOnlyPercent = stats ? `${stats.remotePercent}%` : '13%';
-  const jobCount = stats ? `${Math.floor(stats.totalJobs / 1000).toLocaleString()},000+` : '19,000+';
+  const totalJobs = stats ? stats.totalJobs.toLocaleString() : '68,172';
+  const totalCompanies = stats ? `${stats.totalCompanies}` : '2,490';
   return (
     <div className="h-screen overflow-y-auto bg-[#fafafa] dark:bg-black selection:bg-zinc-200 dark:selection:bg-zinc-800 transition-colors duration-200 flex flex-col">
       <Header />
@@ -375,7 +376,7 @@ export default function TechTalentReport() {
             <div className="lg:col-span-3">
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-5">85% of tech roles still require you to show up</h2>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85] mb-5">
-                Of nearly 26,000 listings, only 13% are explicitly remote and 2% are hybrid. The remaining 85% require on-site presence. This aligns with broader industry data. According to <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, remote job availability in the US declined steadily through 2024 and has hit a stable bottom in 2026.
+                Of nearly 70,000 listings, only 13% are explicitly remote and 2% are hybrid. The remaining 85% require on-site presence. This aligns with broader industry data. According to <Cite href="https://economicgraph.linkedin.com/">LinkedIn Economic Graph</Cite>, remote job availability in the US declined steadily through 2024 and has hit a stable bottom in 2026.
               </p>
               <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-[1.85]">
                 Remote roles skew heavily toward engineering and sales. Infrastructure and physical operations are notably under-represented in remote work, tethering those teams to office or warehouse locations.
@@ -609,7 +610,7 @@ export default function TechTalentReport() {
           </div>
           <Callout>Cloud roles are 30% remote. AI Engineer roles are only 8.6% remote. The more proprietary the compute, the less remote the work.</Callout>
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Specializations extracted from job title keyword matching across 15,458 listings.
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Specializations extracted from job title keyword matching across 68,000+ listings.
           </Sources>
         </section>
 
@@ -669,7 +670,7 @@ export default function TechTalentReport() {
           </div>
 
           <Sources>
-            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Co-occurrence and cross-tabulation analysis across 15,458 listings.
+            Source: <Cite href="https://cvin.bio/jobs">CVin.Bio</Cite>, May 2026. Co-occurrence and cross-tabulation analysis across 68,000+ listings.
           </Sources>
         </section>
 
