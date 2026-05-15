@@ -133,7 +133,6 @@ export default function NewsPage() {
           </h1>
           <div className="flex items-center gap-3">
             {[
-              { name: 'Techmeme', domain: 'techmeme.com' },
               { name: 'TechCrunch', domain: 'techcrunch.com' },
               { name: 'The Verge', domain: 'theverge.com' },
               { name: 'Hacker News', domain: 'news.ycombinator.com' },

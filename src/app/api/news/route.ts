@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 // ── High-signal tech news sources (curated/ranked, no lifestyle) ──
 const RSS_FEEDS = [
   // Curated aggregators (highest signal)
-  { name: 'Techmeme', url: 'https://www.techmeme.com/feed.xml', icon: 'techmeme.com' },
   { name: 'Hacker News', url: 'https://hnrss.org/frontpage?count=30', icon: 'news.ycombinator.com' },
   // Tier 1 tech publications
   { name: 'TechCrunch', url: 'https://techcrunch.com/feed/', icon: 'techcrunch.com' },
@@ -46,19 +45,13 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-// Clean up verbose Techmeme-style titles: strip author attribution only
+// Clean up verbose titles: strip author attribution
 function cleanTitle(title: string): string {
   // Strip (Author/Publication) attribution at the end
   let clean = title.replace(/\s*\([A-Z][\w\s.''-]+\/[A-Z][\w\s.&''-]+\)\s*$/g, '').trim();
   // Strip trailing source attribution like "— Source Name" or "| Source"  
   clean = clean.replace(/\s*[—–|]\s*[A-Z][\w\s.&''-]{2,30}$/, '').trim();
   return clean;
-}
-
-// Extract real article URL from Techmeme description HTML
-function extractRealUrl(description: string, fallbackUrl: string): string {
-  const match = description.match(/<a\s+href="(https?:\/\/(?!www\.techmeme\.com)[^"]+)"/i);
-  return match?.[1] || fallbackUrl;
 }
 
 function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
@@ -74,8 +67,7 @@ function parseRSS(xml: string, source: string, icon: string): NewsItem[] {
     const rawDesc = extractTag(item, 'description');
     const description = stripHtml(rawDesc).slice(0, 300);
     
-    // For Techmeme, extract the real article URL from the description
-    const url = source === 'Techmeme' ? extractRealUrl(rawDesc, link) : link;
+    const url = link;
     
     if (title && url) {
       items.push({
@@ -128,7 +120,7 @@ function isJunk(item: NewsItem): boolean {
   if (PROMO_RE.test(text) || LIFESTYLE_RE.test(text)) return true;
 
   // Curated sources always pass (already editor-filtered)
-  const curated = ['Techmeme', 'The Information', 'Bloomberg Tech'];
+  const curated = ['The Information', 'Bloomberg Tech'];
   if (curated.includes(item.source)) return false;
 
   // Other sources must contain at least one tech-relevant signal
