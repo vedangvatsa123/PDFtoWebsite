@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     .select('*', { count: 'exact', head: true })
     .not('company', 'ilike', '%Gopuff%');
 
-  let countStr = '68,606';
+  let countStr = '68,000+';
   if (count) {
     countStr = count.toLocaleString();
   }

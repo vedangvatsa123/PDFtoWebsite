@@ -327,7 +327,7 @@ function SkillRadarChart() {
 
 export default function TechTalentReport() {
   const { stats } = useReportStats();
-  const jobCount = stats ? stats.totalJobs.toLocaleString() : '68,606';
+  const jobCount = stats ? stats.totalJobs.toLocaleString() : '68,000+';
   const companyCount = stats ? `${stats.totalCompanies}+` : '2,000+';
   const aiPercent = stats ? `${stats.aiPercent}%` : '7%';
   const aiCount = stats ? stats.aiJobs.toLocaleString() : '1,183';

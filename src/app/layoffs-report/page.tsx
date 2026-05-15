@@ -297,7 +297,7 @@ export default function LayoffsReport() {
   const [unlocked, setUnlocked] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const { stats } = useReportStats();
-  const jobCount = stats ? stats.totalJobs.toLocaleString() : '68,606';
+  const jobCount = stats ? stats.totalJobs.toLocaleString() : '68,000+';
   const companyCount = stats ? `${stats.totalCompanies}+` : '2,000+';
 
   useEffect(() => {

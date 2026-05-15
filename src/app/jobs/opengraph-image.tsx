@@ -18,7 +18,7 @@ export default async function Image() {
     .select('*', { count: 'exact', head: true })
     .not('company', 'ilike', '%Gopuff%');
 
-  let jobsCountText = '68,606';
+  let jobsCountText = '68,000+';
   if (count) {
     jobsCountText = count.toLocaleString();
   }
